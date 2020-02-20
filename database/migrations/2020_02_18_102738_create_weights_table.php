@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateCompaniesTable extends Migration
+class CreateWeightsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,15 @@ class CreateCompaniesTable extends Migration
      */
     public function up()
     {
-        Schema::create('companies', function (Blueprint $table) {
+        Schema::create('weights', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->unsignedBigInteger('owner_id')->default(0);
-            $table->string('name');
-            $table->string('setup')->default('/setup/plan');
+
+            $table->string('name', 50);
+            $table->smallInteger('weight');
+            $table->smallInteger('order');
+
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
@@ -29,6 +32,6 @@ class CreateCompaniesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('companies');
+        Schema::dropIfExists('weights');
     }
 }

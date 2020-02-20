@@ -6,12 +6,13 @@ use Illuminate\Notifications\Notifiable;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
-use App\Plan;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 use Laravel\Cashier\Billable;
 
 class User extends Authenticatable implements JWTSubject
 {
+    use SoftDeletes;
 
     public static $ROLE_OWNER = 'owner';
     public static $ROLE_SUBSCRIBER = 'subscriber';
@@ -25,7 +26,7 @@ class User extends Authenticatable implements JWTSubject
      * @var array
      */
     protected $fillable = [
-        'name', 'company_id', 'email', 'password', 'mobile', 'photo', 'role'
+        'member_id', 'is_super', 'password', 'email'
     ];
 
     protected $appends = [
@@ -60,18 +61,8 @@ class User extends Authenticatable implements JWTSubject
         return [];
     }
 
-    public function company()
-    {
-        return $this->belongsTo('App\Company');
-    }
-
     public function getSubscribedAttribute()
     {
-        return $this->subscribed(Plan::$SUBSCRIPTION_DEFAULT);
-    }
-
-    public function meta()
-    {
-        return $this->hasOne('App\UserMeta', 'user_id');
+        return [];
     }
 }

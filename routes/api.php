@@ -14,12 +14,26 @@ use Illuminate\Http\Request;
 */
 
 Route::namespace('Api')->group(function () {
-    Route::post('register', 'AuthController@register');
-    Route::post('login', 'AuthController@authenticate');
+    Route::post('login', 'UserController@login');
     Route::post('forgot', 'ForgotPasswordController@forgot');
     Route::post('reset/{token}', 'ForgotPasswordController@reset');
 
     Route::group(['middleware' => ['jwt.verify']], function () {
-        Route::post('request-development', 'RequestForDevelopmentController@submit');
+        Route::get('organizations', 'OrganizationController@index');
+        Route::get('organizations-list', 'OrganizationController@list');
+        Route::get('organization/{id}', 'OrganizationController@show');
+        Route::get('organization-child/{id}', 'OrganizationController@child');
+        Route::get('club-players/{id}', 'OrganizationController@players');
+        Route::post('register-organization', 'OrganizationController@store');
+        Route::delete('organization/{id}', 'OrganizationController@destroy');
+
+        Route::get('members', 'MemberController@index');
+        Route::get('member/{id}', 'MemberController@show');
+        Route::post('register-member', 'MemberController@store');
+        Route::delete('member/{id}', 'MemberController@destroy');
+
+        Route::get('profile', 'UserController@profile');
+        Route::post('update-profile', 'UserController@update');
+        Route::post('invite-users', 'UserController@invite');
     });
 });

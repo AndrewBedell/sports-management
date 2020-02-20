@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateMessageRequestsTable extends Migration
+class CreatePlayersTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,18 @@ class CreateMessageRequestsTable extends Migration
      */
     public function up()
     {
-        Schema::create('message_requests', function (Blueprint $table) {
+        Schema::create('players', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->unsignedBigInteger('requester_id');
-            $table->string('name');
-            $table->string('mobile');
+            $table->integer('member_id');
+            $table->integer('weight_id');
+
+            $table->smallInteger('dan');
+            $table->string('skill', 100);
+
+            $table->dateTime('expired_date', 0)->nullable();
+
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
@@ -29,6 +35,6 @@ class CreateMessageRequestsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('message_requests');
+        Schema::dropIfExists('players');
     }
 }

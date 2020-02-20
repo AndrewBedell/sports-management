@@ -3,15 +3,18 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
-class MessageRequest extends Model
+class Player extends Model
 {
+    use SoftDeletes;
+
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = [
-        'requester_id', 'name', 'mobile'
+        'member_id', 'weight_id', 'dan', 'skill'
     ];
 }
