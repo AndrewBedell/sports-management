@@ -27,11 +27,13 @@ Route::namespace('Api')->group(function () {
         Route::get('organization-child/{id}', 'OrganizationController@child');
         Route::get('club-players/{id}', 'OrganizationController@players');
         Route::post('register-organization', 'OrganizationController@store');
+        Route::put('organization/{id}', 'OrganizationController@update');
         Route::delete('organization/{id}', 'OrganizationController@destroy');
 
         Route::get('members', 'MemberController@index');
         Route::get('member/{id}', 'MemberController@show');
         Route::post('register-member', 'MemberController@store');
+        Route::put('member/{id}', 'MemberController@update');
         Route::delete('member/{id}', 'MemberController@destroy');
 
         Route::get('profile', 'UserController@profile');

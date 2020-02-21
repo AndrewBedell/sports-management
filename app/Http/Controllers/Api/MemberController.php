@@ -167,7 +167,7 @@ class MemberController extends Controller
                 return response()->json(
                     [
                         'status' => 'error',
-                        'message' => 'Access permission denied'
+                        'message' => 'Access permission denied.'
                     ],
                     406
                 );
@@ -192,7 +192,139 @@ class MemberController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $member = Member::find($id);
+
+        if (isset($member)) {
+            if ($this->checkPermission($member->organization_id)) {
+                $data = $request->all();
+
+                $validMember = Validator::make($data, [
+                    'organization_id' => 'required',
+                    'role_id' => 'required',
+                    'first_name' => 'required|string|max:255',
+                    'last_name' => 'required|string|max:255',
+                    'profile_image' => 'required|string|max:255',
+                    'gender' => 'required|boolean',
+                    'birthday' => 'required|date',
+                    'email' => 'required|string|email|max:255',
+                    'mobile_phone' => 'required|string|max:255',
+                    'addressline1' => 'required|string|max:255',
+                    'country' => 'required|string|max:255',
+                    'state' => 'required|string|max:255',
+                    'city' => 'required|string|max:255',
+                    'zip_code' => 'required|string|max:255',
+                    'position' => 'required|string|max:255',
+                    'identity' => 'required|string|max:255',
+                    'active' => 'required|boolean',
+                    'register_date' => 'required|date'
+                ]);
+
+                if ($validMember->fails()) {
+                    return response()->json(
+                        [
+                            'status' => 'fail',
+                            'data' => $validMember->errors(),
+                        ],
+                        422
+                    );
+                }
+
+                $validPlayer = Validator::make($data, [
+                    'weight_id' => 'required',
+                    'dan' => 'required|integer',
+                    'skill' => 'required|string|max:255'
+                ]);
+                
+                $role = DB::table('roles')->where('id', $data['role_id'])->first();
+        
+                if ($role->is_player && $validPlayer->fails()) {
+                    return response()->json(
+                        [
+                            'status' => 'fail',
+                            'data' => $validPlayer->errors(),
+                        ],
+                        422
+                    );
+                }
+        
+                if (is_null($data['mid_name']))
+                        $data['mid_name'] = "";
+        
+                if (is_null($data['addressline2']))
+                    $data['addressline2'] = "";
+
+                $exist = Member::where('email', $data['email'])->where('id', '!=', $id)->get();
+
+                if (sizeof($exist) == 0) {
+                    if (is_null($data['addressline2']))
+                        $data['addressline2'] = "";
+                        
+                    Member::where('id', $id)->update(array(
+                        'organization_id' => $data['organization_id'],
+                        'role_id' => $data['role_id'],
+                        'first_name' => $data['first_name'],
+                        'mid_name' => $data['mid_name'],
+                        'last_name' => $data['last_name'],
+                        'profile_image' => $data['profile_image'],
+                        'gender' => $data['gender'],
+                        'birthday' => $data['birthday'],
+                        'email' => $data['email'],
+                        'mobile_phone' => $data['mobile_phone'],
+                        'addressline1' => $data['addressline1'],
+                        'addressline2' => $data['addressline2'],
+                        'country' => $data['country'],
+                        'state' => $data['state'],
+                        'city' => $data['city'],
+                        'zip_code' => $data['zip_code'],
+                        'position' => $data['position'],
+                        'identity' => $data['identity']
+                    ));
+                } else {
+                    return response()->json(
+                        [
+                            'status' => 'error',
+                            'message' => 'Email already exist.'
+                        ],
+                        406
+                    );
+                }
+
+                $member_id = $member->id;
+
+                if ($role->is_player) {
+                    Player::where('member_id', $member_id)->update(array(
+                        'weight_id' => $data['weight_id'],
+                        'dan' => $data['dan'],
+                        'skill' => $data['skill']
+                    ));
+                } else {
+                    User::where('member_id', $member_id)->update(array(
+                        'is_super' => $data['is_super'],
+                        'email' => $data['email']
+                    ));
+                }
+
+                return response()->json([
+                    'status' => 'success'
+                ], 200);
+            } else {
+                return response()->json(
+                    [
+                        'status' => 'error',
+                        'message' => 'Access permission denied.'
+                    ],
+                    406
+                );
+            }
+        } else {
+            return response()->json(
+                [
+                    'status' => 'error',
+                    'message' => 'Invalid Member ID'
+                ],
+                406
+            );
+        }
     }
 
     /**
@@ -248,7 +380,7 @@ class MemberController extends Controller
             return response()->json(
                 [
                     'status' => 'error',
-                    'message' => 'Access permission denied'
+                    'message' => 'Access permission denied.'
                 ],
                 406
             );

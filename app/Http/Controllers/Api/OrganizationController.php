@@ -47,18 +47,12 @@ class OrganizationController extends Controller
 
         $data = $request->all();
 
-        $parent_id = '';
-
-        if (isset($data['parent_id'])) {
-            $parent_id = $data['parent_id'];
-        } else {
+        if (!isset($data['parent_id'])) {
             $member_id = $user->member_id;
             $member = Member::where('id', $member_id)->first();
 
-            $parent_id = $member->organization_id;
+            $data['parent_id'] = $member->organization_id;
         }
-
-        $data['parent_id'] = $parent_id;
 
         $validator = Validator::make($data, [
             'register_no' => 'required',
@@ -144,7 +138,64 @@ class OrganizationController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        if ($this->checkPermission($id)) {
+            $data = $request->all();
+
+            $validator = Validator::make($data, [
+                'register_no' => 'required',
+                'name' => 'required|string|max:255',
+                'logo' => 'required|string|max:255',
+                'email' => 'required|string|email|max:255',
+                'mobile_phone' => 'required|string|max:255',
+                'addressline1' => 'required|string|max:255',
+                'country' => 'required|string|max:255',
+                'state' => 'required|string|max:255',
+                'city' => 'required|string|max:255',
+                'zip_code' => 'required|string|max:255',
+                'readable_id' => 'required|string|max:255',
+                'level' => 'required|integer',
+                'is_club' => 'required|boolean',
+            ]);
+            
+            if ($validator->fails()) {
+                return response()->json(
+                    [
+                        'status' => 'fail',
+                        'data' => $validator->errors(),
+                    ],
+                    422
+                );
+            } else {
+                $exist = Organization::where('email', $data['email'])->where('id', '!=', $id)->get();
+
+                if (sizeof($exist) == 0) {
+                    if (is_null($data['addressline2']))
+                        $data['addressline2'] = "";
+                        
+                    Organization::where('id', $id)->update($data);
+
+                    return response()->json([
+                        'status' => 'success'
+                    ], 200);
+                } else {
+                    return response()->json(
+                        [
+                            'status' => 'error',
+                            'message' => 'Email already exist.'
+                        ],
+                        406
+                    );
+                }
+            }
+        } else {
+            return response()->json(
+                [
+                    'status' => 'error',
+                    'message' => 'Access Permission Denined.'
+                ],
+                406
+            );
+        }
     }
 
     /**
@@ -190,7 +241,7 @@ class OrganizationController extends Controller
             return response()->json(
                 [
                     'status' => 'error',
-                    'message' => 'Invalid Organization ID'
+                    'message' => 'Access permission denied.'
                 ],
                 406
             );
@@ -293,7 +344,13 @@ class OrganizationController extends Controller
 
         $chidren = $this->findChildren($parent_id, '');
 
-        $orgs = array($own);
+        $orgs = array();
+
+        if ($own->parent_id != 0) {
+            $orgs[0] = $own;
+            
+        }
+
         $orgs = array_merge($orgs, $chidren);
 
         return response()->json($orgs);
@@ -325,7 +382,7 @@ class OrganizationController extends Controller
             return response()->json(
                 [
                     'status' => 'error',
-                    'message' => 'Invalid Organization ID'
+                    'message' => 'Access permission denied.'
                 ],
                 406
             );
@@ -367,7 +424,7 @@ class OrganizationController extends Controller
             return response()->json(
                 [
                     'status' => 'error',
-                    'message' => 'Invalid Organization ID'
+                    'message' => 'Access permission denied.'
                 ],
                 406
             );
@@ -382,60 +439,60 @@ class OrganizationController extends Controller
      */
     public function search(Request $request)
     {
-        $type = $request->query('type');
-        $org = $request->query('org');
-        $name = $request->query('name');
-        $weight = $request->query('weight');
-        $dan = $request->query('dan');
+        $type = $request->input('type');
+        $org = $request->input('org');
+        $name = $request->input('name');
+        $weight = $request->input('weight');
+        $dan = $request->input('dan');
 
-        $parent_id = ($org == '') ? 1 : $org;
+        // $parent_id = ($org == '') ? 1 : $org;
 
-        $own = Organization::find($parent_id);
-        $chidren = $this->findChildren($parent_id, '');
+        // $own = Organization::find($parent_id);
+        // $chidren = $this->findChildren($parent_id, '');
 
-        $orgs = array($own);
-        $orgs = array_merge($orgs, $chidren);
+        // $orgs = array($own);
+        // $orgs = array_merge($orgs, $chidren);
 
-        $orgIDs = array();
+        // $orgIDs = array();
 
-        foreach ($orgs as $org) {
-            if ($type == 'org') {
-                array_push($orgIDs, $org->id);
-            } else {
-                if ($org->is_club)
-                    array_push($orgIDs, $org->id);
-            }
-        }
+        // foreach ($orgs as $org) {
+        //     if ($type == 'org') {
+        //         array_push($orgIDs, $org->id);
+        //     } else {
+        //         if ($org->is_club)
+        //             array_push($orgIDs, $org->id);
+        //     }
+        // }
 
-        $result = array();
+        // $result = array();
 
-        switch ($type) {
-            case 'org':
-            case 'club':
-                $result = Organization::whereIn('id', $orgIDs)
-                                    ->where('name', 'like', '%' . $name . '%')
-                                    ->get();
-                break;
-            case 'player':
-                $result = Member::whereIn('members.organization_id', $orgIDs)
-                                ->where(function($query) use ($name){
-                                    $query->where('members.first_name', 'like', '%' . $name. '%');
-                                    $query->orWhere('members.mid_name', 'like', '%' . $name. '%');
-                                    $query->orWhere('members.last_name', 'like', '%' . $name . '%');
-                                });
+        // switch ($type) {
+        //     case 'org':
+        //     case 'club':
+        //         $result = Organization::whereIn('id', $orgIDs)
+        //                             ->where('name', 'like', '%' . $name . '%')
+        //                             ->get();
+        //         break;
+        //     case 'player':
+        //         $result = Member::whereIn('members.organization_id', $orgIDs)
+        //                         ->where(function($query) use ($name){
+        //                             $query->where('members.first_name', 'like', '%' . $name. '%');
+        //                             $query->orWhere('members.mid_name', 'like', '%' . $name. '%');
+        //                             $query->orWhere('members.last_name', 'like', '%' . $name . '%');
+        //                         });
                 
-                if ($weight != '')
-                    $result = $result->where('players.weight_id', $weight);
+        //         if ($weight != '')
+        //             $result = $result->where('players.weight_id', $weight);
 
-                if ($dan != '')
-                    $result = $result->where('players.dan', $dan);
+        //         if ($dan != '')
+        //             $result = $result->where('players.dan', $dan);
 
-                $result = $result->leftJoin('players', 'members.id', '=', 'players.member_id')
-                                ->leftJoin('weights', 'players.weight_id', '=', 'players.weight_id')
-                                ->select('members.*', 'weights.name', 'weights.weight', 'players.dan', 'players.skill', 'players.expired_date')
-                                ->get();
-                break;
-        }
+        //         $result = $result->leftJoin('players', 'members.id', '=', 'players.member_id')
+        //                         ->leftJoin('weights', 'players.weight_id', '=', 'players.weight_id')
+        //                         ->select('members.*', 'weights.name', 'weights.weight', 'players.dan', 'players.skill', 'players.expired_date')
+        //                         ->get();
+        //         break;
+        // }
 
         return response()->json($result);
     }
