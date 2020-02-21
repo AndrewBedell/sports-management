@@ -21,8 +21,13 @@ class OrganizationController extends Controller
      */
     public function index()
     {
-        $parent_id = 1;
+        $user = JWTAuth::parseToken()->authenticate();
+        $member = Member::find($user->member_id);
 
+        $parent_id = $member->organization_id;
+
+        if ($parent_id == 1) $parent_id = 0;
+        
         $orgs = array();
 
         $orgs = $this->findTreeChildren($parent_id);
@@ -115,9 +120,19 @@ class OrganizationController extends Controller
      */
     public function show($id)
     {
-        $org = Organization::find($id);
+        if ($this->checkPermission($id)) {
+            $org = Organization::find($id);
 
-        return response()->json($org);
+            return response()->json($org);
+        } else {
+            return response()->json(
+                [
+                    'status' => 'error',
+                    'message' => 'Invalid Organization ID'
+                ],
+                406
+            );
+        }
     }
 
     /**
@@ -140,20 +155,42 @@ class OrganizationController extends Controller
      */
     public function destroy($id)
     {
-        $user = JWTAuth::parseToken()->authenticate();
+        if ($this->checkPermission($id)) {
+            $user = JWTAuth::parseToken()->authenticate();
 
-        if (isset($user) && $user->is_super) {
-            Organization::where('id', $id)->delete();
+            if (isset($user) && $user->is_super) {
+                $child_org = Organization::where('parent_id', $id)->get();
 
-            return response()->json([
-                'status' => 'success',
-                'message' => 'Deleted Successfully'
-            ], 200);
+                if (sizeof($child_org) == 0) {
+                    Organization::where('id', $id)->delete();
+
+                    return response()->json([
+                        'status' => 'success',
+                        'message' => 'Deleted Successfully'
+                    ], 200);
+                } else {
+                    return response()->json(
+                        [
+                            'status' => 'error',
+                            'message' => 'Child Organization exist.'
+                        ],
+                        406
+                    );
+                }
+            } else {
+                return response()->json(
+                    [
+                        'status' => 'error',
+                        'message' => 'Invalid credentials.'
+                    ],
+                    406
+                );
+            }
         } else {
             return response()->json(
                 [
                     'status' => 'error',
-                    'message' => 'Invalid credentials.'
+                    'message' => 'Invalid Organization ID'
                 ],
                 406
             );
@@ -212,17 +249,52 @@ class OrganizationController extends Controller
     }
 
     /**
+     * Check Permission to get the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function checkPermission($id)
+    {
+        $user = JWTAuth::parseToken()->authenticate();
+
+        $member = Member::find($user->member_id);
+
+        $parent_id = $member->organization_id;
+
+        $own = Organization::find($parent_id);
+        $chidren = $this->findChildren($parent_id, '');
+
+        $orgs = array($own);
+        $orgs = array_merge($orgs, $chidren);
+
+        $orgIDs = array();
+
+        foreach ($orgs as $org) {
+            array_push($orgIDs, $org->id);
+        }
+
+        return in_array($id, $orgIDs);
+    }
+
+    /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
     public function list()
     {
-        $parent_id = 1;
+        $user = JWTAuth::parseToken()->authenticate();
+        $member = Member::find($user->member_id);
 
-        $orgs = array();
+        $parent_id = $member->organization_id;
 
-        $orgs = $this->findChildren($parent_id, '');
+        $own = Organization::find($parent_id);
+        $own->label = $own->name;
+
+        $chidren = $this->findChildren($parent_id, '');
+
+        $orgs = array($own);
+        $orgs = array_merge($orgs, $chidren);
 
         return response()->json($orgs);
     }
@@ -235,19 +307,29 @@ class OrganizationController extends Controller
      */
     public function child($id)
     {
-        $orgs = array();
+        if ($this->checkPermission($id)) {
+            $orgs = array();
 
-        $childs = Organization::where('parent_id', $id)->get();
+            $childs = Organization::where('parent_id', $id)->get();
 
-        foreach ($childs as $child) {
-            $hasChild = Organization::where('parent_id', $child->id)->count();
+            foreach ($childs as $child) {
+                $hasChild = Organization::where('parent_id', $child->id)->count();
 
-            $child->children = $hasChild;
+                $child->children = $hasChild;
 
-            array_push($orgs, $child);
+                array_push($orgs, $child);
+            }
+
+            return response()->json($orgs);
+        } else {
+            return response()->json(
+                [
+                    'status' => 'error',
+                    'message' => 'Invalid Organization ID'
+                ],
+                406
+            );
         }
-
-        return response()->json($orgs);
     }
 
     /**
@@ -258,9 +340,9 @@ class OrganizationController extends Controller
      */
     public function players($id)
     {
-        $org = Organization::find($id);
+        if ($this->checkPermission($id)) {
+            $org = Organization::find($id);
 
-        if (isset($org)) {
             if ($org->is_club) {
                 $role = DB::table('roles')->where('is_player', true)->first();
 

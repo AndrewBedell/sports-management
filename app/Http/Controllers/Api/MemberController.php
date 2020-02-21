@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\User;
 use App\Member;
 use App\Player;
+use App\Organization;
 
 use JWTAuth;
 use Illuminate\Http\Request;
@@ -26,7 +27,11 @@ class MemberController extends Controller
 
         $role_id = $role->id;
 
-        $members = Member::where('role_id', '!=', $role_id)->get();
+        $orgIDs = $this->orgIDList();
+
+        $members = Member::where('role_id', '!=', $role_id)
+                        ->whereIn('organization_id', $orgIDs)
+                        ->get();
 
         return response()->json($members);
     }
@@ -146,17 +151,27 @@ class MemberController extends Controller
         $member = Member::find($id);
 
         if (isset($member)) {
-            $role = DB::table('roles')->where('id', $member->role_id)->first();
+            if ($this->checkPermission($member->organization_id)) {
+                $role = DB::table('roles')->where('id', $member->role_id)->first();
 
-            if ($role->is_player) {
-                $member = Member::where('members.id', $id)
-                        ->leftJoin('players', 'members.id', '=', 'players.member_id')
-                        ->leftJoin('weights', 'players.weight_id', '=', 'players.weight_id')
-                        ->select('members.*', 'weights.name', 'weights.weight', 'players.dan', 'players.skill', 'players.expired_date')
-                        ->get();
+                if ($role->is_player) {
+                    $member = Member::where('members.id', $id)
+                            ->leftJoin('players', 'members.id', '=', 'players.member_id')
+                            ->leftJoin('weights', 'players.weight_id', '=', 'players.weight_id')
+                            ->select('members.*', 'weights.name', 'weights.weight', 'players.dan', 'players.skill', 'players.expired_date')
+                            ->get();
+                }
+
+                return response()->json($member);
+            } else {
+                return response()->json(
+                    [
+                        'status' => 'error',
+                        'message' => 'Access permission denied'
+                    ],
+                    406
+                );
             }
-
-            return response()->json($member);
         } else {
             return response()->json(
                 [
@@ -188,31 +203,43 @@ class MemberController extends Controller
      */
     public function destroy($id)
     {
-        $user = JWTAuth::parseToken()->authenticate();
+        $member = Member::find($id);
 
-        if (isset($user) && $user->is_super) {
-            $member = Member::find($id);
+        if ($this->checkPermission($member->organization_id)) {
+            $user = JWTAuth::parseToken()->authenticate();
 
-            if (isset($member)) {
-                $role = DB::table('roles')->where('id', $member->role_id)->first();
+            if (isset($user) && $user->is_super) {
+                $member = Member::find($id);
 
-                if ($role->is_player) {
-                    Player::where('member_id', $id)->delete();
+                if (isset($member)) {
+                    $role = DB::table('roles')->where('id', $member->role_id)->first();
+
+                    if ($role->is_player) {
+                        Player::where('member_id', $id)->delete();
+                    } else {
+                        User::where('member_id', $id)->delete();
+                    }
+
+                    Member::where('id', $id)->delete();
+
+                    return response()->json([
+                        'status' => 'success',
+                        'message' => 'Deleted Successfully'
+                    ], 200);
                 } else {
-                    User::where('member_id', $id)->delete();
+                    return response()->json(
+                        [
+                            'status' => 'error',
+                            'message' => 'Invalid Member ID'
+                        ],
+                        406
+                    );
                 }
-
-                Member::where('id', $id)->delete();
-
-                return response()->json([
-                    'status' => 'success',
-                    'message' => 'Deleted Successfully'
-                ], 200);
             } else {
                 return response()->json(
                     [
                         'status' => 'error',
-                        'message' => 'Invalid Member ID'
+                        'message' => 'Invalid credentials.'
                     ],
                     406
                 );
@@ -221,10 +248,79 @@ class MemberController extends Controller
             return response()->json(
                 [
                     'status' => 'error',
-                    'message' => 'Invalid credentials.'
+                    'message' => 'Access permission denied'
                 ],
                 406
             );
         }
+    }
+
+    /**
+     * Sub function to get a sub list structure of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    function findChildren($parent_id, $parent_name)
+    {
+        $child_org = Organization::where('parent_id', $parent_id)->get();
+
+        $orgs = array();
+
+        foreach ($child_org as $child) {
+            if ($parent_name == "")
+                $parent_name = $child->name;
+            else
+                $parent_name = $child->name . ", " . $parent_name;
+
+            $child->label = $parent_name;
+
+            array_push($orgs, $child);
+
+            if (!$child->is_club) {
+                $orgs = array_merge($orgs, $this->findChildren($child->id, $parent_name));
+            }
+        }
+
+        return $orgs;
+    }
+
+    /**
+     * Get Available List of Organization.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function orgIDList()
+    {
+        $user = JWTAuth::parseToken()->authenticate();
+
+        $member = Member::find($user->member_id);
+
+        $parent_id = $member->organization_id;
+
+        $own = Organization::find($parent_id);
+        $chidren = $this->findChildren($parent_id, '');
+
+        $orgs = array($own);
+        $orgs = array_merge($orgs, $chidren);
+
+        $orgIDs = array();
+
+        foreach ($orgs as $org) {
+            array_push($orgIDs, $org->id);
+        }
+
+        return $orgIDs;
+    }
+
+    /**
+     * Check Permission to get the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function checkPermission($id)
+    {
+        $orgIDs = $this->orgIDList();
+
+        return in_array($id, $orgIDs);
     }
 }
