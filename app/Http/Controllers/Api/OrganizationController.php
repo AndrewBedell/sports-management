@@ -291,4 +291,70 @@ class OrganizationController extends Controller
             );
         }
     }
+
+    /**
+     * Display the search result of the resource.
+     *
+     * 
+     * @return \Illuminate\Http\Response
+     */
+    public function search(Request $request)
+    {
+        $type = $request->query('type');
+        $org = $request->query('org');
+        $name = $request->query('name');
+        $weight = $request->query('weight');
+        $dan = $request->query('dan');
+
+        $parent_id = ($org == '') ? 1 : $org;
+
+        $own = Organization::find($parent_id);
+        $chidren = $this->findChildren($parent_id, '');
+
+        $orgs = array($own);
+        $orgs = array_merge($orgs, $chidren);
+
+        $orgIDs = array();
+
+        foreach ($orgs as $org) {
+            if ($type == 'org') {
+                array_push($orgIDs, $org->id);
+            } else {
+                if ($org->is_club)
+                    array_push($orgIDs, $org->id);
+            }
+        }
+
+        $result = array();
+
+        switch ($type) {
+            case 'org':
+            case 'club':
+                $result = Organization::whereIn('id', $orgIDs)
+                                    ->where('name', 'like', '%' . $name . '%')
+                                    ->get();
+                break;
+            case 'player':
+                $result = Member::whereIn('members.organization_id', $orgIDs)
+                                ->where(function($query) use ($name){
+                                    $query->where('members.first_name', 'like', '%' . $name. '%');
+                                    $query->orWhere('members.mid_name', 'like', '%' . $name. '%');
+                                    $query->orWhere('members.last_name', 'like', '%' . $name . '%');
+                                });
+                
+                if ($weight != '')
+                    $result = $result->where('players.weight_id', $weight);
+
+                if ($dan != '')
+                    $result = $result->where('players.dan', $dan);
+
+                $result = $result->leftJoin('players', 'members.id', '=', 'players.member_id')
+                                ->leftJoin('weights', 'players.weight_id', '=', 'players.weight_id')
+                                ->select('members.*', 'weights.name', 'weights.weight', 'players.dan', 'players.skill', 'players.expired_date')
+                                ->get();
+                break;
+        }
+
+        return response()->json($result);
+    }
 }

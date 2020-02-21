@@ -18,6 +18,8 @@ Route::namespace('Api')->group(function () {
     Route::post('forgot', 'ForgotPasswordController@forgot');
     Route::post('reset/{token}', 'ForgotPasswordController@reset');
 
+    Route::get('search', 'OrganizationController@search');
+
     Route::group(['middleware' => ['jwt.verify']], function () {
         Route::get('organizations', 'OrganizationController@index');
         Route::get('organizations-list', 'OrganizationController@list');
