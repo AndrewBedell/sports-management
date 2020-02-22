@@ -440,10 +440,10 @@ class OrganizationController extends Controller
     public function search(Request $request)
     {
         $type = $request->input('type');
-        $org = $request->input('org');
+        $org = $request->input('org') ? $request->input('org') : [];
         $name = $request->input('name');
-        $weight = $request->input('weight');
-        $dan = $request->input('dan');
+        $weight = $request->input('weight') ? $request->input('weight') : [];
+        $dan = $request->input('dan') ? $request->input('dan') : [];
 
         $orgIDs = array();
 
