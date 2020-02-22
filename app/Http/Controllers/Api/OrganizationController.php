@@ -478,7 +478,9 @@ class OrganizationController extends Controller
         foreach ($orgIDs as $id) {
             $sort .= $id . ',';
         }
-        $sort = substr($sort, 0, strlen($sort) - 1);
+
+        if (strlen($sort) > 0)
+            $sort = substr($sort, 0, strlen($sort) - 1);
 
         $result = array();
 
@@ -486,16 +488,24 @@ class OrganizationController extends Controller
             case 'org':
                 $result = Organization::whereIn('id', $orgIDs)
                                     ->where('name', 'like', '%' . $name . '%')
-                                    ->where('is_club', 0)
-                                    ->orderByRaw('FIELD(id, ' . $sort . ')')
-                                    ->get();
+                                    ->where('is_club', 0);
+                
+                if (is_array($sort))
+                    $result = $result->orderByRaw('FIELD(id, ' . $sort . ')');
+
+                $result = $result->get();
+
                 break;
             case 'club':
                 $result = Organization::whereIn('id', $orgIDs)
                                     ->where('name', 'like', '%' . $name . '%')
-                                    ->where('is_club', 1)
-                                    ->orderByRaw('FIELD(id, ' . $sort . ')')
-                                    ->get();
+                                    ->where('is_club', 1);
+                
+                if (is_array($sort))
+                    $result = $result->orderByRaw('FIELD(id, ' . $sort . ')');
+
+                $result = $result->get();
+
                 break;
             case 'player':
                 $result = Member::whereIn('members.organization_id', $orgIDs);
