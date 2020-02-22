@@ -45,6 +45,7 @@ $green:   #00D994 !default;
 $teal:    #20c997 !default;
 $cyan:    #17a2b8 !default;
 $gray:    #777681 !default;
+$silver:  #DCE0E8 !default;
 
 $colors: () !default;
 // stylelint-disable-next-line scss/dollar-variable-default
@@ -195,7 +196,7 @@ $grid-breakpoints: (
   sm: 576px,
   md: 768px,
   lg: 992px,
-  xl: 1200px
+  xl: 1600px
 ) !default;
 
 @include _assert-ascending($grid-breakpoints, "$grid-breakpoints");
@@ -207,10 +208,10 @@ $grid-breakpoints: (
 // Define the maximum width of `.container` for different screen sizes.
 
 $container-max-widths: (
-  sm: 540px,
-  md: 720px,
-  lg: 960px,
-  xl: 1140px
+  sm: 576px,
+  md: 768px,
+  lg: 992px,
+  xl: 1600px
 ) !default;
 
 @include _assert-ascending($container-max-widths, "$container-max-widths");
@@ -284,6 +285,7 @@ $font-size-sm:                $font-size-base * .8125 !default;
 $font-weight-lighter:         lighter !default;
 $font-weight-light:           300 !default;
 $font-weight-normal:          400 !default;
+$font-weight-medium:          500 !default;
 $font-weight-bold:            700 !default;
 $font-weight-bolder:          bolder !default;
 

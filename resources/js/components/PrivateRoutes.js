@@ -25,17 +25,3 @@ export const RedirectIfAuthenticatedRoute = ({ component: Component, ...rest }) 
     />
   );
 };
-
-export const SetupRoute = ({ component: Component, ...rest }) => {
-  const to = false;
-  return (
-    <Route
-      {...rest}
-      render={props => (to
-        ? <Redirect to={{ pathname: to, state: { from: props.location } }} />
-        : <Component {...props} />
-      )}
-    />
-  );
-};
-

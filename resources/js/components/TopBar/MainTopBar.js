@@ -26,7 +26,9 @@ class MainTopBar extends Component {
   }
 
   toggleClose() {
-    document.body.classList.remove('navigation-opened');
+    this.setState({
+      isOpen: false
+    });
   }
 
   toggleOpen() {
@@ -43,7 +45,7 @@ class MainTopBar extends Component {
         <NavbarBrand className="nav-logo" tag={Link} to="/">
           <img src={Bitmaps.logo} alt="Sports logo" />
         </NavbarBrand>
-        <NavbarToggler onClick={this.toggleOpen} />
+        <NavbarToggler onClick={this.toggleOpen} className={isOpen ? 'toggle-opened' : ''} />
         <Collapse isOpen={isOpen} navbar>
           <Nav>
             <Navbar className="left-nav-bar">

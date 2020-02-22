@@ -8,7 +8,6 @@ import {
 import history from './history';
 import Main from './scenes/Main';
 import Login from './scenes/Auth/Login';
-import Register from './scenes/Auth/Register';
 import Forgot from './scenes/Auth/Forgot';
 import Reset from './scenes/Auth/Reset';
 
@@ -47,7 +46,6 @@ class App extends Component {
         <Router history={history}>
           <Switch>
             <RedirectIfAuthenticatedRoute path="/forgot" name="Forgot" component={Forgot} />
-            <RedirectIfAuthenticatedRoute path="/register" name="Register" component={Register} />
             <RedirectIfAuthenticatedRoute path="/login" name="Login" component={Login} />
             <RedirectIfAuthenticatedRoute path="/reset/:token" name="Reset" component={Reset} />
             <AuthRoute path="/" name="Main" component={Main} />

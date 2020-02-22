@@ -28,7 +28,22 @@
     position: absolute;
     right: 20px;
     top: 20px;
-
+    &.toggle-opened {
+      &>span {
+        opacity: 0;
+      }
+  
+      &::before {
+        transform: rotate(-45deg);
+        transform-origin: 96% 50%;
+      }
+  
+      &::after {
+        transform: rotate(45deg);
+        transform-origin: 96% 50%;
+      }
+      transition: all .5s ease;
+    }
     @include media-breakpoint-down('md') {
       display: block;
       background: transparent;
@@ -180,24 +195,6 @@
           }
         }
       }
-    }
-  }
-}
-
-.navigation-opened {
-  .navbar-toggler {
-    &>span {
-      opacity: 0;
-    }
-
-    &::before {
-      transform: rotate(-45deg);
-      transform-origin: 96% 50%;
-    }
-
-    &::after {
-      transform: rotate(45deg);
-      transform-origin: 96% 50%;
     }
   }
 }

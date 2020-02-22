@@ -52,14 +52,6 @@ class Forgot extends Component {
     } = this.state;
     return (
       <Layout
-        header={(
-          <Fragment>
-            <div>Don’t have an account?</div>
-            <Button type="button" color="success" onClick={() => this.props.history.push('/register')}>
-              Signup
-            </Button>
-          </Fragment>
-        )}
         form={(
           requestSent === false ? (
             <Formik
