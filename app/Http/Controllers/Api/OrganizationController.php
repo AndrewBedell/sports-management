@@ -353,14 +353,7 @@ class OrganizationController extends Controller
 
         $orgs = array_merge($orgs, $chidren);
 
-        $result = array();
-
-        foreach ($orgs as $org) {
-            if (!$org->is_club)
-                array_push($result, $org);
-        }
-
-        return response()->json($result);
+        return response()->json($orgs);
     }
 
     /**
