@@ -131,11 +131,12 @@ class Dashboard extends Component {
     }
     const search_params = {
       type: search_type ? search_type.value : '',
-      org: orgs_search,
-      name: search_name,
-      weight: weight_search,
-      dan: dan_search
+      org: orgs_search || [],
+      name: search_name || '',
+      weight: weight_search || [],
+      dan: dan_search || []
     };
+    console.log(search_params);
     if (search_type) {
       const search_response = await Api.get('search', search_params);
       const { response, body } = search_response;
