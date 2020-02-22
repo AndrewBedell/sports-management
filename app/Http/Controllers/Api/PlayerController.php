@@ -5,6 +5,8 @@ namespace App\Http\Controllers\API;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
+use DB;
+
 class PlayerController extends Controller
 {
     /**
@@ -60,5 +62,18 @@ class PlayerController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    /**
+     * Display a list of Player's weight.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function weights()
+    {
+        $weights = DB::table('weights')->orderBy('order')->get();
+
+        return response()->json($weights);
     }
 }
