@@ -484,9 +484,16 @@ class OrganizationController extends Controller
 
         switch ($type) {
             case 'org':
+                $result = Organization::whereIn('id', $orgIDs)
+                                    ->where('name', 'like', '%' . $name . '%')
+                                    ->where('is_club', 0)
+                                    ->orderByRaw('FIELD(id, ' . $sort . ')')
+                                    ->get();
+                break;
             case 'club':
                 $result = Organization::whereIn('id', $orgIDs)
                                     ->where('name', 'like', '%' . $name . '%')
+                                    ->where('is_club', 1)
                                     ->orderByRaw('FIELD(id, ' . $sort . ')')
                                     ->get();
                 break;
