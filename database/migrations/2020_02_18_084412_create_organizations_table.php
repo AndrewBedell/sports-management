@@ -42,7 +42,7 @@ class CreateOrganizationsTable extends Migration
             array(
                 'parent_id' => 0,
                 'register_no' => '',
-                'name' => '',
+                'name' => 'National Federation',
                 'logo' => '',
                 'email' => 'admin@gmail.com',
                 'mobile_phone' => '',
