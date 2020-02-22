@@ -530,7 +530,8 @@ class OrganizationController extends Controller
 
                 $result = $result->leftJoin('players', 'members.id', '=', 'players.member_id')
                                 ->leftJoin('weights', 'players.weight_id', '=', 'players.weight_id')
-                                ->select('members.*', 'weights.name', 'weights.weight', 'players.dan', 'players.skill', 'players.expired_date')
+                                ->select("members.*", DB::raw("CONCAT(members.first_name, ' ', members.mid_name, ' ', members.last_name) AS name"),
+                                 'weights.name AS weight_name', 'weights.weight', 'players.dan', 'players.skill', 'players.expired_date')
                                 ->get();
                 break;
         }
