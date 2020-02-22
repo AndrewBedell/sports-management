@@ -2,49 +2,60 @@
 import React, {
   Component, Fragment
 } from 'react';
+import {
+  withRouter
+} from 'react-router-dom';
 import Select from 'react-select';
 import {
-  Container, Row, Col, FormGroup, Button, Input, FormFeedback
+  Container,
+  Row,
+  Col,
+  FormGroup,
+  Button,
+  Input,
+  FormFeedback,
+  Alert
 } from 'reactstrap';
 
 import MainTopBar from '../../components/TopBar/MainTopBar';
 import Api from '../../apis/app';
+import DataTable from '../../components/DataTable';
+import Prompt from '../../components/Prompt';
+import EditModal from './EditModal';
+import { Dans, search_type_options } from '../../configs/data';
 
 class Dashboard extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      search_type_options: [
-        { label: 'Organization', value: 'org' },
-        { label: 'Club', value: 'club' },
-        { label: 'Player', value: 'player' }
-      ],
       orgs: [],
+      org_list: [],
       weights: [],
-      dans: [
-        { value: 1, label: '1' },
-        { value: 2, label: '2' },
-        { value: 3, label: '3' },
-        { value: 4, label: '4' },
-        { value: 5, label: '5' },
-        { value: 6, label: '6' },
-        { value: 7, label: '7' },
-        { value: 8, label: '8' },
-        { value: 9, label: '9' },
-        { value: 10, label: '10' }
-      ],
+      roles: [],
       search_required: true,
       search_type: '',
       search_orgs: [],
       search_name: '',
       search_weight: [],
       search_dan: [],
+      search_data: null,
+      isOpenDeleteModal: false,
+      isOpenEditModal: false,
+      edit_item: '',
+      confirmationMessage: '',
+      alertVisible: false,
+      messageStatus: false,
+      successMessage: '',
+      failMessage: '',
+      deleteId: '',
       error: {
         search_type: 'This field is required!'
-      },
-      search_data: null
+      }
     };
     this.handleSearchFilter = this.handleSearchFilter.bind(this);
+    this.handleDeleteMember = this.handleDeleteMember.bind(this);
+    this.handleConfirmationClose = this.handleConfirmationClose.bind(this);
+    this.handleSaveItem = this.handleSaveItem.bind(this);
   }
 
   async componentDidMount() {
@@ -53,7 +64,8 @@ class Dashboard extends Component {
     switch (response.status) {
       case 200:
         this.setState({
-          orgs: body
+          orgs: body,
+          org_list: body
         });
         break;
       default:
@@ -69,34 +81,59 @@ class Dashboard extends Component {
       default:
         break;
     }
+    const role_list = await Api.get('roles');
+    switch (role_list.response.status) {
+      case 200:
+        this.setState({
+          roles: role_list.body
+        });
+        break;
+      default:
+        break;
+    }
   }
 
   handleSearchFilter(type, value) {
+    const { orgs } = this.state;
     switch (type) {
       case 'type':
         this.setState({
           search_type: value,
-          search_required: true
+          search_required: true,
+          search_data: null
         });
+        if (value.value !== 'player') {
+          this.setState({
+            org_list: orgs.filter(org => org.is_club !== 1)
+          });
+        } else {
+          this.setState({
+            org_list: orgs
+          });
+        }
         break;
       case 'orgs':
         this.setState({
-          search_orgs: value
+          search_orgs: value,
+          search_data: null
         });
         break;
       case 'name':
         this.setState({
-          search_name: value
+          search_name: value,
+          search_data: null
         });
         break;
       case 'weight':
         this.setState({
-          search_weight: value
+          search_weight: value,
+          search_data: null
         });
         break;
       case 'dan':
         this.setState({
-          search_dan: value
+          search_dan: value,
+          search_data: null
         });
         break;
       default:
@@ -131,12 +168,12 @@ class Dashboard extends Component {
     }
     const search_params = {
       type: search_type ? search_type.value : '',
-      org: orgs_search || [],
-      name: search_name || '',
-      weight: weight_search || [],
-      dan: dan_search || []
+      org: orgs_search,
+      name: search_name,
+      weight: weight_search,
+      dan: dan_search
     };
-    console.log(search_params);
+
     if (search_type) {
       const search_response = await Api.get('search', search_params);
       const { response, body } = search_response;
@@ -156,12 +193,108 @@ class Dashboard extends Component {
     }
   }
 
+  handleEdit(id) {
+    const { isOpenEditModal } = this.state;
+    this.setState({
+      isOpenEditModal: !isOpenEditModal,
+      edit_item: id
+    });
+  }
+
+  handleDelete(id) {
+    const { search_data } = this.state;
+    let delItem = '';
+    for (let i = 0; i < search_data.length; i++) {
+      const item = search_data[i];
+      if (item.id === id) {
+        delItem = item;
+      }
+    }
+    this.setState({
+      isOpenDeleteModal: true,
+      deleteId: id,
+      confirmationMessage: `Are you sure you want to delete ${delItem.name}?`
+    });
+  }
+
+  async handleDeleteMember(id) {
+    const { search_type, search_data } = this.state;
+    if (search_type.value !== 'player') {
+      const delOrg = await Api.delete(`organization/${id}`);
+      switch (delOrg.response.status) {
+        case 200:
+          this.setState({
+            alertVisible: true,
+            messageStatus: true,
+            isOpenDeleteModal: false,
+            successMessage: delOrg.body.message,
+            search_data: search_data.filter(item => item.id !== id)
+          });
+          break;
+        case 406:
+          this.setState({
+            alertVisible: true,
+            messageStatus: false,
+            isOpenDeleteModal: false,
+            failMessage: delOrg.body.message
+          });
+          break;
+        default:
+          break;
+      }
+    } else {
+      const delMem = await Api.delete(`member/${id}`);
+      switch (delMem.response.status) {
+        case 200:
+          this.setState({
+            alertVisible: true,
+            messageStatus: true,
+            isOpenDeleteModal: false,
+            successMessage: delMem.body.message,
+            search_data: search_data.filter(item => item.id !== id)
+          });
+          break;
+        case 406:
+          this.setState({
+            alertVisible: true,
+            messageStatus: false,
+            isOpenDeleteModal: false,
+            failMessage: delMem.body.message
+          });
+          break;
+        default:
+          break;
+      }
+    }
+    setTimeout(() => {
+      this.setState({ alertVisible: false });
+    }, 2000);
+  }
+
+  async handleSaveItem(item) {
+    console.log(item);
+  }
+
+  handleConfirmationClose() {
+    this.setState({
+      isOpenDeleteModal: false,
+      confirmationMessage: ''
+    });
+  }
+
+  handleCreateAccount() {
+    this.props.history.push('/organizations/create');
+  }
+
+  handleRegisterMember() {
+    this.props.history.push('/members/register');
+  }
+
   render() {
     const {
-      orgs,
+      org_list,
       weights,
-      dans,
-      search_type_options,
+      roles,
       search_type,
       search_orgs,
       search_name,
@@ -169,27 +302,19 @@ class Dashboard extends Component {
       search_dan,
       search_required,
       error,
-      search_data
+      search_data,
+      isOpenDeleteModal,
+      confirmationMessage,
+      isOpenEditModal,
+      edit_item
     } = this.state;
-    console.log(search_data);
+
     return (
       <Fragment>
         <MainTopBar />
         <div className="main-content">
           <Container fluid>
             <h3 className="text-danger text-center mb-5">Welcome to National Sports Federation Management System!</h3>
-            <div className="text-right">
-              <FormGroup>
-                <Button
-                  type="button"
-                  color="success"
-                  className="btn-lg"
-                  onClick={this.handleSearch.bind(this)}
-                >
-                  Search
-                </Button>
-              </FormGroup>
-            </div>
             <Row>
               <Col xl="2" lg="3" md="4" sm="6" xs="12">
                 <FormGroup>
@@ -221,9 +346,9 @@ class Dashboard extends Component {
                     placeholder="Search Orgs"
                     isMulti
                     value={search_orgs}
-                    options={orgs}
+                    options={org_list}
                     getOptionValue={option => option.id}
-                    getOptionLabel={option => option.label}
+                    getOptionLabel={option => option.name}
                     onChange={(org) => {
                       this.handleSearchFilter('orgs', org);
                     }}
@@ -240,9 +365,9 @@ class Dashboard extends Component {
                   />
                 </FormGroup>
               </Col>
-              <Col xl="2" lg="3" md="4" sm="6" xs="12">
-                {
-                  search_type.value === 'player' && (
+              {
+                search_type.value === 'player' && (
+                  <Col xl="2" lg="3" md="4" sm="6" xs="12">
                     <FormGroup>
                       <Select
                         name="weight"
@@ -258,12 +383,12 @@ class Dashboard extends Component {
                         }}
                       />
                     </FormGroup>
-                  )
-                }
-              </Col>
-              <Col xl="2" lg="3" md="4" sm="6" xs="12">
-                {
-                  search_type.value === 'player' && (
+                  </Col>
+                )
+              }
+              {
+                search_type.value === 'player' && (
+                  <Col xl="2" lg="3" md="4" sm="6" xs="12">
                     <FormGroup>
                       <Select
                         name="dan"
@@ -271,7 +396,7 @@ class Dashboard extends Component {
                         placeholder="Search Dan"
                         isMulti
                         value={search_dan}
-                        options={dans}
+                        options={Dans}
                         getOptionValue={option => option.value}
                         getOptionLabel={option => option.label}
                         onChange={(dan) => {
@@ -279,18 +404,95 @@ class Dashboard extends Component {
                         }}
                       />
                     </FormGroup>
-                  )
-                }
+                  </Col>
+                )
+              }
+              <Col xl={search_type.value === 'player' ? 2 : 6} lg={search_type.value === 'player' ? 9 : 3} md={search_type.value === 'player' ? 4 : 12} sm="6" xs="12">
+                <div className="text-right">
+                  <FormGroup>
+                    <Button
+                      type="button"
+                      color="success"
+                      className="btn-lg"
+                      onClick={this.handleSearch.bind(this)}
+                    >
+                      Search
+                    </Button>
+                  </FormGroup>
+                </div>
               </Col>
             </Row>
           </Container>
-          <Container >
-
-          </Container>
+          <Alert color={this.state.messageStatus ? 'success' : 'warning'} isOpen={this.state.alertVisible}>
+            {
+              this.state.messageStatus ? this.state.successMessage : this.state.failMessage
+            }
+          </Alert>
+          {
+            search_data === null && (
+              <Container fluid>
+                WOW
+              </Container>
+            )
+          }
+          {
+            search_data && search_data.length === 0 && (
+              <div className="fixed-content">
+                <h3 className="text-muted">
+                  No results!
+                </h3>
+              </div>
+            )
+          }
+          {
+            search_data && search_data.length > 0 && (
+              <Container fluid>
+                <div className="table-responsive">
+                  <DataTable
+                    items={search_data}
+                    onEdit={this.handleEdit.bind(this)}
+                    onDelete={this.handleDelete.bind(this)}
+                  />
+                </div>
+              </Container>
+            )
+          }
+        </div>
+        { isOpenDeleteModal && <Prompt title={confirmationMessage} id={this.state.deleteId} handleAccept={this.handleDeleteMember} handleCancel={this.handleConfirmationClose} /> }
+        {
+          isOpenEditModal && (
+          <EditModal
+            id={edit_item}
+            type={search_type}
+            weights={weights}
+            orgs={org_list}
+            roles={roles}
+            handleSave={this.handleSaveItem}
+            handleCancel={this.handleEdit.bind(this)}
+          />
+          )
+        }
+        <div className="fixed-button left">
+          <Button
+            type="button"
+            color="secondary"
+            onClick={this.handleCreateAccount.bind(this)}
+          >
+            Creating Account
+          </Button>
+        </div>
+        <div className="fixed-button right">
+          <Button
+            type="button"
+            color="secondary"
+            onClick={this.handleRegisterMember.bind(this)}
+          >
+            Registering Member
+          </Button>
         </div>
       </Fragment>
     );
   }
 }
 
-export default Dashboard;
+export default withRouter(Dashboard);

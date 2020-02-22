@@ -1,0 +1,15 @@
+.table {
+  tbody {
+    tr {
+      td {
+        white-space: nowrap;
+        .actions {
+          .btn {
+            padding: 10px !important;
+            border-radius: 3px;
+          }
+        }
+      }
+    }
+  }
+}

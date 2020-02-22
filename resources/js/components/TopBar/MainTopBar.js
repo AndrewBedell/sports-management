@@ -57,23 +57,16 @@ class MainTopBar extends Component {
                 </NavLink>
               </NavItem>
               <NavItem onClick={this.toggleClose}>
+                <NavLink tag={Link} to="/organizations">
+                  <i className="fa fa-users" />
+                  Organizations
+                  <div />
+                </NavLink>
+              </NavItem>
+              <NavItem onClick={this.toggleClose}>
                 <NavLink tag={Link} to="/members">
                   <i className="fa fa-user" />
                   Members
-                  <div />
-                </NavLink>
-              </NavItem>
-              <NavItem onClick={this.toggleClose}>
-                <NavLink tag={Link} to="/reviews">
-                  <i className="fa fa-star" />
-                  Reviews
-                  <div />
-                </NavLink>
-              </NavItem>
-              <NavItem onClick={this.toggleClose}>
-                <NavLink tag={Link} to="/team">
-                  <i className="fa fa-users" />
-                  Team
                   <div />
                 </NavLink>
               </NavItem>

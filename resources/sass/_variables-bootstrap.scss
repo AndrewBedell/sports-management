@@ -45,6 +45,7 @@ $green:   #00D994 !default;
 $teal:    #20c997 !default;
 $cyan:    #17a2b8 !default;
 $gray:    #777681 !default;
+$steel:   #36539C !default;
 $silver:  #DCE0E8 !default;
 
 $colors: () !default;
@@ -210,7 +211,7 @@ $grid-breakpoints: (
 $container-max-widths: (
   sm: 576px,
   md: 768px,
-  lg: 992px,
+  lg: 1380px,
   xl: 1600px
 ) !default;
 
