@@ -31,6 +31,7 @@ Route::namespace('Api')->group(function () {
 
         Route::get('members', 'MemberController@index');
         Route::get('member/{id}', 'MemberController@show');
+        Route::get('roles', 'MemberController@roles');
         Route::post('register-member', 'MemberController@store');
         Route::put('member/{id}', 'MemberController@update');
         Route::delete('member/{id}', 'MemberController@destroy');

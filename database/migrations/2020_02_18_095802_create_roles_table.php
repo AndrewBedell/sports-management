@@ -19,6 +19,7 @@ class CreateRolesTable extends Migration
             $table->string('name', 50);
             $table->string('description', 200);
             $table->boolean('is_player');
+            $table->smallInteger('order');
 
             $table->timestamps();
             $table->softDeletes();
@@ -29,6 +30,7 @@ class CreateRolesTable extends Migration
                 'name' => 'Officer',
                 'description' => 'Officer',
                 'is_player' => false,
+                'order' => 1,
                 'created_at' => date('Y-m-d H:i:s'),
                 'updated_at' => date('Y-m-d H:i:s')
             )
@@ -39,6 +41,7 @@ class CreateRolesTable extends Migration
                 'name' => 'Coach',
                 'description' => 'Coach',
                 'is_player' => false,
+                'order' => 2,
                 'created_at' => date('Y-m-d H:i:s'),
                 'updated_at' => date('Y-m-d H:i:s')
             )
@@ -49,6 +52,7 @@ class CreateRolesTable extends Migration
                 'name' => 'Player',
                 'description' => 'Player',
                 'is_player' => true,
+                'order' => 3,
                 'created_at' => date('Y-m-d H:i:s'),
                 'updated_at' => date('Y-m-d H:i:s')
             )

@@ -455,4 +455,17 @@ class MemberController extends Controller
 
         return in_array($id, $orgIDs);
     }
+
+    /**
+     * Display a list of Member's Role.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function roles()
+    {
+        $roles = DB::table('roles')->orderBy('order')->get();
+
+        return response()->json($roles);
+    }
 }
