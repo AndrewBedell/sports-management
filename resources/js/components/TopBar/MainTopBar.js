@@ -42,7 +42,7 @@ class MainTopBar extends Component {
     const { isOpen } = this.state;
     return (
       <Nav className="top-header dashboard-top-bar">
-        <NavbarBrand className="nav-logo" tag={Link} to="/">
+        <NavbarBrand className="nav-logo" tag={Link} to="/" onClick={this.toggleClose}>
           <img src={Bitmaps.logo} alt="Sports logo" />
         </NavbarBrand>
         <NavbarToggler onClick={this.toggleOpen} className={isOpen ? 'toggle-opened' : ''} />

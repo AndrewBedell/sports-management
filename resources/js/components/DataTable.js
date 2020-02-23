@@ -42,6 +42,11 @@ class DataTable extends Component {
   }
 
   componentWillReceiveProps(props) {
+    if (props.items.length > 0) {
+      this.setState({
+        activePage: 1
+      });
+    }
     const { items } = props;
     const { per_page } = this.state;
     this.setState({
@@ -323,7 +328,6 @@ class DataTable extends Component {
 }
 
 DataTable.defaultProps = {
-  items: [],
   onDelete: () => {},
   onEdit: () => {},
   onSelect: () => {}
