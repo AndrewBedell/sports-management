@@ -104,9 +104,6 @@ class MemberController extends Controller
         if (is_null($data['position']))
             $data['position'] = "";
 
-        if (is_null($data['skill']))
-            $data['skill'] = "";
-
         $member = Member::create(array(
             'organization_id' => $data['organization_id'],
             'role_id' => $data['role_id'],
@@ -133,6 +130,9 @@ class MemberController extends Controller
         $member_id = $member->id;
 
         if ($role->is_player && !$validPlayer->fails()) {
+            if (is_null($data['skill']))
+                $data['skill'] = "";
+
             Player::create(array(
                 'member_id' => $member_id,
                 'weight_id' => $data['weight_id'],
@@ -264,9 +264,6 @@ class MemberController extends Controller
                 if (is_null($data['position']))
                     $data['position'] = "";
 
-                if (is_null($data['skill']))
-                    $data['skill'] = "";
-
                 $exist = Member::where('email', $data['email'])->where('id', '!=', $id)->get();
 
                 if (sizeof($exist) == 0) {
@@ -303,6 +300,9 @@ class MemberController extends Controller
                 $member_id = $member->id;
 
                 if ($role->is_player) {
+                    if (is_null($data['skill']))
+                        $data['skill'] = "";
+
                     Player::where('member_id', $member_id)->update(array(
                         'weight_id' => $data['weight_id'],
                         'dan' => $data['dan'],
