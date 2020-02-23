@@ -21,7 +21,7 @@ import MainTopBar from '../../components/TopBar/MainTopBar';
 import Api from '../../apis/app';
 import DataTable from '../../components/DataTable';
 import Prompt from '../../components/Prompt';
-import EditModal from './EditModal';
+import EditModal from '../../components/EditModal';
 import { Dans, search_type_options } from '../../configs/data';
 import ChartsPage from '../../components/Chart';
 
@@ -83,6 +83,9 @@ class Dashboard extends Component {
         this.setState({
           weights: weight_list.body
         });
+        if (weight_list.body.length > 0) {
+          localStorage.setItem('weights', JSON.stringify(weight_list.body));
+        }
         break;
       default:
         break;
@@ -93,6 +96,9 @@ class Dashboard extends Component {
         this.setState({
           roles: role_list.body
         });
+        if (role_list.body.length > 0) {
+          localStorage.setItem('roles', JSON.stringify(role_list.body));
+        }
         break;
       default:
         break;
@@ -358,11 +364,11 @@ class Dashboard extends Component {
   }
 
   handleCreateAccount() {
-    this.props.history.push('/organizations/create');
+    this.props.history.push('/organization/create');
   }
 
   handleRegisterMember() {
-    this.props.history.push('/members/register');
+    this.props.history.push('/member/register');
   }
 
   handleSelectItem(id) {

@@ -41205,13 +41205,13 @@ textarea.form-control.is-invalid {
 
 @media (min-width: 992px) {
   .container {
-    max-width: 1380px;
+    max-width: 1200px;
   }
 }
 
 @media (min-width: 1600px) {
   .container {
-    max-width: 1600px;
+    max-width: 1400px;
   }
 }
 
@@ -57124,6 +57124,16 @@ body {
   border: 1px solid #dc3545 !important;
 }
 
+.image-preview {
+  margin-top: 20px;
+  width: 100%;
+}
+
+.image-preview img {
+  width: 100%;
+  height: auto;
+}
+
 .btn-success {
   color: #1E1B52;
 }
@@ -57834,15 +57844,6 @@ body {
 
 .modal-edit-item .modal-body {
   padding: 20px;
-}
-
-.modal-edit-item .modal-body .image-preview {
-  width: 100%;
-}
-
-.modal-edit-item .modal-body .image-preview img {
-  width: 100%;
-  height: auto;
 }
 
 .site-intro {

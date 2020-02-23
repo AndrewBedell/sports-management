@@ -26,3 +26,13 @@ body {
     border: 1px solid $danger !important;
   }
 }
+
+.image-preview {
+  margin-top: 20px;
+  width: 100%;
+  // height: 100px;
+  img {
+    width: 100%;
+    height: auto;
+  }
+}
