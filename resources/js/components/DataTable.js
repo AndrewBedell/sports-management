@@ -182,11 +182,15 @@ class DataTable extends Component {
             data && data.length > 0 && (
               data.map((item, index) => (
                 <Table.Row key={index} onDoubleClick={() => onSelect(item.id)}>
-                  <Table.Cell>{item.name}</Table.Cell>
+                  <Table.Cell>
+                    {
+                      type.value === 'player' ? `${item.first_name} ${item.mid_name} ${item.last_name}` : item.name
+                    }
+                  </Table.Cell>
                   {
                     type.value === 'player' && (
                       <Fragment>
-                        <Table.Cell>{Genders[item.gender - 1].name}</Table.Cell>
+                        <Table.Cell>{item.gender ? Genders[0].name : Genders[1].name}</Table.Cell>
                         <Table.Cell>{item.birthday}</Table.Cell>
                       </Fragment>
                     )

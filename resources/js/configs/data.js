@@ -248,7 +248,7 @@ export const countries = [
 
 export const Genders = [
   { id: 1, name: 'Male' },
-  { id: 2, name: 'Female' }
+  { id: 0, name: 'Female' }
 ];
 
 export const Dans = [

@@ -12,7 +12,6 @@ import {
 } from 'reactstrap';
 import Select from 'react-select';
 // import DateRangePicker from '../../components/DateRangePicker';
-import DatePicker from 'react-date-picker';
 
 import Api from '../../apis/app';
 import {
@@ -151,7 +150,7 @@ class EditModal extends React.Component {
         first_name: values[0].first_name,
         mid_name: values[0].mid_name,
         last_name: values[0].last_name,
-        gender: Genders[values[0].gender - 1],
+        gender: values[0].gender ? Genders[0] : Genders[1],
         organization_id: org_list.filter(org => org.id === values[0].organization_id)[0],
         role_id: roles.filter(role => role.id === values[0].role_id)[0],
         profile_image: values[0].profile_image,
@@ -165,10 +164,11 @@ class EditModal extends React.Component {
         state: values[0].state,
         city: values[0].city,
         zip_code: values[0].zip_code,
-        weight: weights.filter(weight => weight.id === values[0].weight),
-        dan: Dans.filter(dan => dan.id === values[0].dan),
+        weight_id: weights.filter(weight => weight.id === values[0].weight_id)[0],
+        dan: Dans.filter(dan => dan.value === values[0].dan)[0],
         identity: values[0].identity,
-        position: values[0].position
+        position: values[0].position,
+        skill: values[0].skill
       });
     }
   }
@@ -212,7 +212,7 @@ class EditModal extends React.Component {
         mid_name: values.mid_name,
         last_name: values.last_name,
         gender: values.gender.id,
-        birthday: moment(values.birthday).format('DD-MM-YYYY'),
+        birthday: moment(values.birthday).format('YYYY-MM-DD'),
         email: values.email,
         mobile_phone: values.mobile_phone,
         addressline1: values.addressline1,
@@ -228,11 +228,12 @@ class EditModal extends React.Component {
         role_id: values.role_id.id,
         profile_image: values.profile_image,
         position: values.position,
+        skill: values.skill ? values.skill : '',
         active: item[0].active,
-        skill: values.skill,
-        register_date: moment(values.register_date).format('DD-MM-YYYY')
+        register_date: moment(values.register_date).format('YYYY-MM-DD')
       };
     }
+
     let {
       handleSave
     } = this.props;
@@ -381,7 +382,7 @@ class EditModal extends React.Component {
                           <Input
                             name="register_date"
                             type="date"
-                            placeholder="DD-MM-YYYY"
+                            placeholder="YYYY-MM-DD"
                             value={values.register_date || ''}
                             onChange={handleChange}
                             onBlur={handleBlur}
@@ -463,7 +464,7 @@ class EditModal extends React.Component {
                           <Input
                             name="birthday"
                             type="date"
-                            placeholder="DD-MM-YYYY"
+                            placeholder="YYYY-MM-DD"
                             value={values.birthday || ''}
                             onChange={handleChange}
                             onBlur={handleBlur}
@@ -618,6 +619,9 @@ class EditModal extends React.Component {
                               setFieldValue('weight_id', value);
                             }}
                           />
+                          {errors.weight_id && (
+                            <FormFeedback className="d-block">{errors.weight_id}</FormFeedback>
+                          )}
                         </FormGroup>
                       </Col>
                       <Col sm="4" xs="6">
@@ -635,6 +639,9 @@ class EditModal extends React.Component {
                               setFieldValue('dan', value);
                             }}
                           />
+                          {errors.dan && (
+                            <FormFeedback className="d-block">{errors.dan}</FormFeedback>
+                          )}
                         </FormGroup>
                       </Col>
                       <Col xs="6">
