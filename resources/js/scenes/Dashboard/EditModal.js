@@ -179,14 +179,14 @@ class EditModal extends React.Component {
     handleCancel();
   }
 
-  handleSubmit(values) {
+  handleSubmit(values, bags) {
     let newData = {};
     const { id, type } = this.props;
     if (type.value !== 'player') {
       newData = {
         name: values.name,
         register_no: values.register_no,
-        logo: values.logo,
+        logo: values.logo ? values.logo : '',
         email: values.email,
         mobile_phone: values.mobile_phone,
         addressline1: values.addressline1,
@@ -226,9 +226,9 @@ class EditModal extends React.Component {
       handleSave
     } = this.props;
 
-
     handleSave = handleSave || (() => {});
     handleSave(id, newData);
+    bags.setSubmitting(false);
   }
 
   render() {

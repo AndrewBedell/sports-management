@@ -298,6 +298,14 @@ class Dashboard extends Component {
             failMessage: updateOrg.body.message
           });
           break;
+        case 500:
+          this.setState({
+            alertVisible: true,
+            messageStatus: false,
+            isOpenEditModal: false,
+            failMessage: 'Internal Server Error!'
+          });
+          break;
         default:
           break;
       }
@@ -318,6 +326,14 @@ class Dashboard extends Component {
             messageStatus: false,
             isOpenEditModal: false,
             failMessage: updateMem.body.message
+          });
+          break;
+        case 500:
+          this.setState({
+            alertVisible: true,
+            messageStatus: false,
+            isOpenEditModal: false,
+            failMessage: 'Internal Server Error!'
           });
           break;
         default:
