@@ -208,7 +208,7 @@ class Dashboard extends Component {
   }
 
   handleDelete(id) {
-    const { search_data } = this.state;
+    const { search_data, search_type } = this.state;
     let delItem = '';
     for (let i = 0; i < search_data.length; i++) {
       const item = search_data[i];
@@ -219,7 +219,7 @@ class Dashboard extends Component {
     this.setState({
       isOpenDeleteModal: true,
       deleteId: id,
-      confirmationMessage: `Are you sure you want to delete ${delItem.name}?`
+      confirmationMessage: `Are you sure you want to delete ${search_type.value === 'player' ? `${delItem.first_name} - ${delItem.last_name}` : delItem.name}?`
     });
   }
 
