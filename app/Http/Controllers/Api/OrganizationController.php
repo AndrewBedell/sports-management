@@ -78,7 +78,7 @@ class OrganizationController extends Controller
                 422
             );
         } else {
-            if (is_null($data['logo']))
+            if (!isset($data['logo']) || is_null($data['logo']))
                 $data['logo'] = "";
 
             if (is_null($data['addressline2']))
@@ -170,7 +170,7 @@ class OrganizationController extends Controller
                 $exist = Organization::where('email', $data['email'])->where('id', '!=', $id)->get();
 
                 if (sizeof($exist) == 0) {
-                    if (is_null($data['logo']))
+                    if (!isset($data['logo']) || is_null($data['logo']))
                         $data['logo'] = "";
 
                     if (is_null($data['addressline2']))
