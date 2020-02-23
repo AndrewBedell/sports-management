@@ -60,7 +60,6 @@ class MemberController extends Controller
             'state' => 'required|string|max:255',
             'city' => 'required|string|max:255',
             'zip_code' => 'required|string|max:255',
-            'position' => 'required|string|max:255',
             'identity' => 'required|string|max:255',
             'active' => 'required|boolean',
             'register_date' => 'required|date'
@@ -102,6 +101,9 @@ class MemberController extends Controller
 
         if (is_null($data['addressline2']))
             $data['addressline2'] = "";
+
+        if (is_null($data['position']))
+            $data['position'] = "";
 
         $member = Member::create(array(
             'organization_id' => $data['organization_id'],
@@ -214,7 +216,6 @@ class MemberController extends Controller
                     'state' => 'required|string|max:255',
                     'city' => 'required|string|max:255',
                     'zip_code' => 'required|string|max:255',
-                    'position' => 'required|string|max:255',
                     'identity' => 'required|string|max:255',
                     'active' => 'required|boolean',
                     'register_date' => 'required|date'
@@ -250,19 +251,19 @@ class MemberController extends Controller
 
                 if (is_null($data['profile_image']))
                     $data['profile_image'] = "";
-        
+
                 if (is_null($data['mid_name']))
                         $data['mid_name'] = "";
-        
+
                 if (is_null($data['addressline2']))
                     $data['addressline2'] = "";
+
+                if (is_null($data['position']))
+                    $data['position'] = "";
 
                 $exist = Member::where('email', $data['email'])->where('id', '!=', $id)->get();
 
                 if (sizeof($exist) == 0) {
-                    if (is_null($data['addressline2']))
-                        $data['addressline2'] = "";
-                        
                     Member::where('id', $id)->update(array(
                         'organization_id' => $data['organization_id'],
                         'role_id' => $data['role_id'],
