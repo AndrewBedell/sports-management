@@ -3,6 +3,7 @@ namespace App\Http\Controllers\Api;
 
 use App\User;
 use App\Member;
+use App\Organization;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -59,13 +60,16 @@ class UserController extends Controller
         $user = User::where('member_id', $member->id)->first();
 
         if ($member->active) {
+            $org = Organization::find($member->organization_id);
+
             return response()->json([
                 'status' => 'success',
                 'data' => [
                     'token' => $token,
                     'user' => [
                         'member_info' => $member,
-                        'is_super' => $user->is_super
+                        'is_super' => $user->is_super,
+                        'is_club_member' => $org->is_club
                     ]
                 ]
             ], 200);
