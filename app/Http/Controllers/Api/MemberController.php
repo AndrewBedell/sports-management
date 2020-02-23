@@ -164,7 +164,8 @@ class MemberController extends Controller
                     $member = Member::where('members.id', $id)
                             ->leftJoin('players', 'members.id', '=', 'players.member_id')
                             ->leftJoin('weights', 'players.weight_id', '=', 'players.weight_id')
-                            ->select('members.*', 'weights.name AS weight_name', 'weights.weight', 'players.dan', 'players.skill', 'players.expired_date')
+                            ->select('members.*', 'weights.id AS weight_id', 'weights.name AS weight_name', 'weights.weight',
+                                     'players.dan', 'players.skill', 'players.expired_date')
                             ->get();
                 }
 
