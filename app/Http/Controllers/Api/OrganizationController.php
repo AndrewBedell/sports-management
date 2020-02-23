@@ -455,7 +455,10 @@ class OrganizationController extends Controller
         $orgIDs = array();
 
         if (sizeof($org) == 0) {
-            $org[0] = 1;
+            $user = JWTAuth::parseToken()->authenticate();
+            $member = Member::find($user->member_id);
+
+            $org[0] = $member->organization_id;
         }
 
         for ($i = 0; $i < sizeof($org); $i++) {
