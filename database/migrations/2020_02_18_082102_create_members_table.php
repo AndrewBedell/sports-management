@@ -38,7 +38,7 @@ class CreateMembersTable extends Migration
             $table->string('position', 50);
             $table->string('identity', 50);
             $table->boolean('active');
-            $table->dateTime('register_date', 0);
+            $table->date('register_date', 0);
 
             $table->timestamps();
             $table->softDeletes();
