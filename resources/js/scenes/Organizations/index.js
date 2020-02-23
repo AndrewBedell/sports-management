@@ -232,13 +232,15 @@ class Organizations extends Component {
                 this.state.messageStatus ? this.state.successMessage : this.state.failMessage
               }
             </Alert>
-            <DataTable
-              type={search_type_options[0]}
-              items={orgs}
-              onEdit={this.handleEdit.bind(this)}
-              onDelete={this.handleDelete.bind(this)}
-              onSelect={this.handleSelectItem.bind(this)}
-            />
+            <div className="table-responsive">
+              <DataTable
+                type={search_type_options[0]}
+                items={orgs}
+                onEdit={this.handleEdit.bind(this)}
+                onDelete={this.handleDelete.bind(this)}
+                onSelect={this.handleSelectItem.bind(this)}
+              />
+            </div>
           </Container>
           { isOpenDeleteModal && <Prompt title={confirmationMessage} id={this.state.deleteId} handleAccept={this.handleDeleteMember.bind(this)} handleCancel={this.handleConfirmationClose.bind(this)} /> }
           {

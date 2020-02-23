@@ -41149,7 +41149,7 @@ textarea.form-control.is-invalid {
   }
 }
 
-@media (min-width: 1600px) {
+@media (min-width: 1200px) {
   .modal-xl {
     max-width: 1140px;
   }
@@ -41205,13 +41205,13 @@ textarea.form-control.is-invalid {
 
 @media (min-width: 992px) {
   .container {
-    max-width: 1200px;
+    max-width: 992px;
   }
 }
 
-@media (min-width: 1600px) {
+@media (min-width: 1200px) {
   .container {
-    max-width: 1400px;
+    max-width: 1140px;
   }
 }
 
@@ -42039,7 +42039,7 @@ textarea.form-control.is-invalid {
   }
 }
 
-@media (min-width: 1600px) {
+@media (min-width: 1200px) {
   .col-xl {
     flex-basis: 0;
     flex-grow: 1;
@@ -42632,7 +42632,7 @@ button.bg-gray:focus {
   }
 }
 
-@media (min-width: 1600px) {
+@media (min-width: 1200px) {
   .d-xl-none {
     display: none !important;
   }
@@ -43317,7 +43317,7 @@ button.bg-gray:focus {
   }
 }
 
-@media (min-width: 1600px) {
+@media (min-width: 1200px) {
   .flex-xl-row {
     flex-direction: row !important;
   }
@@ -43509,7 +43509,7 @@ button.bg-gray:focus {
   }
 }
 
-@media (min-width: 1600px) {
+@media (min-width: 1200px) {
   .float-xl-left {
     float: left !important;
   }
@@ -45424,7 +45424,7 @@ button.bg-gray:focus {
   }
 }
 
-@media (min-width: 1600px) {
+@media (min-width: 1200px) {
   .m-xl-0 {
     margin: 0 !important;
   }
@@ -45934,7 +45934,7 @@ button.bg-gray:focus {
   }
 }
 
-@media (min-width: 1600px) {
+@media (min-width: 1200px) {
   .text-xl-left {
     text-align: left !important;
   }
@@ -46702,7 +46702,7 @@ a.text-gray:focus {
   }
 }
 
-@media (max-width: 1599.98px) {
+@media (max-width: 1199.98px) {
   .navbar-expand-xl > .container,
   .navbar-expand-xl > .container-fluid {
     padding-right: 0;
@@ -46710,7 +46710,7 @@ a.text-gray:focus {
   }
 }
 
-@media (min-width: 1600px) {
+@media (min-width: 1200px) {
   .navbar-expand-xl {
     flex-flow: row nowrap;
     justify-content: flex-start;
@@ -48243,7 +48243,7 @@ a.badge-gray.focus {
   }
 }
 
-@media (min-width: 1600px) {
+@media (min-width: 1200px) {
   .dropdown-menu-xl-left {
     right: auto;
     left: 0;
@@ -48754,7 +48754,7 @@ a.badge-gray.focus {
   }
 }
 
-@media (max-width: 1599.98px) {
+@media (max-width: 1199.98px) {
   .table-responsive-xl {
     display: block;
     width: 100%;

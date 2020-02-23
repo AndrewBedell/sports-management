@@ -1,4 +1,6 @@
+/* eslint-disable jsx-a11y/alt-text */
 import React, { Component, Fragment } from 'react';
+import { withRouter } from 'react-router-dom';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import {
@@ -45,7 +47,7 @@ class OrganizationAdd extends Component {
     reader.readAsDataURL(file);
   }
 
-  handleSubmit(values, bags) {
+  async handleSubmit(values, bags) {
     let newData = {};
     const { file } = this.state;
     newData = {
@@ -65,7 +67,24 @@ class OrganizationAdd extends Component {
       is_club: values.is_club ? values.is_club.value : 0
     };
 
-    console.log(newData);
+    const data = await Api.post('register-organization', newData);
+    const { response, body } = data;
+    switch (response.status) {
+      case 200:
+        this.props.history.goBack();
+        break;
+      case 406:
+        if (body.message) {
+          bags.setStatus({
+            color: 'danger',
+            children: body.message
+          });
+        }
+        bags.setErrors(body.errors);
+        break;
+      default:
+        break;
+    }
 
     bags.setSubmitting(false);
   }
@@ -376,4 +395,4 @@ class OrganizationAdd extends Component {
   }
 }
 
-export default OrganizationAdd;
+export default withRouter(OrganizationAdd);

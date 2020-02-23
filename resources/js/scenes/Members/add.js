@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/alt-text */
 import React, { Component, Fragment } from 'react';
 import { Formik } from 'formik';
 import moment from 'moment';
@@ -30,6 +31,10 @@ class MemberAdd extends Component {
     };
     this.fileRef = React.createRef();
     this.formikRef = React.createRef();
+  }
+
+  componentDidMount() {
+    this.componentWillReceiveProps();
   }
 
   async componentWillReceiveProps() {
@@ -97,7 +102,7 @@ class MemberAdd extends Component {
     reader.readAsDataURL(file);
   }
 
-  handleSubmit(values, bags) {
+  async handleSubmit(values, bags) {
     let newData = {};
     const { file } = this.state;
     newData = {
@@ -126,7 +131,24 @@ class MemberAdd extends Component {
       register_date: moment(values.register_date).format('YYYY-MM-DD')
     };
 
-    console.log(newData);
+    const data = await Api.post('register-member', newData);
+    const { response, body } = data;
+    switch (response.status) {
+      case 200:
+        this.props.history.goBack();
+        break;
+      case 406:
+        if (body.message) {
+          bags.setStatus({
+            color: 'danger',
+            children: body.message
+          });
+        }
+        bags.setErrors(body.errors);
+        break;
+      default:
+        break;
+    }
 
     bags.setSubmitting(false);
   }
@@ -172,7 +194,7 @@ class MemberAdd extends Component {
                 city: '',
                 zip_code: '',
                 identity: '',
-                weight: null,
+                weight_id: null,
                 dan: null,
                 position: '',
                 skill: ''
@@ -194,9 +216,7 @@ class MemberAdd extends Component {
                   city: Yup.string().required('This field is required!'),
                   state: Yup.string().required('This field is required!'),
                   zip_code: Yup.string().max(6, 'Less than 6 characters!').required('This field is required!'),
-                  identity: Yup.string().required('This field is required!'),
-                  weight_id: Yup.mixed().required('This field is required!'),
-                  dan: Yup.mixed().required('This field is required!')
+                  identity: Yup.string().required('This field is required!')
                 })
               }
               onSubmit={this.handleSubmit.bind(this)}
@@ -502,44 +522,46 @@ class MemberAdd extends Component {
                       </FormGroup>
                     </Col>
                     <Col sm="4" xs="6">
-                      <FormGroup>
-                        <Label for="weight_id">Weight</Label>
-                        <Select
-                          name="weight_id"
-                          menuPlacement="top"
-                          classNamePrefix={errors.weight_id ? 'invalid react-select-lg' : 'react-select-lg'}
-                          value={values.weight_id}
-                          options={weights}
-                          getOptionValue={option => option.id}
-                          getOptionLabel={option => option.name}
-                          onChange={(value) => {
-                            setFieldValue('weight_id', value);
-                          }}
-                        />
-                        {!!errors.weight_id && touched.weight_id && (
-                          <FormFeedback className="d-block">{errors.weight_id}</FormFeedback>
-                        )}
-                      </FormGroup>
+                      {
+                        values.role_id && values.role_id.id === 3 && (
+                          <FormGroup>
+                            <Label for="weight_id">Weight</Label>
+                            <Select
+                              name="weight_id"
+                              menuPlacement="top"
+                              classNamePrefix={errors.weight_id ? 'invalid react-select-lg' : 'react-select-lg'}
+                              value={values.weight_id}
+                              options={weights}
+                              getOptionValue={option => option.id}
+                              getOptionLabel={option => option.name}
+                              onChange={(value) => {
+                                setFieldValue('weight_id', value);
+                              }}
+                            />
+                          </FormGroup>
+                        )
+                      }
                     </Col>
                     <Col sm="4" xs="6">
-                      <FormGroup>
-                        <Label for="dan">Dan</Label>
-                        <Select
-                          name="dan"
-                          menuPlacement="top"
-                          classNamePrefix={errors.dan ? 'invalid react-select-lg' : 'react-select-lg'}
-                          value={values.dan}
-                          options={Dans}
-                          getOptionValue={option => option.value}
-                          getOptionLabel={option => option.label}
-                          onChange={(value) => {
-                            setFieldValue('dan', value);
-                          }}
-                        />
-                        {!!errors.dan && touched.dan && (
-                          <FormFeedback className="d-block">{errors.dan}</FormFeedback>
-                        )}
-                      </FormGroup>
+                      {
+                        values.role_id && values.role_id.id === 3 && (
+                          <FormGroup>
+                            <Label for="dan">Dan</Label>
+                            <Select
+                              name="dan"
+                              menuPlacement="top"
+                              classNamePrefix={errors.dan ? 'invalid react-select-lg' : 'react-select-lg'}
+                              value={values.dan}
+                              options={Dans}
+                              getOptionValue={option => option.value}
+                              getOptionLabel={option => option.label}
+                              onChange={(value) => {
+                                setFieldValue('dan', value);
+                              }}
+                            />
+                          </FormGroup>
+                        )
+                      }
                     </Col>
                     <Col xs="6">
                       <FormGroup>
@@ -573,7 +595,7 @@ class MemberAdd extends Component {
                         type="submit"
                         color="primary"
                       >
-                        Save
+                        Register Member
                       </Button>
                     </div>
                   </div>
