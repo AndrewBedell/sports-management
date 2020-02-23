@@ -278,7 +278,7 @@ class EditModal extends React.Component {
 
   handleSubmit(values, bags) {
     let newData = {};
-    const { id, type, isMembers } = this.props;
+    const { id, type } = this.props;
     const { item, file } = this.state;
     if (type.value !== 'player') {
       newData = {
@@ -315,15 +315,15 @@ class EditModal extends React.Component {
         state: values.state,
         city: values.city,
         zip_code: values.zip_code,
-        weight_id: values.role_id && values.role_id.id === 3 ? values.weight_id.id : 0,
-        dan: values.role_id && values.role_id.id === 3 ? values.dan.value : 0,
+        weight_id: values.role_id && values.role_id.id === 3 ? (values.weight && values.weight_id.id) : '',
+        dan: values.role_id && values.role_id.id === 3 ? (values.dan && values.dan.value) : '',
         identity: values.identity,
         organization_id: values.organization_id.id,
         role_id: values.role_id.id,
         profile_image: file || '',
         position: values.position,
         skill: values.skill ? values.skill : '',
-        active: isMembers ? item.active : item[0].active,
+        active: item.active,
         register_date: moment(values.register_date).format('YYYY-MM-DD')
       };
     }
