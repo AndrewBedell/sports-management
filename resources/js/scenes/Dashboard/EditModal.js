@@ -221,14 +221,16 @@ class EditModal extends React.Component {
         state: values.state,
         city: values.city,
         zip_code: values.zip_code,
-        weight: values.weight.id,
+        weight_id: values.weight_id.id,
         dan: values.dan.value,
         identity: values.identity,
         organization_id: values.organization_id.id,
         role_id: values.role_id.id,
         profile_image: values.profile_image,
-        active: item.active,
-        register_date: values.register_date
+        position: values.position,
+        active: item[0].active,
+        skill: values.skill,
+        register_date: moment(values.register_date).format('DD-MM-YYYY')
       };
     }
     let {
@@ -283,7 +285,8 @@ class EditModal extends React.Component {
                   identity: '',
                   weight: null,
                   dan: null,
-                  position: ''
+                  position: '',
+                  skill: ''
                 }}
                 validationSchema={
                   Yup.object().shape({
@@ -303,7 +306,7 @@ class EditModal extends React.Component {
                     state: Yup.string().required('This field is required!'),
                     zip_code: Yup.string().max(6, 'Less than 6 characters!').required('This field is required!'),
                     identity: Yup.string().required('This field is required!'),
-                    weight: Yup.mixed().required('This field is required!'),
+                    weight_id: Yup.mixed().required('This field is required!'),
                     dan: Yup.mixed().required('This field is required!')
                   })
                 }
@@ -602,17 +605,17 @@ class EditModal extends React.Component {
                       </Col>
                       <Col sm="4" xs="6">
                         <FormGroup>
-                          <Label for="weight">Weight</Label>
+                          <Label for="weight_id">Weight</Label>
                           <Select
-                            name="weight"
+                            name="weight_id"
                             menuPlacement="top"
                             classNamePrefix="react-select-lg"
-                            value={values.weight}
+                            value={values.weight_id}
                             options={weights}
                             getOptionValue={option => option.id}
                             getOptionLabel={option => option.name}
                             onChange={(value) => {
-                              setFieldValue('weight', value);
+                              setFieldValue('weight_id', value);
                             }}
                           />
                         </FormGroup>
@@ -631,6 +634,30 @@ class EditModal extends React.Component {
                             onChange={(value) => {
                               setFieldValue('dan', value);
                             }}
+                          />
+                        </FormGroup>
+                      </Col>
+                      <Col xs="6">
+                        <FormGroup>
+                          <Label for="position">Position</Label>
+                          <Input
+                            name="position"
+                            type="text"
+                            value={values.position || ''}
+                            onChange={handleChange}
+                            onBlur={handleBlur}
+                          />
+                        </FormGroup>
+                      </Col>
+                      <Col xs="6">
+                        <FormGroup>
+                          <Label for="skill">Skill</Label>
+                          <Input
+                            name="skill"
+                            type="text"
+                            value={values.skill || ''}
+                            onChange={handleChange}
+                            onBlur={handleBlur}
                           />
                         </FormGroup>
                       </Col>
