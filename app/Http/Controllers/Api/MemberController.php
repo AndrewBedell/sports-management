@@ -166,7 +166,7 @@ class MemberController extends Controller
                             ->leftJoin('weights', 'players.weight_id', '=', 'players.weight_id')
                             ->select('members.*', 'weights.id AS weight_id', 'weights.name AS weight_name', 'weights.weight',
                                      'players.dan', 'players.skill', 'players.expired_date')
-                            ->get();
+                            ->first();
                 }
 
                 return response()->json($member);
@@ -266,9 +266,9 @@ class MemberController extends Controller
                 if (is_null($data['position']))
                     $data['position'] = "";
 
-                $exist = Member::where('email', $data['email'])->where('id', '!=', $id)->get();
+                $exist = Member::where('email', $data['email'])->where('id', '!=', $id)->count();
 
-                if (sizeof($exist) == 0) {
+                if ($exist == 0) {
                     Member::where('id', $id)->update(array(
                         'organization_id' => $data['organization_id'],
                         'role_id' => $data['role_id'],

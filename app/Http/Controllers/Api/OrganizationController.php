@@ -167,9 +167,9 @@ class OrganizationController extends Controller
                     422
                 );
             } else {
-                $exist = Organization::where('email', $data['email'])->where('id', '!=', $id)->get();
+                $exist = Organization::where('email', $data['email'])->where('id', '!=', $id)->count();
 
-                if (sizeof($exist) == 0) {
+                if ($exist == 0) {
                     if (!isset($data['logo']) || is_null($data['logo']))
                         $data['logo'] = "";
 
