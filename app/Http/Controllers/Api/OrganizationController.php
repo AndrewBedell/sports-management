@@ -57,7 +57,6 @@ class OrganizationController extends Controller
         $validator = Validator::make($data, [
             'register_no' => 'required',
             'name' => 'required|string|max:255',
-            'logo' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:organizations',
             'mobile_phone' => 'required|string|max:255',
             'addressline1' => 'required|string|max:255',
@@ -144,7 +143,6 @@ class OrganizationController extends Controller
             $validator = Validator::make($data, [
                 'register_no' => 'required',
                 'name' => 'required|string|max:255',
-                'logo' => 'required|string|max:255',
                 'email' => 'required|string|email|max:255',
                 'mobile_phone' => 'required|string|max:255',
                 'addressline1' => 'required|string|max:255',
