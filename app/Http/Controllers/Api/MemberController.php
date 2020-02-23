@@ -286,7 +286,8 @@ class MemberController extends Controller
                         'city' => $data['city'],
                         'zip_code' => $data['zip_code'],
                         'position' => $data['position'],
-                        'identity' => $data['identity']
+                        'identity' => $data['identity'],
+                        'register_date' => $data['register_date']
                     ));
                 } else {
                     return response()->json(
