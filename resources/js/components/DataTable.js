@@ -1,3 +1,5 @@
+/* eslint-disable jsx-a11y/alt-text */
+/* eslint-disable jsx-a11y/anchor-is-valid */
 
 import React, { Component, Fragment } from 'react';
 import {
@@ -8,9 +10,11 @@ import {
 } from 'semantic-ui-react';
 import { Button } from 'reactstrap';
 import Select from 'react-select';
+import ReactTooltip from 'react-tooltip';
 
 import _ from 'lodash';
 import { countries, Genders } from '../configs/data';
+import Bitmaps from '../theme/Bitmaps';
 
 const flagRenderer = item => <Flag name={item.countryCode} />;
 
@@ -38,6 +42,11 @@ class DataTable extends Component {
   }
 
   componentWillReceiveProps(props) {
+    if (props.items.length > 0) {
+      this.setState({
+        activePage: 1
+      });
+    }
     const { items } = props;
     const { per_page } = this.state;
     this.setState({
@@ -183,6 +192,37 @@ class DataTable extends Component {
               data.map((item, index) => (
                 <Table.Row key={index} onDoubleClick={() => onSelect(item.id)}>
                   <Table.Cell>
+                    <span className="text-primary mr-2">
+                      {
+                        type.value !== 'player' ? (
+                          <Fragment>
+                            <a data-tip data-for="happyFace"><i className="fa fa-users fa-lg" /></a>
+                            <ReactTooltip
+                              id="happyFace"
+                              type="light"
+                              effect="float"
+                              place="right"
+                              className="avatar-tooltip"
+                            >
+                              <div className="avatar-preview"><img src={item.logo ? item.logo : Bitmaps.logo} /></div>
+                            </ReactTooltip>
+                          </Fragment>
+                        ) : (
+                          <Fragment>
+                            <a data-tip data-for="happyFace"><i className="fa fa-user fa-lg" /></a>
+                            <ReactTooltip
+                              id="happyFace"
+                              type="light"
+                              effect="float"
+                              place="right"
+                              className="avatar-tooltip"
+                            >
+                              <div className="avatar-preview"><img src={item.profile_image ? item.profile_image : Bitmaps.logo} /></div>
+                            </ReactTooltip>
+                          </Fragment>
+                        )
+                      }
+                    </span>
                     {
                       type.value === 'player' ? `${item.first_name} ${item.mid_name} ${item.last_name}` : item.name
                     }
@@ -288,7 +328,6 @@ class DataTable extends Component {
 }
 
 DataTable.defaultProps = {
-  items: [],
   onDelete: () => {},
   onEdit: () => {},
   onSelect: () => {}

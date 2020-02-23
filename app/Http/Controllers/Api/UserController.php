@@ -56,12 +56,17 @@ class UserController extends Controller
         }
 
         $member = Member::where('email', $request->email)->first();
+        $user = User::where('member_id', $member->id)->first();
 
         if ($member->active) {
             return response()->json([
                 'status' => 'success',
                 'data' => [
-                    'token' => $token
+                    'token' => $token,
+                    'user' => [
+                        'member_info' => $member,
+                        'is_super' => $user->is_super
+                    ]
                 ]
             ], 200);
         } else {
