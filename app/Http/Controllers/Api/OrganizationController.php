@@ -182,6 +182,7 @@ class OrganizationController extends Controller
                     return response()->json([
                         'status' => 'success'
                     ], 200);
+                    // return response()->json($data, 200);
                 } else {
                     return response()->json(
                         [

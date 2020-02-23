@@ -265,7 +265,7 @@ export const Dans = [
 ];
 
 export const search_type_options = [
-  { label: 'Organization', value: 'org' },
+  { label: 'Federation', value: 'org' },
   { label: 'Club', value: 'club' },
   { label: 'Player', value: 'player' }
 ];

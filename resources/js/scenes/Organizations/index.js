@@ -31,7 +31,6 @@ class Organizations extends Component {
       deleteId: '',
       editIndex: -1
     };
-    this.getOrganizations = this.getOrganizations.bind(this);
   }
 
   async componentDidMount() {
@@ -92,27 +91,6 @@ class Organizations extends Component {
           break;
       }
     }
-  }
-
-  async getOrganizations(org_id) {
-    const data = await Api.get('organizations-list', {
-      contain_self: 1,
-      contain_club: 0,
-      exclude: org_id
-    });
-    const { response, body } = data;
-    switch (response.status) {
-      case 200:
-        this.setState({
-          orgs: body
-        });
-        break;
-      case 406:
-        break;
-      default:
-        break;
-    }
-    this.componentWillReceiveProps(this.props);
   }
 
   handleEdit(id, index) {
@@ -277,7 +255,7 @@ class Organizations extends Component {
               id={edit_item}
               type={search_type_options[0]}
               weights={weights}
-              orgs={this.getOrganizations(edit_item)}
+              orgs={[]}
               roles={roles}
               handleSave={this.handleSaveItem.bind(this)}
               handleCancel={this.handleEdit.bind(this)}
