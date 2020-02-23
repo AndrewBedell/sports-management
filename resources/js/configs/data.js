@@ -269,3 +269,8 @@ export const search_type_options = [
   { label: 'Club', value: 'club' },
   { label: 'Player', value: 'player' }
 ];
+
+export const SetSwitch = [
+  { label: 'Yes', value: 1 },
+  { label: 'No', value: 0 }
+];

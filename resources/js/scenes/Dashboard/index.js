@@ -48,6 +48,7 @@ class Dashboard extends Component {
       successMessage: '',
       failMessage: '',
       deleteId: '',
+      editIndex: -1,
       error: {
         search_type: 'This field is required!'
       }
@@ -58,7 +59,11 @@ class Dashboard extends Component {
     this.handleSaveItem = this.handleSaveItem.bind(this);
   }
 
-  async componentDidMount() {
+  componentDidMount() {
+    this.componentWillReceiveProps(this.props);
+  }
+
+  async componentWillReceiveProps() {
     const org_response = await Api.get('organizations-list');
     const { response, body } = org_response;
     switch (response.status) {
@@ -193,11 +198,12 @@ class Dashboard extends Component {
     }
   }
 
-  handleEdit(id) {
+  handleEdit(id, index) {
     const { isOpenEditModal } = this.state;
     this.setState({
       isOpenEditModal: !isOpenEditModal,
-      edit_item: id
+      edit_item: id,
+      editIndex: index
     });
   }
 
@@ -271,8 +277,56 @@ class Dashboard extends Component {
     }, 2000);
   }
 
-  async handleSaveItem(item) {
-    console.log(item);
+  async handleSaveItem(id, item) {
+    const { search_type } = this.state;
+    if (search_type.value !== 'player') {
+      const updateOrg = await Api.put(`organization/${id}`, item);
+      switch (updateOrg.response.status) {
+        case 200:
+          this.setState({
+            isOpenEditModal: false,
+            messageStatus: true,
+            alertVisible: true,
+            successMessage: updateOrg.body.message
+          });
+          break;
+        case 406:
+          this.setState({
+            alertVisible: true,
+            messageStatus: false,
+            isOpenEditModal: false,
+            failMessage: updateOrg.body.message
+          });
+          break;
+        default:
+          break;
+      }
+    } else {
+      const updateMem = await Api.put(`member/${id}`, item);
+      switch (updateMem.response.status) {
+        case 200:
+          this.setState({
+            isOpenEditModal: false,
+            messageStatus: true,
+            alertVisible: true,
+            successMessage: updateMem.body.message
+          });
+          break;
+        case 406:
+          this.setState({
+            alertVisible: true,
+            messageStatus: false,
+            isOpenEditModal: false,
+            failMessage: updateMem.body.message
+          });
+          break;
+        default:
+          break;
+      }
+    }
+    setTimeout(() => {
+      this.setState({ alertVisible: false });
+    }, 2000);
   }
 
   handleConfirmationClose() {
@@ -288,6 +342,15 @@ class Dashboard extends Component {
 
   handleRegisterMember() {
     this.props.history.push('/members/register');
+  }
+
+  handleSelectItem(id) {
+    const { search_type } = this.state;
+    if (search_type.value === 'player') {
+      this.props.history.push('/member/detail', id);
+    } else {
+      this.props.history.push('/organization/detail', id);
+    }
   }
 
   render() {
@@ -431,7 +494,7 @@ class Dashboard extends Component {
           {
             search_data === null && (
               <Container fluid>
-                WOW
+                Dashboard Main
               </Container>
             )
           }
@@ -449,9 +512,11 @@ class Dashboard extends Component {
               <Container fluid>
                 <div className="table-responsive">
                   <DataTable
+                    type={search_type}
                     items={search_data}
                     onEdit={this.handleEdit.bind(this)}
                     onDelete={this.handleDelete.bind(this)}
+                    onSelect={this.handleSelectItem.bind(this)}
                   />
                 </div>
               </Container>

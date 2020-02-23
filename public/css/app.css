@@ -57706,8 +57706,12 @@ body {
   white-space: nowrap;
 }
 
+.table tbody tr td .actions {
+  margin-top: -5px;
+}
+
 .table tbody tr td .actions .btn {
-  padding: 10px !important;
+  padding: 6px !important;
   border-radius: 3px;
 }
 

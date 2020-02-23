@@ -1,5 +1,5 @@
 
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import {
   Table,
   Pagination,
@@ -10,7 +10,7 @@ import { Button } from 'reactstrap';
 import Select from 'react-select';
 
 import _ from 'lodash';
-import { countries } from '../configs/data';
+import { countries, Genders } from '../configs/data';
 
 const flagRenderer = item => <Flag name={item.countryCode} />;
 
@@ -45,8 +45,8 @@ class DataTable extends Component {
     });
   }
 
-  getCountryCode(country_name) {
-    const country_val = countries.filter(country => country.name === country_name);
+  getCountryCode(country_code) {
+    const country_val = countries.filter(country => country.countryCode === country_code);
     if (country_val.length > 0) {
       return flagRenderer(country_val[0]);
     }
@@ -100,9 +100,11 @@ class DataTable extends Component {
 
   render() {
     const {
+      onSelect,
       onDelete,
       onEdit,
-      items
+      items,
+      type
     } = this.props;
     const {
       column,
@@ -123,6 +125,24 @@ class DataTable extends Component {
             >
               Name
             </Table.HeaderCell>
+            {
+              type.value === 'player' && (
+                <Fragment>
+                  <Table.HeaderCell
+                    sorted={column === 'gender' ? direction : null}
+                    onClick={this.handleSort.bind(this, 'gender')}
+                  >
+                    Gender
+                  </Table.HeaderCell>
+                  <Table.HeaderCell
+                    sorted={column === 'birthday' ? direction : null}
+                    onClick={this.handleSort.bind(this, 'birthday')}
+                  >
+                    Birthday
+                  </Table.HeaderCell>
+                </Fragment>
+              )
+            }
             <Table.HeaderCell
               sorted={column === 'email' ? direction : null}
               onClick={this.handleSort.bind(this, 'email')}
@@ -147,33 +167,70 @@ class DataTable extends Component {
             >
               Address
             </Table.HeaderCell>
-            <Table.HeaderCell></Table.HeaderCell>
+            {
+              type.value === 'player' && (
+                <Table.HeaderCell>
+                  Active
+                </Table.HeaderCell>
+              )
+            }
+            <Table.HeaderCell width="2"></Table.HeaderCell>
           </Table.Row>
         </Table.Header>
         <Table.Body>
           {
             data && data.length > 0 && (
               data.map((item, index) => (
-                <Table.Row key={index}>
+                <Table.Row key={index} onDoubleClick={() => onSelect(item.id)}>
                   <Table.Cell>{item.name}</Table.Cell>
+                  {
+                    type.value === 'player' && (
+                      <Fragment>
+                        <Table.Cell>{Genders[item.gender - 1].name}</Table.Cell>
+                        <Table.Cell>{item.birthday}</Table.Cell>
+                      </Fragment>
+                    )
+                  }
                   <Table.Cell>{item.email}</Table.Cell>
                   <Table.Cell>
                     {this.getCountryCode(item.country)}
                     {' '}
-                    {item.country}
+                    {countries.filter(country => country.countryCode === item.country).length > 0 && countries.filter(country => country.countryCode === item.country)[0].name}
                   </Table.Cell>
                   <Table.Cell>{item.mobile_phone}</Table.Cell>
                   <Table.Cell>
                     {item.addressline1}
                     {item.addressline2 ? '-' : ''}
                     {item.addressline2}
+                    {', '}
+                    {item.city}
+                    {item.state}
+                    {' '}
+                    {item.zip_code}
                   </Table.Cell>
+                  {
+                    type.value === 'player' && (
+                      <Table.Cell>
+                        {
+                          item.active ? (
+                            <div className="text-warning text-center">
+                              <i className="fa fa-trophy fa-lg" />
+                            </div>
+                          ) : (
+                            <div className="text-muted text-center">
+                              <i className="fa fa-trophy fa-lg" />
+                            </div>
+                          )
+                        }
+                      </Table.Cell>
+                    )
+                  }
                   <Table.Cell>
                     <div className="actions d-flex w-100 justify-content-center align-items-center">
                       <Button
                         color="success"
                         type="button"
-                        onClick={() => onEdit(item.id)}
+                        onClick={() => onEdit(item.id, index)}
                         style={{ marginRight: '20px' }}
                       >
                         <i className="fa fa-pencil-alt fa-lg" />
@@ -181,7 +238,7 @@ class DataTable extends Component {
                       <Button
                         color="danger"
                         type="button"
-                        onClick={() => onDelete(item.id, index)}
+                        onClick={() => onDelete(item.id)}
                       >
                         <i className="fa fa-trash-alt fa-lg" />
                       </Button>
@@ -210,7 +267,7 @@ class DataTable extends Component {
                 }}
               />
             </Table.HeaderCell>
-            <Table.HeaderCell colSpan="5">
+            <Table.HeaderCell colSpan={type.value === 'player' ? 8 : 5}>
               <Menu floated="right" pagination>
                 <Pagination
                   activePage={activePage}
@@ -229,7 +286,8 @@ class DataTable extends Component {
 DataTable.defaultProps = {
   items: [],
   onDelete: () => {},
-  onEdit: () => {}
+  onEdit: () => {},
+  onSelect: () => {}
 };
 
 export default DataTable;

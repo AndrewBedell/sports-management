@@ -7,15 +7,17 @@ import {
   Modal, ModalBody, ModalHeader,
   Button,
   Form, FormGroup, FormFeedback,
-  Input, Label, CustomInput,
+  Input, Label,
   UncontrolledAlert
 } from 'reactstrap';
 import Select from 'react-select';
 // import DateRangePicker from '../../components/DateRangePicker';
-import DatePicker from 'react-date-picker/dist/entry.nostyle';
+import DatePicker from 'react-date-picker';
 
 import Api from '../../apis/app';
-import { Genders, countries, Dans } from '../../configs/data';
+import {
+  Genders, countries, Dans, SetSwitch
+} from '../../configs/data';
 
 class EditModal extends React.Component {
   constructor(props) {
@@ -26,8 +28,9 @@ class EditModal extends React.Component {
       isOpen: true,
       org_list: []
     };
-
-    this.handleSubmit = this.handleSubmit.bind(this);
+    this.formikRef1 = React.createRef();
+    this.formikRef2 = React.createRef();
+    this.settingValues = this.settingValues.bind(this);
     this.handleCancel = this.handleCancel.bind(this);
   }
 
@@ -71,6 +74,99 @@ class EditModal extends React.Component {
     this.setState({
       org_list: orgs.filter(org => org.is_club === 1)
     });
+    this.settingValues(props);
+  }
+
+  settingValues(props) {
+    const { item, org_list } = this.state;
+    const { roles, weights, type } = props;
+    const {
+      formikRef1, formikRef2
+    } = this;
+    const values = {
+      ...item
+    };
+    if (!item) {
+      if (type.value !== 'player') {
+        formikRef1.current.setValues({
+          name: '',
+          register_no: '',
+          logo: null,
+          email: '',
+          mobile_phone: '',
+          addressline1: '',
+          addressline2: '',
+          country: null,
+          state: '',
+          city: '',
+          zip_code: '',
+          level: '',
+          readable_id: '',
+          is_club: null
+        });
+      } else {
+        formikRef2.current.setValues({
+          organization_id: null,
+          role_id: null,
+          profile_image: null,
+          first_name: '',
+          mid_name: '',
+          last_name: '',
+          gender: null,
+          birthday: null,
+          email: '',
+          mobile_phone: '',
+          addressline1: '',
+          addressline2: '',
+          country: null,
+          state: '',
+          city: '',
+          zip_code: '',
+          identity: '',
+          weight: null,
+          dan: null
+        });
+      }
+    } else if (type.value !== 'player') {
+      formikRef1.current.setValues({
+        name: values.name,
+        register_no: values.register_no,
+        logo: values.logo,
+        email: values.email,
+        mobile_phone: values.mobile_phone,
+        addressline1: values.addressline1,
+        addressline2: values.addressline2,
+        country: countries.filter(country => country.countryCode === values.country)[0],
+        state: values.state,
+        city: values.city,
+        zip_code: values.zip_code,
+        level: values.level,
+        readable_id: values.readable_id,
+        is_club: SetSwitch.filter(set => set.value === values.is_club)[0]
+      });
+    } else {
+      formikRef2.current.setValues({
+        first_name: values[0].first_name,
+        mid_name: values[0].mid_name,
+        last_name: values[0].last_name,
+        gender: Genders[values[0].gender - 1],
+        organization_id: org_list.filter(org => org.id === values[0].organization_id)[0],
+        role_id: roles.filter(role => role.id === values[0].role_id)[0],
+        profile_image: values[0].profile_image,
+        birthday: values[0].birthday,
+        email: values[0].email,
+        mobile_phone: values[0].mobile_phone,
+        addressline1: values[0].addressline1,
+        addressline2: values[0].addressline2,
+        country: countries.filter(country => country.countryCode === values[0].country)[0],
+        state: values[0].state,
+        city: values[0].city,
+        zip_code: values[0].zip_code,
+        weight: weights.filter(weight => weight.id === values[0].weight),
+        dan: Dans.filter(dan => dan.id === values[0].dan),
+        identity: values[0].identity
+      });
+    }
   }
 
 
@@ -84,22 +180,55 @@ class EditModal extends React.Component {
   }
 
   handleSubmit(values) {
-    console.log(values);
+    let newData = {};
+    const { id, type } = this.props;
+    if (type.value !== 'player') {
+      newData = {
+        name: values.name,
+        register_no: values.register_no,
+        logo: values.logo,
+        email: values.email,
+        mobile_phone: values.mobile_phone,
+        addressline1: values.addressline1,
+        addressline2: values.addressline2,
+        country: values.country.countryCode,
+        state: values.state,
+        city: values.city,
+        zip_code: values.zip_code,
+        level: values.level,
+        readable_id: values.readable_id,
+        is_club: values.is_club.value
+      };
+    } else {
+      newData = {
+        first_name: values.first_name,
+        mid_name: values.mid_name,
+        last_name: values.last_name,
+        gender: values.gender.id,
+        birthday: moment(values.birthday).format('DD-MM-YYYY'),
+        email: values.email,
+        mobile_phone: values.mobile_phone,
+        addressline1: values.addressline1,
+        addressline2: values.addressline2,
+        country: values.country.countryCode,
+        state: values.state,
+        city: values.city,
+        zip_code: values.zip_code,
+        weight: values.weight.id,
+        dan: values.dan.value,
+        identity: values.identity,
+        organization_id: values.organization_id.id,
+        role_id: values.role_id.id,
+        profile_image: values.profile_image
+      };
+    }
     let {
       handleSave
     } = this.props;
-    const { id } = this.props;
+
 
     handleSave = handleSave || (() => {});
-    handleSave(id);
-  }
-
-  handleCheckbox(e) {
-    const { item } = this.state;
-    item.is_club = e;
-    this.setState({
-      item
-    });
+    handleSave(id, newData);
   }
 
   render() {
@@ -123,6 +252,7 @@ class EditModal extends React.Component {
           {
             type.value === 'player' && item ? (
               <Formik
+                ref={this.formikRef2}
                 initialValues={{
                   organization_id: null,
                   role_id: null,
@@ -148,24 +278,24 @@ class EditModal extends React.Component {
                   Yup.object().shape({
                     organization_id: Yup.mixed().required('This field is required!'),
                     role_id: Yup.mixed().required('This field is required!'),
-                    profile_image: Yup.mixed().required('Image is required!'),
+                    // profile_image: Yup.mixed().required('Image is required!'),
                     first_name: Yup.string().required('This field is required!'),
                     last_name: Yup.string().required('This field is required!'),
                     gender: Yup.mixed().required('This field is required!'),
                     birthday: Yup.mixed().required('This field is required!'),
                     email: Yup.string().email('Email is not valid!').required('This field is required!'),
-                    mobile_phone: Yup.string().min(10, 'Less than 10 characters!').required('This field is required!'),
+                    mobile_phone: Yup.string().matches(/^(\+\d{1,3}[- ]?)?\d{10}$/, 'Mobile phone is incorrect!').required('This field is required!'),
                     addressline1: Yup.string().required('This field is required!'),
                     country: Yup.mixed().required('This field is required!'),
                     city: Yup.string().required('This field is required!'),
                     state: Yup.string().required('This field is required!'),
-                    zip_code: Yup.string().min(6, 'Less than 6 characters!').required('This field is required!'),
+                    zip_code: Yup.string().max(6, 'Less than 6 characters!').required('This field is required!'),
                     identity: Yup.string().required('This field is required!'),
                     weight: Yup.mixed().required('This field is required!'),
                     dan: Yup.mixed().required('This field is required!')
                   })
                 }
-                onSubmit={this.handleSubmit}
+                onSubmit={this.handleSubmit.bind(this)}
                 render={({
                   values,
                   errors,
@@ -300,15 +430,16 @@ class EditModal extends React.Component {
                       <Col sm="8">
                         <FormGroup>
                           <Label for="birthday">Birthday</Label>
-                          <div>
-                            <DatePicker
-                              value={values.birthday}
-                              onChange={(value) => {
-                                setFieldValue('birthday', value);
-                              }}
-                            />
-                            { errors.birthday && <FormFeedback className="d-block">{errors.birthday}</FormFeedback> }
-                          </div>
+                          <Input
+                            name="birthday"
+                            type="date"
+                            placeholder="DD-MM-YYYY"
+                            value={values.birthday || ''}
+                            onChange={handleChange}
+                            onBlur={handleBlur}
+                            invalid={!!errors.birthday}
+                          />
+                          { errors.birthday && <FormFeedback className="d-block">{errors.birthday}</FormFeedback> }
                         </FormGroup>
                       </Col>
                       <Col sm="6">
@@ -493,8 +624,10 @@ class EditModal extends React.Component {
               />
             ) : (
               <Formik
+                ref={this.formikRef1}
                 initialValues={{
                   name: '',
+                  register_no: '',
                   email: '',
                   logo: null,
                   mobile_phone: '',
@@ -505,23 +638,26 @@ class EditModal extends React.Component {
                   city: '',
                   zip_code: '',
                   level: '',
+                  readable_id: '',
                   is_club: false
                 }}
                 validationSchema={
                   Yup.object().shape({
                     name: Yup.string().required('This field is required!'),
+                    register_no: Yup.string().required('This field is required!'),
                     email: Yup.string().email('Email is not valid!').required('This field is required!'),
-                    logo: Yup.mixed().required('Logo is required!'),
-                    mobile_phone: Yup.string().min(10, 'Less than 10 characters!').required('This field is required!'),
+                    // logo: Yup.mixed().required('Logo is required!'),
+                    mobile_phone: Yup.string().matches(/^(\+\d{1,3}[- ]?)?\d{10}$/, 'Mobile phone is incorrect!').required('This field is required!'),
                     addressline1: Yup.string().required('This field is required!'),
                     country: Yup.mixed().required('This field is required!'),
                     city: Yup.string().required('This field is required!'),
                     state: Yup.string().required('This field is required!'),
-                    zip_code: Yup.string().required('This field is required!'),
-                    level: Yup.string().required('This field is required!')
+                    zip_code: Yup.string().max(6, 'Less than 5 characters!').required('This field is required!'),
+                    level: Yup.string().required('This field is required!'),
+                    readable_id: Yup.string().required('This field is required!')
                   })
                 }
-                onSubmit={this.handleSubmit}
+                onSubmit={this.handleSubmit.bind(this)}
                 render={({
                   values,
                   errors,
@@ -535,11 +671,27 @@ class EditModal extends React.Component {
                   <Form onSubmit={handleSubmit}>
                     {status && <UncontrolledAlert {...status} />}
                     <Row>
-                      <Col xs="12">
+                      <Col xs="6">
                         <FormGroup>
                           <Label for="logo">Logo Image</Label>
 
                           <FormFeedback>{errors.logo}</FormFeedback>
+                        </FormGroup>
+                      </Col>
+                      <Col xs="6">
+                        <FormGroup>
+                          <Label for="register_no">
+                            Register Number
+                          </Label>
+                          <Input
+                            type="text"
+                            name="register_no"
+                            value={values.register_no}
+                            onChange={handleChange}
+                            onBlur={handleBlur}
+                            invalid={!!errors.register_no}
+                          />
+                          <FormFeedback>{errors.register_no}</FormFeedback>
                         </FormGroup>
                       </Col>
                       <Col sm="4">
@@ -687,6 +839,20 @@ class EditModal extends React.Component {
                       </Col>
                       <Col xs="4">
                         <FormGroup>
+                          <Label for="readable_id">Readable ID</Label>
+                          <Input
+                            name="readable_id"
+                            type="text"
+                            value={values.readable_id || ''}
+                            onChange={handleChange}
+                            onBlur={handleBlur}
+                            invalid={!!errors.readable_id}
+                          />
+                          {errors.readable_id && (<FormFeedback className="d-block">{errors.readable_id}</FormFeedback>)}
+                        </FormGroup>
+                      </Col>
+                      <Col xs="4">
+                        <FormGroup>
                           <Label for="level">Level</Label>
                           <Input
                             name="level"
@@ -702,12 +868,18 @@ class EditModal extends React.Component {
                       <Col xs="4">
                         <FormGroup>
                           <Label for="is_club">Has Club</Label>
-                          <CustomInput
-                            id="is_club"
-                            type="checkbox"
-                            label={values.is_club ? 'Yes' : 'NO'}
-                            onChange={(event) => { this.handleCheckbox.bind(this, event.target.checked); }}
-                            checked={values.is_club}
+                          <Select
+                            name="is_club"
+                            classNamePrefix="react-select-lg"
+                            indicatorSeparator={null}
+                            options={SetSwitch}
+                            getOptionValue={option => option.value}
+                            getOptionLabel={option => option.label}
+                            value={values.is_club}
+                            onChange={(value) => {
+                              setFieldValue('is_club', value);
+                            }}
+                            onBlur={this.handleBlur}
                           />
                         </FormGroup>
                       </Col>
