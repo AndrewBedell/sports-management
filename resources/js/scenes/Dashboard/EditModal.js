@@ -1,3 +1,5 @@
+/* eslint-disable react/no-unused-state */
+/* eslint-disable jsx-a11y/alt-text */
 import React from 'react';
 import { Formik } from 'formik';
 import moment from 'moment';
@@ -25,8 +27,13 @@ class EditModal extends React.Component {
     this.state = {
       item: null,
       isOpen: true,
-      org_list: []
+      org_list: [],
+      file: '',
+      imagePreviewUrl: '',
+      fileKey: 1
     };
+
+    this.fileRef = React.createRef();
     this.formikRef1 = React.createRef();
     this.formikRef2 = React.createRef();
     this.settingValues = this.settingValues.bind(this);
@@ -47,7 +54,8 @@ class EditModal extends React.Component {
       switch (response.status) {
         case 200: {
           this.setState({
-            item: body
+            item: body,
+            imagePreviewUrl: body.length > 0 ? body[0].profile_image : ''
           });
           break;
         }
@@ -62,7 +70,8 @@ class EditModal extends React.Component {
       switch (response.status) {
         case 200: {
           this.setState({
-            item: body
+            item: body,
+            imagePreviewUrl: body.logo
           });
           break;
         }
@@ -173,6 +182,21 @@ class EditModal extends React.Component {
     }
   }
 
+  fileUpload(e) {
+    e.preventDefault();
+    const reader = new FileReader();
+    // eslint-disable-next-line prefer-const
+    let file = e.target.files[0];
+
+    reader.onloadend = () => {
+      this.setState({
+        file,
+        imagePreviewUrl: reader.result
+      });
+    };
+
+    reader.readAsDataURL(file);
+  }
 
   handleCancel() {
     let {
@@ -186,13 +210,13 @@ class EditModal extends React.Component {
   handleSubmit(values, bags) {
     let newData = {};
     const { id, type } = this.props;
-    const { item } = this.state;
+    const { item, file } = this.state;
     if (type.value !== 'player') {
       newData = {
         id,
         name: values.name,
         register_no: values.register_no,
-        logo: values.logo ? values.logo : '',
+        logo: file || '',
         email: values.email,
         mobile_phone: values.mobile_phone,
         addressline1: values.addressline1,
@@ -226,14 +250,13 @@ class EditModal extends React.Component {
         identity: values.identity,
         organization_id: values.organization_id.id,
         role_id: values.role_id.id,
-        profile_image: values.profile_image,
+        profile_image: file || '',
         position: values.position,
         skill: values.skill ? values.skill : '',
         active: item[0].active,
         register_date: moment(values.register_date).format('YYYY-MM-DD')
       };
     }
-
     let {
       handleSave
     } = this.props;
@@ -247,6 +270,14 @@ class EditModal extends React.Component {
     const {
       isOpen, item, org_list
     } = this.state;
+    const { imagePreviewUrl } = this.state;
+
+    let $imagePreview = null;
+    if (imagePreviewUrl) {
+      $imagePreview = (<img src={imagePreviewUrl} />);
+    } else {
+      $imagePreview = (<div className="previewText">Please select an Image for Preview</div>);
+    }
     const {
       type,
       roles,
@@ -372,11 +403,19 @@ class EditModal extends React.Component {
                       <Col xs="6">
                         <FormGroup>
                           <Label for="profile_image">Profile Image</Label>
-
-                          <FormFeedback>{errors.profile_image}</FormFeedback>
+                          <Input
+                            ref="file"
+                            type="file"
+                            key={this.state.fileKey}
+                            multiple={false}
+                            onChange={this.fileUpload.bind(this)}
+                          />
+                          <div className="image-preview">
+                            {$imagePreview}
+                          </div>
                         </FormGroup>
                       </Col>
-                      <Col>
+                      <Col xs="6">
                         <FormGroup>
                           <Label for="register_date">Register Date</Label>
                           <Input
@@ -735,7 +774,16 @@ class EditModal extends React.Component {
                       <Col xs="6">
                         <FormGroup>
                           <Label for="logo">Logo Image</Label>
-
+                          <Input
+                            ref="file"
+                            type="file"
+                            key={this.state.fileKey}
+                            multiple={false}
+                            onChange={this.fileUpload.bind(this)}
+                          />
+                          <div className="image-preview">
+                            {$imagePreview}
+                          </div>
                           <FormFeedback>{errors.logo}</FormFeedback>
                         </FormGroup>
                       </Col>
