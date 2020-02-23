@@ -7,3 +7,22 @@ body {
 .cursor-pointer {
   cursor: pointer !important;
 }
+
+.avatar-preview {
+  width: 50px;
+  height: 50px;
+  img {
+    width: 100%;
+  }
+}
+
+.avatar-tooltip {
+  padding: 8px !important;
+  border-radius: 20% !important;
+}
+
+.invalid {
+  &.react-select-lg__control {
+    border: 1px solid $danger !important;
+  }
+}

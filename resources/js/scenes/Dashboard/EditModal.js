@@ -363,7 +363,7 @@ class EditModal extends React.Component {
                           </Label>
                           <Select
                             name="organization_id"
-                            classNamePrefix="react-select-lg"
+                            classNamePrefix={errors.organization_id ? 'invalid react-select-lg' : 'react-select-lg'}
                             indicatorSeparator={null}
                             options={org_list}
                             getOptionValue={option => option.id}
@@ -384,7 +384,7 @@ class EditModal extends React.Component {
                           <Label for="role_id">Role</Label>
                           <Select
                             name="role_id"
-                            classNamePrefix="react-select-lg"
+                            classNamePrefix={errors.role_id ? 'invalid react-select-lg' : 'react-select-lg'}
                             indicatorSeparator={null}
                             options={roles}
                             getOptionValue={option => option.id}
@@ -481,7 +481,7 @@ class EditModal extends React.Component {
                           <Label for="gender">Gender</Label>
                           <Select
                             name="gender"
-                            classNamePrefix="react-select-lg"
+                            classNamePrefix={errors.gender ? 'invalid react-select-lg' : 'react-select-lg'}
                             indicatorSeparator={null}
                             options={Genders}
                             getOptionValue={option => option.id}
@@ -571,7 +571,7 @@ class EditModal extends React.Component {
                           <Label for="country">Country</Label>
                           <Select
                             name="country"
-                            classNamePrefix="react-select-lg"
+                            classNamePrefix={errors.country ? 'invalid react-select-lg' : 'react-select-lg'}
                             indicatorSeparator={null}
                             options={countries}
                             getOptionValue={option => option.countryCode}
@@ -649,7 +649,7 @@ class EditModal extends React.Component {
                           <Select
                             name="weight_id"
                             menuPlacement="top"
-                            classNamePrefix="react-select-lg"
+                            classNamePrefix={errors.weight_id ? 'invalid react-select-lg' : 'react-select-lg'}
                             value={values.weight_id}
                             options={weights}
                             getOptionValue={option => option.id}
@@ -669,7 +669,7 @@ class EditModal extends React.Component {
                           <Select
                             name="dan"
                             menuPlacement="top"
-                            classNamePrefix="react-select-lg"
+                            classNamePrefix={errors.dan ? 'invalid react-select-lg' : 'react-select-lg'}
                             value={values.dan}
                             options={Dans}
                             getOptionValue={option => option.value}
@@ -888,7 +888,7 @@ class EditModal extends React.Component {
                           <Label for="country">Country</Label>
                           <Select
                             name="country"
-                            classNamePrefix="react-select-lg"
+                            classNamePrefix={errors.country ? 'invalid react-select-lg' : 'react-select-lg'}
                             indicatorSeparator={null}
                             options={countries}
                             getOptionValue={option => option.countryCode}

@@ -23,6 +23,7 @@ import DataTable from '../../components/DataTable';
 import Prompt from '../../components/Prompt';
 import EditModal from './EditModal';
 import { Dans, search_type_options } from '../../configs/data';
+import ChartsPage from '../../components/Chart';
 
 class Dashboard extends Component {
   constructor(props) {
@@ -403,7 +404,7 @@ class Dashboard extends Component {
                 <FormGroup>
                   <Select
                     name="type"
-                    classNamePrefix="react-select-lg"
+                    classNamePrefix={!search_required ? 'invalid react-select-lg' : 'react-select-lg'}
                     placeholder="Search Type"
                     indicatorSeparator={null}
                     value={search_type}
@@ -513,8 +514,8 @@ class Dashboard extends Component {
           </Alert>
           {
             search_data === null && (
-              <Container fluid>
-                Dashboard Main
+              <Container>
+                <ChartsPage />
               </Container>
             )
           }
