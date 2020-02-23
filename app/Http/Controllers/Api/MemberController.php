@@ -94,6 +94,9 @@ class MemberController extends Controller
             );
         }
 
+        if (is_null($data['profile_image']))
+                $data['profile_image'] = "";
+
         if (is_null($data['mid_name']))
                 $data['mid_name'] = "";
 
@@ -244,6 +247,9 @@ class MemberController extends Controller
                         422
                     );
                 }
+
+                if (is_null($data['profile_image']))
+                    $data['profile_image'] = "";
         
                 if (is_null($data['mid_name']))
                         $data['mid_name'] = "";
