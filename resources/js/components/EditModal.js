@@ -38,9 +38,17 @@ class EditModal extends React.Component {
     this.formikRef2 = React.createRef();
     this.settingValues = this.settingValues.bind(this);
     this.handleCancel = this.handleCancel.bind(this);
+    this.getOrganizations = this.getOrganizations.bind(this);
+    this.getLevel = this.getLevel.bind(this);
   }
 
-  componentDidMount() {
+  async componentDidMount() {
+    if (this.props.type.value !== 'player') {
+      const exOrgs = await this.getOrganizations(this.props.id);
+      this.setState({
+        org_list: exOrgs
+      });
+    }
     this.componentWillReceiveProps(this.props);
   }
 
@@ -81,9 +89,11 @@ class EditModal extends React.Component {
           break;
       }
     }
-    this.setState({
-      org_list: !isMembers ? orgs.filter(org => org.is_club === 1) : orgs
-    });
+    if (type.value === 'player') {
+      this.setState({
+        org_list: !isMembers ? orgs.filter(org => org.is_club === 1) : orgs
+      });
+    }
     this.settingValues(props);
   }
 
@@ -102,6 +112,7 @@ class EditModal extends React.Component {
       if (type.value !== 'player') {
         formikRef1.current.setValues({
           name: '',
+          parent_id: '',
           register_no: '',
           logo: null,
           email: '',
@@ -144,6 +155,7 @@ class EditModal extends React.Component {
     } else if (type.value !== 'player') {
       formikRef1.current.setValues({
         name: values.name,
+        parent_id: org_list.filter(org => org.id === values.parent_id)[0],
         register_no: values.register_no,
         logo: values.logo,
         email: values.email,
@@ -212,6 +224,34 @@ class EditModal extends React.Component {
     // }
   }
 
+  async getOrganizations(org_id) {
+    const data = await Api.get('organizations-list', {
+      contain_self: 1,
+      contain_club: 0,
+      exclude: org_id
+    });
+    const { response, body } = data;
+    switch (response.status) {
+      case 200:
+        return body;
+      case 406:
+        break;
+      default:
+        break;
+    }
+    return [];
+  }
+
+  getLevel(parent_id) {
+    const { orgs } = this.props;
+    for (let i = 0; i < orgs.length; i++) {
+      if (orgs[i].id === parent_id) {
+        return orgs[i].level + 1;
+      }
+    }
+    return 0;
+  }
+
   fileUpload(e) {
     e.preventDefault();
     const reader = new FileReader();
@@ -239,12 +279,13 @@ class EditModal extends React.Component {
 
   handleSubmit(values, bags) {
     let newData = {};
-    const { id, type, isMembers } = this.props;
+    const { id, type } = this.props;
     const { item, file } = this.state;
     if (type.value !== 'player') {
       newData = {
         id,
         name: values.name,
+        parent_id: (values.parent_id && values.parent_id.id) || item.parent_id,
         register_no: values.register_no,
         logo: file || '',
         email: values.email,
@@ -255,7 +296,7 @@ class EditModal extends React.Component {
         state: values.state,
         city: values.city,
         zip_code: values.zip_code,
-        level: values.level,
+        level: this.getLevel((values.parent_id && values.parent_id.id) || item.parent_id) || item.level,
         readable_id: values.readable_id,
         is_club: values.is_club ? values.is_club.value : 0
       };
@@ -275,15 +316,15 @@ class EditModal extends React.Component {
         state: values.state,
         city: values.city,
         zip_code: values.zip_code,
-        weight_id: values.role_id && values.role_id.id === 3 ? values.weight_id.id : 0,
-        dan: values.role_id && values.role_id.id === 3 ? values.dan.value : 0,
+        weight_id: values.role_id && values.role_id.id === 3 ? (values.weight_id && values.weight_id.id) : '',
+        dan: values.role_id && values.role_id.id === 3 ? (values.dan && values.dan.value) : '',
         identity: values.identity,
         organization_id: values.organization_id.id,
         role_id: values.role_id.id,
         profile_image: file || '',
-        position: values.position,
+        position: values.position || '',
         skill: values.skill ? values.skill : '',
-        active: isMembers ? item.active : item[0].active,
+        active: item.active,
         register_date: moment(values.register_date).format('YYYY-MM-DD')
       };
     }
@@ -313,6 +354,7 @@ class EditModal extends React.Component {
       roles,
       weights
     } = this.props;
+
     return (
       <Modal
         isOpen={isOpen}
@@ -762,6 +804,7 @@ class EditModal extends React.Component {
                 ref={this.formikRef1}
                 initialValues={{
                   name: '',
+                  parent_id: 1,
                   register_no: '',
                   email: '',
                   logo: null,
@@ -788,7 +831,6 @@ class EditModal extends React.Component {
                     city: Yup.string().required('This field is required!'),
                     state: Yup.string().required('This field is required!'),
                     zip_code: Yup.string().max(6, 'Less than 5 characters!').required('This field is required!'),
-                    level: Yup.string().required('This field is required!'),
                     readable_id: Yup.string().required('This field is required!')
                   })
                 }
@@ -839,7 +881,34 @@ class EditModal extends React.Component {
                           <FormFeedback>{errors.register_no}</FormFeedback>
                         </FormGroup>
                       </Col>
-                      <Col sm="4">
+                      {org_list.length > 0 && (
+                        <Col sm="6">
+                          <FormGroup>
+                            <Label for="parent_id">
+                              Federation
+                            </Label>
+                            <Select
+                              name="parent_id"
+                              classNamePrefix={errors.parent_id ? 'invalid react-select-lg' : 'react-select-lg'}
+                              indicatorSeparator={null}
+                              options={org_list}
+                              getOptionValue={option => option.id}
+                              getOptionLabel={option => option.name}
+                              value={values.parent_id}
+                              invalid={!!errors.parent_id && touched.parent_id}
+                              onChange={(value) => {
+                                setFieldValue('parent_id', value);
+                              }}
+                              onBlur={this.handleBlur}
+                            />
+                            {!!errors.parent_id && touched.parent_id && (
+                              <FormFeedback className="d-block">{errors.parent_id}</FormFeedback>
+                            )}
+                          </FormGroup>
+                        </Col>
+                      )
+                      }
+                      <Col sm="6">
                         <FormGroup>
                           <Label for="name">
                             Organization Name
@@ -855,7 +924,9 @@ class EditModal extends React.Component {
                           <FormFeedback>{errors.name}</FormFeedback>
                         </FormGroup>
                       </Col>
-                      <Col sm="4">
+                    </Row>
+                    <Row>
+                      <Col sm="6">
                         <FormGroup>
                           <Label for="email">
                             Email
@@ -871,7 +942,7 @@ class EditModal extends React.Component {
                           <FormFeedback>{errors.email}</FormFeedback>
                         </FormGroup>
                       </Col>
-                      <Col sm="4">
+                      <Col sm="6">
                         <FormGroup>
                           <Label for="mobile_phone">
                             Mobile Phone
@@ -980,9 +1051,9 @@ class EditModal extends React.Component {
                           {!!errors.zip_code && touched.zip_code && (<FormFeedback className="d-block">{errors.zip_code}</FormFeedback>)}
                         </FormGroup>
                       </Col>
-                      <Col xs="4">
+                      <Col xs="6">
                         <FormGroup>
-                          <Label for="readable_id">Readable ID</Label>
+                          <Label for="readable_id">ID</Label>
                           <Input
                             name="readable_id"
                             type="text"
@@ -994,21 +1065,7 @@ class EditModal extends React.Component {
                           {!!errors.readable_id && touched.readable_id && (<FormFeedback className="d-block">{errors.readable_id}</FormFeedback>)}
                         </FormGroup>
                       </Col>
-                      <Col xs="4">
-                        <FormGroup>
-                          <Label for="level">Level</Label>
-                          <Input
-                            name="level"
-                            type="text"
-                            value={values.level || ''}
-                            onChange={handleChange}
-                            onBlur={handleBlur}
-                            invalid={!!errors.level && touched.level}
-                          />
-                          {!!errors.level && touched.level && (<FormFeedback className="d-block">{errors.level}</FormFeedback>)}
-                        </FormGroup>
-                      </Col>
-                      <Col xs="4">
+                      <Col xs="6">
                         <FormGroup>
                           <Label for="is_club">Is Club</Label>
                           <Select
@@ -1035,7 +1092,7 @@ class EditModal extends React.Component {
                           type="submit"
                           color="primary"
                         >
-                          Create Organization
+                          Save
                         </Button>
                       </div>
                     </div>

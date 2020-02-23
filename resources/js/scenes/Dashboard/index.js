@@ -112,7 +112,8 @@ class Dashboard extends Component {
         this.setState({
           search_type: value,
           search_required: true,
-          search_data: null
+          search_data: null,
+          search_orgs: []
         });
         if (value.value !== 'player') {
           this.setState({

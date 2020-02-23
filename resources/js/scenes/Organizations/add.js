@@ -22,14 +22,42 @@ class OrganizationAdd extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      org_list: [],
       file: '',
       imagePreviewUrl: '',
       fileKey: 1
     };
     this.fileRef = React.createRef();
     this.formikRef = React.createRef();
+    this.getLevel = this.getLevel.bind(this);
   }
 
+  async componentDidMount() {
+    const org_response = await Api.get('organizations-list', {
+      contain_self: 1,
+      contain_club: 0
+    });
+    const { response, body } = org_response;
+    switch (response.status) {
+      case 200:
+        this.setState({
+          org_list: body
+        });
+        break;
+      default:
+        break;
+    }
+  }
+
+  getLevel(parent_id) {
+    const { org_list } = this.state;
+    for (let i = 0; i < org_list.length; i++) {
+      if (org_list[i].id === parent_id) {
+        return org_list[i].level + 1;
+      }
+    }
+    return 2;
+  }
 
   fileUpload(e) {
     e.preventDefault();
@@ -51,6 +79,7 @@ class OrganizationAdd extends Component {
     let newData = {};
     const { file } = this.state;
     newData = {
+      parent_id: parseInt(values.parent_id, 10) || 1,
       name: values.name,
       register_no: values.register_no,
       logo: file || '',
@@ -62,7 +91,7 @@ class OrganizationAdd extends Component {
       state: values.state,
       city: values.city,
       zip_code: values.zip_code,
-      level: values.level,
+      level: this.getLevel(values.parent_id),
       readable_id: values.readable_id,
       is_club: values.is_club ? values.is_club.value : 0
     };
@@ -89,9 +118,8 @@ class OrganizationAdd extends Component {
     bags.setSubmitting(false);
   }
 
-
   render() {
-    const { imagePreviewUrl } = this.state;
+    const { imagePreviewUrl, org_list } = this.state;
 
     let $imagePreview = null;
     if (imagePreviewUrl) {
@@ -107,6 +135,7 @@ class OrganizationAdd extends Component {
             <Formik
               ref={this.formikRef}
               initialValues={{
+                parent_id: '',
                 name: '',
                 register_no: '',
                 email: '',
@@ -118,12 +147,12 @@ class OrganizationAdd extends Component {
                 state: '',
                 city: '',
                 zip_code: '',
-                level: '',
                 readable_id: '',
                 is_club: false
               }}
               validationSchema={
                 Yup.object().shape({
+                  parent_id: Yup.mixed().required('Federation is required'),
                   name: Yup.string().required('This field is required!'),
                   register_no: Yup.string().required('This field is required!'),
                   email: Yup.string().email('Email is not valid!').required('This field is required!'),
@@ -134,7 +163,6 @@ class OrganizationAdd extends Component {
                   city: Yup.string().required('This field is required!'),
                   state: Yup.string().required('This field is required!'),
                   zip_code: Yup.string().max(6, 'Less than 5 characters!').required('This field is required!'),
-                  level: Yup.string().required('This field is required!'),
                   readable_id: Yup.string().required('This field is required!')
                 })
               }
@@ -185,7 +213,31 @@ class OrganizationAdd extends Component {
                         <FormFeedback>{errors.register_no}</FormFeedback>
                       </FormGroup>
                     </Col>
-                    <Col sm="4">
+                    <Col sm="6">
+                      <FormGroup>
+                        <Label for="parent_id">
+                          Federation
+                        </Label>
+                        <Select
+                          name="parent_id"
+                          classNamePrefix={errors.parent_id ? 'invalid react-select-lg' : 'react-select-lg'}
+                          indicatorSeparator={null}
+                          options={org_list}
+                          getOptionValue={option => option.id}
+                          getOptionLabel={option => option.name}
+                          value={values.parent_id}
+                          invalid={!!errors.parent_id && touched.parent_id}
+                          onChange={(value) => {
+                            setFieldValue('parent_id', value);
+                          }}
+                          onBlur={this.handleBlur}
+                        />
+                        {!!errors.parent_id && touched.parent_id && (
+                          <FormFeedback className="d-block">{errors.parent_id}</FormFeedback>
+                        )}
+                      </FormGroup>
+                    </Col>
+                    <Col sm="6">
                       <FormGroup>
                         <Label for="name">
                           Organization Name
@@ -201,7 +253,7 @@ class OrganizationAdd extends Component {
                         <FormFeedback>{errors.name}</FormFeedback>
                       </FormGroup>
                     </Col>
-                    <Col sm="4">
+                    <Col sm="6">
                       <FormGroup>
                         <Label for="email">
                           Email
@@ -217,7 +269,7 @@ class OrganizationAdd extends Component {
                         <FormFeedback>{errors.email}</FormFeedback>
                       </FormGroup>
                     </Col>
-                    <Col sm="4">
+                    <Col sm="6">
                       <FormGroup>
                         <Label for="mobile_phone">
                           Mobile Phone
@@ -326,9 +378,9 @@ class OrganizationAdd extends Component {
                         {!!errors.zip_code && touched.zip_code && (<FormFeedback className="d-block">{errors.zip_code}</FormFeedback>)}
                       </FormGroup>
                     </Col>
-                    <Col xs="4">
+                    <Col xs="6">
                       <FormGroup>
-                        <Label for="readable_id">Readable ID</Label>
+                        <Label for="readable_id">ID</Label>
                         <Input
                           name="readable_id"
                           type="text"
@@ -340,21 +392,7 @@ class OrganizationAdd extends Component {
                         {!!errors.readable_id && touched.readable_id && (<FormFeedback className="d-block">{errors.readable_id}</FormFeedback>)}
                       </FormGroup>
                     </Col>
-                    <Col xs="4">
-                      <FormGroup>
-                        <Label for="level">Level</Label>
-                        <Input
-                          name="level"
-                          type="text"
-                          value={values.level || ''}
-                          onChange={handleChange}
-                          onBlur={handleBlur}
-                          invalid={!!errors.level && touched.level}
-                        />
-                        {!!errors.level && touched.level && (<FormFeedback className="d-block">{errors.level}</FormFeedback>)}
-                      </FormGroup>
-                    </Col>
-                    <Col xs="4">
+                    <Col xs="6">
                       <FormGroup>
                         <Label for="is_club">Is Club</Label>
                         <Select
