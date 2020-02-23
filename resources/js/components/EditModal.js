@@ -274,8 +274,8 @@ class EditModal extends React.Component {
         state: values.state,
         city: values.city,
         zip_code: values.zip_code,
-        weight_id: values.role_id.id === 3 ? values.weight_id.id : 0,
-        dan: values.role_id.id === 3 ? values.dan.value : 0,
+        weight_id: values.role_id && values.role_id.id === 3 ? values.weight_id.id : 0,
+        dan: values.role_id && values.role_id.id === 3 ? values.dan.value : 0,
         identity: values.identity,
         organization_id: values.organization_id.id,
         role_id: values.role_id.id,
@@ -1005,7 +1005,7 @@ class EditModal extends React.Component {
                       </Col>
                       <Col xs="4">
                         <FormGroup>
-                          <Label for="is_club">Has Club</Label>
+                          <Label for="is_club">Is Club</Label>
                           <Select
                             name="is_club"
                             classNamePrefix="react-select-lg"

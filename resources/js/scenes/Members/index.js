@@ -64,7 +64,7 @@ class Members extends Component {
         break;
     }
     const weight_lists = JSON.parse(localStorage.getItem('weights'));
-    if (weight_lists.length > 0) {
+    if (weight_lists && weight_lists.length > 0) {
       this.setState({
         weights: weight_lists
       });
@@ -75,13 +75,16 @@ class Members extends Component {
           this.setState({
             weights: weight_list.body
           });
+          if (weight_list.body.length > 0) {
+            localStorage.setItem('weights', JSON.stringify(weight_list.body));
+          }
           break;
         default:
           break;
       }
     }
     const role_lists = JSON.parse(localStorage.getItem('roles'));
-    if (role_lists.length > 0) {
+    if (role_lists && role_lists.length > 0) {
       this.setState({
         roles: role_lists
       });
@@ -92,6 +95,9 @@ class Members extends Component {
           this.setState({
             roles: role_list.body
           });
+          if (role_list.body.length > 0) {
+            localStorage.setItem('roles', JSON.stringify(role_list.body));
+          }
           break;
         default:
           break;

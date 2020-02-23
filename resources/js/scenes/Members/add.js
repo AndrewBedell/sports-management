@@ -50,7 +50,7 @@ class MemberAdd extends Component {
         break;
     }
     const weight_lists = JSON.parse(localStorage.getItem('weights'));
-    if (weight_lists.length > 0) {
+    if (weight_lists && weight_lists.length > 0) {
       this.setState({
         weights: weight_lists
       });
@@ -61,13 +61,16 @@ class MemberAdd extends Component {
           this.setState({
             weights: weight_list.body
           });
+          if (weight_list.body.length > 0) {
+            localStorage.setItem('weights', JSON.stringify(weight_list.body));
+          }
           break;
         default:
           break;
       }
     }
     const role_lists = JSON.parse(localStorage.getItem('roles'));
-    if (role_lists.length > 0) {
+    if (role_lists && role_lists.length > 0) {
       this.setState({
         roles: role_lists
       });
@@ -78,6 +81,9 @@ class MemberAdd extends Component {
           this.setState({
             roles: role_list.body
           });
+          if (role_list.body.length > 0) {
+            localStorage.setItem('roles', JSON.stringify(role_list.body));
+          }
           break;
         default:
           break;
@@ -119,8 +125,8 @@ class MemberAdd extends Component {
       state: values.state,
       city: values.city,
       zip_code: values.zip_code,
-      weight_id: values.weight_id.id,
-      dan: values.dan.value,
+      weight_id: values.weight_id ? values.weight_id.id : 0,
+      dan: values.dan ? values.dan.value : 0,
       identity: values.identity,
       organization_id: values.organization_id.id,
       role_id: values.role_id.id,
@@ -247,6 +253,7 @@ class MemberAdd extends Component {
                           getOptionValue={option => option.id}
                           getOptionLabel={option => option.name}
                           value={values.organization_id}
+                          invalid={!!errors.organization_id && touched.organization_id}
                           onChange={(value) => {
                             setFieldValue('organization_id', value);
                           }}
@@ -321,7 +328,7 @@ class MemberAdd extends Component {
                           onBlur={handleBlur}
                           invalid={!!errors.first_name && touched.first_name}
                         />
-                        <FormFeedback className="d-block">{errors.first_name}</FormFeedback>
+                        <FormFeedback>{errors.first_name}</FormFeedback>
                       </FormGroup>
                     </Col>
                     <Col sm="4">
@@ -351,7 +358,7 @@ class MemberAdd extends Component {
                           onBlur={handleBlur}
                           invalid={!!errors.last_name && touched.last_name}
                         />
-                        <FormFeedback className="d-block">{errors.last_name}</FormFeedback>
+                        <FormFeedback>{errors.last_name}</FormFeedback>
                       </FormGroup>
                     </Col>
                     <Col sm="4">
@@ -401,7 +408,7 @@ class MemberAdd extends Component {
                           onBlur={handleBlur}
                           invalid={!!errors.email && touched.email}
                         />
-                        {!!errors.email && touched.email && (<FormFeedback className="d-block">{errors.email}</FormFeedback>)}
+                        <FormFeedback>{errors.email}</FormFeedback>
                       </FormGroup>
                     </Col>
                     <Col sm="6">
@@ -415,7 +422,7 @@ class MemberAdd extends Component {
                           onBlur={handleBlur}
                           invalid={!!errors.mobile_phone && touched.mobile_phone}
                         />
-                        {!!errors.mobile_phone && touched.mobile_phone && (<FormFeedback className="d-block">{errors.mobile_phone}</FormFeedback>)}
+                        <FormFeedback>{errors.mobile_phone}</FormFeedback>
                       </FormGroup>
                     </Col>
                     <Col sm="6">
@@ -427,9 +434,9 @@ class MemberAdd extends Component {
                           value={values.addressline1 || ''}
                           onChange={handleChange}
                           onBlur={handleBlur}
-                          invalid={!!errors.addressline1}
+                          invalid={!!errors.addressline1 && touched.addressline1}
                         />
-                        {!!errors.addressline1 && touched.addressline1 && (<FormFeedback className="d-block">{errors.addressline1}</FormFeedback>)}
+                        <FormFeedback>{errors.addressline1}</FormFeedback>
                       </FormGroup>
                     </Col>
                     <Col sm="6">
@@ -476,7 +483,7 @@ class MemberAdd extends Component {
                           onBlur={handleBlur}
                           invalid={!!errors.state && touched.state}
                         />
-                        {!!errors.state && touched.state && (<FormFeedback className="d-block">{errors.state}</FormFeedback>)}
+                        <FormFeedback>{errors.state}</FormFeedback>
                       </FormGroup>
                     </Col>
                     <Col sm="3" xs="6">
@@ -490,7 +497,7 @@ class MemberAdd extends Component {
                           onBlur={handleBlur}
                           invalid={!!errors.city && touched.city}
                         />
-                        {!!errors.city && touched.city && (<FormFeedback className="d-block">{errors.city}</FormFeedback>)}
+                        <FormFeedback>{errors.city}</FormFeedback>
                       </FormGroup>
                     </Col>
                     <Col sm="3" xs="6">
@@ -504,7 +511,7 @@ class MemberAdd extends Component {
                           onBlur={handleBlur}
                           invalid={!!errors.zip_code && touched.zip_code}
                         />
-                        {!!errors.zip_code && touched.zip_code && (<FormFeedback className="d-block">{errors.zip_code}</FormFeedback>)}
+                        <FormFeedback>{errors.zip_code}</FormFeedback>
                       </FormGroup>
                     </Col>
                     <Col sm="4" xs="6">
@@ -538,6 +545,9 @@ class MemberAdd extends Component {
                                 setFieldValue('weight_id', value);
                               }}
                             />
+                            {!!errors.weight_id && touched.weight_id && values.role_id && values.role_id.id === 3 && (
+                              <FormFeedback className="d-block">{errors.weight_id}</FormFeedback>
+                            )}
                           </FormGroup>
                         )
                       }
@@ -559,6 +569,9 @@ class MemberAdd extends Component {
                                 setFieldValue('dan', value);
                               }}
                             />
+                            {!!errors.dan && touched.dan && values.role_id && values.role_id.id === 3 && (
+                              <FormFeedback className="d-block">{errors.dan}</FormFeedback>
+                            )}
                           </FormGroup>
                         )
                       }

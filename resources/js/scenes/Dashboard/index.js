@@ -570,7 +570,7 @@ class Dashboard extends Component {
             color="secondary"
             onClick={this.handleCreateAccount.bind(this)}
           >
-            Creating Account
+            Register Organization
           </Button>
         </div>
         <div className="fixed-button right">
@@ -579,7 +579,7 @@ class Dashboard extends Component {
             color="secondary"
             onClick={this.handleRegisterMember.bind(this)}
           >
-            Registering Member
+            Register Member
           </Button>
         </div>
       </Fragment>

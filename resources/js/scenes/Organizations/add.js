@@ -356,7 +356,7 @@ class OrganizationAdd extends Component {
                     </Col>
                     <Col xs="4">
                       <FormGroup>
-                        <Label for="is_club">Has Club</Label>
+                        <Label for="is_club">Is Club</Label>
                         <Select
                           name="is_club"
                           classNamePrefix="react-select-lg"
