@@ -109,6 +109,7 @@ class EditModal extends React.Component {
           organization_id: null,
           role_id: null,
           profile_image: null,
+          register_date: null,
           first_name: '',
           mid_name: '',
           last_name: '',
@@ -124,7 +125,8 @@ class EditModal extends React.Component {
           zip_code: '',
           identity: '',
           weight: null,
-          dan: null
+          dan: null,
+          position: ''
         });
       }
     } else if (type.value !== 'player') {
@@ -153,6 +155,7 @@ class EditModal extends React.Component {
         organization_id: org_list.filter(org => org.id === values[0].organization_id)[0],
         role_id: roles.filter(role => role.id === values[0].role_id)[0],
         profile_image: values[0].profile_image,
+        register_date: values[0].register_date,
         birthday: values[0].birthday,
         email: values[0].email,
         mobile_phone: values[0].mobile_phone,
@@ -164,7 +167,8 @@ class EditModal extends React.Component {
         zip_code: values[0].zip_code,
         weight: weights.filter(weight => weight.id === values[0].weight),
         dan: Dans.filter(dan => dan.id === values[0].dan),
-        identity: values[0].identity
+        identity: values[0].identity,
+        position: values[0].position
       });
     }
   }
@@ -182,8 +186,10 @@ class EditModal extends React.Component {
   handleSubmit(values, bags) {
     let newData = {};
     const { id, type } = this.props;
+    const { item } = this.state;
     if (type.value !== 'player') {
       newData = {
+        id,
         name: values.name,
         register_no: values.register_no,
         logo: values.logo ? values.logo : '',
@@ -201,6 +207,7 @@ class EditModal extends React.Component {
       };
     } else {
       newData = {
+        id,
         first_name: values.first_name,
         mid_name: values.mid_name,
         last_name: values.last_name,
@@ -219,7 +226,9 @@ class EditModal extends React.Component {
         identity: values.identity,
         organization_id: values.organization_id.id,
         role_id: values.role_id.id,
-        profile_image: values.profile_image
+        profile_image: values.profile_image,
+        active: item.active,
+        register_date: values.register_date
       };
     }
     let {
@@ -257,6 +266,7 @@ class EditModal extends React.Component {
                   organization_id: null,
                   role_id: null,
                   profile_image: null,
+                  register_date: null,
                   first_name: '',
                   mid_name: '',
                   last_name: '',
@@ -272,13 +282,15 @@ class EditModal extends React.Component {
                   zip_code: '',
                   identity: '',
                   weight: null,
-                  dan: null
+                  dan: null,
+                  position: ''
                 }}
                 validationSchema={
                   Yup.object().shape({
                     organization_id: Yup.mixed().required('This field is required!'),
                     role_id: Yup.mixed().required('This field is required!'),
                     // profile_image: Yup.mixed().required('Image is required!'),
+                    register_date: Yup.mixed().required('This field is required!'),
                     first_name: Yup.string().required('This field is required!'),
                     last_name: Yup.string().required('This field is required!'),
                     gender: Yup.mixed().required('This field is required!'),
@@ -353,11 +365,26 @@ class EditModal extends React.Component {
                           )}
                         </FormGroup>
                       </Col>
-                      <Col xs="12">
+                      <Col xs="6">
                         <FormGroup>
                           <Label for="profile_image">Profile Image</Label>
 
                           <FormFeedback>{errors.profile_image}</FormFeedback>
+                        </FormGroup>
+                      </Col>
+                      <Col>
+                        <FormGroup>
+                          <Label for="register_date">Register Date</Label>
+                          <Input
+                            name="register_date"
+                            type="date"
+                            placeholder="DD-MM-YYYY"
+                            value={values.register_date || ''}
+                            onChange={handleChange}
+                            onBlur={handleBlur}
+                            invalid={!!errors.register_date}
+                          />
+                          { errors.register_date && <FormFeedback className="d-block">{errors.register_date}</FormFeedback> }
                         </FormGroup>
                       </Col>
                       <Col sm="4">

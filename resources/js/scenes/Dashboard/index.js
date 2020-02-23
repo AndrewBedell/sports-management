@@ -278,16 +278,18 @@ class Dashboard extends Component {
   }
 
   async handleSaveItem(id, item) {
-    const { search_type } = this.state;
+    const { search_type, editIndex, search_data } = this.state;
     if (search_type.value !== 'player') {
       const updateOrg = await Api.put(`organization/${id}`, item);
       switch (updateOrg.response.status) {
         case 200:
+          search_data[editIndex] = item;
           this.setState({
             isOpenEditModal: false,
             messageStatus: true,
             alertVisible: true,
-            successMessage: updateOrg.body.message
+            successMessage: `${item.name} is been update successfully!`,
+            search_data
           });
           break;
         case 406:
@@ -313,11 +315,13 @@ class Dashboard extends Component {
       const updateMem = await Api.put(`member/${id}`, item);
       switch (updateMem.response.status) {
         case 200:
+          search_data[editIndex] = item;
           this.setState({
             isOpenEditModal: false,
             messageStatus: true,
             alertVisible: true,
-            successMessage: updateMem.body.message
+            successMessage: `${item.first_name} ${item.last_name} is been update successfully!`,
+            search_data
           });
           break;
         case 406:
