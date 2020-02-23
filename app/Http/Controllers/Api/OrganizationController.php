@@ -279,9 +279,12 @@ class OrganizationController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    function findChildren($parent_id, $parent_name)
+    function findChildren($parent_id, $parent_name, $contain_club)
     {
-        $child_org = Organization::where('parent_id', $parent_id)->get();
+        if ($contain_club)
+            $child_org = Organization::where('parent_id', $parent_id)->get();
+        else
+            $child_org = Organization::where('parent_id', $parent_id)->where('is_club', '!=', 1)->get();
 
         $orgs = array();
 
@@ -296,7 +299,7 @@ class OrganizationController extends Controller
             array_push($orgs, $child);
 
             if (!$child->is_club) {
-                $orgs = array_merge($orgs, $this->findChildren($child->id, $parent_name));
+                $orgs = array_merge($orgs, $this->findChildren($child->id, $parent_name, $contain_club));
             }
         }
 
@@ -317,7 +320,7 @@ class OrganizationController extends Controller
         $parent_id = $member->organization_id;
 
         $own = Organization::find($parent_id);
-        $chidren = $this->findChildren($parent_id, '');
+        $chidren = $this->findChildren($parent_id, '', 1);
 
         $orgs = array($own);
         $orgs = array_merge($orgs, $chidren);
@@ -336,7 +339,7 @@ class OrganizationController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function list()
+    public function list(Request $request)
     {
         $user = JWTAuth::parseToken()->authenticate();
         $member = Member::find($user->member_id);
@@ -346,11 +349,11 @@ class OrganizationController extends Controller
         $own = Organization::find($parent_id);
         $own->label = $own->name;
 
-        $chidren = $this->findChildren($parent_id, '');
+        $chidren = $this->findChildren($parent_id, '', $request->input('contain_club', 1));
 
         $orgs = array();
 
-        if ($own->parent_id != 0) {
+        if ($request->input('contain_self', 1)) {
             $orgs[0] = $own;
             
         }
@@ -464,7 +467,7 @@ class OrganizationController extends Controller
                 $orgs[0] = $own;
             }
 
-            $chidren = $this->findChildren($org[$i], '');
+            $chidren = $this->findChildren($org[$i], '', 1);
 
             $orgs = array_merge($orgs, $chidren);
 
