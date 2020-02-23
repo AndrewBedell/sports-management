@@ -77,8 +77,7 @@ class MemberController extends Controller
 
         $validPlayer = Validator::make($data, [
             'weight_id' => 'required',
-            'dan' => 'required|integer',
-            'skill' => 'required|string|max:255'
+            'dan' => 'required|integer'
         ]);
         
         $role = DB::table('roles')->where('id', $data['role_id'])->first();
@@ -104,6 +103,9 @@ class MemberController extends Controller
 
         if (is_null($data['position']))
             $data['position'] = "";
+
+        if (is_null($data['skill']))
+            $data['skill'] = "";
 
         $member = Member::create(array(
             'organization_id' => $data['organization_id'],
@@ -231,22 +233,23 @@ class MemberController extends Controller
                     );
                 }
 
-                $validPlayer = Validator::make($data, [
-                    'weight_id' => 'required',
-                    'dan' => 'required|integer',
-                    'skill' => 'required|string|max:255'
-                ]);
-                
                 $role = DB::table('roles')->where('id', $data['role_id'])->first();
-        
-                if ($role->is_player && $validPlayer->fails()) {
-                    return response()->json(
-                        [
-                            'status' => 'fail',
-                            'data' => $validPlayer->errors(),
-                        ],
-                        422
-                    );
+
+                if ($role->is_player) {
+                    $validPlayer = Validator::make($data, [
+                        'weight_id' => 'required',
+                        'dan' => 'required|integer'
+                    ]);
+
+                    if ($validPlayer->fails()) {
+                        return response()->json(
+                            [
+                                'status' => 'fail',
+                                'data' => $validPlayer->errors(),
+                            ],
+                            422
+                        );
+                    }
                 }
 
                 if (is_null($data['profile_image']))
@@ -260,6 +263,9 @@ class MemberController extends Controller
 
                 if (is_null($data['position']))
                     $data['position'] = "";
+
+                if (is_null($data['skill']))
+                    $data['skill'] = "";
 
                 $exist = Member::where('email', $data['email'])->where('id', '!=', $id)->get();
 
