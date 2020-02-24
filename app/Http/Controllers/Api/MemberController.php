@@ -30,9 +30,24 @@ class MemberController extends Controller
 
         $orgIDs = $this->orgIDList();
 
-        $members = Member::where('role_id', '!=', $role_id)
-                        ->whereIn('organization_id', $orgIDs)
+        $members = Member::where('members.role_id', '!=', $role_id)
+                        ->whereIn('members.organization_id', $orgIDs)
+                        ->leftJoin('users', 'users.member_id', '=', 'members.id')
+                        ->select('members.*', 'users.id AS uid', 'users.deleted_at AS status', 'users.is_super')
                         ->get();
+
+        for ($i = 0; $i < sizeof($members); $i++) {
+            if (is_null($members[$i]->status)) {
+                if (is_null($members[$i]->is_super)) {
+                    $members[$i]['is_admin'] = 0;
+                    $members[$i]['is_super'] = 0;
+                } else {
+                    $members[$i]['is_admin'] = 1;
+                }
+            } else {
+                $members[$i]['is_admin'] = 0;
+            }
+        }
 
         return response()->json($members);
     }
@@ -183,7 +198,10 @@ class MemberController extends Controller
      */
     public function show($id)
     {
-        $member = Member::find($id);
+        $member = Member::where('members.id', $id)
+                        ->leftJoin('users', 'users.member_id', '=', 'members.id')
+                        ->select('members.*', 'users.id AS uid', 'users.deleted_at AS status', 'users.is_super')
+                        ->first();
 
         if (isset($member)) {
             if ($this->checkPermission($member->organization_id)) {
@@ -194,8 +212,20 @@ class MemberController extends Controller
                             ->leftJoin('players', 'members.id', '=', 'players.member_id')
                             ->leftJoin('weights', 'players.weight_id', '=', 'players.weight_id')
                             ->select('members.*', 'weights.id AS weight_id', 'weights.name AS weight_name', 'weights.weight',
-                                     'players.dan', 'players.skill', 'players.expired_date')
+                                     'players.dan', 'players.skill', 'players.expired_date',
+                                     DB::raw("null AS uid, null AS status, 0 AS is_super, 0 AS is_admin"))
                             ->first();
+                } else {
+                    if (is_null($member->status)) {
+                        if (is_null($member->is_super)) {
+                            $member['is_super'] = 0;
+                            $member['is_admin'] = 0;
+                        } else {
+                            $member['is_admin'] = 1;
+                        }
+                    } else {
+                        $member['is_admin'] = 0;
+                    }
                 }
 
                 return response()->json($member);
@@ -397,7 +427,6 @@ class MemberController extends Controller
                     ));
                 } else {
                     User::where('member_id', $member_id)->update(array(
-                        'is_super' => $data['is_super'],
                         'email' => $data['email']
                     ));
                 }
