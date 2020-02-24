@@ -50,7 +50,7 @@ class Dashboard extends Component {
       failMessage: '',
       deleteId: '',
       editIndex: -1,
-      error: {
+      errors: {
         search_type: 'This field is required!'
       }
     };
@@ -280,7 +280,9 @@ class Dashboard extends Component {
   }
 
   async handleSaveItem(id, item) {
-    const { search_type, editIndex, search_data } = this.state;
+    const {
+      search_type, editIndex, search_data
+    } = this.state;
     if (search_type.value !== 'player') {
       const updateOrg = await Api.put(`organization/${id}`, item);
       switch (updateOrg.response.status) {
@@ -298,8 +300,16 @@ class Dashboard extends Component {
           this.setState({
             alertVisible: true,
             messageStatus: false,
-            isOpenEditModal: false,
+            isOpenEditModal: true,
             failMessage: updateOrg.body.message
+          });
+          break;
+        case 422:
+          this.setState({
+            alertVisible: true,
+            messageStatus: false,
+            isOpenEditModal: false,
+            failMessage: updateOrg.body.data && (`${updateOrg.body.data.email !== undefined ? updateOrg.body.data.email : ''} ${updateOrg.body.data.register_no !== undefined ? updateOrg.body.data.register_no : ''} ${updateOrg.body.data.readable_id !== undefined ? updateOrg.body.data.readable_id : ''}`)
           });
           break;
         case 500:
@@ -317,14 +327,14 @@ class Dashboard extends Component {
       const updateMem = await Api.put(`member/${id}`, item);
       switch (updateMem.response.status) {
         case 200:
-          if (item.role_id !== 3) {
+          if (item.role_id === 3) {
             search_data[editIndex] = item;
             this.setState({
               search_data
             });
           } else {
             this.setState({
-              search_data: search_data.filter(data => data.role_id !== 3)
+              search_data: search_data.filter(data => data.id !== id)
             });
           }
           this.setState({
@@ -342,6 +352,14 @@ class Dashboard extends Component {
             failMessage: updateMem.body.message
           });
           break;
+        case 422:
+          this.setState({
+            alertVisible: true,
+            messageStatus: false,
+            isOpenEditModal: false,
+            failMessage: updateMem.body.data && (`${updateMem.body.data.email !== undefined ? updateMem.body.data.email : ''} ${updateMem.body.data.identity !== undefined ? updateMem.body.data.identity : ''}`)
+          });
+          break;
         case 500:
           this.setState({
             alertVisible: true,
@@ -356,7 +374,7 @@ class Dashboard extends Component {
     }
     setTimeout(() => {
       this.setState({ alertVisible: false });
-    }, 2000);
+    }, 3000);
   }
 
   handleConfirmationClose() {
@@ -394,7 +412,7 @@ class Dashboard extends Component {
       search_weight,
       search_dan,
       search_required,
-      error,
+      errors,
       search_data,
       isOpenDeleteModal,
       confirmationMessage,
@@ -426,7 +444,7 @@ class Dashboard extends Component {
                   />
                   {
                     !search_required && (
-                      <FormFeedback className="d-block">{error.search_type}</FormFeedback>
+                      <FormFeedback className="d-block">{errors.search_type}</FormFeedback>
                     )
                   }
                 </FormGroup>
@@ -562,6 +580,7 @@ class Dashboard extends Component {
             weights={weights}
             orgs={org_list}
             roles={roles}
+            errors={errors}
             handleSave={this.handleSaveItem}
             handleCancel={this.handleEdit.bind(this)}
           />

@@ -159,6 +159,14 @@ class Organizations extends Component {
           failMessage: updateOrg.body.message
         });
         break;
+      case 422:
+        this.setState({
+          alertVisible: true,
+          messageStatus: false,
+          isOpenEditModal: false,
+          failMessage: updateOrg.body.data && (`${updateOrg.body.data.email !== undefined ? updateOrg.body.data.email : ''} ${updateOrg.body.data.register_no !== undefined ? updateOrg.body.data.register_no : ''} ${updateOrg.body.data.readable_id !== undefined ? updateOrg.body.data.readable_id : ''}`)
+        });
+        break;
       case 500:
         this.setState({
           alertVisible: true,
@@ -172,7 +180,7 @@ class Organizations extends Component {
     }
     setTimeout(() => {
       this.setState({ alertVisible: false });
-    }, 2000);
+    }, 3000);
   }
 
   handleConfirmationClose() {
@@ -202,7 +210,7 @@ class Organizations extends Component {
         <div className="main-content">
           <Container>
             <Row className="mb-5">
-              <Col xs="6">
+              <Col xs="6" className="pr-1">
                 <Button
                   type="button"
                   color="primary"
@@ -211,7 +219,7 @@ class Organizations extends Component {
                   Return Back
                 </Button>
               </Col>
-              <Col xs="6" className="text-right">
+              <Col xs="6" className="text-right pl-1">
                 <Button
                   type="button"
                   color="primary"

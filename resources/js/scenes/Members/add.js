@@ -9,7 +9,8 @@ import {
   Button,
   Form, FormGroup, FormFeedback,
   Input, Label,
-  UncontrolledAlert
+  UncontrolledAlert,
+  Alert
 } from 'reactstrap';
 import Select from 'react-select';
 import MainTopBar from '../../components/TopBar/MainTopBar';
@@ -22,12 +23,16 @@ class MemberAdd extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      file: '',
+      // file: '',
       imagePreviewUrl: '',
       fileKey: 1,
       org_list: [],
       weights: [],
-      roles: []
+      roles: [],
+      alertVisible: false,
+      messageStatus: false,
+      successMessage: '',
+      failMessage: '',
     };
     this.fileRef = React.createRef();
     this.formikRef = React.createRef();
@@ -90,7 +95,7 @@ class MemberAdd extends Component {
 
     reader.onloadend = () => {
       this.setState({
-        file,
+        // file,
         imagePreviewUrl: reader.result
       });
     };
@@ -127,11 +132,37 @@ class MemberAdd extends Component {
       register_date: moment(values.register_date).format('YYYY-MM-DD')
     };
 
+    if (values.role_id && values.role_id.is_player === 1 && values.organization_id.is_club !== 1) {
+      bags.setStatus({
+        color: 'danger',
+        children: 'Organization should been Club.'
+      });
+      bags.setSubmitting(false);
+      return;
+    }
+    if (values.role_id && values.role_id.is_player === 1 && (!values.weight_id || !values.dan)) {
+      bags.setSubmitting(false);
+      return;
+    }
+
+    if (values.role_id && values.role_id.is_player !== 1 && !values.position) {
+      bags.setSubmitting(false);
+      return;
+    }
+
     const data = await Api.post('register-member', newData);
     const { response, body } = data;
     switch (response.status) {
       case 200:
-        this.props.history.goBack();
+        this.setState({
+          alertVisible: true,
+          messageStatus: true,
+          successMessage: 'Added Successfully!'
+        });
+        setTimeout(() => {
+          this.setState({ alertVisible: false });
+          this.props.history.goBack();
+        }, 2000);
         break;
       case 406:
         if (body.message) {
@@ -141,6 +172,13 @@ class MemberAdd extends Component {
           });
         }
         bags.setErrors(body.errors);
+        break;
+      case 422:
+        this.setState({
+          alertVisible: true,
+          messageStatus: false,
+          failMessage: body.data && (`${body.data.email !== undefined ? body.data.email : ''} ${body.data.identity !== undefined ? body.data.identity : ''}`)
+        });
         break;
       default:
         break;
@@ -169,6 +207,13 @@ class MemberAdd extends Component {
         <MainTopBar />
         <div className="main-content">
           <Container>
+            <div className="w-100 mb-5">
+              <Alert color={this.state.messageStatus ? 'success' : 'warning'} isOpen={this.state.alertVisible}>
+                {
+                  this.state.messageStatus ? this.state.successMessage : this.state.failMessage
+                }
+              </Alert>
+            </div>
             <Formik
               ref={this.formikRef}
               initialValues={{
@@ -526,7 +571,7 @@ class MemberAdd extends Component {
                             <Select
                               name="weight_id"
                               menuPlacement="top"
-                              classNamePrefix="react-select-lg"
+                              classNamePrefix={values.role_id && values.role_id.is_player === 1 && !values.weight_id && touched.weight_id ? 'invalid react-select-lg' : 'react-select-lg'}
                               value={values.weight_id}
                               options={weights}
                               getOptionValue={option => option.id}
@@ -535,19 +580,20 @@ class MemberAdd extends Component {
                                 setFieldValue('weight_id', value);
                               }}
                             />
+                            {values.role_id && values.role_id.is_player === 1 && !values.weight_id && touched.weight_id && <FormFeedback className="d-block">This field is required!</FormFeedback>}
                           </FormGroup>
                         )
                       }
                     </Col>
                     <Col sm="4" xs="6">
                       {
-                        values.role_id && values.role_id.is_player === 3 && (
+                        values.role_id && values.role_id.is_player === 1 && (
                           <FormGroup>
                             <Label for="dan">Dan</Label>
                             <Select
                               name="dan"
                               menuPlacement="top"
-                              classNamePrefix="react-select-lg"
+                              classNamePrefix={values.role_id && values.role_id.is_player === 1 && !values.dan && touched.dan ? 'invalid react-select-lg' : 'react-select-lg'}
                               value={values.dan}
                               options={Dans}
                               getOptionValue={option => option.value}
@@ -556,6 +602,7 @@ class MemberAdd extends Component {
                                 setFieldValue('dan', value);
                               }}
                             />
+                            {values.role_id && values.role_id.is_player === 1 && !values.dan && touched.dan && <FormFeedback className="d-block">This field is required!</FormFeedback>}
                           </FormGroup>
                         )
                       }
@@ -571,13 +618,15 @@ class MemberAdd extends Component {
                               value={values.position || ''}
                               onChange={handleChange}
                               onBlur={handleBlur}
+                              invalid={values.role_id && values.role_id.is_player !== 1 && !values.position && touched.position}
                               />
+                            {values.role_id && values.role_id.is_player !== 1 && !values.position && touched.position && (<FormFeedback className="d-block">This field is required!</FormFeedback>)}
                           </FormGroup>
                         </Col>
                       )
                     }
                     {
-                      values.role_id && values.role_id.is_player !== 1 && (
+                      values.role_id && values.role_id.is_player === 1 && (
                         <Col xs="6">
                           <FormGroup>
                             <Label for="skill">Skill</Label>

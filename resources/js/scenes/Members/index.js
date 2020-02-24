@@ -161,7 +161,7 @@ class Members extends Component {
           });
         } else {
           this.setState({
-            members: members.filter(data => data.role_id !== 3)
+            members: members.filter(data => data.id !== id)
           });
         }
         this.setState({
@@ -179,6 +179,14 @@ class Members extends Component {
           failMessage: updateMem.body.message
         });
         break;
+      case 422:
+        this.setState({
+          alertVisible: true,
+          messageStatus: false,
+          isOpenEditModal: false,
+          failMessage: updateMem.body.data && (`${updateMem.body.data.email !== undefined ? updateMem.body.data.email : ''} ${updateMem.body.data.identity !== undefined ? updateMem.body.data.identity : ''}`)
+        });
+        break;
       case 500:
         this.setState({
           alertVisible: true,
@@ -192,7 +200,7 @@ class Members extends Component {
     }
     setTimeout(() => {
       this.setState({ alertVisible: false });
-    }, 2000);
+    }, 3000);
   }
 
   handleConfirmationClose() {
