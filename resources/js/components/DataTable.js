@@ -204,9 +204,9 @@ class DataTable extends Component {
                       {
                         type.value !== 'player' ? (
                           <Fragment>
-                            <a data-tip data-for="happyFace"><i className="fa fa-users fa-lg" /></a>
+                            <a data-tip data-for={`happyFace_${index}`}><i className="fa fa-users fa-lg" /></a>
                             <ReactTooltip
-                              id="happyFace"
+                              id={`happyFace_${index}`}
                               type="light"
                               effect="float"
                               place="right"
@@ -217,9 +217,9 @@ class DataTable extends Component {
                           </Fragment>
                         ) : (
                           <Fragment>
-                            <a data-tip data-for="happyFace"><i className="fa fa-user fa-lg" /></a>
+                            <a data-tip data-for={`happyFace_${index}`}><i className="fa fa-user fa-lg" /></a>
                             <ReactTooltip
-                              id="happyFace"
+                              id={`happyFace_${index}`}
                               type="light"
                               effect="float"
                               place="right"

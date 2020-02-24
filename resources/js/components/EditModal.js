@@ -56,7 +56,7 @@ class EditModal extends React.Component {
     const {
       id, type, orgs
     } = props;
-    if (type.value === 'player') {
+    if (type && type.value && type.value === 'player') {
       const data = await Api.get(`member/${id}`);
       const {
         response, body
@@ -109,7 +109,7 @@ class EditModal extends React.Component {
       ...item
     };
     if (!item) {
-      if (type.value !== 'player') {
+      if (type && type.value && type.value !== 'player') {
         formikRef1.current.setValues({
           name: '',
           parent_id: '',
@@ -152,25 +152,7 @@ class EditModal extends React.Component {
           position: ''
         });
       }
-    } else if (type.value !== 'player') {
-      formikRef1.current.setValues({
-        name: values.name,
-        parent_id: org_list.filter(org => org.id === values.parent_id)[0],
-        register_no: values.register_no,
-        logo: values.logo,
-        email: values.email,
-        mobile_phone: values.mobile_phone,
-        addressline1: values.addressline1,
-        addressline2: values.addressline2,
-        country: countries.filter(country => country.countryCode === values.country)[0],
-        state: values.state,
-        city: values.city,
-        zip_code: values.zip_code,
-        level: values.level,
-        readable_id: values.readable_id,
-        is_club: SetSwitch.filter(set => set.value === values.is_club)[0]
-      });
-    } else {
+    } else if (type && type.value && type.value === 'player') {
       formikRef2.current.setValues({
         first_name: values.first_name,
         mid_name: values.mid_name,
@@ -194,6 +176,24 @@ class EditModal extends React.Component {
         identity: values.identity,
         position: values.position || '',
         skill: values.skill || 0
+      });
+    } else {
+      formikRef1.current.setValues({
+        name: values.name,
+        parent_id: org_list.filter(org => org.id === values.parent_id)[0],
+        register_no: values.register_no,
+        logo: values.logo,
+        email: values.email,
+        mobile_phone: values.mobile_phone,
+        addressline1: values.addressline1,
+        addressline2: values.addressline2,
+        country: countries.filter(country => country.countryCode === values.country)[0],
+        state: values.state,
+        city: values.city,
+        zip_code: values.zip_code,
+        level: values.level,
+        readable_id: values.readable_id,
+        is_club: SetSwitch.filter(set => set.value === values.is_club)[0]
       });
     }
   }
@@ -307,6 +307,23 @@ class EditModal extends React.Component {
     } = this.props;
 
     handleSave = handleSave || (() => {});
+    if (values.role_id && values.role_id.is_player === 1 && values.organization_id.is_club !== 1) {
+      bags.setStatus({
+        color: 'danger',
+        children: 'Organization should been Club.'
+      });
+      bags.setSubmitting(false);
+      return;
+    }
+    if (values.role_id && values.role_id.is_player === 1 && (!values.weight_id || !values.dan)) {
+      bags.setSubmitting(false);
+      return;
+    }
+
+    if (values.role_id && values.role_id.is_player !== 1 && !values.position) {
+      bags.setSubmitting(false);
+      return;
+    }
     handleSave(id, newData);
     bags.setSubmitting(false);
   }
@@ -696,7 +713,7 @@ class EditModal extends React.Component {
                               <Select
                                 name="weight_id"
                                 menuPlacement="top"
-                                classNamePrefix="react-select-lg"
+                                classNamePrefix={values.role_id && values.role_id.is_player === 1 && !values.weight_id && touched.weight_id ? 'invalid react-select-lg' : 'react-select-lg'}
                                 value={values.weight_id}
                                 options={weights}
                                 getOptionValue={option => option.id}
@@ -705,6 +722,7 @@ class EditModal extends React.Component {
                                   setFieldValue('weight_id', value);
                                 }}
                               />
+                              {values.role_id && values.role_id.is_player === 1 && !values.weight_id && touched.weight_id && <FormFeedback className="d-block">This field is required!</FormFeedback>}
                             </FormGroup>
                           )
                         }
@@ -717,7 +735,7 @@ class EditModal extends React.Component {
                               <Select
                                 name="dan"
                                 menuPlacement="top"
-                                classNamePrefix="react-select-lg"
+                                classNamePrefix={values.role_id && values.role_id.is_player === 1 && !values.dan && touched.dan ? 'invalid react-select-lg' : 'react-select-lg'}
                                 value={values.dan}
                                 options={Dans}
                                 getOptionValue={option => option.value}
@@ -726,6 +744,7 @@ class EditModal extends React.Component {
                                   setFieldValue('dan', value);
                                 }}
                               />
+                              {values.role_id && values.role_id.is_player === 1 && !values.dan && touched.dan && <FormFeedback className="d-block">This field is required!</FormFeedback>}
                             </FormGroup>
                           )
                         }
@@ -741,7 +760,9 @@ class EditModal extends React.Component {
                                 value={values.position || ''}
                                 onChange={handleChange}
                                 onBlur={handleBlur}
+                                invalid={values.role_id && values.role_id.is_player !== 1 && !values.position && touched.position}
                                 />
+                              {values.role_id && values.role_id.is_player !== 1 && !values.position && touched.position && (<FormFeedback className="d-block">This field is required!</FormFeedback>)}
                             </FormGroup>
                           </Col>
                         )

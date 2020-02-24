@@ -2,6 +2,10 @@
   color: $primary;
 }
 
+.btn {
+  white-space: nowrap;
+}
+
 .fixed-button {
   position: fixed;
   bottom: 15px;
