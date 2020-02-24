@@ -30,6 +30,9 @@ body {
 .image-preview {
   margin-top: 20px;
   width: 100%;
+  &.is_image {
+    max-width: 240px;
+  }
   // height: 100px;
   img {
     width: 100%;

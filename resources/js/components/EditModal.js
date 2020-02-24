@@ -254,14 +254,14 @@ class EditModal extends React.Component {
   handleSubmit(values, bags) {
     let newData = {};
     const { id, type } = this.props;
-    const { item, file } = this.state;
+    const { item, imagePreviewUrl } = this.state;
     if (type.value !== 'player') {
       newData = {
         id,
         name: values.name,
         parent_id: (values.parent_id && values.parent_id.id) || item.parent_id,
         register_no: values.register_no,
-        logo: file || '',
+        logo: imagePreviewUrl || '',
         email: values.email,
         mobile_phone: values.mobile_phone,
         addressline1: values.addressline1,
@@ -290,12 +290,12 @@ class EditModal extends React.Component {
         state: values.state,
         city: values.city,
         zip_code: values.zip_code,
-        weight_id: values.role_id && values.role_id.id === 3 ? (values.weight_id && values.weight_id.id) : '',
-        dan: values.role_id && values.role_id.id === 3 ? (values.dan && values.dan.value) : '',
+        weight_id: values.role_id && values.role_id.is_player === 1 ? (values.weight_id && values.weight_id.id) : '',
+        dan: values.role_id && values.role_id.is_player === 1 ? (values.dan && values.dan.value) : '',
         identity: values.identity,
         organization_id: values.organization_id.id,
         role_id: values.role_id.id,
-        profile_image: file || '',
+        profile_image: imagePreviewUrl || '',
         position: values.position || '',
         skill: values.skill ? values.skill : '',
         active: item.active,
@@ -406,7 +406,7 @@ class EditModal extends React.Component {
                           <Label for="role_id">Role</Label>
                           <Select
                             name="role_id"
-                            classNamePrefix={errors.role_id ? 'invalid react-select-lg' : 'react-select-lg'}
+                            classNamePrefix={!!errors.role_id && touched.role_id ? 'invalid react-select-lg' : 'react-select-lg'}
                             indicatorSeparator={null}
                             options={roles}
                             getOptionValue={option => option.id}
@@ -429,9 +429,9 @@ class EditModal extends React.Component {
                           </Label>
                           <Select
                             name="organization_id"
-                            classNamePrefix={errors.organization_id ? 'invalid react-select-lg' : 'react-select-lg'}
+                            classNamePrefix={!!errors.organization_id && touched.organization_id ? 'invalid react-select-lg' : 'react-select-lg'}
                             indicatorSeparator={null}
-                            options={values.role_id && values.role_id.id === 3 ? org_list.filter(org => org.is_club === 1) : org_list}
+                            options={values.role_id && values.role_id.is_player === 1 ? org_list.filter(org => org.is_club === 1) : org_list}
                             getOptionValue={option => option.id}
                             getOptionLabel={option => option.name}
                             value={values.organization_id}
@@ -455,7 +455,7 @@ class EditModal extends React.Component {
                             multiple={false}
                             onChange={this.fileUpload.bind(this)}
                           />
-                          <div className="image-preview">
+                          <div className={imagePreviewUrl ? 'image-preview is_image' : 'image-preview'}>
                             {$imagePreview}
                           </div>
                         </FormGroup>
@@ -526,7 +526,7 @@ class EditModal extends React.Component {
                           <Label for="gender">Gender</Label>
                           <Select
                             name="gender"
-                            classNamePrefix={errors.gender ? 'invalid react-select-lg' : 'react-select-lg'}
+                            classNamePrefix={!!errors.gender && touched.gender ? 'invalid react-select-lg' : 'react-select-lg'}
                             indicatorSeparator={null}
                             options={Genders}
                             getOptionValue={option => option.id}
@@ -552,7 +552,7 @@ class EditModal extends React.Component {
                             value={values.birthday || ''}
                             onChange={handleChange}
                             onBlur={handleBlur}
-                            invalid={!!errors.birthday}
+                            invalid={!!errors.birthday && touched.birthday}
                           />
                           {!!errors.birthday && touched.birthday && <FormFeedback className="d-block">{errors.birthday}</FormFeedback> }
                         </FormGroup>
@@ -616,7 +616,7 @@ class EditModal extends React.Component {
                           <Label for="country">Country</Label>
                           <Select
                             name="country"
-                            classNamePrefix={errors.country ? 'invalid react-select-lg' : 'react-select-lg'}
+                            classNamePrefix={!!errors.country && touched.country ? 'invalid react-select-lg' : 'react-select-lg'}
                             indicatorSeparator={null}
                             options={countries}
                             getOptionValue={option => option.countryCode}
@@ -690,13 +690,13 @@ class EditModal extends React.Component {
                       </Col>
                       <Col sm="4" xs="6">
                         {
-                          values.role_id && values.role_id.id === 3 && (
+                          values.role_id && values.role_id.is_player === 1 && (
                             <FormGroup>
                               <Label for="weight_id">Weight</Label>
                               <Select
                                 name="weight_id"
                                 menuPlacement="top"
-                                classNamePrefix={errors.weight_id ? 'invalid react-select-lg' : 'react-select-lg'}
+                                classNamePrefix="react-select-lg"
                                 value={values.weight_id}
                                 options={weights}
                                 getOptionValue={option => option.id}
@@ -711,13 +711,13 @@ class EditModal extends React.Component {
                       </Col>
                       <Col sm="4" xs="6">
                         {
-                          values.role_id && values.role_id.id === 3 && (
+                          values.role_id && values.role_id.is_player === 1 && (
                             <FormGroup>
                               <Label for="dan">Dan</Label>
                               <Select
                                 name="dan"
                                 menuPlacement="top"
-                                classNamePrefix={errors.dan ? 'invalid react-select-lg' : 'react-select-lg'}
+                                classNamePrefix="react-select-lg"
                                 value={values.dan}
                                 options={Dans}
                                 getOptionValue={option => option.value}
@@ -731,7 +731,7 @@ class EditModal extends React.Component {
                         }
                       </Col>
                       {
-                        values.role_id && values.role_id.id !== 3 && (
+                        values.role_id && values.role_id.is_player !== 1 && (
                           <Col xs="6">
                             <FormGroup>
                               <Label for="position">Position</Label>
@@ -746,18 +746,22 @@ class EditModal extends React.Component {
                           </Col>
                         )
                       }
-                      <Col xs="6">
-                        <FormGroup>
-                          <Label for="skill">Skill</Label>
-                          <Input
-                            name="skill"
-                            type="text"
-                            value={values.skill || ''}
-                            onChange={handleChange}
-                            onBlur={handleBlur}
-                          />
-                        </FormGroup>
-                      </Col>
+                      {
+                        values.role_id && values.role_id.is_player !== 1 && (
+                          <Col xs="6">
+                            <FormGroup>
+                              <Label for="skill">Skill</Label>
+                              <Input
+                                name="skill"
+                                type="text"
+                                value={values.skill || ''}
+                                onChange={handleChange}
+                                onBlur={handleBlur}
+                              />
+                            </FormGroup>
+                          </Col>
+                        )
+                      }
                     </Row>
                     <div className="w-100 d-flex justify-content-end">
                       <div>
@@ -833,10 +837,9 @@ class EditModal extends React.Component {
                             multiple={false}
                             onChange={this.fileUpload.bind(this)}
                           />
-                          <div className="image-preview">
+                          <div className={imagePreviewUrl ? 'image-preview is_image' : 'image-preview'}>
                             {$imagePreview}
                           </div>
-                          <FormFeedback>{errors.logo}</FormFeedback>
                         </FormGroup>
                       </Col>
                       <Col xs="6">
@@ -863,7 +866,7 @@ class EditModal extends React.Component {
                             </Label>
                             <Select
                               name="parent_id"
-                              classNamePrefix={errors.parent_id ? 'invalid react-select-lg' : 'react-select-lg'}
+                              classNamePrefix={!!errors.parent_id && touched.parent_id ? 'invalid react-select-lg' : 'react-select-lg'}
                               indicatorSeparator={null}
                               options={org_list}
                               getOptionValue={option => option.id}
