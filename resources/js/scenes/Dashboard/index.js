@@ -83,9 +83,6 @@ class Dashboard extends Component {
         this.setState({
           weights: weight_list.body
         });
-        if (weight_list.body.length > 0) {
-          localStorage.setItem('weights', JSON.stringify(weight_list.body));
-        }
         break;
       default:
         break;
@@ -106,7 +103,6 @@ class Dashboard extends Component {
   }
 
   handleSearchFilter(type, value) {
-    const { orgs } = this.state;
     switch (type) {
       case 'type':
         this.setState({
@@ -115,15 +111,6 @@ class Dashboard extends Component {
           search_data: null,
           search_orgs: []
         });
-        if (value.value !== 'player') {
-          this.setState({
-            org_list: orgs.filter(org => org.is_club !== 1)
-          });
-        } else {
-          this.setState({
-            org_list: orgs
-          });
-        }
         break;
       case 'orgs':
         this.setState({

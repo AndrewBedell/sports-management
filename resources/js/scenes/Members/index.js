@@ -63,25 +63,18 @@ class Members extends Component {
       default:
         break;
     }
-    const weight_lists = JSON.parse(localStorage.getItem('weights'));
-    if (weight_lists && weight_lists.length > 0) {
-      this.setState({
-        weights: weight_lists
-      });
-    } else {
-      const weight_list = await Api.get('weights');
-      switch (weight_list.response.status) {
-        case 200:
-          this.setState({
-            weights: weight_list.body
-          });
-          if (weight_list.body.length > 0) {
-            localStorage.setItem('weights', JSON.stringify(weight_list.body));
-          }
-          break;
-        default:
-          break;
-      }
+    const weight_list = await Api.get('weights');
+    switch (weight_list.response.status) {
+      case 200:
+        this.setState({
+          weights: weight_list.body
+        });
+        if (weight_list.body.length > 0) {
+          localStorage.setItem('weights', JSON.stringify(weight_list.body));
+        }
+        break;
+      default:
+        break;
     }
     const role_lists = JSON.parse(localStorage.getItem('roles'));
     if (role_lists && role_lists.length > 0) {
@@ -267,7 +260,6 @@ class Members extends Component {
             isOpenEditModal && (
             <EditModal
               id={edit_item}
-              isMembers
               type={search_type_options[2]}
               weights={weights}
               orgs={org_list}
