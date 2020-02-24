@@ -82,11 +82,11 @@ class OrganizationController extends Controller
         } else {
             $base64_image = $request->input('logo');
                     
-            if ($base64_image != '') {
+            if ($base64_image != '' && preg_match('/^data:image\/(\w+);base64,/', $base64_image)) {
                 $pos  = strpos($base64_image, ';');
                 $type = explode(':', substr($base64_image, 0, $pos))[1];
 
-                if (substr($type, 0, 5) == 'image' && preg_match('/^data:image\/(\w+);base64,/', $base64_image)) {
+                if (substr($type, 0, 5) == 'image') {
                     $filename = date('Ymd') . '_' . $data['register_no'];
 
                     $type = str_replace('image/', '.', $type);
@@ -201,14 +201,14 @@ class OrganizationController extends Controller
 
                 if ($exist == 0) {
                     $current = Organization::where('id', $id)->first();
-                    
+
                     $base64_image = $request->input('logo');
                     
-                    if ($base64_image != '') {
+                    if ($base64_image != '' && preg_match('/^data:image\/(\w+);base64,/', $base64_image)) {
                         $pos  = strpos($base64_image, ';');
                         $type = explode(':', substr($base64_image, 0, $pos))[1];
 
-                        if (substr($type, 0, 5) == 'image' && preg_match('/^data:image\/(\w+);base64,/', $base64_image)) {
+                        if (substr($type, 0, 5) == 'image') {
                             $filename = date('Ymd') . '_' . $data['register_no'];
 
                             $type = str_replace('image/', '.', $type);

@@ -110,11 +110,11 @@ class MemberController extends Controller
 
         $base64_image = $request->input('profile_image');
                     
-        if ($base64_image != '') {
+        if ($base64_image != '' && preg_match('/^data:image\/(\w+);base64,/', $base64_image)) {
             $pos  = strpos($base64_image, ';');
             $type = explode(':', substr($base64_image, 0, $pos))[1];
 
-            if (substr($type, 0, 5) == 'image' && preg_match('/^data:image\/(\w+);base64,/', $base64_image)) {
+            if (substr($type, 0, 5) == 'image') {
                 $filename = $data['identity'] . '_' . date('Ymd');
 
                 $type = str_replace('image/', '.', $type);
@@ -343,11 +343,11 @@ class MemberController extends Controller
 
                     $base64_image = $request->input('profile_image');
                     
-                    if ($base64_image != '') {
+                    if ($base64_image != '' && preg_match('/^data:image\/(\w+);base64,/', $base64_image)) {
                         $pos  = strpos($base64_image, ';');
                         $type = explode(':', substr($base64_image, 0, $pos))[1];
 
-                        if (substr($type, 0, 5) == 'image' && preg_match('/^data:image\/(\w+);base64,/', $base64_image)) {
+                        if (substr($type, 0, 5) == 'image') {
                             $filename = $data['identity'] . '_' . date('Ymd');
 
                             $type = str_replace('image/', '.', $type);
