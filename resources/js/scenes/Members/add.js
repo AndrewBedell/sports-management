@@ -49,25 +49,18 @@ class MemberAdd extends Component {
       default:
         break;
     }
-    const weight_lists = JSON.parse(localStorage.getItem('weights'));
-    if (weight_lists && weight_lists.length > 0) {
-      this.setState({
-        weights: weight_lists
-      });
-    } else {
-      const weight_list = await Api.get('weights');
-      switch (weight_list.response.status) {
-        case 200:
-          this.setState({
-            weights: weight_list.body
-          });
-          if (weight_list.body.length > 0) {
-            localStorage.setItem('weights', JSON.stringify(weight_list.body));
-          }
-          break;
-        default:
-          break;
-      }
+    const weight_list = await Api.get('weights');
+    switch (weight_list.response.status) {
+      case 200:
+        this.setState({
+          weights: weight_list.body
+        });
+        if (weight_list.body.length > 0) {
+          localStorage.setItem('weights', JSON.stringify(weight_list.body));
+        }
+        break;
+      default:
+        break;
     }
     const role_lists = JSON.parse(localStorage.getItem('roles'));
     if (role_lists && role_lists.length > 0) {
@@ -240,30 +233,6 @@ class MemberAdd extends Component {
                 <Form onSubmit={handleSubmit}>
                   {status && <UncontrolledAlert {...status} />}
                   <Row>
-                    <Col sm="8">
-                      <FormGroup>
-                        <Label for="organization_id">
-                          Organization
-                        </Label>
-                        <Select
-                          name="organization_id"
-                          classNamePrefix={errors.organization_id ? 'invalid react-select-lg' : 'react-select-lg'}
-                          indicatorSeparator={null}
-                          options={org_list}
-                          getOptionValue={option => option.id}
-                          getOptionLabel={option => option.name}
-                          value={values.organization_id}
-                          invalid={!!errors.organization_id && touched.organization_id}
-                          onChange={(value) => {
-                            setFieldValue('organization_id', value);
-                          }}
-                          onBlur={this.handleBlur}
-                        />
-                        {!!errors.organization_id && touched.organization_id && (
-                          <FormFeedback className="d-block">{errors.organization_id}</FormFeedback>
-                        )}
-                      </FormGroup>
-                    </Col>
                     <Col sm="4">
                       <FormGroup>
                         <Label for="role_id">Role</Label>
@@ -282,6 +251,30 @@ class MemberAdd extends Component {
                         />
                         {!!errors.role_id && touched.role_id && (
                           <FormFeedback className="d-block">{errors.role_id}</FormFeedback>
+                        )}
+                      </FormGroup>
+                    </Col>
+                    <Col sm="8">
+                      <FormGroup>
+                        <Label for="organization_id">
+                          Organization
+                        </Label>
+                        <Select
+                          name="organization_id"
+                          classNamePrefix={errors.organization_id ? 'invalid react-select-lg' : 'react-select-lg'}
+                          indicatorSeparator={null}
+                          options={values.role_id && values.role_id.id === 3 ? org_list.filter(org => org.is_club === 1) : org_list}
+                          getOptionValue={option => option.id}
+                          getOptionLabel={option => option.name}
+                          value={values.organization_id}
+                          invalid={!!errors.organization_id && touched.organization_id}
+                          onChange={(value) => {
+                            setFieldValue('organization_id', value);
+                          }}
+                          onBlur={this.handleBlur}
+                        />
+                        {!!errors.organization_id && touched.organization_id && (
+                          <FormFeedback className="d-block">{errors.organization_id}</FormFeedback>
                         )}
                       </FormGroup>
                     </Col>

@@ -54,7 +54,7 @@ class EditModal extends React.Component {
 
   async componentWillReceiveProps(props) {
     const {
-      id, type, orgs, isMembers
+      id, type, orgs
     } = props;
     if (type.value === 'player') {
       const data = await Api.get(`member/${id}`);
@@ -91,7 +91,7 @@ class EditModal extends React.Component {
     }
     if (type.value === 'player') {
       this.setState({
-        org_list: !isMembers ? orgs.filter(org => org.is_club === 1) : orgs
+        org_list: orgs
       });
     }
     this.settingValues(props);
@@ -100,7 +100,7 @@ class EditModal extends React.Component {
   settingValues(props) {
     const { item, org_list } = this.state;
     const {
-      roles, weights, type, isMembers
+      roles, weights, type
     } = props;
     const {
       formikRef1, formikRef2
@@ -193,35 +193,9 @@ class EditModal extends React.Component {
         dan: Dans.filter(dan => dan.value === values.dan)[0],
         identity: values.identity,
         position: values.position || '',
-        skill: values.skill
+        skill: values.skill || 0
       });
     }
-    // else {
-    //   formikRef2.current.setValues({
-    //     first_name: values[0].first_name,
-    //     mid_name: values[0].mid_name,
-    //     last_name: values[0].last_name,
-    //     gender: values[0].gender ? Genders[0] : Genders[1],
-    //     organization_id: org_list.filter(org => org.id === values[0].organization_id)[0],
-    //     role_id: roles.filter(role => role.id === values[0].role_id)[0],
-    //     profile_image: values[0].profile_image,
-    //     register_date: values[0].register_date,
-    //     birthday: values[0].birthday,
-    //     email: values[0].email,
-    //     mobile_phone: values[0].mobile_phone,
-    //     addressline1: values[0].addressline1,
-    //     addressline2: values[0].addressline2,
-    //     country: countries.filter(country => country.countryCode === values[0].country)[0],
-    //     state: values[0].state,
-    //     city: values[0].city,
-    //     zip_code: values[0].zip_code,
-    //     weight_id: weights.filter(weight => weight.id === values[0].weight_id)[0],
-    //     dan: Dans.filter(dan => dan.value === values[0].dan)[0],
-    //     identity: values[0].identity,
-    //     position: values[0].position,
-    //     skill: values[0].skill
-    //   });
-    // }
   }
 
   async getOrganizations(org_id) {
@@ -427,29 +401,6 @@ class EditModal extends React.Component {
                   <Form onSubmit={handleSubmit}>
                     {status && <UncontrolledAlert {...status} />}
                     <Row>
-                      <Col sm="8">
-                        <FormGroup>
-                          <Label for="organization_id">
-                            Organization
-                          </Label>
-                          <Select
-                            name="organization_id"
-                            classNamePrefix={errors.organization_id ? 'invalid react-select-lg' : 'react-select-lg'}
-                            indicatorSeparator={null}
-                            options={org_list}
-                            getOptionValue={option => option.id}
-                            getOptionLabel={option => option.name}
-                            value={values.organization_id}
-                            onChange={(value) => {
-                              setFieldValue('organization_id', value);
-                            }}
-                            onBlur={this.handleBlur}
-                          />
-                          {!!errors.organization_id && touched.organization_id && (
-                            <FormFeedback className="d-block">{errors.organization_id}</FormFeedback>
-                          )}
-                        </FormGroup>
-                      </Col>
                       <Col sm="4">
                         <FormGroup>
                           <Label for="role_id">Role</Label>
@@ -468,6 +419,29 @@ class EditModal extends React.Component {
                           />
                           {!!errors.role_id && touched.role_id && (
                             <FormFeedback className="d-block">{errors.role_id}</FormFeedback>
+                          )}
+                        </FormGroup>
+                      </Col>
+                      <Col sm="8">
+                        <FormGroup>
+                          <Label for="organization_id">
+                            Organization
+                          </Label>
+                          <Select
+                            name="organization_id"
+                            classNamePrefix={errors.organization_id ? 'invalid react-select-lg' : 'react-select-lg'}
+                            indicatorSeparator={null}
+                            options={values.role_id && values.role_id.id === 3 ? org_list.filter(org => org.is_club === 1) : org_list}
+                            getOptionValue={option => option.id}
+                            getOptionLabel={option => option.name}
+                            value={values.organization_id}
+                            onChange={(value) => {
+                              setFieldValue('organization_id', value);
+                            }}
+                            onBlur={this.handleBlur}
+                          />
+                          {!!errors.organization_id && touched.organization_id && (
+                            <FormFeedback className="d-block">{errors.organization_id}</FormFeedback>
                           )}
                         </FormGroup>
                       </Col>
@@ -1106,9 +1080,5 @@ class EditModal extends React.Component {
     );
   }
 }
-
-EditModal.defaultProps = {
-  isMembers: false
-};
 
 export default EditModal;
