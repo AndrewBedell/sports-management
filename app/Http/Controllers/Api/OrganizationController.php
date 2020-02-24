@@ -9,6 +9,7 @@ use JWTAuth;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Storage;
 
 use DB;
 
@@ -79,6 +80,34 @@ class OrganizationController extends Controller
                 422
             );
         } else {
+            $base64_image = $request->input('logo');
+                    
+            if ($base64_image != '' && preg_match('/^data:image\/(\w+);base64,/', $base64_image)) {
+                $pos  = strpos($base64_image, ';');
+                $type = explode(':', substr($base64_image, 0, $pos))[1];
+
+                if (substr($type, 0, 5) == 'image') {
+                    $filename = date('Ymd') . '_' . $data['register_no'];
+
+                    $type = str_replace('image/', '.', $type);
+
+                    $image = substr($base64_image, strpos($base64_image, ',') + 1);
+                    $image = base64_decode($image);
+                    
+                    Storage::disk('local')->put($filename . $type, $image);
+
+                    $data['logo'] = "photos/" . $filename . $type;
+                } else {
+                    return response()->json(
+                        [
+                            'status' => 'error',
+                            'message' => 'File type is not image.'
+                        ],
+                        406
+                    );
+                }
+            }
+            
             if (!isset($data['logo']) || is_null($data['logo']))
                 $data['logo'] = "";
 
@@ -168,9 +197,40 @@ class OrganizationController extends Controller
                     422
                 );
             } else {
-                $exist = Organization::where('email', $data['email'])->where('id', '!=', $id)->count();
+                $exist = Organization::where('email', $data['email'])->where('id', '!=', $id)->withTrashed()->count();
 
                 if ($exist == 0) {
+                    $current = Organization::where('id', $id)->first();
+
+                    $base64_image = $request->input('logo');
+                    
+                    if ($base64_image != '' && preg_match('/^data:image\/(\w+);base64,/', $base64_image)) {
+                        $pos  = strpos($base64_image, ';');
+                        $type = explode(':', substr($base64_image, 0, $pos))[1];
+
+                        if (substr($type, 0, 5) == 'image') {
+                            $filename = date('Ymd') . '_' . $data['register_no'];
+
+                            $type = str_replace('image/', '.', $type);
+
+                            $image = substr($base64_image, strpos($base64_image, ',') + 1);
+                            $image = base64_decode($image);
+                            
+                            Storage::disk('local')->delete(str_replace('photos/', '', $current->logo));
+                            Storage::disk('local')->put($filename . $type, $image);
+
+                            $data['logo'] = "photos/" . $filename . $type;
+                        } else {
+                            return response()->json(
+                                [
+                                    'status' => 'error',
+                                    'message' => 'File type is not image.'
+                                ],
+                                406
+                            );
+                        }
+                    }
+                    
                     if (!isset($data['logo']) || is_null($data['logo']))
                         $data['logo'] = "";
 
@@ -182,7 +242,6 @@ class OrganizationController extends Controller
                     return response()->json([
                         'status' => 'success'
                     ], 200);
-                    // return response()->json($data, 200);
                 } else {
                     return response()->json(
                         [

@@ -11,6 +11,7 @@ use JWTAuth;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Storage;
 
 use DB;
 
@@ -29,9 +30,24 @@ class MemberController extends Controller
 
         $orgIDs = $this->orgIDList();
 
-        $members = Member::where('role_id', '!=', $role_id)
-                        ->whereIn('organization_id', $orgIDs)
+        $members = Member::where('members.role_id', '!=', $role_id)
+                        ->whereIn('members.organization_id', $orgIDs)
+                        ->leftJoin('users', 'users.member_id', '=', 'members.id')
+                        ->select('members.*', 'users.id AS uid', 'users.deleted_at AS status', 'users.is_super')
                         ->get();
+
+        for ($i = 0; $i < sizeof($members); $i++) {
+            if (is_null($members[$i]->status)) {
+                if (is_null($members[$i]->is_super)) {
+                    $members[$i]['is_admin'] = 0;
+                    $members[$i]['is_super'] = 0;
+                } else {
+                    $members[$i]['is_admin'] = 1;
+                }
+            } else {
+                $members[$i]['is_admin'] = 0;
+            }
+        }
 
         return response()->json($members);
     }
@@ -92,11 +108,39 @@ class MemberController extends Controller
             );
         }
 
+        $base64_image = $request->input('profile_image');
+                    
+        if ($base64_image != '' && preg_match('/^data:image\/(\w+);base64,/', $base64_image)) {
+            $pos  = strpos($base64_image, ';');
+            $type = explode(':', substr($base64_image, 0, $pos))[1];
+
+            if (substr($type, 0, 5) == 'image') {
+                $filename = $data['identity'] . '_' . date('Ymd');
+
+                $type = str_replace('image/', '.', $type);
+
+                $image = substr($base64_image, strpos($base64_image, ',') + 1);
+                $image = base64_decode($image);
+                
+                Storage::disk('local')->put($filename . $type, $image);
+
+                $data['profile_image'] = "photos/" . $filename . $type;
+            } else {
+                return response()->json(
+                    [
+                        'status' => 'error',
+                        'message' => 'File type is not image.'
+                    ],
+                    406
+                );
+            }
+        }
+
         if (!isset($data['profile_image']) || is_null($data['profile_image']))
-                $data['profile_image'] = "";
+            $data['profile_image'] = "";
 
         if (is_null($data['mid_name']))
-                $data['mid_name'] = "";
+            $data['mid_name'] = "";
 
         if (is_null($data['addressline2']))
             $data['addressline2'] = "";
@@ -154,7 +198,10 @@ class MemberController extends Controller
      */
     public function show($id)
     {
-        $member = Member::find($id);
+        $member = Member::where('members.id', $id)
+                        ->leftJoin('users', 'users.member_id', '=', 'members.id')
+                        ->select('members.*', 'users.id AS uid', 'users.deleted_at AS status', 'users.is_super')
+                        ->first();
 
         if (isset($member)) {
             if ($this->checkPermission($member->organization_id)) {
@@ -165,8 +212,20 @@ class MemberController extends Controller
                             ->leftJoin('players', 'members.id', '=', 'players.member_id')
                             ->leftJoin('weights', 'players.weight_id', '=', 'players.weight_id')
                             ->select('members.*', 'weights.id AS weight_id', 'weights.name AS weight_name', 'weights.weight',
-                                     'players.dan', 'players.skill', 'players.expired_date')
+                                     'players.dan', 'players.skill', 'players.expired_date',
+                                     DB::raw("null AS uid, null AS status, 0 AS is_super, 0 AS is_admin"))
                             ->first();
+                } else {
+                    if (is_null($member->status)) {
+                        if (is_null($member->is_super)) {
+                            $member['is_super'] = 0;
+                            $member['is_admin'] = 0;
+                        } else {
+                            $member['is_admin'] = 1;
+                        }
+                    } else {
+                        $member['is_admin'] = 0;
+                    }
                 }
 
                 return response()->json($member);
@@ -198,7 +257,7 @@ class MemberController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
-    {
+    {   
         $member = Member::find($id);
 
         if (isset($member)) {
@@ -253,20 +312,7 @@ class MemberController extends Controller
                     }
                 }
 
-                if (!isset($data['profile_image']) || is_null($data['profile_image'])) {
-                    $data['profile_image'] = "";
-                }
-
-                if (is_null($data['mid_name']))
-                        $data['mid_name'] = "";
-
-                if (is_null($data['addressline2']))
-                    $data['addressline2'] = "";
-
-                if (is_null($data['position']))
-                    $data['position'] = "";
-
-                $exist = Member::where('email', $data['email'])->where('id', '!=', $id)->count();
+                $exist = Member::where('email', $data['email'])->where('id', '!=', $id)->withTrashed()->count();
 
                 if ($exist == 0) {
                     $current = Member::where('id', $id)->first();
@@ -293,7 +339,49 @@ class MemberController extends Controller
                         } else {
                             Player::where('member_id', $id)->delete();
                         }
-                    }                    
+                    }
+
+                    $base64_image = $request->input('profile_image');
+                    
+                    if ($base64_image != '' && preg_match('/^data:image\/(\w+);base64,/', $base64_image)) {
+                        $pos  = strpos($base64_image, ';');
+                        $type = explode(':', substr($base64_image, 0, $pos))[1];
+
+                        if (substr($type, 0, 5) == 'image') {
+                            $filename = $data['identity'] . '_' . date('Ymd');
+
+                            $type = str_replace('image/', '.', $type);
+
+                            $image = substr($base64_image, strpos($base64_image, ',') + 1);
+                            $image = base64_decode($image);
+                            
+                            Storage::disk('local')->delete(str_replace('photos/', '', $current->profile_image));
+                            Storage::disk('local')->put($filename . $type, $image);
+
+                            $data['profile_image'] = "photos/" . $filename . $type;
+                        } else {
+                            return response()->json(
+                                [
+                                    'status' => 'error',
+                                    'message' => 'File type is not image.'
+                                ],
+                                406
+                            );
+                        }
+                    }
+
+                    if (!isset($data['profile_image']) || is_null($data['profile_image'])) {
+                        $data['profile_image'] = "";
+                    }
+    
+                    if (is_null($data['mid_name']))
+                        $data['mid_name'] = "";
+    
+                    if (is_null($data['addressline2']))
+                        $data['addressline2'] = "";
+    
+                    if (is_null($data['position']))
+                        $data['position'] = "";
 
                     Member::where('id', $id)->update(array(
                         'organization_id' => $data['organization_id'],
@@ -339,13 +427,13 @@ class MemberController extends Controller
                     ));
                 } else {
                     User::where('member_id', $member_id)->update(array(
-                        'is_super' => $data['is_super'],
                         'email' => $data['email']
                     ));
                 }
 
                 return response()->json([
-                    'status' => 'success'
+                    'status' => 'success',
+                    'data' => $data
                 ], 200);
             } else {
                 return response()->json(
