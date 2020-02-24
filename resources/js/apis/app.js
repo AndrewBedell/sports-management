@@ -83,12 +83,6 @@ const App = {
       return null;
     }
   },
-  upload: async (url, formData, headers = {}) => {
-    const realUrl = App.getRequestUrl(url);
-    const res = await Rest.upload(realUrl, formData, headers);
-    const data = await Filter.filter(headers, res);
-    return data;
-  }
 };
 
 export default App;

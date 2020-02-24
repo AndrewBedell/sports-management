@@ -22,6 +22,7 @@ class DataTable extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      user: {},
       column: null,
       data: [],
       direction: null,
@@ -42,6 +43,12 @@ class DataTable extends Component {
   }
 
   componentWillReceiveProps(props) {
+    const user_info = JSON.parse(localStorage.getItem('auth'));
+    if (user_info.user) {
+      this.setState({
+        user: user_info.user.member_info
+      });
+    }
     if (props.items.length > 0) {
       this.setState({
         activePage: 1
@@ -116,6 +123,7 @@ class DataTable extends Component {
       type
     } = this.props;
     const {
+      user,
       column,
       direction,
       data,
@@ -279,13 +287,17 @@ class DataTable extends Component {
                       >
                         <i className="fa fa-pencil-alt fa-lg" />
                       </Button>
-                      <Button
-                        color="danger"
-                        type="button"
-                        onClick={() => onDelete(item.id)}
-                      >
-                        <i className="fa fa-trash-alt fa-lg" />
-                      </Button>
+                      {
+                        (item.parent_id && item.parent_id !== 0) || (item.first_name && item.id !== user.id) ? (
+                          <Button
+                            color="danger"
+                            type="button"
+                            onClick={() => onDelete(item.id)}
+                          >
+                            <i className="fa fa-trash-alt fa-lg" />
+                          </Button>
+                        ) : <div className="px-3"></div>
+                      }
                     </div>
                   </Table.Cell>
                 </Table.Row>
