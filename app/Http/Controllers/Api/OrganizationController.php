@@ -197,7 +197,7 @@ class OrganizationController extends Controller
                     422
                 );
             } else {
-                $exist = Organization::where('email', $data['email'])->where('id', '!=', $id)->count();
+                $exist = Organization::where('email', $data['email'])->where('id', '!=', $id)->withTrashed()->count();
 
                 if ($exist == 0) {
                     $current = Organization::where('id', $id)->first();

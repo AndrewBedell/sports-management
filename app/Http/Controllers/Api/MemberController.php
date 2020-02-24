@@ -312,7 +312,7 @@ class MemberController extends Controller
                     }
                 }
 
-                $exist = Member::where('email', $data['email'])->where('id', '!=', $id)->count();
+                $exist = Member::where('email', $data['email'])->where('id', '!=', $id)->withTrashed()->count();
 
                 if ($exist == 0) {
                     $current = Member::where('id', $id)->first();
