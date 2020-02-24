@@ -353,27 +353,27 @@ class MemberController extends Controller
                     if (is_null($data['position']))
                         $data['position'] = "";
 
-                    // Member::where('id', $id)->update(array(
-                    //     'organization_id' => $data['organization_id'],
-                    //     'role_id' => $data['role_id'],
-                    //     'first_name' => $data['first_name'],
-                    //     'mid_name' => $data['mid_name'],
-                    //     'last_name' => $data['last_name'],
-                    //     'profile_image' => $data['profile_image'],
-                    //     'gender' => $data['gender'],
-                    //     'birthday' => $data['birthday'],
-                    //     'email' => $data['email'],
-                    //     'mobile_phone' => $data['mobile_phone'],
-                    //     'addressline1' => $data['addressline1'],
-                    //     'addressline2' => $data['addressline2'],
-                    //     'country' => $data['country'],
-                    //     'state' => $data['state'],
-                    //     'city' => $data['city'],
-                    //     'zip_code' => $data['zip_code'],
-                    //     'position' => $data['position'],
-                    //     'identity' => $data['identity'],
-                    //     'register_date' => $data['register_date']
-                    // ));
+                    Member::where('id', $id)->update(array(
+                        'organization_id' => $data['organization_id'],
+                        'role_id' => $data['role_id'],
+                        'first_name' => $data['first_name'],
+                        'mid_name' => $data['mid_name'],
+                        'last_name' => $data['last_name'],
+                        'profile_image' => $data['profile_image'],
+                        'gender' => $data['gender'],
+                        'birthday' => $data['birthday'],
+                        'email' => $data['email'],
+                        'mobile_phone' => $data['mobile_phone'],
+                        'addressline1' => $data['addressline1'],
+                        'addressline2' => $data['addressline2'],
+                        'country' => $data['country'],
+                        'state' => $data['state'],
+                        'city' => $data['city'],
+                        'zip_code' => $data['zip_code'],
+                        'position' => $data['position'],
+                        'identity' => $data['identity'],
+                        'register_date' => $data['register_date']
+                    ));
                 } else {
                     return response()->json(
                         [
@@ -396,10 +396,10 @@ class MemberController extends Controller
                         'skill' => $data['skill']
                     ));
                 } else {
-                    // User::where('member_id', $member_id)->update(array(
-                    //     'is_super' => $data['is_super'],
-                    //     'email' => $data['email']
-                    // ));
+                    User::where('member_id', $member_id)->update(array(
+                        'is_super' => $data['is_super'],
+                        'email' => $data['email']
+                    ));
                 }
 
                 return response()->json([
