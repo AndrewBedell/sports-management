@@ -9,7 +9,7 @@ import {
   Button,
   Form, FormGroup, FormFeedback,
   Input, Label,
-  UncontrolledAlert
+  UncontrolledAlert, Alert
 } from 'reactstrap';
 import Select from 'react-select';
 import MainTopBar from '../../components/TopBar/MainTopBar';
@@ -23,9 +23,13 @@ class OrganizationAdd extends Component {
     super(props);
     this.state = {
       org_list: [],
-      file: '',
+      // file: '',
       imagePreviewUrl: '',
-      fileKey: 1
+      fileKey: 1,
+      alertVisible: false,
+      messageStatus: false,
+      successMessage: '',
+      failMessage: ''
     };
     this.fileRef = React.createRef();
     this.formikRef = React.createRef();
@@ -67,7 +71,7 @@ class OrganizationAdd extends Component {
 
     reader.onloadend = () => {
       this.setState({
-        file,
+        // file,
         imagePreviewUrl: reader.result
       });
     };
@@ -100,7 +104,15 @@ class OrganizationAdd extends Component {
     const { response, body } = data;
     switch (response.status) {
       case 200:
-        this.props.history.goBack();
+        this.setState({
+          alertVisible: true,
+          messageStatus: true,
+          successMessage: 'Added Successfully!'
+        });
+        setTimeout(() => {
+          this.setState({ alertVisible: false });
+          this.props.history.goBack();
+        }, 2000);
         break;
       case 406:
         if (body.message) {
@@ -110,6 +122,13 @@ class OrganizationAdd extends Component {
           });
         }
         bags.setErrors(body.errors);
+        break;
+      case 422:
+        this.setState({
+          alertVisible: true,
+          messageStatus: false,
+          failMessage: body.data && (`${body.data.email !== undefined ? body.data.email : ''} ${body.data.register_no !== undefined ? body.data.register_no : ''} ${body.data.readable_id !== undefined ? body.data.readable_id : ''}`)
+        });
         break;
       default:
         break;
@@ -132,6 +151,13 @@ class OrganizationAdd extends Component {
         <MainTopBar />
         <div className="main-content">
           <Container>
+            <div className="w-100 mb-5">
+              <Alert color={this.state.messageStatus ? 'success' : 'warning'} isOpen={this.state.alertVisible}>
+                {
+                  this.state.messageStatus ? this.state.successMessage : this.state.failMessage
+                }
+              </Alert>
+            </div>
             <Formik
               ref={this.formikRef}
               initialValues={{

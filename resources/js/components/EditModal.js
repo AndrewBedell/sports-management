@@ -768,7 +768,7 @@ class EditModal extends React.Component {
                         )
                       }
                       {
-                        values.role_id && values.role_id.is_player !== 1 && (
+                        values.role_id && values.role_id.is_player === 1 && (
                           <Col xs="6">
                             <FormGroup>
                               <Label for="skill">Skill</Label>
