@@ -472,11 +472,11 @@ class OrganizationController extends Controller
 
             $org[0] = $member->organization_id;
         }
-
+        
         for ($i = 0; $i < sizeof($org); $i++) {
             $orgs = array();
 
-            if ($org[$i] != 1) {
+            if ($org[$i] != 1 || $type == 'officer') {
                 $own = Organization::find($org[$i]);
 
                 $orgs[0] = $own;
@@ -487,15 +487,11 @@ class OrganizationController extends Controller
             $orgs = array_merge($orgs, $chidren);
 
             foreach ($orgs as $key) {
-                if ($type == 'org' && !in_array($key->id, $orgIDs)) {
+                if (!in_array($key->id, $orgIDs))
                     array_push($orgIDs, $key->id);
-                } else {
-                    if ($key->is_club && !in_array($key->id, $orgIDs))
-                        array_push($orgIDs, $key->id);
-                }
             }
         }
-
+        
         $sort = '';
         foreach ($orgIDs as $id) {
             $sort .= $id . ',';
@@ -503,6 +499,8 @@ class OrganizationController extends Controller
 
         if (strlen($sort) > 0)
             $sort = substr($sort, 0, strlen($sort) - 1);
+
+        $playRole = DB::table('roles')->where('is_player', true)->first();
 
         $result = array();
 
@@ -529,8 +527,28 @@ class OrganizationController extends Controller
                 $result = $result->get();
 
                 break;
+            case 'officer':
+                $result = Member::whereIn('members.organization_id', $orgIDs)->where('role_id', '!=', $playRole->id);
+
+                if ($name != '') {
+                    $name = explode(" ", $name);
+
+                    foreach ($name as $param) {
+                        $result = $result->where(function($query) use ($param){
+                                $query->where('members.first_name', 'like', '%' . $param. '%');
+                                $query->orWhere('members.mid_name', 'like', '%' . $param. '%');
+                                $query->orWhere('members.last_name', 'like', '%' . $param . '%');
+                        });
+                    }                                
+                }
+
+                $result = $result->leftJoin('users', 'members.id', '=', 'users.member_id')
+                            ->select("members.*", DB::raw("CONCAT(members.first_name, ' ', members.mid_name, ' ', members.last_name) AS name"), 'users.is_super')
+                            ->get();
+                            
+                break;
             case 'player':
-                $result = Member::whereIn('members.organization_id', $orgIDs);
+                $result = Member::whereIn('members.organization_id', $orgIDs)->where('role_id', $playRole->id);
 
                 if ($name != '') {
                     $name = explode(" ", $name);
@@ -549,9 +567,9 @@ class OrganizationController extends Controller
 
                 if (sizeof($dan) > 0)
                     $result = $result->whereIn('players.dan', $dan);
-
-                $result = $result->leftJoin('players', 'members.id', '=', 'players.member_id')
-                                ->leftJoin('weights', 'players.weight_id', '=', 'players.weight_id')
+                    
+                $result = $result->join('players', 'members.id', '=', 'players.member_id')
+                                ->join('weights', 'weights.id', '=', 'players.weight_id')
                                 ->select("members.*", DB::raw("CONCAT(members.first_name, ' ', members.mid_name, ' ', members.last_name) AS name"),
                                  'weights.name AS weight_name', 'weights.weight', 'players.dan', 'players.skill', 'players.expired_date')
                                 ->get();
