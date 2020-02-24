@@ -55,9 +55,6 @@ class MemberAdd extends Component {
         this.setState({
           weights: weight_list.body
         });
-        if (weight_list.body.length > 0) {
-          localStorage.setItem('weights', JSON.stringify(weight_list.body));
-        }
         break;
       default:
         break;
