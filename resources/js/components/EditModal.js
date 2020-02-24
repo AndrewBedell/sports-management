@@ -170,31 +170,6 @@ class EditModal extends React.Component {
         readable_id: values.readable_id,
         is_club: SetSwitch.filter(set => set.value === values.is_club)[0]
       });
-    } else if (isMembers) {
-      formikRef2.current.setValues({
-        first_name: values.first_name,
-        mid_name: values.mid_name,
-        last_name: values.last_name,
-        gender: values.gender ? Genders[0] : Genders[1],
-        organization_id: org_list.filter(org => org.id === values.organization_id)[0],
-        role_id: roles.filter(role => role.id === values.role_id)[0],
-        profile_image: values.profile_image,
-        register_date: values.register_date,
-        birthday: values.birthday,
-        email: values.email,
-        mobile_phone: values.mobile_phone,
-        addressline1: values.addressline1,
-        addressline2: values.addressline2,
-        country: countries.filter(country => country.countryCode === values.country)[0],
-        state: values.state,
-        city: values.city,
-        zip_code: values.zip_code,
-        weight_id: weights.filter(weight => weight.id === values.weight_id)[0],
-        dan: Dans.filter(dan => dan.value === values.dan)[0],
-        identity: values.identity,
-        position: values.position,
-        skill: values.skill
-      });
     } else {
       formikRef2.current.setValues({
         first_name: values.first_name,
@@ -217,10 +192,36 @@ class EditModal extends React.Component {
         weight_id: weights.filter(weight => weight.id === values.weight_id)[0],
         dan: Dans.filter(dan => dan.value === values.dan)[0],
         identity: values.identity,
-        position: values.position,
+        position: values.position || '',
         skill: values.skill
       });
     }
+    // else {
+    //   formikRef2.current.setValues({
+    //     first_name: values[0].first_name,
+    //     mid_name: values[0].mid_name,
+    //     last_name: values[0].last_name,
+    //     gender: values[0].gender ? Genders[0] : Genders[1],
+    //     organization_id: org_list.filter(org => org.id === values[0].organization_id)[0],
+    //     role_id: roles.filter(role => role.id === values[0].role_id)[0],
+    //     profile_image: values[0].profile_image,
+    //     register_date: values[0].register_date,
+    //     birthday: values[0].birthday,
+    //     email: values[0].email,
+    //     mobile_phone: values[0].mobile_phone,
+    //     addressline1: values[0].addressline1,
+    //     addressline2: values[0].addressline2,
+    //     country: countries.filter(country => country.countryCode === values[0].country)[0],
+    //     state: values[0].state,
+    //     city: values[0].city,
+    //     zip_code: values[0].zip_code,
+    //     weight_id: weights.filter(weight => weight.id === values[0].weight_id)[0],
+    //     dan: Dans.filter(dan => dan.value === values[0].dan)[0],
+    //     identity: values[0].identity,
+    //     position: values[0].position,
+    //     skill: values[0].skill
+    //   });
+    // }
   }
 
   async getOrganizations(org_id) {
@@ -321,7 +322,7 @@ class EditModal extends React.Component {
         organization_id: values.organization_id.id,
         role_id: values.role_id.id,
         profile_image: file || '',
-        position: values.position,
+        position: values.position || '',
         skill: values.skill ? values.skill : '',
         active: item.active,
         register_date: moment(values.register_date).format('YYYY-MM-DD')
@@ -755,18 +756,22 @@ class EditModal extends React.Component {
                           )
                         }
                       </Col>
-                      <Col xs="6">
-                        <FormGroup>
-                          <Label for="position">Position</Label>
-                          <Input
-                            name="position"
-                            type="text"
-                            value={values.position || ''}
-                            onChange={handleChange}
-                            onBlur={handleBlur}
-                          />
-                        </FormGroup>
-                      </Col>
+                      {
+                        values.role_id && values.role_id.id !== 3 && (
+                          <Col xs="6">
+                            <FormGroup>
+                              <Label for="position">Position</Label>
+                              <Input
+                                name="position"
+                                type="text"
+                                value={values.position || ''}
+                                onChange={handleChange}
+                                onBlur={handleBlur}
+                                />
+                            </FormGroup>
+                          </Col>
+                        )
+                      }
                       <Col xs="6">
                         <FormGroup>
                           <Label for="skill">Skill</Label>

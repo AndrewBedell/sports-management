@@ -131,7 +131,7 @@ class MemberAdd extends Component {
       organization_id: values.organization_id.id,
       role_id: values.role_id.id,
       profile_image: file || '',
-      position: values.position,
+      position: values.position || '',
       skill: values.skill ? values.skill : '',
       active: values.is_club || 0,
       register_date: moment(values.register_date).format('YYYY-MM-DD')
@@ -576,18 +576,22 @@ class MemberAdd extends Component {
                         )
                       }
                     </Col>
-                    <Col xs="6">
-                      <FormGroup>
-                        <Label for="position">Position</Label>
-                        <Input
-                          name="position"
-                          type="text"
-                          value={values.position || ''}
-                          onChange={handleChange}
-                          onBlur={handleBlur}
-                        />
-                      </FormGroup>
-                    </Col>
+                    {
+                      values.role_id && values.role_id.id !== 3 && (
+                        <Col xs="6">
+                          <FormGroup>
+                            <Label for="position">Position</Label>
+                            <Input
+                              name="position"
+                              type="text"
+                              value={values.position || ''}
+                              onChange={handleChange}
+                              onBlur={handleBlur}
+                              />
+                          </FormGroup>
+                        </Col>
+                      )
+                    }
                     <Col xs="6">
                       <FormGroup>
                         <Label for="skill">Skill</Label>
