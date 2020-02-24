@@ -103,7 +103,7 @@ class MemberAdd extends Component {
 
   async handleSubmit(values, bags) {
     let newData = {};
-    const { file } = this.state;
+    const { imagePreviewUrl } = this.state;
     newData = {
       first_name: values.first_name,
       mid_name: values.mid_name,
@@ -123,7 +123,7 @@ class MemberAdd extends Component {
       identity: values.identity,
       organization_id: values.organization_id.id,
       role_id: values.role_id.id,
-      profile_image: file || '',
+      profile_image: imagePreviewUrl || '',
       position: values.position || '',
       skill: values.skill ? values.skill : '',
       active: values.is_club || 0,
@@ -238,7 +238,7 @@ class MemberAdd extends Component {
                         <Label for="role_id">Role</Label>
                         <Select
                           name="role_id"
-                          classNamePrefix={errors.role_id ? 'invalid react-select-lg' : 'react-select-lg'}
+                          classNamePrefix={!!errors.role_id && touched.role_id ? 'invalid react-select-lg' : 'react-select-lg'}
                           indicatorSeparator={null}
                           options={roles}
                           getOptionValue={option => option.id}
@@ -261,9 +261,9 @@ class MemberAdd extends Component {
                         </Label>
                         <Select
                           name="organization_id"
-                          classNamePrefix={errors.organization_id ? 'invalid react-select-lg' : 'react-select-lg'}
+                          classNamePrefix={!!errors.organization_id && touched.organization_id ? 'invalid react-select-lg' : 'react-select-lg'}
                           indicatorSeparator={null}
-                          options={values.role_id && values.role_id.id === 3 ? org_list.filter(org => org.is_club === 1) : org_list}
+                          options={values.role_id && values.role_id.is_player === 1 ? org_list.filter(org => org.is_club === 1) : org_list}
                           getOptionValue={option => option.id}
                           getOptionLabel={option => option.name}
                           value={values.organization_id}
@@ -288,7 +288,7 @@ class MemberAdd extends Component {
                           multiple={false}
                           onChange={this.fileUpload.bind(this)}
                         />
-                        <div className="image-preview">
+                        <div className={imagePreviewUrl ? 'image-preview is_image' : 'image-preview'}>
                           {$imagePreview}
                         </div>
                       </FormGroup>
@@ -359,7 +359,7 @@ class MemberAdd extends Component {
                         <Label for="gender">Gender</Label>
                         <Select
                           name="gender"
-                          classNamePrefix={errors.gender ? 'invalid react-select-lg' : 'react-select-lg'}
+                          classNamePrefix={!!errors.gender && touched.gender ? 'invalid react-select-lg' : 'react-select-lg'}
                           indicatorSeparator={null}
                           options={Genders}
                           getOptionValue={option => option.id}
@@ -385,7 +385,7 @@ class MemberAdd extends Component {
                           value={values.birthday || ''}
                           onChange={handleChange}
                           onBlur={handleBlur}
-                          invalid={!!errors.birthday}
+                          invalid={!!errors.birthday && touched.birthday}
                         />
                         {!!errors.birthday && touched.birthday && <FormFeedback className="d-block">{errors.birthday}</FormFeedback> }
                       </FormGroup>
@@ -449,7 +449,7 @@ class MemberAdd extends Component {
                         <Label for="country">Country</Label>
                         <Select
                           name="country"
-                          classNamePrefix={errors.country ? 'invalid react-select-lg' : 'react-select-lg'}
+                          classNamePrefix={!!errors.country && touched.country ? 'invalid react-select-lg' : 'react-select-lg'}
                           indicatorSeparator={null}
                           options={countries}
                           getOptionValue={option => option.countryCode}
@@ -523,13 +523,13 @@ class MemberAdd extends Component {
                     </Col>
                     <Col sm="4" xs="6">
                       {
-                        values.role_id && values.role_id.id === 3 && (
+                        values.role_id && values.role_id.is_player === 1 && (
                           <FormGroup>
                             <Label for="weight_id">Weight</Label>
                             <Select
                               name="weight_id"
                               menuPlacement="top"
-                              classNamePrefix={errors.weight_id ? 'invalid react-select-lg' : 'react-select-lg'}
+                              classNamePrefix="react-select-lg"
                               value={values.weight_id}
                               options={weights}
                               getOptionValue={option => option.id}
@@ -538,22 +538,19 @@ class MemberAdd extends Component {
                                 setFieldValue('weight_id', value);
                               }}
                             />
-                            {!!errors.weight_id && touched.weight_id && values.role_id && values.role_id.id === 3 && (
-                              <FormFeedback className="d-block">{errors.weight_id}</FormFeedback>
-                            )}
                           </FormGroup>
                         )
                       }
                     </Col>
                     <Col sm="4" xs="6">
                       {
-                        values.role_id && values.role_id.id === 3 && (
+                        values.role_id && values.role_id.is_player === 3 && (
                           <FormGroup>
                             <Label for="dan">Dan</Label>
                             <Select
                               name="dan"
                               menuPlacement="top"
-                              classNamePrefix={errors.dan ? 'invalid react-select-lg' : 'react-select-lg'}
+                              classNamePrefix="react-select-lg"
                               value={values.dan}
                               options={Dans}
                               getOptionValue={option => option.value}
@@ -562,15 +559,12 @@ class MemberAdd extends Component {
                                 setFieldValue('dan', value);
                               }}
                             />
-                            {!!errors.dan && touched.dan && values.role_id && values.role_id.id === 3 && (
-                              <FormFeedback className="d-block">{errors.dan}</FormFeedback>
-                            )}
                           </FormGroup>
                         )
                       }
                     </Col>
                     {
-                      values.role_id && values.role_id.id !== 3 && (
+                      values.role_id && values.role_id.is_player !== 1 && (
                         <Col xs="6">
                           <FormGroup>
                             <Label for="position">Position</Label>
@@ -585,18 +579,22 @@ class MemberAdd extends Component {
                         </Col>
                       )
                     }
-                    <Col xs="6">
-                      <FormGroup>
-                        <Label for="skill">Skill</Label>
-                        <Input
-                          name="skill"
-                          type="text"
-                          value={values.skill || ''}
-                          onChange={handleChange}
-                          onBlur={handleBlur}
-                        />
-                      </FormGroup>
-                    </Col>
+                    {
+                      values.role_id && values.role_id.is_player !== 1 && (
+                        <Col xs="6">
+                          <FormGroup>
+                            <Label for="skill">Skill</Label>
+                            <Input
+                              name="skill"
+                              type="text"
+                              value={values.skill || ''}
+                              onChange={handleChange}
+                              onBlur={handleBlur}
+                            />
+                          </FormGroup>
+                        </Col>
+                      )
+                    }
                   </Row>
                   <div className="w-100 d-flex justify-content-end">
                     <div>

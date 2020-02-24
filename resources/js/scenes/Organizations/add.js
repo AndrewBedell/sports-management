@@ -77,12 +77,12 @@ class OrganizationAdd extends Component {
 
   async handleSubmit(values, bags) {
     let newData = {};
-    const { file } = this.state;
+    const { imagePreviewUrl } = this.state;
     newData = {
       parent_id: parseInt(values.parent_id, 10) || 1,
       name: values.name,
       register_no: values.register_no,
-      logo: file || '',
+      logo: imagePreviewUrl || '',
       email: values.email,
       mobile_phone: values.mobile_phone,
       addressline1: values.addressline1,
@@ -191,10 +191,9 @@ class OrganizationAdd extends Component {
                           multiple={false}
                           onChange={this.fileUpload.bind(this)}
                         />
-                        <div className="image-preview">
+                        <div className={imagePreviewUrl ? 'image-preview is_image' : 'image-preview'}>
                           {$imagePreview}
                         </div>
-                        <FormFeedback>{errors.logo}</FormFeedback>
                       </FormGroup>
                     </Col>
                     <Col xs="6">
@@ -220,7 +219,7 @@ class OrganizationAdd extends Component {
                         </Label>
                         <Select
                           name="parent_id"
-                          classNamePrefix={errors.parent_id ? 'invalid react-select-lg' : 'react-select-lg'}
+                          classNamePrefix={!!errors.parent_id && touched.parent_id ? 'invalid react-select-lg' : 'react-select-lg'}
                           indicatorSeparator={null}
                           options={org_list}
                           getOptionValue={option => option.id}

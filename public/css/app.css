@@ -57129,6 +57129,10 @@ body {
   width: 100%;
 }
 
+.image-preview.is_image {
+  max-width: 240px;
+}
+
 .image-preview img {
   width: 100%;
   height: auto;

@@ -153,19 +153,26 @@ class Dashboard extends Component {
         const org = search_orgs[i];
         orgs_search.push(org.id);
       }
+    } else {
+      orgs_search[0] = search_orgs.id;
     }
     if (search_weight.length > 0) {
       for (let j = 0; j < search_weight.length; j++) {
         const weight = search_weight[j];
         weight_search.push(weight.id);
       }
+    } else {
+      weight_search[0] = search_weight.id;
     }
     if (search_dan.length > 0) {
       for (let k = 0; k < search_dan.length; k++) {
         const dan = search_dan[k];
         dan_search.push(dan.value);
       }
+    } else {
+      dan_search[0] = search_dan.value;
     }
+
     const search_params = {
       type: search_type ? search_type.value : '',
       org: orgs_search,
@@ -422,7 +429,7 @@ class Dashboard extends Component {
                     name="orgs"
                     classNamePrefix="react-select-lg"
                     placeholder="Search Orgs"
-                    isMulti
+                    // isMulti
                     value={search_orgs}
                     options={org_list}
                     getOptionValue={option => option.id}
@@ -451,7 +458,7 @@ class Dashboard extends Component {
                         name="weight"
                         classNamePrefix="react-select-lg"
                         placeholder="Search Weight"
-                        isMulti
+                        // isMulti
                         value={search_weight}
                         options={weights}
                         getOptionValue={option => option.id}
@@ -472,7 +479,7 @@ class Dashboard extends Component {
                         name="dan"
                         classNamePrefix="react-select-lg"
                         placeholder="Search Dan"
-                        isMulti
+                        // isMulti
                         value={search_dan}
                         options={Dans}
                         getOptionValue={option => option.value}
