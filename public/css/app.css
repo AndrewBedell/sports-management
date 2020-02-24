@@ -57112,7 +57112,10 @@ body {
 }
 
 .avatar-preview img {
-  width: 100%;
+  width: 50px;
+  height: 50px;
+  -o-object-fit: cover;
+     object-fit: cover;
 }
 
 .avatar-tooltip {
@@ -57133,9 +57136,11 @@ body {
   max-width: 240px;
 }
 
-.image-preview img {
-  width: 100%;
-  height: auto;
+.image-preview.is_image img {
+  -o-object-fit: cover;
+     object-fit: cover;
+  width: 240px;
+  height: 240px;
 }
 
 .btn-success {

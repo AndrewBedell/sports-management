@@ -154,13 +154,21 @@ class Members extends Component {
     const updateMem = await Api.put(`member/${id}`, item);
     switch (updateMem.response.status) {
       case 200:
-        members[editIndex] = item;
+        if (item.role_id !== 3) {
+          members[editIndex] = item;
+          this.setState({
+            members
+          });
+        } else {
+          this.setState({
+            members: members.filter(data => data.role_id !== 3)
+          });
+        }
         this.setState({
           isOpenEditModal: false,
           messageStatus: true,
           alertVisible: true,
-          successMessage: `${item.first_name} ${item.mid_name} ${item.last_name} is been update successfully!`,
-          members
+          successMessage: `${item.first_name} ${item.mid_name} ${item.last_name} is been update successfully!`
         });
         break;
       case 406:

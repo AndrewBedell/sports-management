@@ -317,13 +317,21 @@ class Dashboard extends Component {
       const updateMem = await Api.put(`member/${id}`, item);
       switch (updateMem.response.status) {
         case 200:
-          search_data[editIndex] = item;
+          if (item.role_id !== 3) {
+            search_data[editIndex] = item;
+            this.setState({
+              search_data
+            });
+          } else {
+            this.setState({
+              search_data: search_data.filter(data => data.role_id !== 3)
+            });
+          }
           this.setState({
             isOpenEditModal: false,
             messageStatus: true,
             alertVisible: true,
-            successMessage: `${item.first_name} ${item.last_name} is been update successfully!`,
-            search_data
+            successMessage: `${item.first_name} ${item.last_name} is been update successfully!`
           });
           break;
         case 406:
