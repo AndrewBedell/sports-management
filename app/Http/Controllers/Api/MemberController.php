@@ -76,7 +76,7 @@ class MemberController extends Controller
             'state' => 'required|string|max:255',
             'city' => 'required|string|max:255',
             'zip_code' => 'required|string|max:255',
-            'identity' => 'required|string|max:255',
+            'identity' => 'required|string|max:255|unique:members',
             'active' => 'required|boolean',
             'register_date' => 'required|date'
         ]);
@@ -314,97 +314,7 @@ class MemberController extends Controller
 
                 $exist = Member::where('email', $data['email'])->where('id', '!=', $id)->withTrashed()->count();
 
-                if ($exist == 0) {
-                    $current = Member::where('id', $id)->first();
-
-                    if ($current->role_id != $role->id) {
-                        if ($role->is_player) {
-                            User::where('member_id', $id)->delete();
-    
-                            $checkDeleted = Player::withTrashed()->where('member_id', $id)->count();
-    
-                            if ($checkDeleted == 0) {
-                                if (is_null($data['skill']))
-                                    $data['skill'] = "";
-                                
-                                Player::create(array(
-                                    'member_id' => $id,
-                                    'weight_id' => $data['weight_id'],
-                                    'dan' => $data['dan'],
-                                    'skill' => $data['skill']
-                                ));
-                            } else {
-                                Player::withTrashed()->where('member_id', $id)->restore();
-                            }
-                        } else {
-                            Player::where('member_id', $id)->delete();
-                        }
-                    }
-
-                    $base64_image = $request->input('profile_image');
-                    
-                    if ($base64_image != '' && preg_match('/^data:image\/(\w+);base64,/', $base64_image)) {
-                        $pos  = strpos($base64_image, ';');
-                        $type = explode(':', substr($base64_image, 0, $pos))[1];
-
-                        if (substr($type, 0, 5) == 'image') {
-                            $filename = $data['identity'] . '_' . date('Ymd');
-
-                            $type = str_replace('image/', '.', $type);
-
-                            $image = substr($base64_image, strpos($base64_image, ',') + 1);
-                            $image = base64_decode($image);
-                            
-                            Storage::disk('local')->delete(str_replace('photos/', '', $current->profile_image));
-                            Storage::disk('local')->put($filename . $type, $image);
-
-                            $data['profile_image'] = "photos/" . $filename . $type;
-                        } else {
-                            return response()->json(
-                                [
-                                    'status' => 'error',
-                                    'message' => 'File type is not image.'
-                                ],
-                                406
-                            );
-                        }
-                    }
-
-                    if (!isset($data['profile_image']) || is_null($data['profile_image'])) {
-                        $data['profile_image'] = "";
-                    }
-    
-                    if (is_null($data['mid_name']))
-                        $data['mid_name'] = "";
-    
-                    if (is_null($data['addressline2']))
-                        $data['addressline2'] = "";
-    
-                    if (is_null($data['position']))
-                        $data['position'] = "";
-
-                    Member::where('id', $id)->update(array(
-                        'organization_id' => $data['organization_id'],
-                        'role_id' => $data['role_id'],
-                        'first_name' => $data['first_name'],
-                        'mid_name' => $data['mid_name'],
-                        'last_name' => $data['last_name'],
-                        'profile_image' => $data['profile_image'],
-                        'gender' => $data['gender'],
-                        'birthday' => $data['birthday'],
-                        'email' => $data['email'],
-                        'mobile_phone' => $data['mobile_phone'],
-                        'addressline1' => $data['addressline1'],
-                        'addressline2' => $data['addressline2'],
-                        'country' => $data['country'],
-                        'state' => $data['state'],
-                        'city' => $data['city'],
-                        'zip_code' => $data['zip_code'],
-                        'position' => $data['position'],
-                        'identity' => $data['identity'],
-                        'register_date' => $data['register_date']
-                    ));
-                } else {
+                if ($exist > 0) {
                     return response()->json(
                         [
                             'status' => 'error',
@@ -413,6 +323,108 @@ class MemberController extends Controller
                         406
                     );
                 }
+
+                $exist = Member::where('identity', $data['identity'])->where('id', '!=', $id)->withTrashed()->count();
+
+                if ($exist > 0) {
+                    return response()->json(
+                        [
+                            'status' => 'error',
+                            'message' => 'Identity already exist.'
+                        ],
+                        406
+                    );
+                }
+
+                $current = Member::where('id', $id)->first();
+
+                if ($current->role_id != $role->id) {
+                    if ($role->is_player) {
+                        User::where('member_id', $id)->delete();
+
+                        $checkDeleted = Player::withTrashed()->where('member_id', $id)->count();
+
+                        if ($checkDeleted == 0) {
+                            if (is_null($data['skill']))
+                                $data['skill'] = "";
+                            
+                            Player::create(array(
+                                'member_id' => $id,
+                                'weight_id' => $data['weight_id'],
+                                'dan' => $data['dan'],
+                                'skill' => $data['skill']
+                            ));
+                        } else {
+                            Player::withTrashed()->where('member_id', $id)->restore();
+                        }
+                    } else {
+                        Player::where('member_id', $id)->delete();
+                    }
+                }
+
+                $base64_image = $request->input('profile_image');
+                
+                if ($base64_image != '' && preg_match('/^data:image\/(\w+);base64,/', $base64_image)) {
+                    $pos  = strpos($base64_image, ';');
+                    $type = explode(':', substr($base64_image, 0, $pos))[1];
+
+                    if (substr($type, 0, 5) == 'image') {
+                        $filename = $data['identity'] . '_' . date('Ymd');
+
+                        $type = str_replace('image/', '.', $type);
+
+                        $image = substr($base64_image, strpos($base64_image, ',') + 1);
+                        $image = base64_decode($image);
+                        
+                        Storage::disk('local')->delete(str_replace('photos/', '', $current->profile_image));
+                        Storage::disk('local')->put($filename . $type, $image);
+
+                        $data['profile_image'] = "photos/" . $filename . $type;
+                    } else {
+                        return response()->json(
+                            [
+                                'status' => 'error',
+                                'message' => 'File type is not image.'
+                            ],
+                            406
+                        );
+                    }
+                }
+
+                if (!isset($data['profile_image']) || is_null($data['profile_image'])) {
+                    $data['profile_image'] = "";
+                }
+
+                if (is_null($data['mid_name']))
+                    $data['mid_name'] = "";
+
+                if (is_null($data['addressline2']))
+                    $data['addressline2'] = "";
+
+                if (is_null($data['position']))
+                    $data['position'] = "";
+
+                Member::where('id', $id)->update(array(
+                    'organization_id' => $data['organization_id'],
+                    'role_id' => $data['role_id'],
+                    'first_name' => $data['first_name'],
+                    'mid_name' => $data['mid_name'],
+                    'last_name' => $data['last_name'],
+                    'profile_image' => $data['profile_image'],
+                    'gender' => $data['gender'],
+                    'birthday' => $data['birthday'],
+                    'email' => $data['email'],
+                    'mobile_phone' => $data['mobile_phone'],
+                    'addressline1' => $data['addressline1'],
+                    'addressline2' => $data['addressline2'],
+                    'country' => $data['country'],
+                    'state' => $data['state'],
+                    'city' => $data['city'],
+                    'zip_code' => $data['zip_code'],
+                    'position' => $data['position'],
+                    'identity' => $data['identity'],
+                    'register_date' => $data['register_date']
+                ));
 
                 $member_id = $member->id;
 

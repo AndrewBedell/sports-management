@@ -57,7 +57,7 @@ class OrganizationController extends Controller
 
         $validator = Validator::make($data, [
             'parent_id' => 'required|integer',
-            'register_no' => 'required',
+            'register_no' => 'required|string|max:255|unique:organizations',
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:organizations',
             'mobile_phone' => 'required|string|max:255',
@@ -66,7 +66,7 @@ class OrganizationController extends Controller
             'state' => 'required|string|max:255',
             'city' => 'required|string|max:255',
             'zip_code' => 'required|string|max:255',
-            'readable_id' => 'required|string|max:255',
+            'readable_id' => 'required|string|max:255|unique:organizations',
             'level' => 'required|integer',
             'is_club' => 'required|boolean',
         ]);
@@ -199,50 +199,7 @@ class OrganizationController extends Controller
             } else {
                 $exist = Organization::where('email', $data['email'])->where('id', '!=', $id)->withTrashed()->count();
 
-                if ($exist == 0) {
-                    $current = Organization::where('id', $id)->first();
-
-                    $base64_image = $request->input('logo');
-                    
-                    if ($base64_image != '' && preg_match('/^data:image\/(\w+);base64,/', $base64_image)) {
-                        $pos  = strpos($base64_image, ';');
-                        $type = explode(':', substr($base64_image, 0, $pos))[1];
-
-                        if (substr($type, 0, 5) == 'image') {
-                            $filename = date('Ymd') . '_' . $data['register_no'];
-
-                            $type = str_replace('image/', '.', $type);
-
-                            $image = substr($base64_image, strpos($base64_image, ',') + 1);
-                            $image = base64_decode($image);
-                            
-                            Storage::disk('local')->delete(str_replace('photos/', '', $current->logo));
-                            Storage::disk('local')->put($filename . $type, $image);
-
-                            $data['logo'] = "photos/" . $filename . $type;
-                        } else {
-                            return response()->json(
-                                [
-                                    'status' => 'error',
-                                    'message' => 'File type is not image.'
-                                ],
-                                406
-                            );
-                        }
-                    }
-                    
-                    if (!isset($data['logo']) || is_null($data['logo']))
-                        $data['logo'] = "";
-
-                    if (is_null($data['addressline2']))
-                        $data['addressline2'] = "";
-                        
-                    Organization::where('id', $id)->update($data);
-
-                    return response()->json([
-                        'status' => 'success'
-                    ], 200);
-                } else {
+                if ($exist > 0) {
                     return response()->json(
                         [
                             'status' => 'error',
@@ -251,6 +208,73 @@ class OrganizationController extends Controller
                         406
                     );
                 }
+
+                $exist = Organization::where('register_no', $data['register_no'])->where('id', '!=', $id)->withTrashed()->count();
+
+                if ($exist > 0) {
+                    return response()->json(
+                        [
+                            'status' => 'error',
+                            'message' => 'Register No already exist.'
+                        ],
+                        406
+                    );
+                }
+
+                $exist = Organization::where('readable_id', $data['readable_id'])->where('id', '!=', $id)->withTrashed()->count();
+
+                if ($exist > 0) {
+                    return response()->json(
+                        [
+                            'status' => 'error',
+                            'message' => 'Readable ID already exist.'
+                        ],
+                        406
+                    );
+                }
+
+                $current = Organization::where('id', $id)->first();
+
+                $base64_image = $request->input('logo');
+                
+                if ($base64_image != '' && preg_match('/^data:image\/(\w+);base64,/', $base64_image)) {
+                    $pos  = strpos($base64_image, ';');
+                    $type = explode(':', substr($base64_image, 0, $pos))[1];
+
+                    if (substr($type, 0, 5) == 'image') {
+                        $filename = date('Ymd') . '_' . $data['register_no'];
+
+                        $type = str_replace('image/', '.', $type);
+
+                        $image = substr($base64_image, strpos($base64_image, ',') + 1);
+                        $image = base64_decode($image);
+                        
+                        Storage::disk('local')->delete(str_replace('photos/', '', $current->logo));
+                        Storage::disk('local')->put($filename . $type, $image);
+
+                        $data['logo'] = "photos/" . $filename . $type;
+                    } else {
+                        return response()->json(
+                            [
+                                'status' => 'error',
+                                'message' => 'File type is not image.'
+                            ],
+                            406
+                        );
+                    }
+                }
+                
+                if (!isset($data['logo']) || is_null($data['logo']))
+                    $data['logo'] = "";
+
+                if (is_null($data['addressline2']))
+                    $data['addressline2'] = "";
+                    
+                Organization::where('id', $id)->update($data);
+
+                return response()->json([
+                    'status' => 'success'
+                ], 200);
             }
         } else {
             return response()->json(

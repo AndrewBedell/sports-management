@@ -17,7 +17,7 @@ class CreateOrganizationsTable extends Migration
             $table->bigIncrements('id');
             $table->integer('parent_id');
 
-            $table->string('register_no', 50);
+            $table->string('register_no', 50)->unique();
             $table->string('name', 50);
             $table->string('logo', 100);            
             $table->string('email')->unique();
@@ -30,7 +30,7 @@ class CreateOrganizationsTable extends Migration
             $table->string('city', 50);
             $table->string('zip_code', 20);
 
-            $table->string('readable_id', 20);
+            $table->string('readable_id', 20)->unique();
             $table->tinyInteger('level');
             $table->boolean('is_club');
             

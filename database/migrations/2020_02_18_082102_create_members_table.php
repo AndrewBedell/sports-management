@@ -36,7 +36,7 @@ class CreateMembersTable extends Migration
             $table->string('zip_code', 20);
             
             $table->string('position', 50);
-            $table->string('identity', 50);
+            $table->string('identity', 50)->unique();
             $table->boolean('active');
             $table->date('register_date', 0);
 
