@@ -269,6 +269,32 @@ class MemberController extends Controller
                 $exist = Member::where('email', $data['email'])->where('id', '!=', $id)->count();
 
                 if ($exist == 0) {
+                    $current = Member::where('id', $id)->first();
+
+                    if ($current->role_id != $role->id) {
+                        if ($role->is_player) {
+                            User::where('member_id', $id)->delete();
+    
+                            $checkDeleted = Player::withTrashed()->where('member_id', $id)->count();
+    
+                            if ($checkDeleted == 0) {
+                                if (is_null($data['skill']))
+                                    $data['skill'] = "";
+                                
+                                Player::create(array(
+                                    'member_id' => $id,
+                                    'weight_id' => $data['weight_id'],
+                                    'dan' => $data['dan'],
+                                    'skill' => $data['skill']
+                                ));
+                            } else {
+                                Player::withTrashed()->where('member_id', $id)->restore();
+                            }
+                        } else {
+                            Player::where('member_id', $id)->delete();
+                        }
+                    }                    
+
                     Member::where('id', $id)->update(array(
                         'organization_id' => $data['organization_id'],
                         'role_id' => $data['role_id'],
