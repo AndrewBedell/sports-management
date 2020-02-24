@@ -567,9 +567,9 @@ class OrganizationController extends Controller
 
                 if (sizeof($dan) > 0)
                     $result = $result->whereIn('players.dan', $dan);
-
-                $result = $result->leftJoin('players', 'members.id', '=', 'players.member_id')
-                                ->leftJoin('weights', 'players.weight_id', '=', 'players.weight_id')
+                    
+                $result = $result->join('players', 'members.id', '=', 'players.member_id')
+                                ->join('weights', 'weights.id', '=', 'players.weight_id')
                                 ->select("members.*", DB::raw("CONCAT(members.first_name, ' ', members.mid_name, ' ', members.last_name) AS name"),
                                  'weights.name AS weight_name', 'weights.weight', 'players.dan', 'players.skill', 'players.expired_date')
                                 ->get();
