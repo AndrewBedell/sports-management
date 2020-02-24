@@ -11,6 +11,7 @@ use JWTAuth;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Storage;
 
 use DB;
 
@@ -92,11 +93,39 @@ class MemberController extends Controller
             );
         }
 
+        $base64_image = $request->input('profile_image');
+                    
+        if ($base64_image != '') {
+            $pos  = strpos($base64_image, ';');
+            $type = explode(':', substr($base64_image, 0, $pos))[1];
+
+            if (substr($type, 0, 5) == 'image' && preg_match('/^data:image\/(\w+);base64,/', $base64_image)) {
+                $filename = $data['identity'] . '_' . date('Ymd');
+
+                $type = str_replace('image/', '.', $type);
+
+                $image = substr($base64_image, strpos($base64_image, ',') + 1);
+                $image = base64_decode($image);
+                
+                Storage::disk('local')->put($filename . $type, $image);
+
+                $data['profile_image'] = "photos/" . $filename . $type;
+            } else {
+                return response()->json(
+                    [
+                        'status' => 'error',
+                        'message' => 'File type is not image.'
+                    ],
+                    406
+                );
+            }
+        }
+
         if (!isset($data['profile_image']) || is_null($data['profile_image']))
-                $data['profile_image'] = "";
+            $data['profile_image'] = "";
 
         if (is_null($data['mid_name']))
-                $data['mid_name'] = "";
+            $data['mid_name'] = "";
 
         if (is_null($data['addressline2']))
             $data['addressline2'] = "";
@@ -198,7 +227,7 @@ class MemberController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
-    {
+    {   
         $member = Member::find($id);
 
         if (isset($member)) {
@@ -253,19 +282,6 @@ class MemberController extends Controller
                     }
                 }
 
-                if (!isset($data['profile_image']) || is_null($data['profile_image'])) {
-                    $data['profile_image'] = "";
-                }
-
-                if (is_null($data['mid_name']))
-                        $data['mid_name'] = "";
-
-                if (is_null($data['addressline2']))
-                    $data['addressline2'] = "";
-
-                if (is_null($data['position']))
-                    $data['position'] = "";
-
                 $exist = Member::where('email', $data['email'])->where('id', '!=', $id)->count();
 
                 if ($exist == 0) {
@@ -293,29 +309,71 @@ class MemberController extends Controller
                         } else {
                             Player::where('member_id', $id)->delete();
                         }
-                    }                    
+                    }
 
-                    Member::where('id', $id)->update(array(
-                        'organization_id' => $data['organization_id'],
-                        'role_id' => $data['role_id'],
-                        'first_name' => $data['first_name'],
-                        'mid_name' => $data['mid_name'],
-                        'last_name' => $data['last_name'],
-                        'profile_image' => $data['profile_image'],
-                        'gender' => $data['gender'],
-                        'birthday' => $data['birthday'],
-                        'email' => $data['email'],
-                        'mobile_phone' => $data['mobile_phone'],
-                        'addressline1' => $data['addressline1'],
-                        'addressline2' => $data['addressline2'],
-                        'country' => $data['country'],
-                        'state' => $data['state'],
-                        'city' => $data['city'],
-                        'zip_code' => $data['zip_code'],
-                        'position' => $data['position'],
-                        'identity' => $data['identity'],
-                        'register_date' => $data['register_date']
-                    ));
+                    $base64_image = $request->input('profile_image');
+                    
+                    if ($base64_image != '') {
+                        $pos  = strpos($base64_image, ';');
+                        $type = explode(':', substr($base64_image, 0, $pos))[1];
+
+                        if (substr($type, 0, 5) == 'image' && preg_match('/^data:image\/(\w+);base64,/', $base64_image)) {
+                            $filename = $data['identity'] . '_' . date('Ymd');
+
+                            $type = str_replace('image/', '.', $type);
+
+                            $image = substr($base64_image, strpos($base64_image, ',') + 1);
+                            $image = base64_decode($image);
+                            
+                            Storage::disk('local')->delete(str_replace('photos/', '', $current->profile_image));
+                            Storage::disk('local')->put($filename . $type, $image);
+
+                            $data['profile_image'] = "photos/" . $filename . $type;
+                        } else {
+                            return response()->json(
+                                [
+                                    'status' => 'error',
+                                    'message' => 'File type is not image.'
+                                ],
+                                406
+                            );
+                        }
+                    }
+
+                    if (!isset($data['profile_image']) || is_null($data['profile_image'])) {
+                        $data['profile_image'] = "";
+                    }
+    
+                    if (is_null($data['mid_name']))
+                        $data['mid_name'] = "";
+    
+                    if (is_null($data['addressline2']))
+                        $data['addressline2'] = "";
+    
+                    if (is_null($data['position']))
+                        $data['position'] = "";
+
+                    // Member::where('id', $id)->update(array(
+                    //     'organization_id' => $data['organization_id'],
+                    //     'role_id' => $data['role_id'],
+                    //     'first_name' => $data['first_name'],
+                    //     'mid_name' => $data['mid_name'],
+                    //     'last_name' => $data['last_name'],
+                    //     'profile_image' => $data['profile_image'],
+                    //     'gender' => $data['gender'],
+                    //     'birthday' => $data['birthday'],
+                    //     'email' => $data['email'],
+                    //     'mobile_phone' => $data['mobile_phone'],
+                    //     'addressline1' => $data['addressline1'],
+                    //     'addressline2' => $data['addressline2'],
+                    //     'country' => $data['country'],
+                    //     'state' => $data['state'],
+                    //     'city' => $data['city'],
+                    //     'zip_code' => $data['zip_code'],
+                    //     'position' => $data['position'],
+                    //     'identity' => $data['identity'],
+                    //     'register_date' => $data['register_date']
+                    // ));
                 } else {
                     return response()->json(
                         [
@@ -338,14 +396,15 @@ class MemberController extends Controller
                         'skill' => $data['skill']
                     ));
                 } else {
-                    User::where('member_id', $member_id)->update(array(
-                        'is_super' => $data['is_super'],
-                        'email' => $data['email']
-                    ));
+                    // User::where('member_id', $member_id)->update(array(
+                    //     'is_super' => $data['is_super'],
+                    //     'email' => $data['email']
+                    // ));
                 }
 
                 return response()->json([
-                    'status' => 'success'
+                    'status' => 'success',
+                    'data' => $data
                 ], 200);
             } else {
                 return response()->json(
