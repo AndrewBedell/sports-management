@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 use App\User;
 use App\Member;
 use App\Organization;
+use App\Invitation;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -137,33 +138,65 @@ class UserController extends Controller
         }
     }
 
-    public function invite(Request $request)
+    public function invite()
     {
+        $user = JWTAuth::parseToken()->authenticate();
+            
         $role = DB::table('roles')->where('is_player', true)->first();
 
-        $role_id = $role->id;
-
-        for ($i = 0; $i < sizeof($request['ids']); $i++) {
-            $member = Member::where('id', $request['ids'][$i])->first();
-
-            if ($member->role_id != $role_id && !$member->active) {
-                User::create(array(
-                    'member_id' => $member->id,
-                    'is_super' => $request['is_super'][$i],
-                    'password' => Hash::make('password'),
-                    'email' => $member->email
-                ));
-
-                // $msg = "You are registered as a manager in the system.\r\nPlease confirm the below url.\r\n";
-                // $headers = "From: administrator@sports.org";
-
-                // mail($member->email, "Invitation from Sport Organization", $msg, $headers);
+        $members = Member::where('role_id', '!=', $role->id)
+                        ->where('members.id', '!=', $user->member_id)
+                        ->leftJoin('users', 'users.member_id', '=', 'members.id')
+                        ->select('members.*', 'users.is_super')
+                        ->get();
+                        
+        for ($i = 0; $i < sizeof($members); $i++) {
+            if (is_null($members[$i]->status)) {
+                if (is_null($members[$i]->is_super)) {
+                    $members[$i]['is_admin'] = 0;
+                    $members[$i]['is_super'] = 0;
+                } else {
+                    $members[$i]['is_admin'] = 1;
+                }
+            } else {
+                $members[$i]['is_admin'] = 0;
             }
         }
 
+        return response()->json($members);
+    }
+    
+    public function invite_send(Request $request)
+    {
+        $data = $request->all();
+        
+        foreach ($data as $row) {
+            $msg = "You are registered as a manager in the system.\r\nPlease confirm the below url.\r\n";
+            $msg .= url('/api/invite-accept?token=' . Hash::make($row['email']));
+            
+            $headers = "From: administrator@sports.org";
+
+            mail($row['email'], "Invitation from Sport Organization", $msg, $headers);
+            
+            Invitation::where('email', $row['email'])->delete();
+            
+            Invitation::create(array(
+                'email' => $row['email'],
+                'token' => Hash::make($row['email']),
+                'is_super' => $row['is_super'],
+                'created_at' => date('Y-m-d H:i:s')
+            ));
+        }
+        
         return response()->json([
             'status' => 'success',
-            'message' => 'Invitation sent successfully.'
+            'message' => 'Invite sent successfully.',
+            'data' => $data
         ], 200);
+    }
+    
+    public function invite_accept(Request $request)
+    {
+        var_dump($request->all());
     }
 }

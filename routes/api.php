@@ -17,6 +17,8 @@ Route::namespace('Api')->group(function () {
     Route::post('login', 'UserController@login');
     Route::post('forgot', 'ForgotPasswordController@forgot');
     Route::post('reset/{token}', 'ForgotPasswordController@reset');
+    
+    Route::get('invite-accept', 'UserController@invite_accept');
 
     Route::group(['middleware' => ['jwt.verify']], function () {
         Route::get('search', 'OrganizationController@search');
@@ -38,7 +40,9 @@ Route::namespace('Api')->group(function () {
 
         Route::get('profile', 'UserController@profile');
         Route::post('update-profile', 'UserController@update');
-        Route::post('invite-users', 'UserController@invite');
+        
+        Route::get('invite-users', 'UserController@invite');
+        Route::get('invite-send', 'UserController@invite_send');
 
         Route::get('weights', 'PlayerController@weights');
     });
