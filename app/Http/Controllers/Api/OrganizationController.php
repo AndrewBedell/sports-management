@@ -197,39 +197,35 @@ class OrganizationController extends Controller
                     422
                 );
             } else {
-                $exist = Organization::where('email', $data['email'])->where('id', '!=', $id)->withTrashed()->count();
+                $exist1 = Organization::where('email', $data['email'])->where('id', '!=', $id)->withTrashed()->count();
+                $exist2 = Organization::where('register_no', $data['register_no'])->where('id', '!=', $id)->withTrashed()->count();
+                $exist3 = Organization::where('readable_id', $data['readable_id'])->where('id', '!=', $id)->withTrashed()->count();
 
-                if ($exist > 0) {
-                    return response()->json(
-                        [
-                            'status' => 'error',
-                            'message' => 'Email already exist.'
-                        ],
-                        406
-                    );
+                $errArr = array();
+                $exist = 0;
+
+                if ($exist1 > 0) {
+                    $errArr['email'] = 'Email already exist.';
+                    $exist += $exist1;
                 }
 
-                $exist = Organization::where('register_no', $data['register_no'])->where('id', '!=', $id)->withTrashed()->count();
-
-                if ($exist > 0) {
-                    return response()->json(
-                        [
-                            'status' => 'error',
-                            'message' => 'Register No already exist.'
-                        ],
-                        406
-                    );
+                if ($exist2 > 0) {
+                    $errArr['register_no'] = 'Register No already exist.';
+                    $exist += $exist2;
                 }
 
-                $exist = Organization::where('readable_id', $data['readable_id'])->where('id', '!=', $id)->withTrashed()->count();
-
+                if ($exist3 > 0) {
+                    $errArr['readable_id'] = 'Reable ID already exist.';
+                    $exist += $exist3;
+                }
+                
                 if ($exist > 0) {
                     return response()->json(
                         [
-                            'status' => 'error',
-                            'message' => 'Readable ID already exist.'
+                            'status' => 'fail',
+                            'data' => $errArr
                         ],
-                        406
+                        422
                     );
                 }
 

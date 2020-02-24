@@ -312,27 +312,29 @@ class MemberController extends Controller
                     }
                 }
 
-                $exist = Member::where('email', $data['email'])->where('id', '!=', $id)->withTrashed()->count();
+                $exist1 = Member::where('email', $data['email'])->where('id', '!=', $id)->withTrashed()->count();
+                $exist2 = Member::where('identity', $data['identity'])->where('id', '!=', $id)->withTrashed()->count();
 
-                if ($exist > 0) {
-                    return response()->json(
-                        [
-                            'status' => 'error',
-                            'message' => 'Email already exist.'
-                        ],
-                        406
-                    );
+                $errArr = array();
+                $exist = 0;
+
+                if ($exist1 > 0) {
+                    $errArr['email'] = 'Email already exist.';
+                    $exist += $exist1;
                 }
 
-                $exist = Member::where('identity', $data['identity'])->where('id', '!=', $id)->withTrashed()->count();
+                if ($exist2 > 0) {
+                    $errArr['identity'] = 'Identity No already exist.';
+                    $exist += $exist2;
+                }
 
                 if ($exist > 0) {
                     return response()->json(
                         [
-                            'status' => 'error',
-                            'message' => 'Identity already exist.'
+                            'status' => 'fail',
+                            'data' => $errArr
                         ],
-                        406
+                        422
                     );
                 }
 
