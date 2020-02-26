@@ -19,6 +19,7 @@ Route::namespace('Api')->group(function () {
     Route::post('reset/{token}', 'ForgotPasswordController@reset');
     
     Route::get('invite-accept', 'UserController@invite_accept');
+    Route::post('register-user', 'UserController@store');
 
     Route::group(['middleware' => ['jwt.verify']], function () {
         Route::get('search', 'OrganizationController@search');

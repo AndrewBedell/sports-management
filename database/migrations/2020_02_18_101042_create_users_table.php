@@ -25,8 +25,6 @@ class CreateUsersTable extends Migration
 
             $table->rememberToken();
 
-            $table->dateTime('email_verified_at', 0)->nullable();
-
             $table->timestamps();
             $table->softDeletes();
         });
@@ -37,7 +35,6 @@ class CreateUsersTable extends Migration
                 'is_super' => true,
                 'password' => Hash::make('123456'),
                 'email' => 'admin@gmail.com',
-                'email_verified_at' => '2020-02-18 00:00:00',
                 'created_at' => date('Y-m-d H:i:s'),
                 'updated_at' => date('Y-m-d H:i:s')
             )

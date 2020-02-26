@@ -12,6 +12,7 @@ import Members from './Members/index';
 import MemberDetail from './Members/detail';
 import OrganizationAdd from './Organizations/add';
 import MemberAdd from './Members/add';
+import GetInviteUsers from './Users/';
 
 class Main extends Component {
   render() {
@@ -21,6 +22,7 @@ class Main extends Component {
           <Route exact path="/member/register" name="MemberAdd" component={MemberAdd} />
           <Route exact path="/member/detail" name="MemberDetail" component={MemberDetail} />
           <Route exact path="/members" name="Members" component={Members} />
+          <Route exact path="/invite-users" name="GetInviteUsers" component={GetInviteUsers} />
           <Route exact path="/organization/create" name="OrganizationAdd" component={OrganizationAdd} />
           <Route exact path="/organization/detail" name="OrganizationDetail" component={OrganizationDetail} />
           <Route exact path="/organizations" name="Organizations" component={Organizations} />

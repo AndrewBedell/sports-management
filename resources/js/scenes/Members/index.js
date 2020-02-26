@@ -231,7 +231,7 @@ class Members extends Component {
         <div className="main-content">
           <Container>
             <Row className="mb-5">
-              <Col xs="6">
+              <Col xs="4">
                 <Button
                   type="button"
                   color="primary"
@@ -240,7 +240,16 @@ class Members extends Component {
                   Go Home
                 </Button>
               </Col>
-              <Col xs="6" className="text-right">
+              <Col xs="4">
+                <Button
+                  type="button"
+                  color="primary"
+                  onClick={() => this.props.history.push('/invite-users')}
+                >
+                  Invite Users
+                </Button>
+              </Col>
+              <Col xs="4">
                 <Button
                   type="button"
                   color="primary"

@@ -94,6 +94,42 @@ class UserController extends Controller
         return response()->json($member);
     }
 
+    public function store(Request $request)
+    {
+        $data = $request->all();
+
+        $exist = Invitation::where('email', $data['email'])->first();
+
+        if ($data['code'] == $exist->vcode) {
+            $member = Member::where('email', $data['email'])->first();
+
+            User::create(array(
+                'member_id' => $member->id,
+                'is_super' => $exist->is_super,
+                'password' => Hash::make($data['pass']),
+                'email' => $data['email']
+            ));
+
+            Member::where('email', $data['email'])->update(['active' => 1]);
+
+            Invitation::where('email', $data['email'])->delete();
+
+            return response()->json([
+                'status' => 'success'
+            ], 200);
+        } else {
+            $errArr['code'] = 'Invalid Verification Code.';
+
+            return response()->json(
+                [
+                    'status' => 'error',
+                    'data' => $errArr
+                ],
+                422
+            );
+        }
+    }
+
     public function update(Request $request)
     {
         $user = JWTAuth::parseToken()->authenticate();
@@ -146,8 +182,11 @@ class UserController extends Controller
 
         $members = Member::where('role_id', '!=', $role->id)
                         ->where('members.id', '!=', $user->member_id)
+                        ->where('members.active', 0)
                         ->leftJoin('users', 'users.member_id', '=', 'members.id')
-                        ->select('members.*', 'users.is_super')
+                        ->leftJoin('invitations', 'members.email', '=', 'invitations.email')
+                        ->select('members.*', 'users.is_super', 'invitations.created_at AS invited')
+                        ->orderBy('members.first_name')
                         ->get();
                         
         for ($i = 0; $i < sizeof($members); $i++) {
@@ -161,7 +200,12 @@ class UserController extends Controller
             } else {
                 $members[$i]['is_admin'] = 0;
             }
-        }
+
+            if (is_null($members[$i]->invited))
+                $members[$i]->invited = 0;
+            else
+                $members[$i]->invited = 1;
+        }   
 
         return response()->json($members);
     }
@@ -169,34 +213,94 @@ class UserController extends Controller
     public function invite_send(Request $request)
     {
         $data = $request->all();
-        
-        foreach ($data as $row) {
-            $msg = "You are registered as a manager in the system.\r\nPlease confirm the below url.\r\n";
-            $msg .= url('/api/invite-accept?token=' . Hash::make($row['email']));
-            
-            $headers = "From: administrator@sports.org";
 
-            mail($row['email'], "Invitation from Sport Organization", $msg, $headers);
-            
-            Invitation::where('email', $row['email'])->delete();
-            
+        $token = Hash::make($data['email']);
+        
+        $msg = "You have an invitation to register as a manager in our system.\r\n";
+        $msg .= "Please confirm the below url.\r\n";
+        $msg .= url('/api/invite-accept?token=' . $token);
+        
+        $headers = "From: administrator@sports.org";
+
+        mail($data['email'], "Invitation from LiveMedia", $msg, $headers);
+        
+        $exist = Invitation::where('email', $data['email'])->count();
+        
+        if ($exist == 0) {
             Invitation::create(array(
-                'email' => $row['email'],
-                'token' => Hash::make($row['email']),
-                'is_super' => $row['is_super'],
+                'email' => $data['email'],
+                'token' => $token,
+                'is_super' => $data['is_super'],
                 'created_at' => date('Y-m-d H:i:s')
             ));
-        }
+        } else {
+            Invitation::where('email', $data['email'])->update(array(
+                'email' => $data['email'],
+                'token' => $token,
+                'is_super' => $data['is_super'],
+                'created_at' => date('Y-m-d H:i:s')
+            ));
+        }        
         
         return response()->json([
             'status' => 'success',
-            'message' => 'Invite sent successfully.',
-            'data' => $data
+            'message' => 'Invite sent successfully.'
         ], 200);
     }
     
     public function invite_accept(Request $request)
     {
-        var_dump($request->all());
+        $token = $request->input('token');
+        
+        if (is_null($token) || $token == '') {
+            return response()->json(
+                [
+                    'status' => 'error',
+                    'message' => 'Empty token.'
+                ],
+                406
+            );
+        } else {
+            $exist = Invitation::where('token', $token)->get();
+
+            if (sizeof($exist) == 1) {
+                $code = '';
+
+                $characters = '0123456789abcdefghijklmnopqrstuvwxyz';
+                $charactersLength = strlen($characters);
+
+                for ($j = 0; $j < 6; $j++) {
+                    $code .= $characters[rand(0, $charactersLength - 1)];
+                }
+
+                $msg = "Please use the below verification code to register now.\r\n";
+                $msg .= "Verification Code: " . $code;
+                
+                $headers = "From: administrator@sports.org";
+
+                mail($data['email'], "Invitation from LiveMedia", $msg, $headers);
+
+                Invitation::where('token', $token)->update(array(
+                    'email' => $exist[0]->email,
+                    'token' => $token,
+                    'is_super' => $exist[0]->is_super,
+                    'vcode' => $code,
+                    'codesent_at' => date('Y-m-d H:i:s')
+                ));
+
+                return response()->json([
+                    'status' => 'success',
+                    'member' => $exist[0]
+                ]);
+            } else {
+                return response()->json(
+                    [
+                        'status' => 'error',
+                        'message' => 'Invalid token.'
+                    ],
+                    406
+                );
+            }
+        }
     }
 }
