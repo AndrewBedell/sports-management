@@ -218,7 +218,7 @@ class UserController extends Controller
         
         $msg = "You have an invitation to register as a manager in our system.\r\n";
         $msg .= "Please confirm the below url.\r\n";
-        $msg .= url('/api/invite-accept?token=' . $token);
+        $msg .= url('/invite-accept?token=' . $token);
         
         $headers = "From: administrator@sports.org";
 
@@ -266,7 +266,7 @@ class UserController extends Controller
             if (sizeof($exist) == 1) {
                 $code = '';
 
-                $characters = '0123456789abcdefghijklmnopqrstuvwxyz';
+                $characters = '0123456789';
                 $charactersLength = strlen($characters);
 
                 for ($j = 0; $j < 6; $j++) {
