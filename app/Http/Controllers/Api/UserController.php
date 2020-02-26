@@ -278,7 +278,7 @@ class UserController extends Controller
                 
                 $headers = "From: administrator@sports.org";
 
-                mail($exist[0]['email'], "Invitation from LiveMedia", $msg, $headers);
+                mail($exist[0]->email, "Invitation from LiveMedia", $msg, $headers);
 
                 Invitation::where('token', $token)->update(array(
                     'email' => $exist[0]->email,
