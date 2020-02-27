@@ -16,8 +16,10 @@ class CreateWeightsTable extends Migration
         Schema::create('weights', function (Blueprint $table) {
             $table->bigIncrements('id');
 
-            $table->string('name', 50);
-            $table->smallInteger('weight');
+            $table->string('name', 20);
+            $table->string('weight', 10);
+            $table->string('description', 50);
+            $table->boolean('gender');
             $table->smallInteger('order');
 
             $table->timestamps();
