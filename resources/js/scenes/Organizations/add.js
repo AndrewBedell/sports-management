@@ -84,7 +84,8 @@ class OrganizationAdd extends Component {
     const { imagePreviewUrl } = this.state;
     newData = {
       parent_id: parseInt(values.parent_id, 10) || 1,
-      name: values.name,
+      name_o: values.name_o,
+      name_s: values.name_s,
       register_no: values.register_no,
       logo: imagePreviewUrl || '',
       email: values.email,
@@ -162,7 +163,8 @@ class OrganizationAdd extends Component {
               ref={this.formikRef}
               initialValues={{
                 parent_id: '',
-                name: '',
+                name_o: '',
+                name_s: '',
                 register_no: '',
                 email: '',
                 logo: null,
@@ -179,7 +181,8 @@ class OrganizationAdd extends Component {
               validationSchema={
                 Yup.object().shape({
                   parent_id: Yup.mixed().required('Federation is required'),
-                  name: Yup.string().required('This field is required!'),
+                  name_o: Yup.string().required('This field is required!'),
+                  name_s: Yup.string().required('This field is required!'),
                   register_no: Yup.string().required('This field is required!'),
                   email: Yup.string().email('Email is not valid!').required('This field is required!'),
                   // logo: Yup.mixed().required('Logo is required!'),
@@ -222,22 +225,7 @@ class OrganizationAdd extends Component {
                         </div>
                       </FormGroup>
                     </Col>
-                    <Col xs="6">
-                      <FormGroup>
-                        <Label for="register_no">
-                          Register Number
-                        </Label>
-                        <Input
-                          type="text"
-                          name="register_no"
-                          value={values.register_no}
-                          onChange={handleChange}
-                          onBlur={handleBlur}
-                          invalid={!!errors.register_no && touched.register_no}
-                        />
-                        <FormFeedback>{errors.register_no}</FormFeedback>
-                      </FormGroup>
-                    </Col>
+                    <Col xs="6"></Col>
                     <Col sm="6">
                       <FormGroup>
                         <Label for="parent_id">
@@ -264,18 +252,50 @@ class OrganizationAdd extends Component {
                     </Col>
                     <Col sm="6">
                       <FormGroup>
-                        <Label for="name">
+                        <Label for="register_no">
+                          Register Number
+                        </Label>
+                        <Input
+                          type="text"
+                          name="register_no"
+                          value={values.register_no}
+                          onChange={handleChange}
+                          onBlur={handleBlur}
+                          invalid={!!errors.register_no && touched.register_no}
+                        />
+                        <FormFeedback>{errors.register_no}</FormFeedback>
+                      </FormGroup>
+                    </Col>
+                    <Col sm="6">
+                      <FormGroup>
+                        <Label for="name_o">
                           Organization Name
                         </Label>
                         <Input
                           type="text"
-                          name="name"
-                          value={values.name}
+                          name="name_o"
+                          value={values.name_o}
                           onChange={handleChange}
                           onBlur={handleBlur}
-                          invalid={!!errors.name && touched.name}
+                          invalid={!!errors.name_o && touched.name_o}
                         />
-                        <FormFeedback>{errors.name}</FormFeedback>
+                        <FormFeedback>{errors.name_o}</FormFeedback>
+                      </FormGroup>
+                    </Col>
+                    <Col sm="6">
+                      <FormGroup>
+                        <Label for="name_s">
+                          Simple Name
+                        </Label>
+                        <Input
+                          type="text"
+                          name="name_s"
+                          value={values.name_s}
+                          onChange={handleChange}
+                          onBlur={handleBlur}
+                          invalid={!!errors.name_s && touched.name_s}
+                        />
+                        <FormFeedback>{errors.name_s}</FormFeedback>
                       </FormGroup>
                     </Col>
                     <Col sm="6">

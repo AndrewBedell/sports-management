@@ -39,11 +39,11 @@ class MemberDetail extends Component {
             <div>
               Welcome to
               {' '}
-              {user.first_name}
+              {user.name}
               {' '}
-              {user.mid_name}
+              {user.patronymic}
               {' '}
-              {user.last_name}
+              {user.surname}
             </div>
           </Container>
         </div>

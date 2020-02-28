@@ -104,7 +104,7 @@ class Organizations extends Component {
     this.setState({
       isOpenDeleteModal: true,
       deleteId: id,
-      confirmationMessage: `Are you sure you want to delete ${delItem.name}?`
+      confirmationMessage: `Are you sure you want to delete ${delItem.name_o}?`
     });
   }
 
@@ -147,7 +147,7 @@ class Organizations extends Component {
           isOpenEditModal: false,
           messageStatus: true,
           alertVisible: true,
-          successMessage: `${item.name} is been update successfully!`,
+          successMessage: `${item.name_o} is been update successfully!`,
           orgs
         });
         break;

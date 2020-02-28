@@ -18,9 +18,9 @@ class CreateMembersTable extends Migration
             $table->integer('organization_id');
             $table->integer('role_id');
 
-            $table->string('first_name', 20);
-            $table->string('mid_name', 20)->default("");
-            $table->string('last_name', 20);
+            $table->string('name', 20);
+            $table->string('surname', 20);
+            $table->string('patronymic', 20)->default("");
             
             $table->string('profile_image', 100);
             $table->boolean('gender');
@@ -48,9 +48,9 @@ class CreateMembersTable extends Migration
             array(
                 'organization_id' => 1,
                 'role_id' => 1,
-                'first_name' => 'Admin',
-                'mid_name' => '',
-                'last_name' => 'User',
+                'name' => 'Admin',
+                'surname' => 'User',
+                'patronymic' => '',
                 'profile_image' => '',
                 'gender' => true,
                 'birthday' => '2000-01-01',

@@ -65,8 +65,8 @@ class MemberController extends Controller
         $validMember = Validator::make($data, [
             'organization_id' => 'required',
             'role_id' => 'required',
-            'first_name' => 'required|string|max:255',
-            'last_name' => 'required|string|max:255',
+            'name' => 'required|string|max:255',
+            'surname' => 'required|string|max:255',
             'gender' => 'required|boolean',
             'birthday' => 'required|date',
             'email' => 'required|string|email|max:255|unique:members',
@@ -139,8 +139,8 @@ class MemberController extends Controller
         if (!isset($data['profile_image']) || is_null($data['profile_image']))
             $data['profile_image'] = "";
 
-        if (is_null($data['mid_name']))
-            $data['mid_name'] = "";
+        if (is_null($data['patronymic']))
+            $data['patronymic'] = "";
 
         if (is_null($data['addressline2']))
             $data['addressline2'] = "";
@@ -151,9 +151,9 @@ class MemberController extends Controller
         $member = Member::create(array(
             'organization_id' => $data['organization_id'],
             'role_id' => $data['role_id'],
-            'first_name' => $data['first_name'],
-            'mid_name' => $data['mid_name'],
-            'last_name' => $data['last_name'],
+            'name' => $data['name'],
+            'patronymic' => $data['patronymic'],
+            'surname' => $data['surname'],
             'profile_image' => $data['profile_image'],
             'gender' => $data['gender'],
             'birthday' => $data['birthday'],
@@ -267,8 +267,8 @@ class MemberController extends Controller
                 $validMember = Validator::make($data, [
                     'organization_id' => 'required',
                     'role_id' => 'required',
-                    'first_name' => 'required|string|max:255',
-                    'last_name' => 'required|string|max:255',
+                    'name' => 'required|string|max:255',
+                    'surname' => 'required|string|max:255',
                     'gender' => 'required|boolean',
                     'birthday' => 'required|date',
                     'email' => 'required|string|email|max:255',
@@ -397,8 +397,8 @@ class MemberController extends Controller
                     $data['profile_image'] = "";
                 }
 
-                if (is_null($data['mid_name']))
-                    $data['mid_name'] = "";
+                if (is_null($data['patronymic']))
+                    $data['patronymic'] = "";
 
                 if (is_null($data['addressline2']))
                     $data['addressline2'] = "";
@@ -409,9 +409,9 @@ class MemberController extends Controller
                 Member::where('id', $id)->update(array(
                     'organization_id' => $data['organization_id'],
                     'role_id' => $data['role_id'],
-                    'first_name' => $data['first_name'],
-                    'mid_name' => $data['mid_name'],
-                    'last_name' => $data['last_name'],
+                    'name' => $data['name'],
+                    'patronymic' => $data['patronymic'],
+                    'surname' => $data['surname'],
                     'profile_image' => $data['profile_image'],
                     'gender' => $data['gender'],
                     'birthday' => $data['birthday'],
@@ -542,9 +542,9 @@ class MemberController extends Controller
 
         foreach ($child_org as $child) {
             if ($parent_name == "")
-                $parent_name = $child->name;
+                $parent_name = $child->name_o;
             else
-                $parent_name = $child->name . ", " . $parent_name;
+                $parent_name = $child->name_o . ", " . $parent_name;
 
             $child->label = $parent_name;
 

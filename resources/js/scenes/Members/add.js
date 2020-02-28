@@ -107,9 +107,9 @@ class MemberAdd extends Component {
     let newData = {};
     const { imagePreviewUrl } = this.state;
     newData = {
-      first_name: values.first_name,
-      mid_name: values.mid_name,
-      last_name: values.last_name,
+      name: values.name,
+      patronymic: values.patronymic,
+      surname: values.surname,
       gender: values.gender.id,
       birthday: moment(values.birthday).format('YYYY-MM-DD'),
       email: values.email,
@@ -221,9 +221,9 @@ class MemberAdd extends Component {
                 role_id: null,
                 profile_image: null,
                 register_date: null,
-                first_name: '',
-                mid_name: '',
-                last_name: '',
+                name: '',
+                patronymic: '',
+                surname: '',
                 gender: null,
                 birthday: null,
                 email: '',
@@ -246,8 +246,8 @@ class MemberAdd extends Component {
                   role_id: Yup.mixed().required('This field is required!'),
                   // profile_image: Yup.mixed().required('Image is required!'),
                   register_date: Yup.mixed().required('This field is required!'),
-                  first_name: Yup.string().required('This field is required!'),
-                  last_name: Yup.string().required('This field is required!'),
+                  name: Yup.string().required('This field is required!'),
+                  surname: Yup.string().required('This field is required!'),
                   gender: Yup.mixed().required('This field is required!'),
                   birthday: Yup.mixed().required('This field is required!'),
                   email: Yup.string().email('Email is not valid!').required('This field is required!'),
@@ -307,7 +307,7 @@ class MemberAdd extends Component {
                           indicatorSeparator={null}
                           options={values.role_id && values.role_id.is_player === 1 ? org_list.filter(org => org.is_club === 1) : org_list}
                           getOptionValue={option => option.id}
-                          getOptionLabel={option => option.name}
+                          getOptionLabel={option => option.name_o}
                           value={values.organization_id}
                           invalid={!!errors.organization_id && touched.organization_id}
                           onChange={(value) => {
@@ -352,29 +352,29 @@ class MemberAdd extends Component {
                     </Col>
                     <Col sm="4">
                       <FormGroup>
-                        <Label for="first_name">
-                          First name
+                        <Label for="name">
+                          Name
                         </Label>
                         <Input
-                          name="first_name"
+                          name="name"
                           type="text"
-                          value={values.first_name || ''}
+                          value={values.name || ''}
                           onChange={handleChange}
                           onBlur={handleBlur}
-                          invalid={!!errors.first_name && touched.first_name}
+                          invalid={!!errors.name && touched.name}
                         />
-                        <FormFeedback>{errors.first_name}</FormFeedback>
+                        <FormFeedback>{errors.name}</FormFeedback>
                       </FormGroup>
                     </Col>
                     <Col sm="4">
                       <FormGroup>
-                        <Label for="mid_name">
-                          Mid name
+                        <Label for="patronymic">
+                          Patronymic
                         </Label>
                         <Input
-                          name="mid_name"
+                          name="patronymic"
                           type="text"
-                          value={values.mid_name || ''}
+                          value={values.patronymic || ''}
                           onChange={handleChange}
                           onBlur={handleBlur}
                         />
@@ -382,18 +382,18 @@ class MemberAdd extends Component {
                     </Col>
                     <Col sm="4">
                       <FormGroup>
-                        <Label for="last_name">
-                          Last name
+                        <Label for="surname">
+                          Surname
                         </Label>
                         <Input
-                          name="last_name"
+                          name="surname"
                           type="text"
-                          value={values.last_name || ''}
+                          value={values.surname || ''}
                           onChange={handleChange}
                           onBlur={handleBlur}
-                          invalid={!!errors.last_name && touched.last_name}
+                          invalid={!!errors.surname && touched.surname}
                         />
-                        <FormFeedback>{errors.last_name}</FormFeedback>
+                        <FormFeedback>{errors.surname}</FormFeedback>
                       </FormGroup>
                     </Col>
                     <Col sm="4">

@@ -111,7 +111,8 @@ class EditModal extends React.Component {
     if (!item) {
       if (type && type.value && type.value !== 'player') {
         formikRef1.current.setValues({
-          name: '',
+          name_o: '',
+          name_s: '',
           parent_id: '',
           register_no: '',
           logo: null,
@@ -133,9 +134,9 @@ class EditModal extends React.Component {
           role_id: null,
           profile_image: null,
           register_date: null,
-          first_name: '',
-          mid_name: '',
-          last_name: '',
+          name: '',
+          patronymic: '',
+          surname: '',
           gender: null,
           birthday: null,
           email: '',
@@ -154,9 +155,9 @@ class EditModal extends React.Component {
       }
     } else if (type && type.value && type.value === 'player') {
       formikRef2.current.setValues({
-        first_name: values.first_name,
-        mid_name: values.mid_name,
-        last_name: values.last_name,
+        name: values.name,
+        patronymic: values.patronymic,
+        surname: values.surname,
         gender: values.gender ? Genders[0] : Genders[1],
         organization_id: org_list.filter(org => org.id === values.organization_id)[0],
         role_id: roles.filter(role => role.id === values.role_id)[0],
@@ -179,7 +180,8 @@ class EditModal extends React.Component {
       });
     } else {
       formikRef1.current.setValues({
-        name: values.name,
+        name_o: values.name_o,
+        name_s: values.name_s,
         parent_id: org_list.filter(org => org.id === values.parent_id)[0],
         register_no: values.register_no,
         logo: values.logo,
@@ -258,7 +260,8 @@ class EditModal extends React.Component {
     if (type.value !== 'player') {
       newData = {
         id,
-        name: values.name,
+        name_o: values.name_o,
+        name_s: values.name_s,
         parent_id: (values.parent_id && values.parent_id.id) || item.parent_id,
         register_no: values.register_no,
         logo: imagePreviewUrl || '',
@@ -277,9 +280,9 @@ class EditModal extends React.Component {
     } else {
       newData = {
         id,
-        first_name: values.first_name,
-        mid_name: values.mid_name,
-        last_name: values.last_name,
+        name: values.name,
+        patronymic: values.patronymic,
+        surname: values.surname,
         gender: values.gender.id,
         birthday: moment(values.birthday).format('YYYY-MM-DD'),
         email: values.email,
@@ -364,9 +367,9 @@ class EditModal extends React.Component {
                   role_id: null,
                   profile_image: null,
                   register_date: null,
-                  first_name: '',
-                  mid_name: '',
-                  last_name: '',
+                  name: '',
+                  patronymic: '',
+                  surname: '',
                   gender: null,
                   birthday: null,
                   email: '',
@@ -389,8 +392,8 @@ class EditModal extends React.Component {
                     role_id: Yup.mixed().required('This field is required!'),
                     // profile_image: Yup.mixed().required('Image is required!'),
                     register_date: Yup.mixed().required('This field is required!'),
-                    first_name: Yup.string().required('This field is required!'),
-                    last_name: Yup.string().required('This field is required!'),
+                    name: Yup.string().required('This field is required!'),
+                    surname: Yup.string().required('This field is required!'),
                     gender: Yup.mixed().required('This field is required!'),
                     birthday: Yup.mixed().required('This field is required!'),
                     email: Yup.string().email('Email is not valid!').required('This field is required!'),
@@ -450,7 +453,7 @@ class EditModal extends React.Component {
                             indicatorSeparator={null}
                             options={values.role_id && values.role_id.is_player === 1 ? org_list.filter(org => org.is_club === 1) : org_list}
                             getOptionValue={option => option.id}
-                            getOptionLabel={option => option.name}
+                            getOptionLabel={option => option.name_o}
                             value={values.organization_id}
                             onChange={(value) => {
                               setFieldValue('organization_id', value);
@@ -494,29 +497,29 @@ class EditModal extends React.Component {
                       </Col>
                       <Col sm="4">
                         <FormGroup>
-                          <Label for="first_name">
-                            First name
+                          <Label for="name">
+                            Name
                           </Label>
                           <Input
-                            name="first_name"
+                            name="name"
                             type="text"
-                            value={values.first_name || ''}
+                            value={values.name || ''}
                             onChange={handleChange}
                             onBlur={handleBlur}
-                            invalid={!!errors.first_name && touched.first_name}
+                            invalid={!!errors.name && touched.name}
                           />
-                          <FormFeedback className="d-block">{errors.first_name}</FormFeedback>
+                          <FormFeedback className="d-block">{errors.name}</FormFeedback>
                         </FormGroup>
                       </Col>
                       <Col sm="4">
                         <FormGroup>
-                          <Label for="mid_name">
-                            Mid name
+                          <Label for="patronymic">
+                            Patronymic
                           </Label>
                           <Input
-                            name="mid_name"
+                            name="patronymic"
                             type="text"
-                            value={values.mid_name || ''}
+                            value={values.patronymic || ''}
                             onChange={handleChange}
                             onBlur={handleBlur}
                           />
@@ -524,18 +527,18 @@ class EditModal extends React.Component {
                       </Col>
                       <Col sm="4">
                         <FormGroup>
-                          <Label for="last_name">
-                            Last name
+                          <Label for="surname">
+                            Surname
                           </Label>
                           <Input
-                            name="last_name"
+                            name="surname"
                             type="text"
-                            value={values.last_name || ''}
+                            value={values.surname || ''}
                             onChange={handleChange}
                             onBlur={handleBlur}
-                            invalid={!!errors.last_name && touched.last_name}
+                            invalid={!!errors.surname && touched.surname}
                           />
-                          <FormFeedback className="d-block">{errors.last_name}</FormFeedback>
+                          <FormFeedback className="d-block">{errors.surname}</FormFeedback>
                         </FormGroup>
                       </Col>
                       <Col sm="4">
@@ -802,7 +805,8 @@ class EditModal extends React.Component {
               <Formik
                 ref={this.formikRef1}
                 initialValues={{
-                  name: '',
+                  name_o: '',
+                  name_s: '',
                   parent_id: 1,
                   register_no: '',
                   email: '',
@@ -820,7 +824,8 @@ class EditModal extends React.Component {
                 }}
                 validationSchema={
                   Yup.object().shape({
-                    name: Yup.string().required('This field is required!'),
+                    name_o: Yup.string().required('This field is required!'),
+                    name_s: Yup.string().required('This field is required!'),
                     register_no: Yup.string().required('This field is required!'),
                     email: Yup.string().email('Email is not valid!').required('This field is required!'),
                     // logo: Yup.mixed().required('Logo is required!'),
@@ -863,22 +868,9 @@ class EditModal extends React.Component {
                           </div>
                         </FormGroup>
                       </Col>
-                      <Col xs="6">
-                        <FormGroup>
-                          <Label for="register_no">
-                            Register Number
-                          </Label>
-                          <Input
-                            type="text"
-                            name="register_no"
-                            value={values.register_no}
-                            onChange={handleChange}
-                            onBlur={handleBlur}
-                            invalid={!!errors.register_no && touched.register_no}
-                          />
-                          <FormFeedback>{errors.register_no}</FormFeedback>
-                        </FormGroup>
-                      </Col>
+                      <Col></Col>
+                    </Row>
+                    <Row>
                       {org_list.length > 0 && (
                         <Col sm="6">
                           <FormGroup>
@@ -891,7 +883,7 @@ class EditModal extends React.Component {
                               indicatorSeparator={null}
                               options={org_list}
                               getOptionValue={option => option.id}
-                              getOptionLabel={option => option.name}
+                              getOptionLabel={option => option.name_o}
                               value={values.parent_id}
                               invalid={!!errors.parent_id && touched.parent_id}
                               onChange={(value) => {
@@ -908,18 +900,52 @@ class EditModal extends React.Component {
                       }
                       <Col sm="6">
                         <FormGroup>
-                          <Label for="name">
+                          <Label for="register_no">
+                            Register Number
+                          </Label>
+                          <Input
+                            type="text"
+                            name="register_no"
+                            value={values.register_no}
+                            onChange={handleChange}
+                            onBlur={handleBlur}
+                            invalid={!!errors.register_no && touched.register_no}
+                          />
+                          <FormFeedback>{errors.register_no}</FormFeedback>
+                        </FormGroup>
+                      </Col>
+                    </Row>
+                    <Row>
+                      <Col sm="6">
+                        <FormGroup>
+                          <Label for="name_o">
                             Organization Name
                           </Label>
                           <Input
                             type="text"
-                            name="name"
-                            value={values.name}
+                            name="name_o"
+                            value={values.name_o}
                             onChange={handleChange}
                             onBlur={handleBlur}
-                            invalid={!!errors.name && touched.name}
+                            invalid={!!errors.name_o && touched.name_o}
                           />
-                          <FormFeedback>{errors.name}</FormFeedback>
+                          <FormFeedback>{errors.name_o}</FormFeedback>
+                        </FormGroup>
+                      </Col>
+                      <Col sm="6">
+                        <FormGroup>
+                          <Label for="name_s">
+                            Simple Name
+                          </Label>
+                          <Input
+                            type="text"
+                            name="name_s"
+                            value={values.name_s}
+                            onChange={handleChange}
+                            onBlur={handleBlur}
+                            invalid={!!errors.name_s && touched.name_s}
+                          />
+                          <FormFeedback>{errors.name_s}</FormFeedback>
                         </FormGroup>
                       </Col>
                     </Row>

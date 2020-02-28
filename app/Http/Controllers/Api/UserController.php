@@ -144,8 +144,8 @@ class UserController extends Controller
         $data = $request->all();
 
         $validMember = Validator::make($data, [
-            'first_name' => 'required|string|max:255',
-            'last_name' => 'required|string|max:255',
+            'name' => 'required|string|max:255',
+            'surname' => 'required|string|max:255',
             'profile_image' => 'required|string|max:255',
             'gender' => 'required|boolean',
             'birthday' => 'required|date',
@@ -213,7 +213,7 @@ class UserController extends Controller
                         ->leftJoin('users', 'users.member_id', '=', 'members.id')
                         ->leftJoin('invitations', 'members.email', '=', 'invitations.email')
                         ->select('members.*', 'users.is_super', 'invitations.created_at AS invited')
-                        ->orderBy('members.first_name')
+                        ->orderBy('members.name')
                         ->get();
                         
         for ($i = 0; $i < sizeof($members); $i++) {
@@ -232,7 +232,7 @@ class UserController extends Controller
                         ->where('members.active', 1)
                         ->leftJoin('users', 'users.member_id', '=', 'members.id')
                         ->select('members.*', 'users.id AS user_id', 'users.is_super')
-                        ->orderBy('members.first_name')
+                        ->orderBy('members.name')
                         ->get();
 
         $result = array(

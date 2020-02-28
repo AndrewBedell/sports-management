@@ -37,11 +37,11 @@ class Profile extends Component {
         <div className="main-content">
           <Container>
             <div>
-              {user.first_name}
+              {user.name}
               {' '}
-              {user.mid_name}
+              {user.protronymic}
               {' '}
-              {user.last_name}
+              {user.surname}
             </div>
           </Container>
         </div>

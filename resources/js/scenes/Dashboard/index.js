@@ -459,7 +459,7 @@ class Dashboard extends Component {
                     value={search_orgs}
                     options={org_list}
                     getOptionValue={option => option.id}
-                    getOptionLabel={option => option.name}
+                    getOptionLabel={option => option.name_o}
                     onChange={(org) => {
                       this.handleSearchFilter('orgs', org);
                     }}

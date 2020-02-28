@@ -18,7 +18,8 @@ class CreateOrganizationsTable extends Migration
             $table->integer('parent_id');
 
             $table->string('register_no', 50)->unique();
-            $table->string('name', 50);
+            $table->string('name_o', 50);
+            $table->string('name_s', 3);
             $table->string('logo', 100);            
             $table->string('email')->unique();
             $table->string('mobile_phone', 50);
@@ -42,7 +43,8 @@ class CreateOrganizationsTable extends Migration
             array(
                 'parent_id' => 0,
                 'register_no' => '',
-                'name' => 'National Federation',
+                'name_o' => 'National Federation',
+                'name_s' => 'NF',
                 'logo' => '',
                 'email' => 'admin@gmail.com',
                 'mobile_phone' => '',

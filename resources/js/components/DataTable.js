@@ -232,7 +232,7 @@ class DataTable extends Component {
                       }
                     </span>
                     {
-                      type.value === 'player' ? `${item.first_name} ${item.mid_name} ${item.last_name}` : item.name
+                      type.value === 'player' ? `${item.name} ${item.patronymic} ${item.surname}` : item.name_o
                     }
                   </Table.Cell>
                   {
@@ -288,7 +288,7 @@ class DataTable extends Component {
                         <i className="fa fa-pencil-alt fa-lg" />
                       </Button>
                       {
-                        (item.parent_id && item.parent_id !== 0) || (item.first_name && item.id !== user.id) ? (
+                        (item.parent_id && item.parent_id !== 0) || (item.name && item.id !== user.id) ? (
                           <Button
                             color="danger"
                             type="button"

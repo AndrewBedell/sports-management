@@ -116,7 +116,7 @@ class Members extends Component {
     this.setState({
       isOpenDeleteModal: true,
       deleteId: id,
-      confirmationMessage: `Are you sure you want to delete ${delItem.first_name} ${delItem.mid_name} ${delItem.last_name}?`
+      confirmationMessage: `Are you sure you want to delete ${delItem.name} ${delItem.patronymic} ${delItem.surname}?`
     });
   }
 
@@ -168,7 +168,7 @@ class Members extends Component {
           isOpenEditModal: false,
           messageStatus: true,
           alertVisible: true,
-          successMessage: `${item.first_name} ${item.mid_name} ${item.last_name} is been update successfully!`
+          successMessage: `${item.name} ${item.patronymic} ${item.surname} is been update successfully!`
         });
         break;
       case 406:

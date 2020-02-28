@@ -58,7 +58,8 @@ class OrganizationController extends Controller
         $validator = Validator::make($data, [
             'parent_id' => 'required|integer',
             'register_no' => 'required|string|max:255|unique:organizations',
-            'name' => 'required|string|max:255',
+            'name_o' => 'required|string|max:255',
+            'name_s' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:organizations',
             'mobile_phone' => 'required|string|max:255',
             'addressline1' => 'required|string|max:255',
@@ -117,7 +118,7 @@ class OrganizationController extends Controller
             Organization::create(array(
                 'parent_id' => $data['parent_id'],
                 'register_no' => $data['register_no'],
-                'name' => $data['name'],
+                'name_o' => $data['name_o'],
                 'logo' => $data['logo'],
                 'email' => $data['email'],
                 'mobile_phone' => $data['mobile_phone'],
@@ -175,7 +176,8 @@ class OrganizationController extends Controller
 
             $validator = Validator::make($data, [
                 'register_no' => 'required',
-                'name' => 'required|string|max:255',
+                'name_o' => 'required|string|max:255',
+                'name_s' => 'required|string|max:255',
                 'email' => 'required|string|email|max:255',
                 'mobile_phone' => 'required|string|max:255',
                 'addressline1' => 'required|string|max:255',
@@ -377,9 +379,9 @@ class OrganizationController extends Controller
 
         foreach ($child_org as $child) {
             if ($parent_name == "")
-                $parent_name = $child->name;
+                $parent_name = $child->name_o;
             else
-                $parent_name = $child->name . ", " . $parent_name;
+                $parent_name = $child->name_o . ", " . $parent_name;
 
             $child->label = $parent_name;
 
@@ -439,7 +441,7 @@ class OrganizationController extends Controller
         }
 
         $own = Organization::find($parent_id);
-        $own->label = $own->name;
+        $own->label = $own->name_o;
 
         $chidren = $this->findChildren($parent_id, '', $request->input('contain_club', 1), $exclude);
 
@@ -586,7 +588,7 @@ class OrganizationController extends Controller
         switch ($type) {
             case 'org':
                 $result = Organization::whereIn('id', $orgIDs)
-                                    ->where('name', 'like', '%' . $name . '%')
+                                    ->where('name_o', 'like', '%' . $name . '%')
                                     ->where('is_club', 0);
                 
                 if (is_array($sort))
@@ -597,7 +599,7 @@ class OrganizationController extends Controller
                 break;
             case 'club':
                 $result = Organization::whereIn('id', $orgIDs)
-                                    ->where('name', 'like', '%' . $name . '%')
+                                    ->where('name_o', 'like', '%' . $name . '%')
                                     ->where('is_club', 1);
                 
                 if (is_array($sort))
@@ -614,15 +616,15 @@ class OrganizationController extends Controller
 
                     foreach ($name as $param) {
                         $result = $result->where(function($query) use ($param){
-                                $query->where('members.first_name', 'like', '%' . $param. '%');
-                                $query->orWhere('members.mid_name', 'like', '%' . $param. '%');
-                                $query->orWhere('members.last_name', 'like', '%' . $param . '%');
+                                $query->where('members.name', 'like', '%' . $param. '%');
+                                $query->orWhere('members.surname', 'like', '%' . $param . '%');
+                                $query->orWhere('members.patronymic', 'like', '%' . $param. '%');
                         });
                     }                                
                 }
 
                 $result = $result->leftJoin('users', 'members.id', '=', 'users.member_id')
-                            ->select("members.*", DB::raw("CONCAT(members.first_name, ' ', members.mid_name, ' ', members.last_name) AS name"), 'users.is_super')
+                            ->select("members.*", 'users.is_super')
                             ->get();
                             
                 break;
@@ -634,9 +636,9 @@ class OrganizationController extends Controller
 
                     foreach ($name as $param) {
                         $result = $result->where(function($query) use ($param){
-                                $query->where('members.first_name', 'like', '%' . $param. '%');
-                                $query->orWhere('members.mid_name', 'like', '%' . $param. '%');
-                                $query->orWhere('members.last_name', 'like', '%' . $param . '%');
+                                $query->where('members.name', 'like', '%' . $param. '%');
+                                $query->orWhere('members.surname', 'like', '%' . $param . '%');
+                                $query->orWhere('members.patronymic', 'like', '%' . $param. '%');
                         });
                     }                                
                 }
@@ -649,8 +651,7 @@ class OrganizationController extends Controller
                     
                 $result = $result->join('players', 'members.id', '=', 'players.member_id')
                                 ->join('weights', 'weights.id', '=', 'players.weight_id')
-                                ->select("members.*", DB::raw("CONCAT(members.first_name, ' ', members.mid_name, ' ', members.last_name) AS name"),
-                                 'weights.name AS weight_name', 'weights.weight', 'players.dan', 'players.skill', 'players.expired_date')
+                                ->select("members.*",  'weights.name AS weight_name', 'weights.weight', 'players.dan', 'players.skill', 'players.expired_date')
                                 ->get();
                 break;
         }

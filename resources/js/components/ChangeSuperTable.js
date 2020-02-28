@@ -179,7 +179,7 @@ class ChangeSuperTable extends Component {
     this.setState({
       isOpenDeleteModal: true,
       userID: id,
-      confirmationMessage: `Are you sure you want to delete ${delItem.first_name} ${delItem.mid_name} ${delItem.last_name}?`
+      confirmationMessage: `Are you sure you want to delete ${delItem.name} ${delItem.patronymic} ${delItem.surname}?`
     });
   }
 

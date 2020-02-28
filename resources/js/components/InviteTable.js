@@ -245,11 +245,11 @@ class InviteTable extends Component {
                         <div className="avatar-preview"><img src={item.profile_image ? item.profile_image : Bitmaps.logo} /></div>
                         </ReactTooltip>
                       </span>
-                      {item.first_name}
+                      {item.name}
                       {' '}
-                      {item.mid_name}
+                      {item.patronymic}
                       {' '}
-                      {item.last_name}
+                      {item.surname}
                     </Table.Cell>
                     <Table.Cell className="text-center">{item.gender ? Genders[0].name : Genders[1].name}</Table.Cell>
                     <Table.Cell className="text-center">{item.birthday}</Table.Cell>
