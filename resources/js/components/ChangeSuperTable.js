@@ -2,6 +2,7 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 
 import React, { Component, Fragment } from 'react';
+import { Alert } from 'reactstrap';
 import {
   Table,
   Pagination,
@@ -15,13 +16,14 @@ import ReactTooltip from 'react-tooltip';
 import _ from 'lodash';
 import { countries, Genders } from '../configs/data';
 import Bitmaps from '../theme/Bitmaps';
-import InviteModal from './InviteModal';
 
 import Api from '../apis/app';
 
+import Prompt from '../components/Prompt';
+
 const flagRenderer = item => <Flag name={item.countryCode} />;
 
-class InviteTable extends Component {
+class ChangeSuperTable extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -29,10 +31,14 @@ class InviteTable extends Component {
       column: null,
       data: [],
       direction: null,
-      isOpenInviteModal: false,
-      invite_item: '',
-      invite_email: '',
-      invite_is_super: false,
+      isOpenChangeModal: false,
+      isOpenDeleteModal: false,
+      confirmationMessage: '',
+      alertVisible: false,
+      messageStatus: false,
+      successMessage: '',
+      failMessage: '',
+      userID: '',
       activePage: 1,
       per_page: 10,
       current_perPage: { label: 10, value: 10 },
@@ -121,37 +127,66 @@ class InviteTable extends Component {
     });
   }
 
-  async handleSendInvite(is_super) {
+  async changeSuper(id, email, is_super) {
+    is_super = !is_super;
+
     const param = {
-      email: this.state.invite_email,
+      email,
       is_super: is_super ? 1 : 0
     }
 
-    const {data, invite_item} = this.state;
+    const {data} = this.state;
 
-    const inviteSend = await Api.get(`invite-send`, param);
-    const { response } = inviteSend;
-    switch (response.status) {
-      case 200:
-        data.filter(item => item.id === invite_item)[0].invited = 1;
+    const changed = await Api.get(`change-super`, param);
+    const { response, body } = changed;
 
-        this.setState({
-          data,
-          isOpenInviteModal: false
-        });
-        break;
-      default:
-          break;
+    if (response.status == 200) {
+      data.filter(item => item.user_id === id)[0].is_super = (body.data == "1");
+
+      this.setState({data});
     }
   }
 
-  handleInvite(id, email, is_super) {
-    const { isOpenInviteModal } = this.state;
+  async handleDeleteUser(id) {console.log(id);
+    const {data} = this.state;
+    
+    const delUser = await Api.delete(`user/${id}`);
+
+    if (delUser.response.status == 200) {
+      this.setState({
+        alertVisible: true,
+        messageStatus: true,
+        isOpenDeleteModal: false,
+        successMessage: delUser.body.message,
+        data: data.filter(item => item.user_id !== id)
+      });
+    }
+
+    setTimeout(() => {
+      this.setState({ alertVisible: false });
+    }, 2000);
+  }
+
+  handleDelete(id) {
+    const { data } = this.state;
+    let delItem = '';
+    for (let i = 0; i < data.length; i++) {
+      const item = data[i];
+      if (item.id === id) {
+        delItem = item;
+      }
+    }
     this.setState({
-      isOpenInviteModal: !isOpenInviteModal,
-      invite_item: id,
-      invite_email: email,
-      invite_is_super: is_super
+      isOpenDeleteModal: true,
+      userID: id,
+      confirmationMessage: `Are you sure you want to delete ${delItem.first_name} ${delItem.mid_name} ${delItem.last_name}?`
+    });
+  }
+
+  handleConfirmationClose() {
+    this.setState({
+      isOpenDeleteModal: false,
+      confirmationMessage: ''
     });
   }
 
@@ -163,9 +198,9 @@ class InviteTable extends Component {
       column,
       direction,
       data,
-      isOpenInviteModal,
-      invite_item,
-      invite_email,
+      isOpenDeleteModal,
+      confirmationMessage,
+      isOpenEditModal,
       activePage,
       per_page,
       pageOptions,
@@ -174,6 +209,11 @@ class InviteTable extends Component {
 
     return (
       <Fragment>
+        <Alert color={this.state.messageStatus ? 'success' : 'warning'} isOpen={this.state.alertVisible}>
+          {
+            this.state.messageStatus ? this.state.successMessage : this.state.failMessage
+          }
+        </Alert>
         <Table sortable celled selectable unstackable>
           <Table.Header>
             <Table.Row>
@@ -220,7 +260,7 @@ class InviteTable extends Component {
                 Address
               </Table.HeaderCell>
               <Table.HeaderCell className="text-center">
-                Status
+                Is Super ?
               </Table.HeaderCell>
               <Table.HeaderCell className="text-center">
                 Action
@@ -258,7 +298,7 @@ class InviteTable extends Component {
                       {this.getCountryCode(item.country)}
                       {' '}
                       {countries.filter(country => country.countryCode === item.country).length > 0 && 
-                       countries.filter(country => country.countryCode === item.country)[0].name}
+                      countries.filter(country => country.countryCode === item.country)[0].name}
                     </Table.Cell>
                     <Table.Cell className="text-center">{item.mobile_phone}</Table.Cell>
                     <Table.Cell>
@@ -271,25 +311,30 @@ class InviteTable extends Component {
                       {' '}
                       {item.zip_code}
                     </Table.Cell>
-                    <Table.Cell>
-                      {
-                        item.invited ? (
-                          <div className="text-center text-success mt-2">
-                            <i className="fa fa-lg fa-check" /> <span className="font-weight-bold">Invited</span>
-                          </div>
-                        ) : (
-                          <div className="text-center"></div>
-                        )
-                      }
+                    <Table.Cell className="text-center">
+                      {item.is_super ? (
+                        <span>Yes</span>
+                      ) : (
+                        <span>No</span>
+                      )}
                     </Table.Cell>
                     <Table.Cell>
                       <div className="text-center">
                         <Button
+                          title="Change"
                           type="button"
-                          color="green"
-                          onClick={() => this.handleInvite(item.id, item.email, item.is_super)}
+                          color="purple"
+                          onClick={() => this.changeSuper(item.user_id, item.email, item.is_super)}
                         >
-                          {item.invited ? "Resend" : "Invite"}
+                          <i className="fa fa-exchange-alt" />
+                        </Button>
+                        <Button
+                          title="Remove"
+                          color="red"
+                          type="button"
+                          onClick={() => this.handleDelete(item.id)}
+                        >
+                          <i className="fa fa-trash-alt" />
                         </Button>
                       </div>
                     </Table.Cell>
@@ -328,23 +373,21 @@ class InviteTable extends Component {
             </Table.Row>
           </Table.Footer>
         </Table>
-        {
-          isOpenInviteModal && (
-          <InviteModal
-            id={invite_item}
-            email={invite_email}
-            handleSend={this.handleSendInvite.bind(this)}
-            handleCancel={this.handleInvite.bind(this)}
-          />
-          )
+        { 
+          isOpenDeleteModal && 
+          <Prompt title={confirmationMessage} 
+            id={this.state.userID}
+            handleAccept={this.handleDeleteUser.bind(this)} 
+            handleCancel={this.handleConfirmationClose.bind(this)} 
+          /> 
         }
       </Fragment>
     );
   }
 }
 
-InviteTable.defaultProps = {
+ChangeSuperTable.defaultProps = {
   
 };
 
-export default InviteTable;
+export default ChangeSuperTable;

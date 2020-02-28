@@ -9,13 +9,14 @@ import {
 import MainTopBar from '../../components/TopBar/MainTopBar';
 import Api from '../../apis/app';
 import InviteTable from '../../components/InviteTable';
+import ChangeSuperTable from '../../components/ChangeSuperTable';
 
 class GetInviteUsers extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      users: [],
-      selectedItems: []
+      members: [],
+      users: []
     }
   }
 
@@ -25,7 +26,8 @@ class GetInviteUsers extends Component {
     switch (response.status) {
       case 200:
         this.setState({
-          users: body
+          members: body.members,
+          users: body.users
         });
         break;
       case 406:
@@ -37,6 +39,7 @@ class GetInviteUsers extends Component {
 
   render() {
     const {
+      members,
       users
     } = this.state;
     return (
@@ -46,6 +49,9 @@ class GetInviteUsers extends Component {
           <Container fluid>
             <div className="table-responsive">
               <InviteTable
+                items={members}
+              />
+              <ChangeSuperTable
                 items={users}
               />
             </div>

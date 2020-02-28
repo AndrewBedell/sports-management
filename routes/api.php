@@ -41,9 +41,10 @@ Route::namespace('Api')->group(function () {
 
         Route::get('profile', 'UserController@profile');
         Route::post('update-profile', 'UserController@update');
-        
         Route::get('invite-users', 'UserController@invite');
         Route::get('invite-send', 'UserController@invite_send');
+        Route::get('change-super', 'UserController@change_super');
+        Route::delete('user/{id}', 'UserController@destroy');
 
         Route::get('weights', 'PlayerController@weights');
     });

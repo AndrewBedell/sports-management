@@ -130,6 +130,13 @@ class UserController extends Controller
         }
     }
 
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
     public function update(Request $request)
     {
         $user = JWTAuth::parseToken()->authenticate();
@@ -174,6 +181,26 @@ class UserController extends Controller
         }
     }
 
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy($id)
+    {
+        Member::find($id)->update(array(
+            'active' => 0
+        ));
+
+        User::where('member_id', $id)->delete();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Deleted Successfully'
+        ], 200);
+    }
+
     public function invite()
     {
         $user = JWTAuth::parseToken()->authenticate();
@@ -190,24 +217,30 @@ class UserController extends Controller
                         ->get();
                         
         for ($i = 0; $i < sizeof($members); $i++) {
-            if (is_null($members[$i]->status)) {
-                if (is_null($members[$i]->is_super)) {
-                    $members[$i]['is_admin'] = 0;
-                    $members[$i]['is_super'] = 0;
-                } else {
-                    $members[$i]['is_admin'] = 1;
-                }
-            } else {
-                $members[$i]['is_admin'] = 0;
+            if (is_null($members[$i]->is_super)) {
+                $members[$i]['is_super'] = 0;
             }
 
             if (is_null($members[$i]->invited))
                 $members[$i]->invited = 0;
             else
                 $members[$i]->invited = 1;
-        }   
+        }
 
-        return response()->json($members);
+        $users = Member::where('role_id', '!=', $role->id)
+                        ->where('members.id', '!=', $user->member_id)
+                        ->where('members.active', 1)
+                        ->leftJoin('users', 'users.member_id', '=', 'members.id')
+                        ->select('members.*', 'users.id AS user_id', 'users.is_super')
+                        ->orderBy('members.first_name')
+                        ->get();
+
+        $result = array(
+            'members' => $members,
+            'users' => $users
+        );
+
+        return response()->json($result);
     }
     
     public function invite_send(Request $request)
@@ -291,7 +324,7 @@ class UserController extends Controller
                 return response()->json([
                     'status' => 'success',
                     'member' => $exist[0]
-                ]);
+                ], 200);
             } else {
                 return response()->json(
                     [
@@ -302,5 +335,19 @@ class UserController extends Controller
                 );
             }
         }
+    }
+
+    public function change_super(Request $request)
+    {
+        $data = $request->all();
+
+        User::where('email', $data['email'])->update(array(
+            'is_super' => $data['is_super']
+        ));
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $data['is_super']
+        ], 200);
     }
 }
