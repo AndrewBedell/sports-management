@@ -72,7 +72,7 @@ class PlayerController extends Controller
      */
     public function weights()
     {
-        $weights = DB::table('weights')->orderBy('order')->get();
+        $weights = DB::table('weights')->get();
 
         return response()->json($weights);
     }

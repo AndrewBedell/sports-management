@@ -1,612 +1,400 @@
 /* eslint-disable react/no-unused-state */
 import React, {
-  Component, Fragment
-} from 'react';
-import {
-  withRouter
-} from 'react-router-dom';
-import Select from 'react-select';
-import {
-  Container,
-  Row,
-  Col,
-  FormGroup,
-  Button,
-  Input,
-  FormFeedback,
-  Alert
-} from 'reactstrap';
+    Component, Fragment
+  } from 'react';
+  import {
+    withRouter
+  } from 'react-router-dom';
+  import Select from 'react-select';
+  import {
+    Container,
+    Row,
+    Col,
+    FormGroup,
+    Button,
+    Input,
+    FormFeedback,
+    Alert
+  } from 'reactstrap';
+  
+  import MainTopBar from '../../components/TopBar/MainTopBar';
+  import Api from '../../apis/app';
+  import DataTable from '../../components/DataTable';
+  import Prompt from '../../components/Prompt';
+  import EditModal from '../../components/EditModal';
+  import { Dans, search_type_options, member_type_options } from '../../configs/data';
 
-import MainTopBar from '../../components/TopBar/MainTopBar';
-import Api from '../../apis/app';
-import DataTable from '../../components/DataTable';
-import Prompt from '../../components/Prompt';
-import EditModal from '../../components/EditModal';
-import { Dans, search_type_options } from '../../configs/data';
-import ChartsPage from '../../components/Chart';
+  class Dashboard extends Component {
+    constructor(props) {
+      super(props);
 
-class Dashboard extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      orgs: [],
-      org_list: [],
-      weights: [],
-      roles: [],
-      search_required: true,
-      search_type: '',
-      search_orgs: [],
-      search_name: '',
-      search_weight: [],
-      search_dan: [],
-      search_data: null,
-      isOpenDeleteModal: false,
-      isOpenEditModal: false,
-      edit_item: '',
-      confirmationMessage: '',
-      alertVisible: false,
-      messageStatus: false,
-      successMessage: '',
-      failMessage: '',
-      deleteId: '',
-      editIndex: -1,
-      errors: {
-        search_type: 'This field is required!'
-      }
-    };
-    this.handleSearchFilter = this.handleSearchFilter.bind(this);
-    this.handleDeleteMember = this.handleDeleteMember.bind(this);
-    this.handleConfirmationClose = this.handleConfirmationClose.bind(this);
-    this.handleSaveItem = this.handleSaveItem.bind(this);
-  }
-
-  componentDidMount() {
-    this.componentWillReceiveProps(this.props);
-  }
-
-  async componentWillReceiveProps() {
-    const org_response = await Api.get('organizations-list');
-    const { response, body } = org_response;
-    switch (response.status) {
-      case 200:
-        this.setState({
-          orgs: body,
-          org_list: body
-        });
-        break;
-      default:
-        break;
-    }
-    const weight_list = await Api.get('weights');
-    switch (weight_list.response.status) {
-      case 200:
-        this.setState({
-          weights: weight_list.body
-        });
-        break;
-      default:
-        break;
-    }
-    const role_list = await Api.get('roles');
-    switch (role_list.response.status) {
-      case 200:
-        this.setState({
-          roles: role_list.body
-        });
-        if (role_list.body.length > 0) {
-          localStorage.setItem('roles', JSON.stringify(role_list.body));
+      this.state = {
+        org_list: [],
+        weights: [],
+        search_required: true,
+        member_required: true,
+        search_type: '',
+        member_type: '',
+        search_org: '',
+        search_name: '',
+        search_weight: '',
+        search_dan: '',
+        search_data: null,
+        errors: {
+          required: 'This field is required!'
         }
-        break;
-      default:
-        break;
-    }
-  }
+      };
 
-  handleSearchFilter(type, value) {
-    switch (type) {
-      case 'type':
-        this.setState({
-          search_type: value,
-          search_required: true,
-          search_data: null,
-          search_orgs: []
-        });
-        break;
-      case 'orgs':
-        this.setState({
-          search_orgs: value,
-          search_data: null
-        });
-        break;
-      case 'name':
-        this.setState({
-          search_name: value,
-          search_data: null
-        });
-        break;
-      case 'weight':
-        this.setState({
-          search_weight: value,
-          search_data: null
-        });
-        break;
-      case 'dan':
-        this.setState({
-          search_dan: value,
-          search_data: null
-        });
-        break;
-      default:
-        break;
-    }
-  }
-
-  async handleSearch() {
-    const {
-      search_type, search_orgs, search_name, search_weight, search_dan
-    } = this.state;
-    const orgs_search = [];
-    const weight_search = [];
-    const dan_search = [];
-    if (search_orgs.length > 0) {
-      for (let i = 0; i < search_orgs.length; i++) {
-        const org = search_orgs[i];
-        orgs_search.push(org.id);
-      }
-    } else {
-      orgs_search[0] = search_orgs.id;
-    }
-    if (search_weight.length > 0) {
-      for (let j = 0; j < search_weight.length; j++) {
-        const weight = search_weight[j];
-        weight_search.push(weight.id);
-      }
-    } else {
-      weight_search[0] = search_weight.id;
-    }
-    if (search_dan.length > 0) {
-      for (let k = 0; k < search_dan.length; k++) {
-        const dan = search_dan[k];
-        dan_search.push(dan.value);
-      }
-    } else {
-      dan_search[0] = search_dan.value;
+      this.handleSearchFilter = this.handleSearchFilter.bind(this);
+      this.handleDeleteMember = this.handleDeleteMember.bind(this);
+      this.handleConfirmationClose = this.handleConfirmationClose.bind(this);
+      this.handleSaveItem = this.handleSaveItem.bind(this);
     }
 
-    const search_params = {
-      type: search_type ? search_type.value : '',
-      org: orgs_search,
-      name: search_name,
-      weight: weight_search,
-      dan: dan_search
-    };
+    componentDidMount() {
+      this.componentWillReceiveProps(this.props);
+    }
 
-    if (search_type) {
-      const search_response = await Api.get('search', search_params);
-      const { response, body } = search_response;
+    async componentWillReceiveProps() {
+      const org_response = await Api.get('organizations-list');
+      const { response, body } = org_response;
       switch (response.status) {
         case 200:
           this.setState({
-            search_data: body
+            org_list: body
           });
           break;
         default:
           break;
       }
-    } else {
+      const weight_list = await Api.get('weights');
+      switch (weight_list.response.status) {
+        case 200:
+          this.setState({
+            weights: weight_list.body
+          });
+          break;
+        default:
+          break;
+      }
+    }
+
+    handleSearchFilter(type, value) {
+      switch (type) {
+        case 'search_type':
+          this.setState({
+            search_type: value,
+            search_required: true,
+            search_org: '',
+            search_data: null
+          });
+          break;
+        case 'search_org':
+            this.setState({
+              search_org: value,
+              search_data: null
+            });
+            break;
+        case 'search_name':
+          this.setState({
+            search_name: value,
+            search_data: null
+          });
+          break;
+        case 'member_type':
+          this.setState({
+            member_type: value,
+            search_required: true,
+            member_required: true,
+            search_data: null
+          });
+          break;
+        case 'search_weight':
+          this.setState({
+            search_weight: value,
+            search_data: null
+          });
+          break;
+        case 'search_dan':
+          this.setState({
+            search_dan: value,
+            search_data: null
+          });
+          break;
+        default:
+          break;
+      }
+    }
+
+    async handleSearch() {
+      const {
+        search_type, search_org, search_name, member_type, search_weight, search_dan
+      } = this.state;
+
+      const search_params = {
+        stype: search_type ? search_type.value : '',
+        org: search_org ? search_org.id : '',
+        name: search_name,
+        mtype: member_type ? member_type.value : '',
+        weight: search_weight ? search_weight.id : '',
+        dan: search_dan ? search_dan.value : ''
+      }
+
+      if (search_type) {
+        if (search_type.value == 'member' && !member_type) {
+          this.setState({
+            member_required: false,
+          });
+        } else {
+          const search_response = await Api.get('search', search_params);
+          const { response, body } = search_response;
+
+          switch (response.status) {
+            case 200:
+              console.log(body);
+              this.setState({
+                search_data: body
+              });
+              break;
+            default:
+              break;
+          }
+        }
+      } else {
+        this.setState({
+          search_required: false,
+        });
+      }
+    }
+
+    handleEdit(id, index) {
+      const { isOpenEditModal } = this.state;
       this.setState({
-        search_required: false
+        isOpenEditModal: !isOpenEditModal,
+        edit_item: id,
+        editIndex: index
       });
     }
-  }
 
-  handleEdit(id, index) {
-    const { isOpenEditModal } = this.state;
-    this.setState({
-      isOpenEditModal: !isOpenEditModal,
-      edit_item: id,
-      editIndex: index
-    });
-  }
+    handleDelete() {
 
-  handleDelete(id) {
-    const { search_data, search_type } = this.state;
-    let delItem = '';
-    for (let i = 0; i < search_data.length; i++) {
-      const item = search_data[i];
-      if (item.id === id) {
-        delItem = item;
+    }
+
+    handleSelectItem(id) {
+      const { search_type } = this.state;
+      if (search_type.value === 'player') {
+        this.props.history.push('/member/detail', id);
+      } else {
+        this.props.history.push('/organization/detail', id);
       }
     }
-    this.setState({
-      isOpenDeleteModal: true,
-      deleteId: id,
-      confirmationMessage: `Are you sure you want to delete ${search_type.value === 'player' ? `${delItem.first_name} - ${delItem.last_name}` : delItem.name}?`
-    });
-  }
 
-  async handleDeleteMember(id) {
-    const { search_type, search_data } = this.state;
-    if (search_type.value !== 'player') {
-      const delOrg = await Api.delete(`organization/${id}`);
-      switch (delOrg.response.status) {
-        case 200:
-          this.setState({
-            alertVisible: true,
-            messageStatus: true,
-            isOpenDeleteModal: false,
-            successMessage: delOrg.body.message,
-            search_data: search_data.filter(item => item.id !== id)
-          });
-          break;
-        case 406:
-          this.setState({
-            alertVisible: true,
-            messageStatus: false,
-            isOpenDeleteModal: false,
-            failMessage: delOrg.body.message
-          });
-          break;
-        default:
-          break;
-      }
-    } else {
-      const delMem = await Api.delete(`member/${id}`);
-      switch (delMem.response.status) {
-        case 200:
-          this.setState({
-            alertVisible: true,
-            messageStatus: true,
-            isOpenDeleteModal: false,
-            successMessage: delMem.body.message,
-            search_data: search_data.filter(item => item.id !== id)
-          });
-          break;
-        case 406:
-          this.setState({
-            alertVisible: true,
-            messageStatus: false,
-            isOpenDeleteModal: false,
-            failMessage: delMem.body.message
-          });
-          break;
-        default:
-          break;
-      }
+    handleDeleteMember() {
+
     }
-    setTimeout(() => {
-      this.setState({ alertVisible: false });
-    }, 2000);
-  }
 
-  async handleSaveItem(id, item) {
-    const {
-      search_type, editIndex, search_data
-    } = this.state;
-    if (search_type.value !== 'player') {
-      const updateOrg = await Api.put(`organization/${id}`, item);
-      switch (updateOrg.response.status) {
-        case 200:
-          search_data[editIndex] = item;
-          this.setState({
-            isOpenEditModal: false,
-            messageStatus: true,
-            alertVisible: true,
-            successMessage: `${item.name} is been update successfully!`,
-            search_data
-          });
-          break;
-        case 406:
-          this.setState({
-            alertVisible: true,
-            messageStatus: false,
-            isOpenEditModal: true,
-            failMessage: updateOrg.body.message
-          });
-          break;
-        case 422:
-          this.setState({
-            alertVisible: true,
-            messageStatus: false,
-            isOpenEditModal: false,
-            failMessage: updateOrg.body.data && (`${updateOrg.body.data.email !== undefined ? updateOrg.body.data.email : ''} ${updateOrg.body.data.register_no !== undefined ? updateOrg.body.data.register_no : ''} ${updateOrg.body.data.readable_id !== undefined ? updateOrg.body.data.readable_id : ''}`)
-          });
-          break;
-        case 500:
-          this.setState({
-            alertVisible: true,
-            messageStatus: false,
-            isOpenEditModal: false,
-            failMessage: 'Internal Server Error!'
-          });
-          break;
-        default:
-          break;
-      }
-    } else {
-      const updateMem = await Api.put(`member/${id}`, item);
-      switch (updateMem.response.status) {
-        case 200:
-          if (item.role_id === 3) {
-            search_data[editIndex] = item;
-            this.setState({
-              search_data
-            });
-          } else {
-            this.setState({
-              search_data: search_data.filter(data => data.id !== id)
-            });
-          }
-          this.setState({
-            isOpenEditModal: false,
-            messageStatus: true,
-            alertVisible: true,
-            successMessage: `${item.first_name} ${item.last_name} is been update successfully!`
-          });
-          break;
-        case 406:
-          this.setState({
-            alertVisible: true,
-            messageStatus: false,
-            isOpenEditModal: false,
-            failMessage: updateMem.body.message
-          });
-          break;
-        case 422:
-          this.setState({
-            alertVisible: true,
-            messageStatus: false,
-            isOpenEditModal: false,
-            failMessage: updateMem.body.data && (`${updateMem.body.data.email !== undefined ? updateMem.body.data.email : ''} ${updateMem.body.data.identity !== undefined ? updateMem.body.data.identity : ''}`)
-          });
-          break;
-        case 500:
-          this.setState({
-            alertVisible: true,
-            messageStatus: false,
-            isOpenEditModal: false,
-            failMessage: 'Internal Server Error!'
-          });
-          break;
-        default:
-          break;
-      }
+    handleConfirmationClose() {
+
     }
-    setTimeout(() => {
-      this.setState({ alertVisible: false });
-    }, 3000);
-  }
 
-  handleConfirmationClose() {
-    this.setState({
-      isOpenDeleteModal: false,
-      confirmationMessage: ''
-    });
-  }
+    handleSaveItem() {
 
-  handleCreateAccount() {
-    this.props.history.push('/organization/create');
-  }
-
-  handleRegisterMember() {
-    this.props.history.push('/member/register');
-  }
-
-  handleSelectItem(id) {
-    const { search_type } = this.state;
-    if (search_type.value === 'player') {
-      this.props.history.push('/member/detail', id);
-    } else {
-      this.props.history.push('/organization/detail', id);
     }
-  }
 
-  render() {
-    const {
-      org_list,
-      weights,
-      roles,
-      search_type,
-      search_orgs,
-      search_name,
-      search_weight,
-      search_dan,
-      search_required,
-      errors,
-      search_data,
-      isOpenDeleteModal,
-      confirmationMessage,
-      isOpenEditModal,
-      edit_item
-    } = this.state;
-
-    return (
-      <Fragment>
-        <MainTopBar />
-        <div className="main-content">
-          <Container fluid>
-            <h3 className="text-danger text-center mb-5">Welcome to National Sports Federation Management System!</h3>
-            <Row>
-              <Col xl="2" lg="3" md="4" sm="6" xs="12">
-                <FormGroup>
-                  <Select
-                    name="type"
-                    classNamePrefix={!search_required ? 'invalid react-select-lg' : 'react-select-lg'}
-                    placeholder="Search Type"
-                    indicatorSeparator={null}
-                    value={search_type}
-                    options={search_type_options}
-                    getOptionValue={option => option.value}
-                    getOptionLabel={option => option.label}
-                    onChange={(type) => {
-                      this.handleSearchFilter('type', type);
-                    }}
-                  />
-                  {
-                    !search_required && (
-                      <FormFeedback className="d-block">{errors.search_type}</FormFeedback>
-                    )
-                  }
-                </FormGroup>
-              </Col>
-              <Col xl="2" lg="3" md="4" sm="6" xs="12">
-                <FormGroup>
-                  <Select
-                    name="orgs"
-                    classNamePrefix="react-select-lg"
-                    placeholder="Search Orgs"
-                    // isMulti
-                    value={search_orgs}
-                    options={org_list}
-                    getOptionValue={option => option.id}
-                    getOptionLabel={option => option.name_o}
-                    onChange={(org) => {
-                      this.handleSearchFilter('orgs', org);
-                    }}
-                  />
-                </FormGroup>
-              </Col>
-              <Col xl="2" lg="3" md="4" sm="6" xs="12">
-                <FormGroup>
-                  <Input
-                    type="text"
-                    value={search_name}
-                    placeholder="Name"
-                    onChange={event => this.handleSearchFilter('name', event.target.value)}
-                  />
-                </FormGroup>
-              </Col>
-              {
-                search_type.value === 'player' && (
-                  <Col xl="2" lg="3" md="4" sm="6" xs="12">
-                    <FormGroup>
-                      <Select
-                        name="weight"
-                        classNamePrefix="react-select-lg"
-                        placeholder="Search Weight"
-                        // isMulti
-                        value={search_weight}
-                        options={weights}
-                        getOptionValue={option => option.id}
-                        getOptionLabel={option => option.name}
-                        onChange={(weight) => {
-                          this.handleSearchFilter('weight', weight);
-                        }}
-                      />
-                    </FormGroup>
-                  </Col>
-                )
-              }
-              {
-                search_type.value === 'player' && (
-                  <Col xl="2" lg="3" md="4" sm="6" xs="12">
-                    <FormGroup>
-                      <Select
-                        name="dan"
-                        classNamePrefix="react-select-lg"
-                        placeholder="Search Dan"
-                        // isMulti
-                        value={search_dan}
-                        options={Dans}
-                        getOptionValue={option => option.value}
-                        getOptionLabel={option => option.label}
-                        onChange={(dan) => {
-                          this.handleSearchFilter('dan', dan);
-                        }}
-                      />
-                    </FormGroup>
-                  </Col>
-                )
-              }
-              <Col xl={search_type.value === 'player' ? 2 : 6} lg={search_type.value === 'player' ? 9 : 3} md={search_type.value === 'player' ? 4 : 12} sm="6" xs="12">
-                <div className="text-right">
+    render() {
+      const {
+        org_list,
+        search_type,
+        member_type,
+        weights,
+        search_org,
+        search_name,
+        search_weight,
+        search_dan,
+        search_required,
+        member_required,
+        search_data,
+        errors,
+      } = this.state;
+      
+      return (
+        <Fragment>
+          <MainTopBar />
+          <div className="main-content">
+            <Container fluid>
+              <h3 className="text-danger text-center mb-5">Welcome to National Sports Federation Management System!</h3>
+              <Row>
+                <Col xl="2" lg="3" md="4" sm="6" xs="12">
                   <FormGroup>
-                    <Button
-                      type="button"
-                      color="success"
-                      className="btn-lg"
-                      onClick={this.handleSearch.bind(this)}
-                    >
-                      Search
-                    </Button>
+                    <Select
+                      name="search_type"
+                      classNamePrefix={!search_required ? 'invalid react-select-lg' : 'react-select-lg'}
+                      placeholder="Search Type"
+                      indicatorSeparator={null}
+                      value={search_type}
+                      options={search_type_options}
+                      getOptionValue={option => option.value}
+                      getOptionLabel={option => option.label}
+                      onChange={(type) => {
+                        this.handleSearchFilter('search_type', type);
+                      }}
+                    />
+                    {
+                      !search_required && (
+                        <FormFeedback className="d-block">{errors.required}</FormFeedback>
+                      )
+                    }
                   </FormGroup>
-                </div>
-              </Col>
-            </Row>
-          </Container>
-          <Alert color={this.state.messageStatus ? 'success' : 'warning'} isOpen={this.state.alertVisible}>
+                </Col>
+                {
+                  (search_type.value === 'club' || search_type.value === 'member') && (
+                  <Col xl="2" lg="3" md="4" sm="6" xs="12">
+                    <FormGroup>
+                      <Select
+                        name="search_org"
+                        classNamePrefix="react-select-lg"
+                        placeholder="Regional Federation"
+                        // isMulti
+                        value={search_org}
+                        options={org_list}
+                        getOptionValue={option => option.id}
+                        getOptionLabel={option => option.name_o}
+                        onChange={(org) => {
+                          this.handleSearchFilter('search_org', org);
+                        }}
+                      />
+                    </FormGroup>
+                  </Col>
+                  )
+                }
+                {
+                  search_type.value === 'club' && (
+                    <Col xl="2" lg="3" md="4" sm="6" xs="12">
+                      <FormGroup>
+                        <Input
+                          name="search_name"
+                          type="text"
+                          value={search_name}
+                          placeholder="Club Name"
+                          onChange={event => this.handleSearchFilter('search_name', event.target.value)}
+                        />
+                      </FormGroup>
+                    </Col>
+                  )
+                }
+                {
+                  search_type.value === 'member' && (
+                    <Col xl="2" lg="3" md="4" sm="6" xs="12">
+                      <FormGroup>
+                        <Select
+                          name="member_type"
+                          classNamePrefix={!member_required ? 'invalid react-select-lg' : 'react-select-lg'}
+                          placeholder="Member Type"
+                          classNamePrefix="react-select-lg"
+                          value={member_type}
+                          options={member_type_options}
+                          getOptionValue={option => option.value}
+                          getOptionLabel={option => option.label}
+                          onChange={(type) => {
+                            this.handleSearchFilter('member_type', type);
+                          }}
+                        />
+                        {
+                          !member_required && (
+                            <FormFeedback className="d-block">{errors.required}</FormFeedback>
+                          )
+                        }
+                      </FormGroup>
+                    </Col>                  
+                  )
+                }
+                {
+                  search_type.value === 'member' && member_type.value === 'player' && (
+                    <Col xl="3" lg="4" md="6" sm="6" xs="12">
+                      <FormGroup>
+                        <Select
+                          name="search_weight"
+                          classNamePrefix="react-select-lg"
+                          placeholder="Weight"
+                          // isMulti
+                          value={search_weight}
+                          options={weights}
+                          getOptionValue={option => option.id}
+                          getOptionLabel=
+                            {option => option.name + ", " +  option.weight + "Kg, " + (option.gender ? "Male" : "Female")}
+                          onChange={(weight) => {
+                            this.handleSearchFilter('search_weight', weight);
+                          }}
+                        />
+                      </FormGroup>
+                    </Col>
+                  )
+                }
+                {
+                  search_type.value === 'member' && member_type.value === 'player' && (
+                    <Col xl="1" lg="2" md="2" sm="6" xs="12">
+                      <FormGroup>
+                        <Select
+                          name="search_dan"
+                          classNamePrefix="react-select-lg"
+                          placeholder="Dan"
+                          // isMulti
+                          value={search_dan}
+                          options={Dans}
+                          getOptionValue={option => option.value}
+                          getOptionLabel={option => option.label}
+                          onChange={(dan) => {
+                            this.handleSearchFilter('search_dan', dan);
+                          }}
+                        />
+                      </FormGroup>
+                    </Col>
+                  )
+                }
+                <Col xl="2" lg="3" md="4" sm="6" xs="12">
+                  <div className="text-right">
+                    <FormGroup>
+                      <Button
+                        type="button"
+                        color="success"
+                        className="btn-lg"
+                        onClick={this.handleSearch.bind(this)}
+                      >
+                        Search
+                      </Button>
+                    </FormGroup>
+                  </div>
+                </Col>
+              </Row>
+            </Container>
             {
-              this.state.messageStatus ? this.state.successMessage : this.state.failMessage
-            }
-          </Alert>
-          {
-            search_data === null && (
-              <Container>
-                <ChartsPage />
-              </Container>
-            )
-          }
-          {
-            search_data && search_data.length === 0 && (
-              <div className="fixed-content">
-                <h3 className="text-muted">
-                  No results!
-                </h3>
-              </div>
-            )
-          }
-          {
-            search_data && search_data.length > 0 && (
-              <Container fluid>
-                <div className="table-responsive">
-                  <DataTable
-                    type={search_type}
-                    items={search_data}
-                    onEdit={this.handleEdit.bind(this)}
-                    onDelete={this.handleDelete.bind(this)}
-                    onSelect={this.handleSelectItem.bind(this)}
-                  />
+              search_data && search_data.length === 0 && (
+                <div className="fixed-content">
+                  <h3 className="text-muted">
+                    No results!
+                  </h3>
                 </div>
-              </Container>
-            )
-          }
-        </div>
-        { isOpenDeleteModal && <Prompt title={confirmationMessage} id={this.state.deleteId} handleAccept={this.handleDeleteMember} handleCancel={this.handleConfirmationClose} /> }
-        {
-          isOpenEditModal && (
-          <EditModal
-            id={edit_item}
-            type={search_type}
-            weights={weights}
-            orgs={org_list}
-            roles={roles}
-            errors={errors}
-            handleSave={this.handleSaveItem}
-            handleCancel={this.handleEdit.bind(this)}
-          />
-          )
-        }
-        <div className="fixed-button left">
-          <Button
-            type="button"
-            color="secondary"
-            onClick={this.handleCreateAccount.bind(this)}
-          >
-            Register Organization
-          </Button>
-        </div>
-        <div className="fixed-button right">
-          <Button
-            type="button"
-            color="secondary"
-            onClick={this.handleRegisterMember.bind(this)}
-          >
-            Register Member
-          </Button>
-        </div>
-      </Fragment>
-    );
+              )
+            }
+            {
+              search_data && search_data.length > 0 && (
+                <Container fluid>
+                  <div className="table-responsive">
+                    <DataTable
+                      type={search_type}
+                      items={search_data}
+                      onEdit={this.handleEdit.bind(this)}
+                      onDelete={this.handleDelete.bind(this)}
+                      onSelect={this.handleSelectItem.bind(this)}
+                    />
+                  </div>
+                </Container>
+              )
+            }
+          </div>
+        </Fragment>
+      )
+    }
   }
-}
 
-export default withRouter(Dashboard);
+  export default withRouter(Dashboard);
