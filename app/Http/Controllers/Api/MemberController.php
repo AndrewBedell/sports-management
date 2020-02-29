@@ -199,8 +199,11 @@ class MemberController extends Controller
     public function show($id)
     {
         $member = Member::where('members.id', $id)
+                        ->leftJoin('organizations', 'organizations.id', '=', 'members.organization_id')
+                        ->leftJoin('roles', 'roles.id', '=', 'members.role_id')
                         ->leftJoin('users', 'users.member_id', '=', 'members.id')
-                        ->select('members.*', 'users.id AS uid', 'users.deleted_at AS status', 'users.is_super')
+                        ->select('members.*', 'organizations.name_o', 'roles.name AS role_name', 'roles.is_player',
+                                'users.id AS uid', 'users.deleted_at AS status', 'users.is_super')
                         ->first();
 
         if (isset($member)) {
@@ -209,11 +212,13 @@ class MemberController extends Controller
 
                 if ($role->is_player) {
                     $member = Member::where('members.id', $id)
-                            ->leftJoin('players', 'members.id', '=', 'players.member_id')
-                            ->leftJoin('weights', 'players.weight_id', '=', 'players.weight_id')
-                            ->select('members.*', 'weights.id AS weight_id', 'weights.name AS weight_name', 'weights.weight',
-                                     'players.dan', 'players.skill', 'players.expired_date',
-                                     DB::raw("null AS uid, null AS status, 0 AS is_super, 0 AS is_admin"))
+                            ->leftJoin('organizations', 'organizations.id', '=', 'members.organization_id')
+                            ->leftJoin('roles', 'roles.id', '=', 'members.role_id')
+                            ->leftJoin('players', 'players.member_id', '=', 'members.id')
+                            ->leftJoin('weights', 'weights.id', '=', 'players.weight_id')
+                            ->select('members.*', 'organizations.name_o', 'roles.name AS role_name', 'roles.is_player',
+                                    'weights.id AS weight_id', 'weights.name AS weight_name', 'weights.weight', 'players.dan', 'players.skill', 'players.expired_date',
+                                    DB::raw("null AS uid, null AS status, 0 AS is_super, 0 AS is_admin"))
                             ->first();
                 } else {
                     if (is_null($member->status)) {

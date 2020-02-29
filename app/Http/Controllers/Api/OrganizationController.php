@@ -150,6 +150,10 @@ class OrganizationController extends Controller
         if ($this->checkPermission($id)) {
             $org = Organization::find($id);
 
+            $parent = Organization::find($org['parent_id']);
+
+            $org['parent'] = $parent['name_o'];
+
             return response()->json($org);
         } else {
             return response()->json(
