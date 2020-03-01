@@ -43,7 +43,7 @@ class EditModal extends React.Component {
   }
 
   async componentDidMount() {
-    if (this.props.type.value !== 'player') {
+    if (this.props.type.value !== 'member') {
       const exOrgs = await this.getOrganizations(this.props.id);
       this.setState({
         org_list: exOrgs
@@ -56,7 +56,7 @@ class EditModal extends React.Component {
     const {
       id, type, orgs
     } = props;
-    if (type && type.value && type.value === 'player') {
+    if (type && type.value && type.value === 'member') {
       const data = await Api.get(`member/${id}`);
       const {
         response, body
@@ -89,7 +89,7 @@ class EditModal extends React.Component {
           break;
       }
     }
-    if (type.value === 'player') {
+    if (type.value === 'member') {
       this.setState({
         org_list: orgs
       });
@@ -109,7 +109,7 @@ class EditModal extends React.Component {
       ...item
     };
     if (!item) {
-      if (type && type.value && type.value !== 'player') {
+      if (type && type.value && type.value !== 'member') {
         formikRef1.current.setValues({
           name_o: '',
           name_s: '',
@@ -153,7 +153,7 @@ class EditModal extends React.Component {
           position: ''
         });
       }
-    } else if (type && type.value && type.value === 'player') {
+    } else if (type && type.value && type.value === 'member') {
       formikRef2.current.setValues({
         name: values.name,
         patronymic: values.patronymic,
@@ -257,7 +257,7 @@ class EditModal extends React.Component {
     let newData = {};
     const { id, type } = this.props;
     const { item, imagePreviewUrl } = this.state;
-    if (type.value !== 'player') {
+    if (type.value !== 'member') {
       newData = {
         id,
         name_o: values.name_o,
@@ -302,7 +302,8 @@ class EditModal extends React.Component {
         position: values.position || '',
         skill: values.skill ? values.skill : '',
         active: item.active,
-        register_date: moment(values.register_date).format('YYYY-MM-DD')
+        register_date: moment(values.register_date).format('YYYY-MM-DD'),
+        name_o: values.organization_id.name_o,
       };
     }
     let {
@@ -359,7 +360,7 @@ class EditModal extends React.Component {
         <ModalHeader toggle={this.handleCancel} style={{ borderBottom: 'none' }} />
         <ModalBody>
           {
-            type.value === 'player' && item ? (
+            type.value === 'member' && item ? (
               <Formik
                 ref={this.formikRef2}
                 initialValues={{

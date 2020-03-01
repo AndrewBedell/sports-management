@@ -7,6 +7,15 @@
     height: calc(100vh - 500px);
   }
 
+  &.dashboard {
+    .club-list {
+      width: 100%;
+      input {
+        height: 48px;      
+      }
+    }
+  }
+
   &.detail a {
     color: #1E1B52;
   }

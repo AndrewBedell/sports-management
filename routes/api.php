@@ -27,6 +27,7 @@ Route::namespace('Api')->group(function () {
         Route::get('organizations-list', 'OrganizationController@list');
         Route::get('organization/{id}', 'OrganizationController@show');
         Route::get('organization-child/{id}', 'OrganizationController@child');
+        Route::get('clubs', 'OrganizationController@clubs');
         Route::get('club-players/{id}', 'OrganizationController@players');
         Route::post('register-organization', 'OrganizationController@store');
         Route::put('organization/{id}', 'OrganizationController@update');

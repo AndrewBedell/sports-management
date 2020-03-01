@@ -271,7 +271,7 @@ class DataTable extends Component {
                     </span>
                     {
                       stype.value === 'member' ? (
-                        <a className="detail-link" onClick={() => onSelect(item.id)}>{item.name} {item.patronymic} {item.surname}</a>
+                        <a className="detail-link" onClick={() => onSelect(item.id)}>{item.surname && item.surname.toUpperCase()} {item.patronymic} {item.name}</a>
                       ) : (
                         <a className="detail-link" onClick={() => onSelect(item.id)}>{item.name_o}</a>
                       )

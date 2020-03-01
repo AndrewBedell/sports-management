@@ -448,6 +448,18 @@ class OrganizationController extends Controller
     }
 
     /**
+     * Display a listing of the clubs.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function clubs()
+    {
+        $clubs = Organization::where('is_club', 1)->select('name_o')->orderBy('name_o')->get();
+
+        return response()->json($clubs);
+    }
+
+    /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
@@ -559,7 +571,10 @@ class OrganizationController extends Controller
 
         switch ($stype) {
             case 'org':
-                $result = Organization::where('id', '!=', 1)->where('is_club', 0)->get();
+                $result = Organization::where('id', '!=', 1)
+                                ->where('name_o', 'like', '%' . $name . '%')
+                                ->where('is_club', 0)
+                                ->get();
                 break;
             case 'club':
                 $result = Organization::where('name_o', 'like', '%' . $name . '%')
@@ -587,7 +602,7 @@ class OrganizationController extends Controller
                 if ($mtype == 'player') {
                     if ($gender == 0 || $gender == 1)
                         $result = $result->where('members.gender', $gender);
-                        
+
                     if ($weight != '')
                         $result = $result->where('players.weight_id', $weight);
 

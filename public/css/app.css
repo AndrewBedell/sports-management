@@ -58262,6 +58262,14 @@ body {
   height: calc(100vh - 500px);
 }
 
+.main-content.dashboard .club-list {
+  width: 100%;
+}
+
+.main-content.dashboard .club-list input {
+  height: 48px;
+}
+
 .main-content.detail a {
   color: #1E1B52;
 }
