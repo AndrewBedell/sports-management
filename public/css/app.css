@@ -58262,11 +58262,11 @@ body {
   height: calc(100vh - 500px);
 }
 
-.main-content.dashboard table tr td a.detail-link {
+.main-content table tr td a.detail-link {
   cursor: pointer;
 }
 
-.main-content.dashboard table tr td a.detail-link:hover {
+.main-content table tr td a.detail-link:hover {
   color: #1a0dab;
   text-decoration: underline;
 }

@@ -36,7 +36,7 @@ class OrganizationDetail extends Component {
     }
 
     let org_id = this.props.location.state;
-    console.log(org_id);
+    
     const org_data = await Api.get(`organization/${org_id}`);
     
     switch (org_data.response.status) {
@@ -55,8 +55,23 @@ class OrganizationDetail extends Component {
     }
   }
 
-  handleSelectItem(id) {
-    this.props.history.push('/organization/detail', id);
+  async handleSelectItem(id) {
+    const sub_data = await Api.get(`organization/${id}`);
+    
+    switch (sub_data.response.status) {
+      case 200:
+        this.setState({
+          org: sub_data.body,
+          type: sub_data.body.type,
+          data: sub_data.body.table
+        });
+        
+        break;
+      case 406:
+        break;
+      default:
+        break;
+    }
   }
 
   render() {

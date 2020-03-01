@@ -294,7 +294,7 @@ class SubTable extends Component {
 }
 
 SubTable.defaultProps = {
-  onSelect: (id) => {}
+  onSelect: () => {}
 };
 
 export default SubTable;
