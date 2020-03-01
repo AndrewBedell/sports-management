@@ -22,7 +22,7 @@ import React, {
   import DataTable from '../../components/DataTable';
   import Prompt from '../../components/Prompt';
   import EditModal from '../../components/EditModal';
-  import { Dans, search_type_options, member_type_options } from '../../configs/data';
+  import { Genders, Dans, search_type_options, member_type_options } from '../../configs/data';
 
   class Dashboard extends Component {
     constructor(props) {
@@ -309,48 +309,61 @@ import React, {
                 }
                 {
                   search_type.value === 'member' && member_type.value === 'player' && (
-                    <Col xl="3" lg="4" md="6" sm="6" xs="12">
-                      <FormGroup>
-                        <Select
-                          name="search_weight"
-                          classNamePrefix="react-select-lg"
-                          placeholder="Weight"
-                          // isMulti
-                          value={search_weight}
-                          options={weights}
-                          getOptionValue={option => option.id}
-                          getOptionLabel=
-                            {option => option.name + ", " +  option.weight + "Kg, " + (option.gender ? "Male" : "Female")}
-                          onChange={(weight) => {
-                            this.handleSearchFilter('search_weight', weight);
-                          }}
-                        />
-                      </FormGroup>
-                    </Col>
+                    <Fragment>
+                      <Col xl="2" lg="2" md="3" sm="6" xs="12">
+                        <FormGroup>
+                          <Select
+                            name="search_gender"
+                            classNamePrefix="react-select-lg"
+                            placeholder="Gender"
+                            options={Genders}
+                            getOptionValue={option => option.value}
+                            getOptionLabel={option => option.name}
+                            onChange={(gender) => {
+                              this.handleSearchFilter('search_gender', gender);
+                            }}
+                          />
+                        </FormGroup>
+                      </Col>
+                      <Col xl="2" lg="2" md="3" sm="6" xs="12">
+                        <FormGroup>
+                          <Select
+                            name="search_weight"
+                            classNamePrefix="react-select-lg"
+                            placeholder="Weight"
+                            // isMulti
+                            value={search_weight}
+                            options={weights}
+                            getOptionValue={option => option.id}
+                            getOptionLabel=
+                              {option => option.weight + "Kg"}
+                            onChange={(weight) => {
+                              this.handleSearchFilter('search_weight', weight);
+                            }}
+                          />
+                        </FormGroup>
+                      </Col>
+                      <Col xl="1" lg="2" md="2" sm="6" xs="12">
+                        <FormGroup>
+                          <Select
+                            name="search_dan"
+                            classNamePrefix="react-select-lg"
+                            placeholder="Dan"
+                            // isMulti
+                            value={search_dan}
+                            options={Dans}
+                            getOptionValue={option => option.value}
+                            getOptionLabel={option => option.label}
+                            onChange={(dan) => {
+                              this.handleSearchFilter('search_dan', dan);
+                            }}
+                          />
+                        </FormGroup>
+                      </Col>
+                    </Fragment>
                   )
                 }
-                {
-                  search_type.value === 'member' && member_type.value === 'player' && (
-                    <Col xl="1" lg="2" md="2" sm="6" xs="12">
-                      <FormGroup>
-                        <Select
-                          name="search_dan"
-                          classNamePrefix="react-select-lg"
-                          placeholder="Dan"
-                          // isMulti
-                          value={search_dan}
-                          options={Dans}
-                          getOptionValue={option => option.value}
-                          getOptionLabel={option => option.label}
-                          onChange={(dan) => {
-                            this.handleSearchFilter('search_dan', dan);
-                          }}
-                        />
-                      </FormGroup>
-                    </Col>
-                  )
-                }
-                <Col xl="2" lg="3" md="4" sm="6" xs="12">
+                <Col xl="1" lg="3" md="4" sm="6" xs="12">
                   <div className="text-right">
                     <FormGroup>
                       <Button
