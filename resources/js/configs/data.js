@@ -264,6 +264,13 @@ export const Dans = [
   { value: 10, label: '10' }
 ];
 
+export const search_genders = [
+  {label: "All Genders", value: 2},
+  {label: "Male", value: 1},
+  {label: "Female", value: 0}
+  
+];
+
 export const search_type_options = [
   { label: 'Regional Federation', value: 'org' },
   { label: 'Club', value: 'club' },

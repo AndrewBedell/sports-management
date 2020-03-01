@@ -7,6 +7,10 @@
     height: calc(100vh - 500px);
   }
 
+  &.detail a {
+    color: #1E1B52;
+  }
+
   table tr td a.detail-link {
     cursor: pointer;
     &:hover {

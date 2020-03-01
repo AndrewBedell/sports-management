@@ -53,7 +53,7 @@ class MemberDetail extends Component {
     return (
       <Fragment>
         <MainTopBar />
-        <div className="main-content">
+        <div className="main-content detail">
           <Container>
             <div>
               Welcome to
@@ -73,48 +73,47 @@ class MemberDetail extends Component {
                   {
                     member.is_player ? (
                       <Fragment>
-                        <h4 className="pt-3 pb-2">Name: {member.name} {member.patronymic} {member.surname}</h4>
-                        <h4 className="py-2">Club Name: {member.name_o}</h4>
-                        <h4 className="py-2">Role: {member.role_name}</h4>
-                        <h4 className="py-2">Gender: {member.gender? 'Male': "Female"}</h4>
+                        <h4 className="pt-3 pb-2"><b>Name</b>: {member.name} {member.patronymic} {member.surname}</h4>
+                        <h4 className="py-2"><b>Club Name</b>: {member.name_o}</h4>
+                        <h4 className="py-2"><b>Role</b>: {member.role_name}</h4>
+                        <h4 className="py-2"><b>Gender</b>: {member.gender? 'Male': "Female"}</h4>
                       </Fragment>
                     ) : (
                       <Fragment>
-                        <h4 className="pt-3 pb-2">Name: {member.name} {member.patronymic} {member.surname}</h4>
-                        <h4 className="py-2">Organization Name: {member.name_o}</h4>
-                        <h4 className="py-2">Role: {member.role_name}</h4>
+                        <h4 className="pt-3 pb-2"><b>Name</b>: {member.name} {member.patronymic} {member.surname}</h4>
+                        <h4 className="py-2"><b>Organization Name</b>: {member.name_o}</h4>
+                        <h4 className="py-2"><b>Role</b>: {member.role_name}</h4>
                       </Fragment>
                     )
                   }
                 </Col>
               </Row>
               <Row>
-                <Col sm="6"><h4 className="px-5 pt-5">Register Date: {member.register_date}</h4></Col>
-                <Col sm="6"><h4 className="px-5 pt-5">Birthday: {member.birthday}</h4></Col>
+                <Col sm="6"><h4 className="px-5 pt-5"><b>Register Date</b>: {member.register_date}</h4></Col>
+                <Col sm="6"><h4 className="px-5 pt-5"><b>Birthday</b>: {member.birthday}</h4></Col>
+              </Row>
+              <Row>
+                <Col sm="6">
+                  <h4 className="px-5 pt-5">
+                    <b>Email</b>: <a href={"mailto:" + member.email}>{member.email}</a>
+                  </h4>
+                </Col>
+                <Col sm="6"><h4 className="px-5 pt-5"><b>Mobile</b>: {member.mobile}</h4></Col>
               </Row>
               {member.is_player && (
-                <Fragment>
-                  <Row>
-                    <Col sm="6"><h4 className="px-5 pt-5">Email: {member.email}</h4></Col>
-                    <Col sm="6"><h4 className="px-5 pt-5">Mobile: {member.mobile}</h4></Col>
-                  </Row>
-                  <Row>
-                    <Col sm="6"><h4 className="px-5 pt-5">Weight: {member.weight_name}, {member.weight} Kg</h4></Col>
-                    <Col sm="6"><h4 className="px-5 pt-5">Dan: {member.dan}</h4></Col>
-                  </Row>
-                </Fragment>
+                <Row>
+                  <Col sm="6"><h4 className="px-5 pt-5"><b>Weight</b>: {member.weight_name}, {member.weight} Kg</h4></Col>
+                  <Col sm="6"><h4 className="px-5 pt-5"><b>Dan</b>: {member.dan}</h4></Col>
+                </Row>
               )}
               <Row>
                 <Col sm="12">
                   <h4 className="px-5 pt-5">
-                    Address: {member.addresslin1}, {member.addressline2}, {member.city},&nbsp;
-                    {countries.filter(country => country.countryCode === member.country).length > 0 && 
-                    countries.filter(country => country.countryCode === member.country)[0].name}, {member.state}, {member.zip_code}
-                  </h4>
-                </Col>
-                <Col sm="12">
-                  <h4 className="px-5 pt-5">
-                    Identity: {member.identity}
+                    <b>Address</b>: {(member.addressline1 && member.addressline1 != '' && member.addressline1 != '-') ? member.addressline1 + ', ' : '' }
+                    {(member.addressline2 && member.addressline2 != '' && member.addressline2 != '-') ? member.addressline2 + ', ' : '' }
+                    {(member.city && member.city != '' && member.city != '-') ? member.city + ', ' : '' }
+                    {(member.state && member.state != '' && member.state != '-') ? member.state + ', ' : '' }
+                    {member.zip_code}
                   </h4>
                 </Col>
               </Row>

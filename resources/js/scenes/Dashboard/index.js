@@ -22,7 +22,7 @@ import React, {
   import DataTable from '../../components/DataTable';
   import Prompt from '../../components/Prompt';
   import EditModal from '../../components/EditModal';
-  import { Genders, Dans, search_type_options, member_type_options } from '../../configs/data';
+  import { Dans, search_genders, search_type_options, member_type_options } from '../../configs/data';
 
   class Dashboard extends Component {
     constructor(props) {
@@ -37,6 +37,7 @@ import React, {
         member_type: '',
         search_org: '',
         search_name: '',
+        search_gender: search_genders[0],
         search_weight: '',
         search_dan: '',
         search_data: null,
@@ -49,6 +50,7 @@ import React, {
       this.handleDeleteMember = this.handleDeleteMember.bind(this);
       this.handleConfirmationClose = this.handleConfirmationClose.bind(this);
       this.handleSaveItem = this.handleSaveItem.bind(this);
+      this.getWeights = this.getWeights.bind(this);
     }
 
     componentDidMount() {
@@ -109,6 +111,12 @@ import React, {
             search_data: null
           });
           break;
+        case 'search_gender':
+          this.setState({
+            search_gender: value,
+            search_data: null
+          });
+          break;
         case 'search_weight':
           this.setState({
             search_weight: value,
@@ -128,7 +136,7 @@ import React, {
 
     async handleSearch() {
       const {
-        search_type, search_org, search_name, member_type, search_weight, search_dan
+        search_type, search_org, search_name, member_type, search_gender, search_weight, search_dan
       } = this.state;
 
       const search_params = {
@@ -136,6 +144,7 @@ import React, {
         org: search_org ? search_org.id : '',
         name: search_name,
         mtype: member_type ? member_type.value : '',
+        gender: search_gender ? search_gender.value : '',
         weight: search_weight ? search_weight.id : '',
         dan: search_dan ? search_dan.value : ''
       }
@@ -200,6 +209,16 @@ import React, {
 
     }
 
+    getWeights(gender) {
+      return this.state.weights.filter(weight => {
+        if (gender === 2) {
+          return true;
+        } else {
+          return weight.gender === gender;
+        }
+      })
+    }
+
     render() {
       const {
         org_list,
@@ -208,6 +227,7 @@ import React, {
         weights,
         search_org,
         search_name,
+        search_gender,
         search_weight,
         search_dan,
         search_required,
@@ -316,9 +336,10 @@ import React, {
                             name="search_gender"
                             classNamePrefix="react-select-lg"
                             placeholder="Gender"
-                            options={Genders}
+                            value={search_gender}
+                            options={search_genders}
                             getOptionValue={option => option.value}
-                            getOptionLabel={option => option.name}
+                            getOptionLabel={option => option.label}
                             onChange={(gender) => {
                               this.handleSearchFilter('search_gender', gender);
                             }}
@@ -333,7 +354,7 @@ import React, {
                             placeholder="Weight"
                             // isMulti
                             value={search_weight}
-                            options={weights}
+                            options={this.getWeights(search_gender ? search_gender.value : '')}
                             getOptionValue={option => option.id}
                             getOptionLabel=
                               {option => option.weight + "Kg"}

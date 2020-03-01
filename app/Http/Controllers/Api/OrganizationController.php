@@ -551,6 +551,7 @@ class OrganizationController extends Controller
         $org = $request->input('org');
         $name = $request->input('name');
         $mtype = $request->input('mtype');
+        $gender = $request->input('gender');
         $weight = $request->input('weight');
         $dan = $request->input('dan');
 
@@ -584,6 +585,9 @@ class OrganizationController extends Controller
                     $result = $result->where('organization_id', $org);
 
                 if ($mtype == 'player') {
+                    if ($gender == 0 || $gender == 1)
+                        $result = $result->where('members.gender', $gender);
+                        
                     if ($weight != '')
                         $result = $result->where('players.weight_id', $weight);
 

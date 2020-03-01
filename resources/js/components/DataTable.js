@@ -129,6 +129,7 @@ class DataTable extends Component {
         <Table.Header>
           <Table.Row>
             <Table.HeaderCell
+              className="text-center"
               sorted={column === 'name' ? direction : null}
               onClick={this.handleSort.bind(this, 'name')}
             >
@@ -137,6 +138,7 @@ class DataTable extends Component {
             {
               (stype.value === 'org' || stype.value === 'club') && (
                 <Table.HeaderCell
+                  className="text-center"
                   sorted={column === 'register_no' ? direction : null}
                   onClick={this.handleSort.bind(this, 'register_no')}
                 >
@@ -148,18 +150,22 @@ class DataTable extends Component {
               stype.value === 'member' && (
                 <Fragment>
                   <Table.HeaderCell
+                    className="text-center"
+                    width="2"
                     sorted={column === 'name_o' ? direction : null}
                     onClick={this.handleSort.bind(this, 'name_o')}
                   >
-                    {mtype.value === 'player' ? 'Club' : 'Federation'}
+                    {mtype.value === 'player' ? 'Club' : 'Regional Federation'}
                   </Table.HeaderCell>
                   <Table.HeaderCell
+                    className="text-center"
                     sorted={column === 'gender' ? direction : null}
                     onClick={this.handleSort.bind(this, 'gender')}
                   >
                     Gender
                   </Table.HeaderCell>
                   <Table.HeaderCell
+                    className="text-center"
                     sorted={column === 'birthday' ? direction : null}
                     onClick={this.handleSort.bind(this, 'birthday')}
                   >
@@ -172,18 +178,24 @@ class DataTable extends Component {
               mtype.value !== 'player' && (
                 <Fragment>
                   <Table.HeaderCell
+                    width="1"
+                    className="text-center"
                     sorted={column === 'mobile_phone' ? direction : null}
                     onClick={this.handleSort.bind(this, 'mobile_phone')}
                   >
                     Mobile
                   </Table.HeaderCell>
                   <Table.HeaderCell
+                    className="text-center"
+                    width="3"
                     sorted={column === 'email' ? direction : null}
                     onClick={this.handleSort.bind(this, 'email')}
                   >
                     Email
                   </Table.HeaderCell>
                   <Table.HeaderCell
+                    className="text-center"
+                    width="6"
                     sorted={column === 'addressline1' ? direction : null}
                     onClick={this.handleSort.bind(this, 'addressline1')}
                   >
@@ -196,22 +208,28 @@ class DataTable extends Component {
               stype.value === 'member' && mtype.value === 'player' && (
                 <Fragment>
                   <Table.HeaderCell
+                    className="text-center"
                     sorted={column === 'weight' ? direction : null}
                     onClick={this.handleSort.bind(this, 'weight')}
                   >
                     Weight
                   </Table.HeaderCell>
                   <Table.HeaderCell
+                    className="text-center"
                     sorted={column === 'dan' ? direction : null}
                     onClick={this.handleSort.bind(this, 'dan')}
                   >
                     Dan
                   </Table.HeaderCell>
-                  <Table.HeaderCell>Active</Table.HeaderCell>
+                  <Table.HeaderCell className="text-center">
+                    Status
+                  </Table.HeaderCell>
                 </Fragment>
               )
             }
-            <Table.HeaderCell width="2"></Table.HeaderCell>
+            <Table.HeaderCell className="text-center" width="2">
+              Edit / Delete
+            </Table.HeaderCell>
           </Table.Row>
         </Table.Header>
         <Table.Body>
@@ -262,7 +280,7 @@ class DataTable extends Component {
                   {
                     (stype.value === 'org' || stype.value === 'club') && (
                       <Fragment>
-                        <Table.Cell>{item.register_no}</Table.Cell>
+                        <Table.Cell className="text-center">{item.register_no}</Table.Cell>
                       </Fragment>
                     )
                   }
@@ -270,16 +288,16 @@ class DataTable extends Component {
                     stype.value === 'member' && (
                       <Fragment>
                         <Table.Cell>{item.name_o}</Table.Cell>
-                        <Table.Cell>{item.gender ? Genders[0].name : Genders[1].name}</Table.Cell>
-                        <Table.Cell>{item.birthday}</Table.Cell>
+                        <Table.Cell className="text-center">{item.gender ? Genders[0].name : Genders[1].name}</Table.Cell>
+                        <Table.Cell className="text-center">{item.birthday}</Table.Cell>
                       </Fragment>
                     )
                   }
                   {
                     mtype.value !== 'player' && (
                       <Fragment>
-                        <Table.Cell>{item.mobile_phone}</Table.Cell>
-                        <Table.Cell>{item.email}</Table.Cell>
+                        <Table.Cell className="text-center">{item.mobile_phone}</Table.Cell>
+                        <Table.Cell className="text-center">{item.email}</Table.Cell>
                         <Table.Cell>
                           {(item.addressline1 && item.addressline1 != '' && item.addressline1 != '-') ? item.addressline1 + ', ' : '' }
                           {(item.addressline2 && item.addressline2 != '' && item.addressline2 != '-') ? item.addressline2 + ', ' : '' }
@@ -293,21 +311,35 @@ class DataTable extends Component {
                   {
                     stype.value === 'member' && mtype.value === 'player' && (
                       <Fragment>
-                        <Table.Cell>{item.weight} Kg</Table.Cell>
-                        <Table.Cell>{item.dan}</Table.Cell>
-                        <Table.Cell>
+                        <Table.Cell className="text-center">{item.weight} Kg</Table.Cell>
+                        <Table.Cell className="text-center">{item.dan}</Table.Cell>
                           {
-                            item.active ? (
-                              <div className="text-warning text-center">
-                                <i className="fa fa-trophy fa-lg" />
-                              </div>
-                            ) : (
-                              <div className="text-muted text-center">
-                                <i className="fa fa-trophy fa-lg" />
-                              </div>
+                            item.active == 0 && (
+                              <Table.Cell>
+                                <div className="text-danger text-center">
+                                  <i className="fa fa-user fa-lg" />
+                                </div>
+                              </Table.Cell>
                             )
                           }
-                        </Table.Cell>
+                          {
+                            item.active == 1 && (
+                              <Table.Cell>
+                                <div className="text-success text-center">
+                                  <i className="fa fa-user fa-lg" />
+                                </div>
+                              </Table.Cell>
+                            )
+                          }
+                          {
+                            item.active == 2 && (
+                              <Table.Cell>
+                                <div className="text-warning text-center">
+                                  <i className="fa fa-user fa-lg" />
+                                </div>
+                              </Table.Cell>
+                            )
+                          }
                       </Fragment>
                     )
                   }

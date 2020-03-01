@@ -129,30 +129,37 @@ class SubTable extends Component {
               <Table.Header>
                 <Table.Row>
                   <Table.HeaderCell
+                    className="text-center"
                     sorted={column === 'club_name' ? direction : null}
                     onClick={this.handleSort.bind(this, 'club_name')}
                   >
                     Club Name
                   </Table.HeaderCell>
                   <Table.HeaderCell
+                    width="1"
+                    className="text-center"
                     sorted={column === 'register_no' ? direction : null}
                     onClick={this.handleSort.bind(this, 'register_no')}
                   >
                     Register No
                   </Table.HeaderCell>
                   <Table.HeaderCell
+                    className="text-center"
                     sorted={column === 'mobile_phone' ? direction : null}
                     onClick={this.handleSort.bind(this, 'mobile_phone')}
                   >
                     Mobile
                   </Table.HeaderCell>
                   <Table.HeaderCell
+                    className="text-center"
                     sorted={column === 'email' ? direction : null}
                     onClick={this.handleSort.bind(this, 'email')}
                   >
                     Email
                   </Table.HeaderCell>
                   <Table.HeaderCell
+                    width="6"
+                    className="text-center"
                     sorted={column === 'addressline1' ? direction : null}
                     onClick={this.handleSort.bind(this, 'addressline1')}
                   >
@@ -168,9 +175,9 @@ class SubTable extends Component {
                         <Table.Cell>
                           <a className="detail-link" onClick={() => onSelect(item.id)}>{item.name_o}</a>
                         </Table.Cell>
-                        <Table.Cell>{item.register_no}</Table.Cell>
-                        <Table.Cell>{item.mobile_phone}</Table.Cell>
-                        <Table.Cell>{item.email}</Table.Cell>
+                        <Table.Cell className="text-center">{item.register_no}</Table.Cell>
+                        <Table.Cell className="text-center">{item.mobile_phone}</Table.Cell>
+                        <Table.Cell className="text-center">{item.email}</Table.Cell>
                         <Table.Cell>
                           {(item.addressline1 && item.addressline1 != '' && item.addressline1 != '-') ? item.addressline1 + ', ' : '' }
                           {(item.addressline2 && item.addressline2 != '' && item.addressline2 != '-') ? item.addressline2 + ', ' : '' }
@@ -192,36 +199,43 @@ class SubTable extends Component {
               <Table.Header>
                 <Table.Row>
                   <Table.HeaderCell
+                    className="text-center"
                     sorted={column === 'name' ? direction : null}
                     onClick={this.handleSort.bind(this, 'name')}
                   >
                     Name
                   </Table.HeaderCell>
                   <Table.HeaderCell
+                    className="text-center"
                     sorted={column === 'gender' ? direction : null}
                     onClick={this.handleSort.bind(this, 'gender')}
                   >
                     Gender
                   </Table.HeaderCell>
                   <Table.HeaderCell
+                    className="text-center"
                     sorted={column === 'birthday' ? direction : null}
                     onClick={this.handleSort.bind(this, 'birthday')}
                   >
                     Birthday
                   </Table.HeaderCell>
                   <Table.HeaderCell
+                    className="text-center"
                     sorted={column === 'weight' ? direction : null}
                     onClick={this.handleSort.bind(this, 'weight')}
                   >
                     Weight
                   </Table.HeaderCell>
                   <Table.HeaderCell
+                    className="text-center"
                     sorted={column === 'dan' ? direction : null}
                     onClick={this.handleSort.bind(this, 'dan')}
                   >
                     Dan
                   </Table.HeaderCell>
-                  <Table.HeaderCell>Active</Table.HeaderCell>
+                  <Table.HeaderCell className="text-center">
+                    Status
+                  </Table.HeaderCell>
                 </Table.Row>
               </Table.Header>
               <Table.Body>
@@ -234,19 +248,19 @@ class SubTable extends Component {
                             {item.name} {item.patronymic} {item.surname}
                           </span>
                         </Table.Cell>
-                        <Table.Cell>{item.gender ? Genders[0].name : Genders[1].name}</Table.Cell>
-                        <Table.Cell>{item.birthday}</Table.Cell>
-                        <Table.Cell>{item.weight} Kg</Table.Cell>
-                        <Table.Cell>{item.dan}</Table.Cell>
+                        <Table.Cell className="text-center">{item.gender ? Genders[0].name : Genders[1].name}</Table.Cell>
+                        <Table.Cell className="text-center">{item.birthday}</Table.Cell>
+                        <Table.Cell className="text-center">{item.weight} Kg</Table.Cell>
+                        <Table.Cell className="text-center">{item.dan}</Table.Cell>
                         <Table.Cell>
                           {
                             item.active ? (
                               <div className="text-warning text-center">
-                                <i className="fa fa-trophy fa-lg" />
+                                <i className="fa fa-user fa-lg" />
                               </div>
                             ) : (
                               <div className="text-muted text-center">
-                                <i className="fa fa-trophy fa-lg" />
+                                <i className="fa fa-user fa-lg" />
                               </div>
                             )
                           }

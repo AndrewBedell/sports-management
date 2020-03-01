@@ -80,7 +80,7 @@ class OrganizationDetail extends Component {
     return (
       <Fragment>
         <MainTopBar />
-        <div className="main-content">
+        <div className="main-content detail">
           <Container>
             <div>
               Welcome to
@@ -97,20 +97,20 @@ class OrganizationDetail extends Component {
                   <Image className="m-auto" src={org.logo ? org.logo : Bitmaps.logo} size='small' />
                 </Col>
                 <Col sm="8">
-                  <h4 className="py-2">
-                    { org.is_club ? "Club Name: " : "Regional Federation Name: " }
+                  <h5 className="py-2">
+                    <b>{ org.is_club ? "Club Name" : "Regional Federation Name" }</b>:&nbsp;
                     {org.name_o} ({org.name_s})
-                  </h4>
-                  <h4 className="py-2">Register No: {org.register_no}</h4>
-                  <h4 className="py-2">Email: {org.email}</h4>
-                  <h4 className="py-2">Phone: {org.mobile}</h4>
-                  <h4 className="py-2">
-                    Address: {(org.addressline1 && org.addressline1 != '' && org.addressline1 != '-') ? org.addressline1 + ', ' : '' }
+                  </h5>
+                  <h5 className="py-2"><b>Register No</b>: {org.register_no}</h5>
+                  <h5 className="py-2"><b>Email</b>: <a href={"mailto:" + org.email}>{org.email}</a></h5>
+                  <h5 className="py-2"><b>Phone</b>: {org.mobile}</h5>
+                  <h5 className="py-2">
+                    <b>Address</b>: {(org.addressline1 && org.addressline1 != '' && org.addressline1 != '-') ? org.addressline1 + ', ' : '' }
                     {(org.addressline2 && org.addressline2 != '' && org.addressline2 != '-') ? org.addressline2 + ', ' : '' }
                     {(org.city && org.city != '' && org.city != '-') ? org.city + ', ' : '' }
                     {(org.state && org.state != '' && org.state != '-') ? org.state + ', ' : '' }
                     {org.zip_code}
-                  </h4>
+                  </h5>
                 </Col>
               </Row>
             </Segment>

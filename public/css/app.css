@@ -58262,6 +58262,10 @@ body {
   height: calc(100vh - 500px);
 }
 
+.main-content.detail a {
+  color: #1E1B52;
+}
+
 .main-content table tr td a.detail-link {
   cursor: pointer;
 }
