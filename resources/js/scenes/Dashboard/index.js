@@ -15,7 +15,7 @@ import {
   FormFeedback,
   Alert
 } from 'reactstrap';
-import { Input } from 'semantic-ui-react';
+import { Input, Search } from 'semantic-ui-react';
 
 import MainTopBar from '../../components/TopBar/MainTopBar';
 import Api from '../../apis/app';
@@ -23,6 +23,7 @@ import DataTable from '../../components/DataTable';
 import Prompt from '../../components/Prompt';
 import EditModal from '../../components/EditModal';
 import { Dans, search_genders, search_type_options, member_type_options } from '../../configs/data';
+import QueryString from 'qs';
 
 class Dashboard extends Component {
   constructor(props) {
@@ -64,10 +65,11 @@ class Dashboard extends Component {
     this.handleConfirmationClose = this.handleConfirmationClose.bind(this);
     this.handleSaveItem = this.handleSaveItem.bind(this);
     this.getWeights = this.getWeights.bind(this);
+    this.search = this.search.bind(this);
   }
 
   componentDidMount() {
-    this.componentWillReceiveProps(this.props);
+    this.componentWillReceiveProps();
   }
 
   async componentWillReceiveProps() {
@@ -139,6 +141,25 @@ class Dashboard extends Component {
       default:
         break;
     }
+
+    const search = QueryString.parse(this.props.location.search, { ignoreQueryPrefix: true });
+
+    this.setState({
+      search_type: search.stype ? (search_type_options.find(type => type.value == search.stype) || '') : '',
+      search_org: search.org ? (org_list.find(org => org.id == search.org) || '') : '',
+      search_name: search.name || '',
+      member_type: search.mtype ? (member_type_options.find(option => option.value == search.mtype) || '') : '',
+      search_gender: search.gender ?
+                      (search_genders.find(gender => gender.value == search.gender) || search_genders[0])
+                    : search_genders[0],
+      search_weight: search.weight ? (weight_list.find(weight => weight.id == search.weight) || '') : '',
+      search_dan: search.dan ? (Dans.find(dan => dan.value == search.dan) || '') : '',
+      search_data: null,
+    });
+    // const search = {};
+    if (search.stype) {
+      this.search(search);
+    }
   }
 
   handleSearchFilter(type, value) {
@@ -204,34 +225,58 @@ class Dashboard extends Component {
       org: search_org ? search_org.id : '',
       name: search_name,
       mtype: member_type ? member_type.value : '',
-      gender: search_gender ? search_gender.value : '',
+      gender: search_gender ? search_gender.value : search_genders[0],
       weight: search_weight ? search_weight.id : '',
       dan: search_dan ? search_dan.value : ''
+    };
+
+    if (!search_params.stype) {
+      this.setState({
+        search_required: false
+      });
+      return;
     }
 
-    if (search_type) {
-      if (search_type.value == 'member' && !member_type) {
-        this.setState({
-          member_required: false,
-        });
-      } else {
-        const search_response = await Api.get('search', search_params);
-        const { response, body } = search_response;
-
-        switch (response.status) {
-          case 200:
-            this.setState({
-              search_data: body
-            });
-            break;
-          default:
-            break;
-        }
-      }
-    } else {
+    if (search_params.stype == 'member' && !search_params.mtype) {
       this.setState({
-        search_required: false,
+        member_required: false,
       });
+      return
+    }
+
+    this.props.history.push(`/${QueryString.stringify(search_params, { addQueryPrefix: true })}`);
+  }
+
+  async search(search_params) {
+    // const {
+    //   search_type, search_org, search_name, member_type, search_gender, search_weight, search_dan
+    // } = this.state;
+
+    // const search_params = {
+    //   stype: search_type ? search_type.value : '',
+    //   org: search_org ? search_org.id : '',
+    //   name: search_name,
+    //   mtype: member_type ? member_type.value : '',
+    //   gender: search_gender ? search_gender.value : search_genders[0],
+    //   weight: search_weight ? search_weight.id : '',
+    //   dan: search_dan ? search_dan.value : ''
+    // }
+
+    if (search_params.stype == 'member' && !search_params.mtype) {
+      return;
+    } else {
+      const search_response = await Api.get('search', search_params);
+      const { response, body } = search_response;
+
+      switch (response.status) {
+        case 200:
+          this.setState({
+            search_data: body
+          });
+          break;
+        default:
+          break;
+      }
     }
   }
 
