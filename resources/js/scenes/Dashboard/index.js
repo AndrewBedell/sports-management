@@ -151,7 +151,6 @@ import React, {
 
           switch (response.status) {
             case 200:
-              console.log(body);
               this.setState({
                 search_data: body
               });
@@ -182,7 +181,7 @@ import React, {
 
     handleSelectItem(id) {
       const { search_type } = this.state;
-      if (search_type.value === 'player') {
+      if (search_type.value === 'member') {
         this.props.history.push('/member/detail', id);
       } else {
         this.props.history.push('/organization/detail', id);
@@ -220,7 +219,7 @@ import React, {
       return (
         <Fragment>
           <MainTopBar />
-          <div className="main-content">
+          <div className="main-content dashboard">
             <Container fluid>
               <h3 className="text-danger text-center mb-5">Welcome to National Sports Federation Management System!</h3>
               <Row>
@@ -381,7 +380,8 @@ import React, {
                 <Container fluid>
                   <div className="table-responsive">
                     <DataTable
-                      type={search_type}
+                      stype={search_type}
+                      mtype={member_type}
                       items={search_data}
                       onEdit={this.handleEdit.bind(this)}
                       onDelete={this.handleDelete.bind(this)}

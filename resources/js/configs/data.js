@@ -265,7 +265,7 @@ export const Dans = [
 ];
 
 export const search_type_options = [
-  { label: 'Federation', value: 'org' },
+  { label: 'Regional Federation', value: 'org' },
   { label: 'Club', value: 'club' },
   { label: 'Member', value: 'member' }
 ];
@@ -273,7 +273,7 @@ export const search_type_options = [
 export const member_type_options = [
   { label: 'Official Staff', value: 'staff' },
   { label: 'Coach', value: 'coach' },
-  { label: 'Player', value: 'player' }
+  { label: 'Judoka', value: 'player' }
 ];
 
 export const SetSwitch = [

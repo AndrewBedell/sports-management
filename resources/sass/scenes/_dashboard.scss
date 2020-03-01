@@ -6,4 +6,14 @@
     width: 100%;
     height: calc(100vh - 500px);
   }
+
+  &.dashboard {
+    table tr td a.detail-link {
+      cursor: pointer;
+      &:hover {
+        color: #1a0dab;
+        text-decoration: underline;
+      }
+    }
+  }
 }

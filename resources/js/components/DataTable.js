@@ -5,18 +5,15 @@ import React, { Component, Fragment } from 'react';
 import {
   Table,
   Pagination,
-  Menu,
-  Flag
+  Menu
 } from 'semantic-ui-react';
 import { Button } from 'reactstrap';
 import Select from 'react-select';
 import ReactTooltip from 'react-tooltip';
 
 import _ from 'lodash';
-import { countries, Genders } from '../configs/data';
+import { Genders } from '../configs/data';
 import Bitmaps from '../theme/Bitmaps';
-
-const flagRenderer = item => <Flag name={item.countryCode} />;
 
 class DataTable extends Component {
   constructor(props) {
@@ -34,7 +31,7 @@ class DataTable extends Component {
         { label: 20, value: 20 }
       ]
     };
-    this.getCountryCode = this.getCountryCode.bind(this);
+    
     this.handleChangePerPage = this.handleChangePerPage.bind(this);
   }
 
@@ -59,14 +56,6 @@ class DataTable extends Component {
     this.setState({
       data: items.slice(0, per_page)
     });
-  }
-
-  getCountryCode(country_code) {
-    const country_val = countries.filter(country => country.countryCode === country_code);
-    if (country_val.length > 0) {
-      return flagRenderer(country_val[0]);
-    }
-    return '';
   }
 
   handlePaginationChange(e, { activePage }) {
@@ -120,8 +109,10 @@ class DataTable extends Component {
       onDelete,
       onEdit,
       items,
-      type
+      stype,
+      mtype
     } = this.props;
+
     const {
       user,
       column,
@@ -132,6 +123,7 @@ class DataTable extends Component {
       pageOptions,
       current_perPage
     } = this.state;
+    
     return (
       <Table sortable celled selectable unstackable>
         <Table.Header>
@@ -143,8 +135,24 @@ class DataTable extends Component {
               Name
             </Table.HeaderCell>
             {
-              type.value === 'player' && (
+              (stype.value === 'org' || stype.value === 'club') && (
+                <Table.HeaderCell
+                  sorted={column === 'register_no' ? direction : null}
+                  onClick={this.handleSort.bind(this, 'register_no')}
+                >
+                  Register No
+                </Table.HeaderCell>
+              )
+            }
+            {
+              stype.value === 'member' && (
                 <Fragment>
+                  <Table.HeaderCell
+                    sorted={column === 'name_o' ? direction : null}
+                    onClick={this.handleSort.bind(this, 'name_o')}
+                  >
+                    {mtype.value === 'player' ? 'Club' : 'Federation'}
+                  </Table.HeaderCell>
                   <Table.HeaderCell
                     sorted={column === 'gender' ? direction : null}
                     onClick={this.handleSort.bind(this, 'gender')}
@@ -160,35 +168,47 @@ class DataTable extends Component {
                 </Fragment>
               )
             }
-            <Table.HeaderCell
-              sorted={column === 'email' ? direction : null}
-              onClick={this.handleSort.bind(this, 'email')}
-            >
-              Email
-            </Table.HeaderCell>
-            <Table.HeaderCell
-              sorted={column === 'country' ? direction : null}
-              onClick={this.handleSort.bind(this, 'country')}
-            >
-              Country
-            </Table.HeaderCell>
-            <Table.HeaderCell
-              sorted={column === 'mobile_phone' ? direction : null}
-              onClick={this.handleSort.bind(this, 'mobile_phone')}
-            >
-              Mobile
-            </Table.HeaderCell>
-            <Table.HeaderCell
-              sorted={column === 'addressline1' ? direction : null}
-              onClick={this.handleSort.bind(this, 'addressline1')}
-            >
-              Address
-            </Table.HeaderCell>
             {
-              type.value === 'player' && (
-                <Table.HeaderCell>
-                  Active
-                </Table.HeaderCell>
+              mtype.value !== 'player' && (
+                <Fragment>
+                  <Table.HeaderCell
+                    sorted={column === 'mobile_phone' ? direction : null}
+                    onClick={this.handleSort.bind(this, 'mobile_phone')}
+                  >
+                    Mobile
+                  </Table.HeaderCell>
+                  <Table.HeaderCell
+                    sorted={column === 'email' ? direction : null}
+                    onClick={this.handleSort.bind(this, 'email')}
+                  >
+                    Email
+                  </Table.HeaderCell>
+                  <Table.HeaderCell
+                    sorted={column === 'addressline1' ? direction : null}
+                    onClick={this.handleSort.bind(this, 'addressline1')}
+                  >
+                    Address
+                  </Table.HeaderCell>
+                </Fragment>
+              )
+            }
+            {
+              stype.value === 'member' && mtype.value === 'player' && (
+                <Fragment>
+                  <Table.HeaderCell
+                    sorted={column === 'weight' ? direction : null}
+                    onClick={this.handleSort.bind(this, 'weight')}
+                  >
+                    Weight
+                  </Table.HeaderCell>
+                  <Table.HeaderCell
+                    sorted={column === 'dan' ? direction : null}
+                    onClick={this.handleSort.bind(this, 'dan')}
+                  >
+                    Dan
+                  </Table.HeaderCell>
+                  <Table.HeaderCell>Active</Table.HeaderCell>
+                </Fragment>
               )
             }
             <Table.HeaderCell width="2"></Table.HeaderCell>
@@ -198,11 +218,11 @@ class DataTable extends Component {
           {
             data && data.length > 0 && (
               data.map((item, index) => (
-                <Table.Row key={index} onDoubleClick={() => onSelect(item.id)}>
+                <Table.Row key={index}>
                   <Table.Cell>
                     <span className="text-primary mr-2">
                       {
-                        type.value !== 'player' ? (
+                        stype.value !== 'player' ? (
                           <Fragment>
                             <a data-tip data-for={`happyFace_${index}`}><i className="fa fa-users fa-lg" /></a>
                             <ReactTooltip
@@ -232,49 +252,63 @@ class DataTable extends Component {
                       }
                     </span>
                     {
-                      type.value === 'player' ? `${item.name} ${item.patronymic} ${item.surname}` : item.name_o
+                      stype.value === 'member' ? (
+                        <a className="detail-link" onClick={() => onSelect(item.id)}>{item.name} {item.patronymic} {item.surname}</a>
+                      ) : (
+                        <a className="detail-link" onClick={() => onSelect(item.id)}>{item.name_o}</a>
+                      )
                     }
                   </Table.Cell>
                   {
-                    type.value === 'player' && (
+                    (stype.value === 'org' || stype.value === 'club') && (
                       <Fragment>
+                        <Table.Cell>{item.register_no}</Table.Cell>
+                      </Fragment>
+                    )
+                  }
+                  {
+                    stype.value === 'member' && (
+                      <Fragment>
+                        <Table.Cell>{item.name_o}</Table.Cell>
                         <Table.Cell>{item.gender ? Genders[0].name : Genders[1].name}</Table.Cell>
                         <Table.Cell>{item.birthday}</Table.Cell>
                       </Fragment>
                     )
                   }
-                  <Table.Cell>{item.email}</Table.Cell>
-                  <Table.Cell>
-                    {this.getCountryCode(item.country)}
-                    {' '}
-                    {countries.filter(country => country.countryCode === item.country).length > 0 && countries.filter(country => country.countryCode === item.country)[0].name}
-                  </Table.Cell>
-                  <Table.Cell>{item.mobile_phone}</Table.Cell>
-                  <Table.Cell>
-                    {item.addressline1}
-                    {item.addressline2 ? '-' : ''}
-                    {item.addressline2}
-                    {', '}
-                    {item.city}
-                    {item.state}
-                    {' '}
-                    {item.zip_code}
-                  </Table.Cell>
                   {
-                    type.value === 'player' && (
-                      <Table.Cell>
-                        {
-                          item.active ? (
-                            <div className="text-warning text-center">
-                              <i className="fa fa-trophy fa-lg" />
-                            </div>
-                          ) : (
-                            <div className="text-muted text-center">
-                              <i className="fa fa-trophy fa-lg" />
-                            </div>
-                          )
-                        }
-                      </Table.Cell>
+                    mtype.value !== 'player' && (
+                      <Fragment>
+                        <Table.Cell>{item.mobile_phone}</Table.Cell>
+                        <Table.Cell>{item.email}</Table.Cell>
+                        <Table.Cell>
+                          {(item.addressline1 && item.addressline1 != '' && item.addressline1 != '-') ? item.addressline1 + ', ' : '' }
+                          {(item.addressline2 && item.addressline2 != '' && item.addressline2 != '-') ? item.addressline2 + ', ' : '' }
+                          {(item.city && item.city != '' && item.city != '-') ? item.city + ', ' : '' }
+                          {(item.state && item.state != '' && item.state != '-') ? item.state + ', ' : '' }
+                          {item.zip_code}
+                        </Table.Cell>
+                      </Fragment>
+                    )
+                  }
+                  {
+                    stype.value === 'member' && mtype.value === 'player' && (
+                      <Fragment>
+                        <Table.Cell>{item.weight} Kg</Table.Cell>
+                        <Table.Cell>{item.dan}</Table.Cell>
+                        <Table.Cell>
+                          {
+                            item.active ? (
+                              <div className="text-warning text-center">
+                                <i className="fa fa-trophy fa-lg" />
+                              </div>
+                            ) : (
+                              <div className="text-muted text-center">
+                                <i className="fa fa-trophy fa-lg" />
+                              </div>
+                            )
+                          }
+                        </Table.Cell>
+                      </Fragment>
                     )
                   }
                   <Table.Cell>
@@ -323,7 +357,7 @@ class DataTable extends Component {
                 }}
               />
             </Table.HeaderCell>
-            <Table.HeaderCell colSpan={type.value === 'player' ? 8 : 5}>
+            <Table.HeaderCell colSpan={stype.value === 'member' ? 8 : 5}>
               <Menu floated="right" pagination>
                 <Pagination
                   activePage={activePage}

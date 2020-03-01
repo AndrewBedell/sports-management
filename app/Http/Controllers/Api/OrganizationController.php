@@ -154,6 +154,26 @@ class OrganizationController extends Controller
 
             $org['parent'] = $parent['name_o'];
 
+            $org['table'] = array();
+
+            if ($org['is_club']) {
+                $org['type'] = 'club';
+
+                $players = Member::where('organization_id', $id)
+                            ->leftJoin('players', 'players.member_id', '=', 'members.id')
+                            ->leftJoin('weights', 'weights.id', '=', 'players.weight_id')
+                            ->select('members.*', 'weights.weight', 'players.dan')
+                            ->get();
+
+                $org['table'] = $players;
+            } else {
+                $org['type'] = 'org';
+
+                $clubs = Organization::where('parent_id', $id)->get();
+
+                $org['table'] = $clubs;
+            }
+
             return response()->json($org);
         } else {
             return response()->json(
@@ -551,6 +571,7 @@ class OrganizationController extends Controller
                 break;
             case 'member':
                 $result = Member::where('members.id', '!=', 1)
+                                ->leftJoin('organizations', 'organizations.id', '=', 'members.organization_id')
                                 ->leftJoin('roles', 'roles.id', '=', 'members.role_id');
                 
                 if ($mtype == 'player')
@@ -569,10 +590,11 @@ class OrganizationController extends Controller
                     if ($dan != '')
                         $result = $result->where('players.dan', $dan);
 
-                    $result = $result->select("members.*",  'weights.name AS weight_name', 'weights.weight', 'players.dan', 'players.skill', 'players.expired_date')
+                    $result = $result->select('members.*', 'organizations.name_o',
+                                        'weights.name AS weight_name', 'weights.weight', 'players.dan', 'players.skill', 'players.expired_date')
                                 ->get();
                 } else {
-                    $result = $result->select("members.*", 'roles.name')->get();
+                    $result = $result->select('members.*', 'organizations.name_o', 'roles.name AS role_name')->get();
                 }
                 
                 break;
