@@ -66,55 +66,67 @@ class MemberDetail extends Component {
             </div>
             <Segment>
               <Row>
-                <Col sm="4">
+                <Col sm="3">
                   <Image className="m-auto" src={member.logo ? member.logo : Bitmaps.logo} size='small' />
                 </Col>
-                <Col sm="8">
+                <Col sm="9">
                   {
                     member.is_player ? (
                       <Fragment>
-                        <h4 className="pt-3 pb-2"><b>Name</b>: {member.name} {member.patronymic} {member.surname}</h4>
-                        <h4 className="py-2"><b>Club Name</b>: {member.name_o}</h4>
-                        <h4 className="py-2"><b>Role</b>: {member.role_name}</h4>
-                        <h4 className="py-2"><b>Gender</b>: {member.gender? 'Male': "Female"}</h4>
+                        <Row>
+                          <Col sm="12">
+                            <h5 className="pt-3 py-2"><b>Club Name</b>:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{member.name_o}</h5>
+                          </Col>
+                          <Col sm="6">
+                            <h5 className="py-2"><b>Name</b>:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{member.name} {member.patronymic} {member.surname}</h5>
+                          </Col>
+                          <Col sm="6">
+                            <h5 className="py-2"><b>Gender</b>:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{member.gender? 'Male': "Female"}</h5>
+                          </Col>
+                        </Row>
                       </Fragment>
                     ) : (
                       <Fragment>
-                        <h4 className="pt-3 pb-2"><b>Name</b>: {member.name} {member.patronymic} {member.surname}</h4>
-                        <h4 className="py-2"><b>Organization Name</b>: {member.name_o}</h4>
-                        <h4 className="py-2"><b>Role</b>: {member.role_name}</h4>
+                        <Row>
+                          <Col sm="12">
+                            <h5 className="pt-3 pb-2"><b>Name</b>:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{member.name} {member.patronymic} {member.surname}</h5>
+                          </Col>
+                          <Col sm="12">
+                            <h5 className="py-2"><b>Regional Federation Name</b>:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{member.name_o}</h5>
+                          </Col>
+                          <Col sm="4"><h5 className="py-2"><b>Register Date</b>:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{member.register_date}</h5></Col>
+                          <Col sm="4"><h5 className="py-2"><b>Role</b>:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{member.role_name}</h5></Col>
+                          <Col sm="4"><h5 className="py-2"><b>Birthday</b>:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{member.birthday}</h5></Col>
+                        </Row>
                       </Fragment>
                     )
                   }
-                </Col>
-              </Row>
-              <Row>
-                <Col sm="6"><h4 className="px-5 pt-5"><b>Register Date</b>: {member.register_date}</h4></Col>
-                <Col sm="6"><h4 className="px-5 pt-5"><b>Birthday</b>: {member.birthday}</h4></Col>
-              </Row>
-              <Row>
-                <Col sm="6">
-                  <h4 className="px-5 pt-5">
-                    <b>Email</b>: <a href={"mailto:" + member.email}>{member.email}</a>
-                  </h4>
-                </Col>
-                <Col sm="6"><h4 className="px-5 pt-5"><b>Mobile</b>: {member.mobile}</h4></Col>
-              </Row>
-              {member.is_player && (
-                <Row>
-                  <Col sm="6"><h4 className="px-5 pt-5"><b>Weight</b>: {member.weight_name}, {member.weight} Kg</h4></Col>
-                  <Col sm="6"><h4 className="px-5 pt-5"><b>Dan</b>: {member.dan}</h4></Col>
-                </Row>
-              )}
-              <Row>
-                <Col sm="12">
-                  <h4 className="px-5 pt-5">
-                    <b>Address</b>: {(member.addressline1 && member.addressline1 != '' && member.addressline1 != '-') ? member.addressline1 + ', ' : '' }
-                    {(member.addressline2 && member.addressline2 != '' && member.addressline2 != '-') ? member.addressline2 + ', ' : '' }
-                    {(member.city && member.city != '' && member.city != '-') ? member.city + ', ' : '' }
-                    {(member.state && member.state != '' && member.state != '-') ? member.state + ', ' : '' }
-                    {member.zip_code}
-                  </h4>
+                  <Row>
+                    <Col sm="6">
+                      <h5 className="py-2">
+                        <b>Email</b>:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href={"mailto:" + member.email}>{member.email}</a>
+                      </h5>
+                    </Col>
+                    <Col sm="6">
+                      <h5 className="py-2"><b>Mobile</b>:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{member.mobile}</h5>
+                    </Col>
+                    <Col sm="12">
+                      <h5 className="py-2">
+                        <b>Address</b>:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        {(member.addressline1 && member.addressline1 != '' && member.addressline1 != '-') ? member.addressline1 + ', ' : '' }
+                        {(member.addressline2 && member.addressline2 != '' && member.addressline2 != '-') ? member.addressline2 + ', ' : '' }
+                        {(member.city && member.city != '' && member.city != '-') ? member.city + ', ' : '' }
+                        {(member.state && member.state != '' && member.state != '-') ? member.state + ', ' : '' }
+                        {member.zip_code}
+                      </h5>
+                    </Col>
+                  </Row>
+                  {member.is_player ? (
+                    <Row>
+                      <Col sm="6"><h5 className="py-2"><b>Weight</b>: {member.weight} Kg</h5></Col>
+                      <Col sm="6"><h5 className="py-2"><b>Dan</b>: {member.dan}</h5></Col>
+                    </Row>
+                  ) : ''}
                 </Col>
               </Row>
             </Segment>

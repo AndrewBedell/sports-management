@@ -135,7 +135,7 @@ class MemberAdd extends Component {
     if (values.role_id && values.role_id.is_player === 1 && values.organization_id.is_club !== 1) {
       bags.setStatus({
         color: 'danger',
-        children: 'Organization should been Club.'
+        children: 'Regional Federation should been Club.'
       });
       bags.setSubmitting(false);
       return;
@@ -299,7 +299,7 @@ class MemberAdd extends Component {
                     <Col sm="8">
                       <FormGroup>
                         <Label for="organization_id">
-                          Organization
+                          Regional Federation
                         </Label>
                         <Select
                           name="organization_id"
@@ -645,11 +645,19 @@ class MemberAdd extends Component {
                   <div className="w-100 d-flex justify-content-end">
                     <div>
                       <Button
+                        className="mr-5"
                         disabled={isSubmitting}
                         type="submit"
                         color="primary"
                       >
-                        Register Member
+                        Register
+                      </Button>
+                      <Button
+                        type="button"
+                        color="secondary"
+                        onClick={() => this.props.history.push('/')}
+                      >
+                        Cancel
                       </Button>
                     </div>
                   </div>

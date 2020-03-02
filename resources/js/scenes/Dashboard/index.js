@@ -127,11 +127,11 @@ class Dashboard extends Component {
         let clubArr = [];
 
         for (var i = 0; i < club_list.body.length; i++) {
-          clubArr.push(club_list.body[i]['name_o'])
+          clubArr.push({id: club_list.body[i]['parent_id'], value: club_list.body[i]['name_o']});
         }
 
         const clubList = clubArr.map((club, Index) =>
-          <option key={Index} value={club} />
+          <option key={Index} id={club.id} value={club.value} />
         );
         
         this.setState({
@@ -172,7 +172,9 @@ class Dashboard extends Component {
           search_data: null
         });
         break;
-      case 'search_org':
+      case 'search_org':console.log(this.state.clubs);
+          // this.state.clubs.filter(clubs.id === value.id);
+          
           this.setState({
             search_org: value,
             search_data: null
@@ -519,6 +521,24 @@ class Dashboard extends Component {
         <div className="main-content dashboard">
           <Container fluid>
             <h3 className="text-danger text-center mb-5">Welcome to National Sports Federation Management System!</h3>
+              <div className="text-center mb-4">
+                <Button
+                  className="mr-5"
+                  type="button"
+                  color="secondary"
+                  onClick={this.handleCreateAccount.bind(this)}
+                >
+                  Register Federation / Club
+                </Button>
+                <Button
+                  className="ml-5"
+                  type="button"
+                  color="secondary"
+                  onClick={this.handleRegisterMember.bind(this)}
+                >
+                  Register Member
+                </Button>
+              </div>
             <Row>
               <Col xl="2" lg="3" md="4" sm="6" xs="12">
                 <FormGroup>

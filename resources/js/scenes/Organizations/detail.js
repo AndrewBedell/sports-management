@@ -91,29 +91,59 @@ class OrganizationDetail extends Component {
               {' '}
               {user.surname}
             </div>
-            <Segment>
-              <Row>
-                <Col sm="4">
-                  <Image className="m-auto" src={org.logo ? org.logo : Bitmaps.logo} size='small' />
-                </Col>
-                <Col sm="8">
-                  <h5 className="py-2">
-                    <b>{ org.is_club ? "Club Name" : "Regional Federation Name" }</b>:&nbsp;
-                    {org.name_o} ({org.name_s})
-                  </h5>
-                  <h5 className="py-2"><b>Register No</b>: {org.register_no}</h5>
-                  <h5 className="py-2"><b>Email</b>: <a href={"mailto:" + org.email}>{org.email}</a></h5>
-                  <h5 className="py-2"><b>Phone</b>: {org.mobile}</h5>
-                  <h5 className="py-2">
-                    <b>Address</b>: {(org.addressline1 && org.addressline1 != '' && org.addressline1 != '-') ? org.addressline1 + ', ' : '' }
-                    {(org.addressline2 && org.addressline2 != '' && org.addressline2 != '-') ? org.addressline2 + ', ' : '' }
-                    {(org.city && org.city != '' && org.city != '-') ? org.city + ', ' : '' }
-                    {(org.state && org.state != '' && org.state != '-') ? org.state + ', ' : '' }
-                    {org.zip_code}
-                  </h5>
-                </Col>
-              </Row>
-            </Segment>
+            <Row>
+              <Col sm={org.is_club ? 12 : 8}>
+                <Segment>
+                  <Row>
+                    <Col sm="3">
+                      <Image className="m-auto" src={org.logo ? org.logo : Bitmaps.logo} size='small' />
+                    </Col>
+                    <Col sm="9">
+                      <h5 className="py-2">
+                        <b>{ org.is_club ? "Club Name" : "Regional Federation Name" }</b>:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        {org.name_o} ({org.name_s})
+                      </h5>
+                      <h5 className="py-2"><b>Register No</b>:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{org.register_no}</h5>
+                      <h5 className="py-2"><b>Email</b>:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href={"mailto:" + org.email}>{org.email}</a></h5>
+                      <h5 className="py-2"><b>Phone</b>:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{org.mobile}</h5>
+                      <h5 className="py-2">
+                        <b>Address</b>:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        {(org.addressline1 && org.addressline1 != '' && org.addressline1 != '-') ? org.addressline1 + ', ' : '' }
+                        {(org.addressline2 && org.addressline2 != '' && org.addressline2 != '-') ? org.addressline2 + ', ' : '' }
+                        {(org.city && org.city != '' && org.city != '-') ? org.city + ', ' : '' }
+                        {(org.state && org.state != '' && org.state != '-') ? org.state + ', ' : '' }
+                        {org.zip_code}
+                      </h5>
+                    </Col>
+                  </Row>
+                </Segment>
+              </Col>
+              {
+                !org.is_club && (
+                  <Col sm="4">
+                    <Segment>
+                      <h4 className="text-center"><b>Summary</b></h4>
+                      <Row>
+                        <Col sm="12">
+                          <h4 className="py-2">President:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{org.president}</h4>
+                        </Col>
+                        <Col sm="12">
+                          <h4 className="py-2">Clubs:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{org.clubs}</h4>
+                        </Col>
+                        <Col sm="12">
+                          <h4 className="py-2">
+                            Judokas:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{org.players}
+                          </h4>
+                          <h5 className="py-2 text-right">
+                            (Male:&nbsp;&nbsp;{org.mplayers},&nbsp;&nbsp;Female:&nbsp;&nbsp;{org.fplayers})
+                          </h5>
+                        </Col>
+                      </Row>
+                    </Segment>
+                  </Col>
+                )
+              }
+            </Row>
           </Container>
           <Container>
             <div className="table-responsive">

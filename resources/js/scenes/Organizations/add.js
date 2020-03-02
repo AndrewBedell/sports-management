@@ -37,13 +37,10 @@ class OrganizationAdd extends Component {
   }
 
   async componentDidMount() {
-    const org_response = await Api.get('organizations-list', {
-      contain_self: 1,
-      contain_club: 0
-    });
+    const org_response = await Api.get('organizations-list');
     const { response, body } = org_response;
     switch (response.status) {
-      case 200:
+      case 200:console.log(body);
         this.setState({
           org_list: body
         });
@@ -237,7 +234,7 @@ class OrganizationAdd extends Component {
                           indicatorSeparator={null}
                           options={org_list}
                           getOptionValue={option => option.id}
-                          getOptionLabel={option => option.name}
+                          getOptionLabel={option => option.name_o}
                           value={values.parent_id}
                           invalid={!!errors.parent_id && touched.parent_id}
                           onChange={(value) => {
@@ -460,11 +457,19 @@ class OrganizationAdd extends Component {
                   <div className="w-100 d-flex justify-content-end">
                     <div>
                       <Button
+                        className="mr-5"
                         disabled={isSubmitting}
                         type="submit"
                         color="primary"
                       >
-                        Create Organization
+                        Create
+                      </Button>
+                      <Button
+                        type="button"
+                        color="secondary"
+                        onClick={() => this.props.history.push('/')}
+                      >
+                        Cancel
                       </Button>
                     </div>
                   </div>

@@ -172,6 +172,31 @@ class OrganizationController extends Controller
                 $clubs = Organization::where('parent_id', $id)->get();
 
                 $org['table'] = $clubs;
+
+                $org['president'] = '---';
+
+                $president = Member::where('role_id', 1)->where('organization_id', $id)->first();
+
+                if ($president)
+                    $org['president'] = $president->name . ' ' . $president->surname;
+
+                $org['clubs'] = sizeof($clubs);
+
+                $mplayers = Member::leftJoin('organizations', 'organizations.id', '=', 'members.organization_id')
+                                ->where('members.role_id', 3)
+                                ->where('members.gender', 1)
+                                ->where('organizations.parent_id', $id)
+                                ->count();
+
+                $fplayers = Member::leftJoin('organizations', 'organizations.id', '=', 'members.organization_id')
+                                ->where('members.role_id', 3)
+                                ->where('members.gender', 0)
+                                ->where('organizations.parent_id', $id)
+                                ->count();
+                
+                $org['players'] = $mplayers + $fplayers;
+                $org['mplayers'] = $mplayers;
+                $org['fplayers'] = $fplayers;
             }
 
             return response()->json($org);
@@ -454,7 +479,7 @@ class OrganizationController extends Controller
      */
     public function clubs()
     {
-        $clubs = Organization::where('is_club', 1)->select('name_o')->orderBy('name_o')->get();
+        $clubs = Organization::where('is_club', 1)->select('parent_id', 'name_o')->orderBy('name_o')->get();
 
         return response()->json($clubs);
     }
@@ -609,8 +634,7 @@ class OrganizationController extends Controller
                     if ($dan != '')
                         $result = $result->where('players.dan', $dan);
 
-                    $result = $result->select('members.*', 'organizations.name_o',
-                                        'weights.name AS weight_name', 'weights.weight', 'players.dan', 'players.skill', 'players.expired_date')
+                    $result = $result->select('members.*', 'organizations.name_o', 'weights.weight', 'players.dan', 'players.skill', 'players.expired_date')
                                 ->get();
                 } else {
                     $result = $result->select('members.*', 'organizations.name_o', 'roles.name AS role_name')->get();
@@ -620,118 +644,5 @@ class OrganizationController extends Controller
         }
 
         return response()->json($result);
-
-        // $orgIDs = array();
-
-        // if (sizeof($org) == 0) {
-        //     $user = JWTAuth::parseToken()->authenticate();
-        //     $member = Member::find($user->member_id);
-
-        //     $org[0] = $member->organization_id;
-        // }
-        
-        // for ($i = 0; $i < sizeof($org); $i++) {
-        //     $orgs = array();
-
-        //     if ($org[$i] != 1 || $type == 'officer') {
-        //         $own = Organization::find($org[$i]);
-
-        //         $orgs[0] = $own;
-        //     }
-
-        //     $chidren = $this->findChildren($org[$i], '', 1, 0);
-
-        //     $orgs = array_merge($orgs, $chidren);
-
-        //     foreach ($orgs as $key) {
-        //         if (!in_array($key->id, $orgIDs))
-        //             array_push($orgIDs, $key->id);
-        //     }
-        // }
-        
-        // $sort = '';
-        // foreach ($orgIDs as $id) {
-        //     $sort .= $id . ',';
-        // }
-
-        // if (strlen($sort) > 0)
-        //     $sort = substr($sort, 0, strlen($sort) - 1);
-
-        // $playRole = DB::table('roles')->where('is_player', true)->first();
-
-        // $result = array();
-
-        // switch ($type) {
-        //     case 'org':
-        //         $result = Organization::whereIn('id', $orgIDs)
-        //                             ->where('name_o', 'like', '%' . $name . '%')
-        //                             ->where('is_club', 0);
-                
-        //         if (is_array($sort))
-        //             $result = $result->orderByRaw('FIELD(id, ' . $sort . ')');
-
-        //         $result = $result->get();
-
-        //         break;
-        //     case 'club':
-        //         $result = Organization::whereIn('id', $orgIDs)
-        //                             ->where('name_o', 'like', '%' . $name . '%')
-        //                             ->where('is_club', 1);
-                
-        //         if (is_array($sort))
-        //             $result = $result->orderByRaw('FIELD(id, ' . $sort . ')');
-
-        //         $result = $result->get();
-
-        //         break;
-        //     case 'officer':
-        //         $result = Member::whereIn('members.organization_id', $orgIDs)->where('role_id', '!=', $playRole->id);
-
-        //         if ($name != '') {
-        //             $name = explode(" ", $name);
-
-        //             foreach ($name as $param) {
-        //                 $result = $result->where(function($query) use ($param){
-        //                         $query->where('members.name', 'like', '%' . $param. '%');
-        //                         $query->orWhere('members.surname', 'like', '%' . $param . '%');
-        //                         $query->orWhere('members.patronymic', 'like', '%' . $param. '%');
-        //                 });
-        //             }                                
-        //         }
-
-        //         $result = $result->leftJoin('users', 'members.id', '=', 'users.member_id')
-        //                     ->select("members.*", 'users.is_super')
-        //                     ->get();
-                            
-        //         break;
-        //     case 'player':
-        //         $result = Member::whereIn('members.organization_id', $orgIDs)->where('role_id', $playRole->id);
-
-        //         if ($name != '') {
-        //             $name = explode(" ", $name);
-
-        //             foreach ($name as $param) {
-        //                 $result = $result->where(function($query) use ($param){
-        //                         $query->where('members.name', 'like', '%' . $param. '%');
-        //                         $query->orWhere('members.surname', 'like', '%' . $param . '%');
-        //                         $query->orWhere('members.patronymic', 'like', '%' . $param. '%');
-        //                 });
-        //             }                                
-        //         }
-                
-        //         if (sizeof($weight) > 0)
-        //             $result = $result->whereIn('players.weight_id', $weight);
-
-        //         if (sizeof($dan) > 0)
-        //             $result = $result->whereIn('players.dan', $dan);
-                    
-        //         $result = $result->join('players', 'members.id', '=', 'players.member_id')
-        //                         ->join('weights', 'weights.id', '=', 'players.weight_id')
-        //                         ->select("members.*",  'weights.name AS weight_name', 'weights.weight', 'players.dan', 'players.skill', 'players.expired_date')
-        //                         ->get();
-        //         break;
-        // }
-
-        // return response()->json($result);
     }
 }

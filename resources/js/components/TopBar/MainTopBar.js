@@ -56,7 +56,7 @@ class MainTopBar extends Component {
                   <div />
                 </NavLink>
               </NavItem>
-              <NavItem onClick={this.toggleClose}>
+              {/* <NavItem onClick={this.toggleClose}>
                 <NavLink tag={Link} to="/organizations">
                   <i className="fa fa-users" />
                   Organizations
@@ -69,7 +69,7 @@ class MainTopBar extends Component {
                   Members
                   <div />
                 </NavLink>
-              </NavItem>
+              </NavItem> */}
             </Navbar>
             <RightNavBar />
           </Nav>

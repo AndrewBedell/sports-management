@@ -217,7 +217,7 @@ class MemberController extends Controller
                             ->leftJoin('players', 'players.member_id', '=', 'members.id')
                             ->leftJoin('weights', 'weights.id', '=', 'players.weight_id')
                             ->select('members.*', 'organizations.name_o', 'roles.name AS role_name', 'roles.is_player',
-                                    'weights.id AS weight_id', 'weights.name AS weight_name', 'weights.weight', 'players.dan', 'players.skill', 'players.expired_date',
+                                    'weights.id AS weight_id', 'weights.weight', 'players.dan', 'players.skill', 'players.expired_date',
                                     DB::raw("null AS uid, null AS status, 0 AS is_super, 0 AS is_admin"))
                             ->first();
                 } else {
