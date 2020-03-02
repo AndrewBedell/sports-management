@@ -324,7 +324,8 @@ class Dashboard extends Component {
     this.setState({
       isOpenDeleteModal: true,
       deleteId: id,
-      confirmationMessage: `Are you sure you want to delete ${search_type.value == 'member' ? `${delItem.name} ${delItem.surname}` : delItem.name}?`
+      confirmationMessage: `Are you sure you want to delete "${search_type.value == 'member' ? 
+        `${delItem.name} ${delItem.surname}` : delItem.name_o}"?`
     });
   }
 
@@ -395,7 +396,7 @@ class Dashboard extends Component {
             isOpenEditModal: false,
             messageStatus: true,
             alertVisible: true,
-            successMessage: `${item.name} is been update successfully!`,
+            successMessage: `${item.name_o} is been update successfully!`,
             search_data
           });
           break;

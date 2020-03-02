@@ -281,10 +281,11 @@ export const search_type_options = [
 export const member_type_options = [
   { label: 'Official Staff', value: 'staff' },
   { label: 'Coach', value: 'coach' },
+  { label: 'Referee', value: 'referee'},
   { label: 'Judoka', value: 'player' }
 ];
 
 export const SetSwitch = [
-  { label: 'Yes', value: 1 },
-  { label: 'No', value: 0 }
+  { label: 'Regional Federation', value: 0 },
+  { label: 'Club', value: 1 }
 ];

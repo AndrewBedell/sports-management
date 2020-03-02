@@ -119,6 +119,7 @@ class OrganizationController extends Controller
                 'parent_id' => $data['parent_id'],
                 'register_no' => $data['register_no'],
                 'name_o' => $data['name_o'],
+                'name_s' => $data['name_s'],
                 'logo' => $data['logo'],
                 'email' => $data['email'],
                 'mobile_phone' => $data['mobile_phone'],

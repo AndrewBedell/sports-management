@@ -872,8 +872,26 @@ class EditModal extends React.Component {
                       <Col></Col>
                     </Row>
                     <Row>
-                      {org_list.length > 0 && (
-                        <Col sm="6">
+                      <Col xs="6">
+                        <FormGroup>
+                          <Label for="is_club">Is Club</Label>
+                          <Select
+                            name="is_club"
+                            classNamePrefix="react-select-lg"
+                            indicatorSeparator={null}
+                            options={SetSwitch}
+                            getOptionValue={option => option.value}
+                            getOptionLabel={option => option.label}
+                            value={values.is_club}
+                            onChange={(value) => {
+                              setFieldValue('is_club', value);
+                            }}
+                            onBlur={this.handleBlur}
+                          />
+                        </FormGroup>
+                      </Col>
+                      <Col sm="6">
+                        {org_list.length > 0 && values.is_club && values.is_club.value == 1 && (
                           <FormGroup>
                             <Label for="parent_id">
                               Federation
@@ -896,27 +914,8 @@ class EditModal extends React.Component {
                               <FormFeedback className="d-block">{errors.parent_id}</FormFeedback>
                             )}
                           </FormGroup>
-                        </Col>
-                      )
-                      }
-                      <Col sm="6">
-                        <FormGroup>
-                          <Label for="register_no">
-                            Register Number
-                          </Label>
-                          <Input
-                            type="text"
-                            name="register_no"
-                            value={values.register_no}
-                            onChange={handleChange}
-                            onBlur={handleBlur}
-                            invalid={!!errors.register_no && touched.register_no}
-                          />
-                          <FormFeedback>{errors.register_no}</FormFeedback>
-                        </FormGroup>
+                        )}
                       </Col>
-                    </Row>
-                    <Row>
                       <Col sm="6">
                         <FormGroup>
                           <Label for="name_o">
@@ -949,8 +948,36 @@ class EditModal extends React.Component {
                           <FormFeedback>{errors.name_s}</FormFeedback>
                         </FormGroup>
                       </Col>
-                    </Row>
-                    <Row>
+                      <Col sm="6">
+                        <FormGroup>
+                          <Label for="register_no">
+                            Register Number
+                          </Label>
+                          <Input
+                            type="text"
+                            name="register_no"
+                            value={values.register_no}
+                            onChange={handleChange}
+                            onBlur={handleBlur}
+                            invalid={!!errors.register_no && touched.register_no}
+                          />
+                          <FormFeedback>{errors.register_no}</FormFeedback>
+                        </FormGroup>
+                      </Col>
+                      <Col sm="6">
+                        <FormGroup>
+                          <Label for="readable_id">ID</Label>
+                          <Input
+                            name="readable_id"
+                            type="text"
+                            value={values.readable_id || ''}
+                            onChange={handleChange}
+                            onBlur={handleBlur}
+                            invalid={!!errors.readable_id && touched.readable_id}
+                          />
+                          {!!errors.readable_id && touched.readable_id && (<FormFeedback className="d-block">{errors.readable_id}</FormFeedback>)}
+                        </FormGroup>
+                      </Col>
                       <Col sm="6">
                         <FormGroup>
                           <Label for="email">
@@ -1074,38 +1101,6 @@ class EditModal extends React.Component {
                             invalid={!!errors.zip_code && touched.zip_code}
                           />
                           {!!errors.zip_code && touched.zip_code && (<FormFeedback className="d-block">{errors.zip_code}</FormFeedback>)}
-                        </FormGroup>
-                      </Col>
-                      <Col xs="6">
-                        <FormGroup>
-                          <Label for="readable_id">ID</Label>
-                          <Input
-                            name="readable_id"
-                            type="text"
-                            value={values.readable_id || ''}
-                            onChange={handleChange}
-                            onBlur={handleBlur}
-                            invalid={!!errors.readable_id && touched.readable_id}
-                          />
-                          {!!errors.readable_id && touched.readable_id && (<FormFeedback className="d-block">{errors.readable_id}</FormFeedback>)}
-                        </FormGroup>
-                      </Col>
-                      <Col xs="6">
-                        <FormGroup>
-                          <Label for="is_club">Is Club</Label>
-                          <Select
-                            name="is_club"
-                            classNamePrefix="react-select-lg"
-                            indicatorSeparator={null}
-                            options={SetSwitch}
-                            getOptionValue={option => option.value}
-                            getOptionLabel={option => option.label}
-                            value={values.is_club}
-                            onChange={(value) => {
-                              setFieldValue('is_club', value);
-                            }}
-                            onBlur={this.handleBlur}
-                          />
                         </FormGroup>
                       </Col>
                     </Row>

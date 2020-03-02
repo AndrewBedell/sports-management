@@ -17,8 +17,8 @@ class Member extends Model
     protected $fillable = [
         'organization_id',
         'role_id',
-        'first_name',
-        'last_name',
+        'name',
+        'surname',
         'profile_image',
         'gender',
         'birthday',

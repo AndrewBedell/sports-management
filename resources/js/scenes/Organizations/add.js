@@ -40,7 +40,7 @@ class OrganizationAdd extends Component {
     const org_response = await Api.get('organizations-list');
     const { response, body } = org_response;
     switch (response.status) {
-      case 200:console.log(body);
+      case 200:
         this.setState({
           org_list: body
         });
@@ -97,7 +97,7 @@ class OrganizationAdd extends Component {
       readable_id: values.readable_id,
       is_club: values.is_club ? values.is_club.value : 0
     };
-
+console.log(newData);
     const data = await Api.post('register-organization', newData);
     const { response, body } = data;
     switch (response.status) {
@@ -144,6 +144,7 @@ class OrganizationAdd extends Component {
     } else {
       $imagePreview = (<div className="previewText">Please select an Image for Preview</div>);
     }
+    
     return (
       <Fragment>
         <MainTopBar />
@@ -177,7 +178,7 @@ class OrganizationAdd extends Component {
               }}
               validationSchema={
                 Yup.object().shape({
-                  parent_id: Yup.mixed().required('Federation is required'),
+                  // parent_id: Yup.mixed().required('Federation is required'),
                   name_o: Yup.string().required('This field is required!'),
                   name_s: Yup.string().required('This field is required!'),
                   register_no: Yup.string().required('This field is required!'),
@@ -223,45 +224,51 @@ class OrganizationAdd extends Component {
                       </FormGroup>
                     </Col>
                     <Col xs="6"></Col>
-                    <Col sm="6">
+                    <Col xs="6">
                       <FormGroup>
-                        <Label for="parent_id">
-                          Federation
-                        </Label>
+                        <Label for="is_club">Organization Type</Label>
                         <Select
-                          name="parent_id"
-                          classNamePrefix={!!errors.parent_id && touched.parent_id ? 'invalid react-select-lg' : 'react-select-lg'}
+                          name="is_club"
+                          classNamePrefix="react-select-lg"
                           indicatorSeparator={null}
-                          options={org_list}
-                          getOptionValue={option => option.id}
-                          getOptionLabel={option => option.name_o}
-                          value={values.parent_id}
-                          invalid={!!errors.parent_id && touched.parent_id}
+                          options={SetSwitch}
+                          getOptionValue={option => option.value}
+                          getOptionLabel={option => option.label}
+                          value={values.is_club}
                           onChange={(value) => {
-                            setFieldValue('parent_id', value);
+                            setFieldValue('is_club', value);
                           }}
                           onBlur={this.handleBlur}
                         />
-                        {!!errors.parent_id && touched.parent_id && (
-                          <FormFeedback className="d-block">{errors.parent_id}</FormFeedback>
-                        )}
                       </FormGroup>
                     </Col>
                     <Col sm="6">
-                      <FormGroup>
-                        <Label for="register_no">
-                          Register Number
-                        </Label>
-                        <Input
-                          type="text"
-                          name="register_no"
-                          value={values.register_no}
-                          onChange={handleChange}
-                          onBlur={handleBlur}
-                          invalid={!!errors.register_no && touched.register_no}
-                        />
-                        <FormFeedback>{errors.register_no}</FormFeedback>
-                      </FormGroup>
+                      {
+                        values.is_club && values.is_club.value == 1 && (
+                        <FormGroup>
+                          <Label for="parent_id">
+                            Regional Federation
+                          </Label>
+                          <Select
+                            name="parent_id"
+                            classNamePrefix={!!errors.parent_id && touched.parent_id ? 'invalid react-select-lg' : 'react-select-lg'}
+                            indicatorSeparator={null}
+                            options={org_list}
+                            getOptionValue={option => option.id}
+                            getOptionLabel={option => option.name_o}
+                            value={values.parent_id}
+                            invalid={!!errors.parent_id && touched.parent_id}
+                            onChange={(value) => {
+                              setFieldValue('parent_id', value);
+                            }}
+                            onBlur={this.handleBlur}
+                          />
+                          {!!errors.parent_id && touched.parent_id && (
+                            <FormFeedback className="d-block">{errors.parent_id}</FormFeedback>
+                          )}
+                        </FormGroup>
+                        )
+                      }
                     </Col>
                     <Col sm="6">
                       <FormGroup>
@@ -293,6 +300,36 @@ class OrganizationAdd extends Component {
                           invalid={!!errors.name_s && touched.name_s}
                         />
                         <FormFeedback>{errors.name_s}</FormFeedback>
+                      </FormGroup>
+                    </Col>
+                    <Col sm="6">
+                      <FormGroup>
+                        <Label for="register_no">
+                          Register Number
+                        </Label>
+                        <Input
+                          type="text"
+                          name="register_no"
+                          value={values.register_no}
+                          onChange={handleChange}
+                          onBlur={handleBlur}
+                          invalid={!!errors.register_no && touched.register_no}
+                        />
+                        <FormFeedback>{errors.register_no}</FormFeedback>
+                      </FormGroup>
+                    </Col>
+                    <Col xs="6">
+                      <FormGroup>
+                        <Label for="readable_id">ID</Label>
+                        <Input
+                          name="readable_id"
+                          type="text"
+                          value={values.readable_id || ''}
+                          onChange={handleChange}
+                          onBlur={handleBlur}
+                          invalid={!!errors.readable_id && touched.readable_id}
+                        />
+                        {!!errors.readable_id && touched.readable_id && (<FormFeedback className="d-block">{errors.readable_id}</FormFeedback>)}
                       </FormGroup>
                     </Col>
                     <Col sm="6">
@@ -420,40 +457,7 @@ class OrganizationAdd extends Component {
                         {!!errors.zip_code && touched.zip_code && (<FormFeedback className="d-block">{errors.zip_code}</FormFeedback>)}
                       </FormGroup>
                     </Col>
-                    <Col xs="6">
-                      <FormGroup>
-                        <Label for="readable_id">ID</Label>
-                        <Input
-                          name="readable_id"
-                          type="text"
-                          value={values.readable_id || ''}
-                          onChange={handleChange}
-                          onBlur={handleBlur}
-                          invalid={!!errors.readable_id && touched.readable_id}
-                        />
-                        {!!errors.readable_id && touched.readable_id && (<FormFeedback className="d-block">{errors.readable_id}</FormFeedback>)}
-                      </FormGroup>
-                    </Col>
-                    <Col xs="6">
-                      <FormGroup>
-                        <Label for="is_club">Is Club</Label>
-                        <Select
-                          name="is_club"
-                          classNamePrefix="react-select-lg"
-                          indicatorSeparator={null}
-                          options={SetSwitch}
-                          getOptionValue={option => option.value}
-                          getOptionLabel={option => option.label}
-                          value={values.is_club}
-                          onChange={(value) => {
-                            setFieldValue('is_club', value);
-                          }}
-                          onBlur={this.handleBlur}
-                        />
-                      </FormGroup>
-                    </Col>
                   </Row>
-
                   <div className="w-100 d-flex justify-content-end">
                     <div>
                       <Button
