@@ -288,7 +288,7 @@ class DataTable extends Component {
                     stype.value === 'member' && (
                       <Fragment>
                         <Table.Cell>{item.name_o}</Table.Cell>
-                        <Table.Cell className="text-center">{item.gender ? Genders[0].name : Genders[1].name}</Table.Cell>
+                        <Table.Cell className="text-center">{item.gender && item.gender == 1 ? Genders[0].name : Genders[1].name}</Table.Cell>
                         <Table.Cell className="text-center">{item.birthday}</Table.Cell>
                       </Fragment>
                     )
