@@ -223,20 +223,23 @@ class OrganizationController extends Controller
         if ($this->checkPermission($id)) {
             $data = $request->all();
 
+            $data['mobile_phone'] = '';
+            $data['zip_code'] = '';
+
             $validator = Validator::make($data, [
                 'register_no' => 'required',
                 'name_o' => 'required|string|max:255',
-                'name_s' => 'required|string|max:255',
+                // 'name_s' => 'required|string|max:255',
                 'email' => 'required|string|email|max:255',
-                'mobile_phone' => 'required|string|max:255',
-                'addressline1' => 'required|string|max:255',
-                'country' => 'required|string|max:255',
-                'state' => 'required|string|max:255',
-                'city' => 'required|string|max:255',
-                'zip_code' => 'required|string|max:255',
+                // 'mobile_phone' => 'required|string|max:255',
+                // 'addressline1' => 'required|string|max:255',
+                // 'country' => 'required|string|max:255',
+                // 'state' => 'required|string|max:255',
+                // 'city' => 'required|string|max:255',
+                // 'zip_code' => 'required|string|max:255',
                 'readable_id' => 'required|string|max:255',
-                'level' => 'required|integer',
-                'is_club' => 'required|boolean',
+                // 'level' => 'required|integer',
+                // 'is_club' => 'required|boolean',
             ]);
             
             if ($validator->fails()) {

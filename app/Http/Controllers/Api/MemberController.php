@@ -277,15 +277,15 @@ class MemberController extends Controller
                     'gender' => 'required|boolean',
                     'birthday' => 'required|date',
                     'email' => 'required|string|email|max:255',
-                    'mobile_phone' => 'required|string|max:255',
-                    'addressline1' => 'required|string|max:255',
-                    'country' => 'required|string|max:255',
-                    'state' => 'required|string|max:255',
-                    'city' => 'required|string|max:255',
-                    'zip_code' => 'required|string|max:255',
+                    // 'mobile_phone' => 'required|string|max:255',
+                    // 'addressline1' => 'required|string|max:255',
+                    // 'country' => 'required|string|max:255',
+                    // 'state' => 'required|string|max:255',
+                    // 'city' => 'required|string|max:255',
+                    // 'zip_code' => 'required|string|max:255',
                     'identity' => 'required|string|max:255',
-                    'active' => 'required|boolean',
-                    'register_date' => 'required|date'
+                    // 'active' => 'required|boolean',
+                    // 'register_date' => 'required|date'
                 ]);
 
                 if ($validMember->fails()) {

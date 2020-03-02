@@ -35,6 +35,7 @@ class Dashboard extends Component {
       weights: [],
       roles: [],
       clubs: [],
+      original_clubs: [],
       search_required: true,
       member_required: true,
       search_type: '',
@@ -73,6 +74,8 @@ class Dashboard extends Component {
   }
 
   async componentWillReceiveProps() {
+    const search = QueryString.parse(this.props.location.search, { ignoreQueryPrefix: true });
+
     const org_response = await Api.get('organizations-list');
     const { response, body } = org_response;
     switch (response.status) {
@@ -130,23 +133,27 @@ class Dashboard extends Component {
           clubArr.push({id: club_list.body[i]['parent_id'], value: club_list.body[i]['name_o']});
         }
 
-        const clubList = clubArr.map((club, Index) =>
+        let clubs1 = clubArr;
+        if (search.org != '') {
+          clubs1 = clubArr.filter(club => club.id == search.org);
+        }
+
+        const clubList = clubs1.map((club, Index) =>
           <option key={Index} id={club.id} value={club.value} />
         );
         
         this.setState({
-          clubs: clubList
+          clubs: clubList,
+          original_clubs: clubArr,
         });
         break;
       default:
         break;
     }
 
-    const search = QueryString.parse(this.props.location.search, { ignoreQueryPrefix: true });
-
     this.setState({
       search_type: search.stype ? (search_type_options.find(type => type.value == search.stype) || '') : '',
-      search_org: search.org ? (org_list.find(org => org.id == search.org) || '') : '',
+      search_org: search.org ? (org_response.body.find(org => org.id == search.org) || '') : '',
       search_name: search.name || '',
       member_type: search.mtype ? (member_type_options.find(option => option.value == search.mtype) || '') : '',
       search_gender: search.gender ?
@@ -172,14 +179,17 @@ class Dashboard extends Component {
           search_data: null
         });
         break;
-      case 'search_org':console.log(this.state.clubs);
-          // this.state.clubs.filter(clubs.id === value.id);
-          
-          this.setState({
-            search_org: value,
-            search_data: null
-          });
-          break;
+      case 'search_org':
+        const clubsFiltered = this.state.original_clubs.filter((club) => club.id == value.id).map((club, Index) =>
+          <option key={Index} id={club.id} value={club.value} />
+        );
+        
+        this.setState({
+          search_org: value,
+          clubs: clubsFiltered,
+          search_data: null
+        });
+        break;
       case 'search_name':
         this.setState({
           search_name: value,

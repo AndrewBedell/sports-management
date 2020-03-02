@@ -392,18 +392,18 @@ class EditModal extends React.Component {
                     organization_id: Yup.mixed().required('This field is required!'),
                     role_id: Yup.mixed().required('This field is required!'),
                     // profile_image: Yup.mixed().required('Image is required!'),
-                    register_date: Yup.mixed().required('This field is required!'),
+                    // register_date: Yup.mixed().required('This field is required!'),
                     name: Yup.string().required('This field is required!'),
                     surname: Yup.string().required('This field is required!'),
                     gender: Yup.mixed().required('This field is required!'),
                     birthday: Yup.mixed().required('This field is required!'),
                     email: Yup.string().email('Email is not valid!').required('This field is required!'),
-                    mobile_phone: Yup.string().matches(/^(\+\d{1,3}[- ]?)?\d{10}$/, 'Mobile phone is incorrect!').required('This field is required!'),
-                    addressline1: Yup.string().required('This field is required!'),
-                    country: Yup.mixed().required('This field is required!'),
-                    city: Yup.string().required('This field is required!'),
-                    state: Yup.string().required('This field is required!'),
-                    zip_code: Yup.string().max(6, 'Less than 6 characters!').required('This field is required!'),
+                    // mobile_phone: Yup.string().matches(/^(\+\d{1,3}[- ]?)?\d{10}$/, 'Mobile phone is incorrect!').required('This field is required!'),
+                    // addressline1: Yup.string().required('This field is required!'),
+                    // country: Yup.mixed().required('This field is required!'),
+                    // city: Yup.string().required('This field is required!'),
+                    // state: Yup.string().required('This field is required!'),
+                    // zip_code: Yup.string().max(6, 'Less than 6 characters!').required('This field is required!'),
                     identity: Yup.string().required('This field is required!')
                   })
                 }
@@ -826,16 +826,16 @@ class EditModal extends React.Component {
                 validationSchema={
                   Yup.object().shape({
                     name_o: Yup.string().required('This field is required!'),
-                    name_s: Yup.string().required('This field is required!'),
+                    // name_s: Yup.string().required('This field is required!'),
                     register_no: Yup.string().required('This field is required!'),
                     email: Yup.string().email('Email is not valid!').required('This field is required!'),
                     // logo: Yup.mixed().required('Logo is required!'),
-                    mobile_phone: Yup.string().matches(/^(\+\d{1,3}[- ]?)?\d{10}$/, 'Mobile phone is incorrect!').required('This field is required!'),
-                    addressline1: Yup.string().required('This field is required!'),
-                    country: Yup.mixed().required('This field is required!'),
-                    city: Yup.string().required('This field is required!'),
-                    state: Yup.string().required('This field is required!'),
-                    zip_code: Yup.string().max(6, 'Less than 5 characters!').required('This field is required!'),
+                    // mobile_phone: Yup.string().matches(/^(\+\d{1,3}[- ]?)?\d{10}$/, 'Mobile phone is incorrect!').required('This field is required!'),
+                    // addressline1: Yup.string().required('This field is required!'),
+                    // country: Yup.mixed().required('This field is required!'),
+                    // city: Yup.string().required('This field is required!'),
+                    // state: Yup.string().required('This field is required!'),
+                    // zip_code: Yup.string().max(6, 'Less than 5 characters!').required('This field is required!'),
                     readable_id: Yup.string().required('This field is required!')
                   })
                 }
