@@ -2,11 +2,10 @@ import React, { Component, Fragment } from 'react';
 import {
   Container, Row, Col
 } from 'reactstrap';
-import { Segment, Image } from 'semantic-ui-react'
+import { Segment, Image, Input } from 'semantic-ui-react'
 import MainTopBar from '../../components/TopBar/MainTopBar';
 import Api from '../../apis/app';
 import Bitmaps from '../../theme/Bitmaps';
-import { countries } from '../../configs/data';
 import SubTable from '../../components/SubTable';
 
 class OrganizationDetail extends Component {
@@ -15,7 +14,9 @@ class OrganizationDetail extends Component {
     this.state = {
       user: {},
       org: {},
+      filter: '',
       type: '',
+      init_data: [],
       data: []
     };
   }
@@ -44,6 +45,7 @@ class OrganizationDetail extends Component {
         this.setState({
           org: org_data.body,
           type: org_data.body.type,
+          init_data: org_data.body.table,
           data: org_data.body.table
         });
         
@@ -53,6 +55,31 @@ class OrganizationDetail extends Component {
       default:
         break;
     }
+  }
+
+  handleFilterItem(evt, data) {
+    let type = this.state.type;
+    
+    this.setState({
+      filter: data.value
+    });
+
+    var filtered = [];
+
+    if (type == 'org') {
+      filtered = this.state.init_data.filter(
+        (obj) => obj.name_o.toUpperCase().includes(data.value.toUpperCase())
+      );
+    } else {
+      filtered = this.state.init_data.filter(
+        (obj) => obj.name.toUpperCase().includes(data.value.toUpperCase()) || 
+                 obj.surname.toUpperCase().includes(data.value.toUpperCase())
+      );
+    }
+    
+    this.setState({
+      data: filtered
+    });
   }
 
   async handleSelectItem(id) {
@@ -66,6 +93,7 @@ class OrganizationDetail extends Component {
           this.setState({
             org: sub_data.body,
             type: sub_data.body.type,
+            init_data: sub_data.body.table,
             data: sub_data.body.table
           });
           
@@ -83,7 +111,7 @@ class OrganizationDetail extends Component {
   }
 
   render() {
-    const { user, org, type, data } = this.state;
+    const { user, org, filter, type, data } = this.state;
     
     return (
       <Fragment>
@@ -161,6 +189,14 @@ class OrganizationDetail extends Component {
             </Row>
           </Container>
           <Container>
+            <div className="mt-5">
+              <Input
+                value={filter}
+                icon='search'
+                placeholder='Search Clubs'
+                onChange={this.handleFilterItem.bind(this)}
+              />
+            </div>
             <div className="table-responsive">
               <SubTable
                 type={type}

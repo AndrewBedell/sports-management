@@ -7,13 +7,10 @@ import {
   Pagination,
   Menu
 } from 'semantic-ui-react';
-import { Button } from 'reactstrap';
 import Select from 'react-select';
-import ReactTooltip from 'react-tooltip';
 
 import _ from 'lodash';
 import { Genders } from '../configs/data';
-import Bitmaps from '../theme/Bitmaps';
 
 class SubTable extends Component {
   constructor(props) {
@@ -111,7 +108,6 @@ class SubTable extends Component {
     } = this.props;
     
     const {
-      user,
       column,
       direction,
       data,
@@ -169,7 +165,7 @@ class SubTable extends Component {
               </Table.Header>
               <Table.Body>
                 {
-                  data && data.length > 0 && (
+                  (data && data.length > 0) ? (
                     data.map((item, index) => (
                       <Table.Row key={index}>
                         <Table.Cell>
@@ -187,6 +183,10 @@ class SubTable extends Component {
                         </Table.Cell>
                       </Table.Row>
                     ))
+                  ) : (
+                    <Table.Row>
+                      <Table.Cell colSpan="5" className="text-center">No Clubs</Table.Cell>
+                    </Table.Row>
                   )
                 }
               </Table.Body>
@@ -240,7 +240,7 @@ class SubTable extends Component {
               </Table.Header>
               <Table.Body>
                 {
-                  data && data.length > 0 && (
+                  (data && data.length > 0) ? (
                     data.map((item, index) => (
                       <Table.Row key={index}>
                         <Table.Cell>
@@ -269,6 +269,10 @@ class SubTable extends Component {
                         </Table.Cell>
                       </Table.Row>
                     ))
+                  ) : (
+                    <Table.Row>
+                      <Table.Cell colSpan="6" className="text-center">No Competitors</Table.Cell>
+                    </Table.Row>
                   )
                 }
               </Table.Body>

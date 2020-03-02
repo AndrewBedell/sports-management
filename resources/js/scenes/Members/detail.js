@@ -6,7 +6,6 @@ import { Segment, Image } from 'semantic-ui-react'
 import MainTopBar from '../../components/TopBar/MainTopBar';
 import Api from '../../apis/app';
 import Bitmaps from '../../theme/Bitmaps';
-import { countries } from '../../configs/data';
 
 class MemberDetail extends Component {
   constructor(props) {
