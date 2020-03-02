@@ -100,7 +100,7 @@ class OrganizationDetail extends Component {
               {user.surname}
             </div>
             <Row>
-              <Col md={org.is_club ? 12 : 8}>
+              <Col md={org.is_club == 1 ? 12 : 8}>
                 <Segment>
                   <Row>
                     <Col md="6" lg="3">
@@ -136,7 +136,7 @@ class OrganizationDetail extends Component {
                 </Segment>
               </Col>
               {
-                !org.is_club && (
+                org.is_club != 1 && (
                   <Col md="4">
                     <Segment>
                       <h4 className="text-center"><b>Summary</b></h4>
