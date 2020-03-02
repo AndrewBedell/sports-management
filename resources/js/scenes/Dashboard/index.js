@@ -503,10 +503,10 @@ class Dashboard extends Component {
 
   getWeights(gender) {
     return this.state.weights.filter(weight => {
-      if (gender == 2) {
+      if (gender + '' == '2') {
         return true;
       } else {
-        return weight.gender == gender;
+        return weight.gender + '' == gender + '';
       }
     })
   }
