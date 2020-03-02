@@ -316,7 +316,7 @@ class Dashboard extends Component {
     let delItem = '';
     for (let i = 0; i < search_data.length; i++) {
       const item = search_data[i];
-      if (item.id === id) {
+      if (item.id == id) {
         delItem = item;
       }
     }
@@ -324,7 +324,7 @@ class Dashboard extends Component {
     this.setState({
       isOpenDeleteModal: true,
       deleteId: id,
-      confirmationMessage: `Are you sure you want to delete ${search_type.value === 'member' ? `${delItem.name} ${delItem.surname}` : delItem.name}?`
+      confirmationMessage: `Are you sure you want to delete ${search_type.value == 'member' ? `${delItem.name} ${delItem.surname}` : delItem.name}?`
     });
   }
 
@@ -494,7 +494,7 @@ class Dashboard extends Component {
 
   handleSelectItem(id) {
     const { search_type } = this.state;
-    if (search_type.value === 'member') {
+    if (search_type.value == 'member') {
       this.props.history.push('/member/detail', id);
     } else {
       this.props.history.push('/organization/detail', id);
@@ -503,10 +503,10 @@ class Dashboard extends Component {
 
   getWeights(gender) {
     return this.state.weights.filter(weight => {
-      if (gender === 2) {
+      if (gender == 2) {
         return true;
       } else {
-        return weight.gender === gender;
+        return weight.gender == gender;
       }
     })
   }
@@ -583,7 +583,7 @@ class Dashboard extends Component {
                 </FormGroup>
               </Col>
               {
-                search_type.value === 'org' && (
+                search_type.value == 'org' && (
                   <Col xl="3" lg="3" md="4" sm="6" xs="12">
                     <FormGroup>
                       <Input
@@ -603,7 +603,7 @@ class Dashboard extends Component {
                 )
               }
               {
-                (search_type.value === 'club' || search_type.value === 'member') && (
+                (search_type.value == 'club' || search_type.value == 'member') && (
                 <Col xl="2" lg="3" md="4" sm="6" xs="12">
                   <FormGroup>
                     <Select
@@ -624,7 +624,7 @@ class Dashboard extends Component {
                 )
               }
               {
-                search_type.value === 'club' && (
+                search_type.value == 'club' && (
                   <Col xl="2" lg="3" md="4" sm="6" xs="12">
                     <FormGroup>
                       <Input
@@ -644,7 +644,7 @@ class Dashboard extends Component {
                 )
               }
               {
-                search_type.value === 'member' && (
+                search_type.value == 'member' && (
                   <Col xl="2" lg="3" md="4" sm="6" xs="12">
                     <FormGroup>
                       <Select
@@ -670,7 +670,7 @@ class Dashboard extends Component {
                 )
               }
               {
-                search_type.value === 'member' && member_type.value === 'player' && (
+                search_type.value == 'member' && member_type.value == 'player' && (
                   <Fragment>
                     <Col xl="2" lg="2" md="3" sm="6" xs="12">
                       <FormGroup>
@@ -748,7 +748,7 @@ class Dashboard extends Component {
             }
           </Alert>
           {
-            search_data && search_data.length === 0 && (
+            search_data && search_data.length == 0 && (
               <div className="fixed-content">
                 <h3 className="text-muted">
                   No results!
