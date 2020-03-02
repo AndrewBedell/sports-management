@@ -121,7 +121,7 @@ class MemberDetail extends Component {
                       </h5>
                     </Col>
                   </Row>
-                  {member.is_player ? (
+                  {member.is_player == 1 ? (
                     <Row>
                       <Col sm="6"><h5 className="py-2"><b>Weight</b>: {member.weight} Kg</h5></Col>
                       <Col sm="6"><h5 className="py-2"><b>Dan</b>: {member.dan}</h5></Col>
