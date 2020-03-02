@@ -71,7 +71,7 @@ class MemberDetail extends Component {
                 </Col>
                 <Col sm="9">
                   {
-                    member.is_player ? (
+                    member.is_player == 1 ? (
                       <Fragment>
                         <Row>
                           <Col sm="12">

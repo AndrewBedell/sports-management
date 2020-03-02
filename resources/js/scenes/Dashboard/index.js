@@ -711,7 +711,7 @@ class Dashboard extends Component {
                         <Select
                           name="search_dan"
                           classNamePrefix="react-select-lg"
-                          placeholder="Dan"
+                          placeholder="All Dan"
                           // isMulti
                           value={search_dan}
                           options={Dans}
