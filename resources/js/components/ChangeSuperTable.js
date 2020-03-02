@@ -21,8 +21,6 @@ import Api from '../apis/app';
 
 import Prompt from '../components/Prompt';
 
-const flagRenderer = item => <Flag name={item.countryCode} />;
-
 class ChangeSuperTable extends Component {
   constructor(props) {
     super(props);
@@ -47,7 +45,7 @@ class ChangeSuperTable extends Component {
         { label: 20, value: 20 }
       ]
     };
-    this.getCountryCode = this.getCountryCode.bind(this);
+    
     this.handleChangePerPage = this.handleChangePerPage.bind(this);
   }
 
@@ -72,14 +70,6 @@ class ChangeSuperTable extends Component {
     this.setState({
       data: items.slice(0, per_page)
     });
-  }
-
-  getCountryCode(country_code) {
-    const country_val = countries.filter(country => country.countryCode === country_code);
-    if (country_val.length > 0) {
-      return flagRenderer(country_val[0]);
-    }
-    return '';
   }
 
   handlePaginationChange(e, { activePage }) {
@@ -147,7 +137,7 @@ class ChangeSuperTable extends Component {
     }
   }
 
-  async handleDeleteUser(id) {console.log(id);
+  async handleDeleteUser(id) {
     const {data} = this.state;
     
     const delUser = await Api.delete(`user/${id}`);
@@ -217,7 +207,7 @@ class ChangeSuperTable extends Component {
         <Table sortable celled selectable unstackable>
           <Table.Header>
             <Table.Row>
-              <Table.HeaderCell className="text-center"
+              <Table.HeaderCell width="2" className="text-center"
                 sorted={column === 'name' ? direction : null}
                 onClick={this.handleSort.bind(this, 'name')}
               >
@@ -242,18 +232,12 @@ class ChangeSuperTable extends Component {
                 Email
               </Table.HeaderCell>
               <Table.HeaderCell className="text-center"
-                sorted={column === 'country' ? direction : null}
-                onClick={this.handleSort.bind(this, 'country')}
-              >
-                Country
-              </Table.HeaderCell>
-              <Table.HeaderCell className="text-center"
                 sorted={column === 'mobile_phone' ? direction : null}
                 onClick={this.handleSort.bind(this, 'mobile_phone')}
               >
                 Mobile
               </Table.HeaderCell>
-              <Table.HeaderCell className="text-center"
+              <Table.HeaderCell width="4" className="text-center"
                 sorted={column === 'addressline1' ? direction : null}
                 onClick={this.handleSort.bind(this, 'addressline1')}
               >
@@ -285,21 +269,15 @@ class ChangeSuperTable extends Component {
                         <div className="avatar-preview"><img src={item.profile_image ? item.profile_image : Bitmaps.logo} /></div>
                         </ReactTooltip>
                       </span>
-                      {item.first_name}
+                      {item.name}
                       {' '}
-                      {item.mid_name}
+                      {item.patronymic == '-' ? '' : item.patronymic}
                       {' '}
-                      {item.last_name}
+                      {item.surname}
                     </Table.Cell>
                     <Table.Cell className="text-center">{item.gender ? Genders[0].name : Genders[1].name}</Table.Cell>
                     <Table.Cell className="text-center">{item.birthday}</Table.Cell>
                     <Table.Cell>{item.email}</Table.Cell>
-                    <Table.Cell className="text-center">
-                      {this.getCountryCode(item.country)}
-                      {' '}
-                      {countries.filter(country => country.countryCode === item.country).length > 0 && 
-                      countries.filter(country => country.countryCode === item.country)[0].name}
-                    </Table.Cell>
                     <Table.Cell className="text-center">{item.mobile_phone}</Table.Cell>
                     <Table.Cell>
                       {item.addressline1}
@@ -361,7 +339,7 @@ class ChangeSuperTable extends Component {
                   }}
                 />
               </Table.HeaderCell>
-              <Table.HeaderCell colSpan="8">
+              <Table.HeaderCell colSpan="7">
                 <Menu floated="right" pagination>
                   <Pagination
                     activePage={activePage}

@@ -51,8 +51,15 @@ class MainTopBar extends Component {
             <Navbar className="left-nav-bar">
               <NavItem onClick={this.toggleClose}>
                 <NavLink tag={Link} to="/" exact>
-                  <i className="fa fa-rocket" />
+                  <i className="fa fa-home" />
                   Dashboard
+                  <div />
+                </NavLink>
+              </NavItem>
+              <NavItem onClick={this.toggleClose}>
+                <NavLink tag={Link} to="/invite-users" exact>
+                  <i className="fa fa-user" />
+                  Invite User
                   <div />
                 </NavLink>
               </NavItem>

@@ -13,13 +13,11 @@ import Select from 'react-select';
 import ReactTooltip from 'react-tooltip';
 
 import _ from 'lodash';
-import { countries, Genders } from '../configs/data';
+import { Genders } from '../configs/data';
 import Bitmaps from '../theme/Bitmaps';
 import InviteModal from './InviteModal';
 
 import Api from '../apis/app';
-
-const flagRenderer = item => <Flag name={item.countryCode} />;
 
 class InviteTable extends Component {
   constructor(props) {
@@ -41,7 +39,7 @@ class InviteTable extends Component {
         { label: 20, value: 20 }
       ]
     };
-    this.getCountryCode = this.getCountryCode.bind(this);
+    
     this.handleChangePerPage = this.handleChangePerPage.bind(this);
   }
 
@@ -66,14 +64,6 @@ class InviteTable extends Component {
     this.setState({
       data: items.slice(0, per_page)
     });
-  }
-
-  getCountryCode(country_code) {
-    const country_val = countries.filter(country => country.countryCode === country_code);
-    if (country_val.length > 0) {
-      return flagRenderer(country_val[0]);
-    }
-    return '';
   }
 
   handlePaginationChange(e, { activePage }) {
@@ -202,12 +192,6 @@ class InviteTable extends Component {
                 Email
               </Table.HeaderCell>
               <Table.HeaderCell className="text-center"
-                sorted={column === 'country' ? direction : null}
-                onClick={this.handleSort.bind(this, 'country')}
-              >
-                Country
-              </Table.HeaderCell>
-              <Table.HeaderCell className="text-center"
                 sorted={column === 'mobile_phone' ? direction : null}
                 onClick={this.handleSort.bind(this, 'mobile_phone')}
               >
@@ -254,12 +238,6 @@ class InviteTable extends Component {
                     <Table.Cell className="text-center">{item.gender ? Genders[0].name : Genders[1].name}</Table.Cell>
                     <Table.Cell className="text-center">{item.birthday}</Table.Cell>
                     <Table.Cell>{item.email}</Table.Cell>
-                    <Table.Cell className="text-center">
-                      {this.getCountryCode(item.country)}
-                      {' '}
-                      {countries.filter(country => country.countryCode === item.country).length > 0 && 
-                       countries.filter(country => country.countryCode === item.country)[0].name}
-                    </Table.Cell>
                     <Table.Cell className="text-center">{item.mobile_phone}</Table.Cell>
                     <Table.Cell>
                       {item.addressline1}
@@ -316,7 +294,7 @@ class InviteTable extends Component {
                   }}
                 />
               </Table.HeaderCell>
-              <Table.HeaderCell colSpan="8">
+              <Table.HeaderCell colSpan="7">
                 <Menu floated="right" pagination>
                   <Pagination
                     activePage={activePage}
