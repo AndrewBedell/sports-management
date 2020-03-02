@@ -259,14 +259,30 @@ class SubTable extends Component {
                         <Table.Cell className="text-center">{item.dan}</Table.Cell>
                         <Table.Cell>
                           {
-                            item.active ? (
-                              <div className="text-warning text-center">
-                                <i className="fa fa-user fa-lg" />
-                              </div>
-                            ) : (
-                              <div className="text-muted text-center">
-                                <i className="fa fa-user fa-lg" />
-                              </div>
+                            item.active == 0 && (
+                              <Table.Cell>
+                                <div className="text-danger text-center">
+                                  <i className="fa fa-user fa-lg" />
+                                </div>
+                              </Table.Cell>
+                            )
+                          }
+                          {
+                            item.active == 1 && (
+                              <Table.Cell>
+                                <div className="text-success text-center">
+                                  <i className="fa fa-user fa-lg" />
+                                </div>
+                              </Table.Cell>
+                            )
+                          }
+                          {
+                            item.active == 2 && (
+                              <Table.Cell>
+                                <div className="text-warning text-center">
+                                  <i className="fa fa-user fa-lg" />
+                                </div>
+                              </Table.Cell>
                             )
                           }
                         </Table.Cell>
