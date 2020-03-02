@@ -315,7 +315,7 @@ class DataTable extends Component {
                         <Table.Cell className="text-center">{item.dan}</Table.Cell>
                           {
                             item.active == 0 && (
-                              <Table.Cell>
+                              <Table.Cell className="text-center">
                                 <div className="text-danger text-center">
                                   <i className="fa fa-user fa-lg" />
                                 </div>
@@ -324,7 +324,7 @@ class DataTable extends Component {
                           }
                           {
                             item.active == 1 && (
-                              <Table.Cell>
+                              <Table.Cell className="text-center">
                                 <div className="text-success text-center">
                                   <i className="fa fa-user fa-lg" />
                                 </div>
@@ -333,7 +333,7 @@ class DataTable extends Component {
                           }
                           {
                             item.active == 2 && (
-                              <Table.Cell>
+                              <Table.Cell className="text-center">
                                 <div className="text-warning text-center">
                                   <i className="fa fa-user fa-lg" />
                                 </div>
