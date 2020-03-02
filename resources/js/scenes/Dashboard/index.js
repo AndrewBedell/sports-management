@@ -74,8 +74,6 @@ class Dashboard extends Component {
   }
 
   async componentWillReceiveProps() {
-    const search = QueryString.parse(this.props.location.search, { ignoreQueryPrefix: true });
-
     const org_response = await Api.get('organizations-list');
     const { response, body } = org_response;
     switch (response.status) {
@@ -125,31 +123,42 @@ class Dashboard extends Component {
     }
 
     const club_list = await Api.get('clubs');
+    let clubArr = [];
     switch (club_list.response.status) {
       case 200:
-        let clubArr = [];
 
         for (var i = 0; i < club_list.body.length; i++) {
           clubArr.push({id: club_list.body[i]['parent_id'], value: club_list.body[i]['name_o']});
         }
 
-        let clubs1 = clubArr;
-        if (search.org != '') {
-          clubs1 = clubArr.filter(club => club.id == search.org);
-        }
+        // let clubs1 = clubArr;
+        // if (search.org != '') {
+        //   clubs1 = clubArr.filter(club => club.id == search.org);
+        // }
 
-        const clubList = clubs1.map((club, Index) =>
-          <option key={Index} id={club.id} value={club.value} />
-        );
+        // const clubList = clubs1.map((club, Index) =>
+        //   <option key={Index} id={club.id} value={club.value} />
+        // );
         
         this.setState({
-          clubs: clubList,
+          // clubs: clubList,
           original_clubs: clubArr,
         });
         break;
       default:
         break;
     }
+
+    const search = QueryString.parse(this.props.location.search, { ignoreQueryPrefix: true });
+    
+    let clubs1 = clubArr;
+    if (search.org != '') {
+      clubs1 = clubArr.filter(club => club.id == search.org);
+    }
+
+    const clubList = clubs1.map((club, Index) =>
+      <option key={Index} id={club.id} value={club.value} />
+    );
 
     this.setState({
       search_type: search.stype ? (search_type_options.find(type => type.value == search.stype) || '') : '',
@@ -162,6 +171,7 @@ class Dashboard extends Component {
       search_weight: search.weight ? (weight_list.body.find(weight => weight.id == search.weight) || '') : '',
       search_dan: search.dan ? (Dans.find(dan => dan.value == search.dan) || '') : '',
       search_data: null,
+      clubs: clubList,
     });
     // const search = {};
     if (search.stype) {
