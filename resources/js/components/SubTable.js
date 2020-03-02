@@ -242,7 +242,10 @@ class SubTable extends Component {
                 {
                   (data && data.length > 0) ? (
                     data.map((item, index) => (
-                      <Table.Row key={index}>
+                      <Table.Row 
+                        key={index}
+                        disabled={item.active == 0}
+                      >
                         <Table.Cell>
                           <span className="text-primary mr-2">
                             <a className="detail-link" onClick={() => onSelect(item.id)}>
