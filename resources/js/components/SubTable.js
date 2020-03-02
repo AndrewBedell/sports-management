@@ -245,7 +245,9 @@ class SubTable extends Component {
                       <Table.Row key={index}>
                         <Table.Cell>
                           <span className="text-primary mr-2">
-                            {item.name} {item.patronymic} {item.surname}
+                            <a className="detail-link" onClick={() => onSelect(item.id)}>
+                              {item.surname && item.surname.toUpperCase()} {item.patronymic != '-' && item.patronymic} {item.name}
+                            </a>
                           </span>
                         </Table.Cell>
                         <Table.Cell className="text-center">{item.gender ? Genders[0].name : Genders[1].name}</Table.Cell>

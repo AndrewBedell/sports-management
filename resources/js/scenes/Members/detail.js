@@ -66,10 +66,10 @@ class MemberDetail extends Component {
             </div>
             <Segment>
               <Row>
-                <Col sm="3">
+                <Col lg="3">
                   <Image className="m-auto" src={member.logo ? member.logo : Bitmaps.logo} size='small' />
                 </Col>
-                <Col sm="9">
+                <Col lg="9">
                   {
                     member.is_player == 1 ? (
                       <Fragment>
@@ -77,10 +77,13 @@ class MemberDetail extends Component {
                           <Col sm="12">
                             <h5 className="pt-3 py-2"><b>Club Name</b>:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{member.name_o}</h5>
                           </Col>
-                          <Col sm="6">
-                            <h5 className="py-2"><b>Name</b>:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{member.name} {member.patronymic} {member.surname}</h5>
+                          <Col md="6" lg="8">
+                            <h5 className="py-2">
+                              <b>Name</b>:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                              {member.name} {member.patronymic != '-' && member.patronymic} {member.surname}
+                            </h5>
                           </Col>
-                          <Col sm="6">
+                          <Col md="6" lg="4">
                             <h5 className="py-2"><b>Gender</b>:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{member.gender? 'Male': "Female"}</h5>
                           </Col>
                         </Row>
@@ -102,12 +105,12 @@ class MemberDetail extends Component {
                     )
                   }
                   <Row>
-                    <Col sm="6">
+                    <Col md="12" lg="8">
                       <h5 className="py-2">
                         <b>Email</b>:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href={"mailto:" + member.email}>{member.email}</a>
                       </h5>
                     </Col>
-                    <Col sm="6">
+                    <Col md="12" lg="4">
                       <h5 className="py-2"><b>Mobile</b>:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{member.mobile}</h5>
                     </Col>
                     <Col sm="12">
@@ -123,8 +126,8 @@ class MemberDetail extends Component {
                   </Row>
                   {member.is_player == 1 ? (
                     <Row>
-                      <Col sm="6"><h5 className="py-2"><b>Weight</b>: {member.weight} Kg</h5></Col>
-                      <Col sm="6"><h5 className="py-2"><b>Dan</b>: {member.dan}</h5></Col>
+                      <Col sm="8"><h5 className="py-2"><b>Weight</b>: {member.weight} Kg</h5></Col>
+                      <Col sm="4"><h5 className="py-2"><b>Dan</b>: {member.dan}</h5></Col>
                     </Row>
                   ) : ''}
                 </Col>
