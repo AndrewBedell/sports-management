@@ -270,6 +270,7 @@ class Dashboard extends Component {
   }
 
   async search(search_params) {
+    console.log("compare", 1 == '1')
     // const {
     //   search_type, search_org, search_name, member_type, search_gender, search_weight, search_dan
     // } = this.state;
