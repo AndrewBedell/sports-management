@@ -462,10 +462,10 @@ class OrganizationController extends Controller
         $parent_id = $member->organization_id;
 
         $own = Organization::find($parent_id);
-        $chidren = $this->findChildren($parent_id, '', 1, 0);
+        $children = $this->findChildren($parent_id, '', 1, 0);
 
         $orgs = array($own);
-        $orgs = array_merge($orgs, $chidren);
+        $orgs = array_merge($orgs, $children);
 
         $orgIDs = array();
 
@@ -495,14 +495,15 @@ class OrganizationController extends Controller
      */
     public function list(Request $request)
     {
-        $user = JWTAuth::parseToken()->authenticate();
-        $member = Member::find($user->member_id);
+        $nf = Organization::where('parent_id', 0)->get();
 
-        $parent_id = $member->organization_id;
+        $children = Organization::where('parent_id', '!=', 0)->where('is_club', 0)->orderBy('name_o')->get();
 
-        $chidren = Organization::where('parent_id', $parent_id)->where('is_club', 0)->orderBy('name_o')->get();
+        $merged = $nf->merge($children);
 
-        return response()->json($chidren);
+        $result = $merged->all();
+
+        return response()->json($result);
     }
 
     /**
