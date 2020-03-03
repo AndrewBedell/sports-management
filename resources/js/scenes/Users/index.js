@@ -5,6 +5,7 @@ import {
 import {
   withRouter
 } from 'react-router-dom';
+import { Input } from 'semantic-ui-react'
 
 import MainTopBar from '../../components/TopBar/MainTopBar';
 import Api from '../../apis/app';
@@ -16,7 +17,11 @@ class GetInviteUsers extends Component {
     super(props);
     this.state = {
       members: [],
-      users: []
+      init_members: [],
+      filter_members: '',
+      users: [],
+      init_users: [],
+      filter_users: ''
     }
   }
 
@@ -26,7 +31,9 @@ class GetInviteUsers extends Component {
     switch (response.status) {
       case 200:
         this.setState({
+          init_members: body.members,
           members: body.members,
+          init_users: body.users,
           users: body.users
         });
         break;
@@ -37,20 +44,72 @@ class GetInviteUsers extends Component {
     }
   }
 
+  handleFilterInvite(evt, data) {
+    this.setState({
+      filter_members: data.value
+    });
+
+    var filtered = [];
+
+    filtered = this.state.init_members.filter(
+      (obj) => obj.name.toUpperCase().includes(data.value.toUpperCase())
+    );
+
+    this.setState({
+      members: filtered
+    });
+  }
+
+  handleFilterChange(evt, data) {
+    this.setState({
+      filter_users: data.value
+    });
+
+    var filtered = [];
+
+    filtered = this.state.init_users.filter(
+      (obj) => obj.name.toUpperCase().includes(data.value.toUpperCase())
+    );
+
+    this.setState({
+      users: filtered
+    });
+  }
+
   render() {
     const {
       members,
-      users
+      users,
+      filter_members,
+      filter_users
     } = this.state;
     return (
       <Fragment>
         <MainTopBar />
         <div className="main-content">
           <Container fluid>
+            <div className="my-2">
+              <Input
+                value={filter_members}
+                icon='search'
+                placeholder='Search Users'
+                onChange={this.handleFilterInvite.bind(this)}
+              />
+            </div>
             <div className="table-responsive">
               <InviteTable
                 items={members}
               />
+            </div>
+            <div className="my-2">
+              <Input
+                value={filter_users}
+                icon='search'
+                placeholder='Search Users'
+                onChange={this.handleFilterChange.bind(this)}
+              />
+            </div>
+            <div className="table-responsive">
               <ChangeSuperTable
                 items={users}
               />
