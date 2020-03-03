@@ -474,7 +474,7 @@ class OrganizationController extends Controller
      */
     public function clubs()
     {
-        $clubs = Organization::where('is_club', 1)->select('parent_id', 'name_o')->orderBy('name_o')->get();
+        $clubs = Organization::where('is_club', 1)->select('id', 'parent_id', 'name_o')->orderBy('name_o')->get();
 
         return response()->json($clubs);
     }

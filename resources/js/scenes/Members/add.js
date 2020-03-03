@@ -25,6 +25,7 @@ class MemberAdd extends Component {
       imagePreviewUrl: '',
       fileKey: 1,
       org_list: [],
+      club_list: [],
       weights: [],
       roles: [],
       alertVisible: false,
@@ -44,7 +45,7 @@ class MemberAdd extends Component {
     const org_response = await Api.get('organizations-list');
     const { response, body } = org_response;
     switch (response.status) {
-      case 200:
+      case 200:        
         this.setState({
           org_list: body
         });
@@ -52,6 +53,18 @@ class MemberAdd extends Component {
       default:
         break;
     }
+
+    const club_response = await Api.get('clubs');
+    switch (club_response.response.status) {
+      case 200:
+        this.setState({
+          club_list: club_response.body
+        });
+        break;
+      default:
+        break;
+    }
+
     const weight_list = await Api.get('weights');
     switch (weight_list.response.status) {
       case 200:
@@ -62,6 +75,7 @@ class MemberAdd extends Component {
       default:
         break;
     }
+
     const role_lists = JSON.parse(localStorage.getItem('roles'));
     if (role_lists && role_lists.length > 0) {
       this.setState({
@@ -74,6 +88,7 @@ class MemberAdd extends Component {
           this.setState({
             roles: role_list.body
           });
+
           if (role_list.body.length > 0) {
             localStorage.setItem('roles', JSON.stringify(role_list.body));
           }
@@ -83,7 +98,6 @@ class MemberAdd extends Component {
       }
     }
   }
-
 
   fileUpload(e) {
     e.preventDefault();
@@ -121,7 +135,8 @@ class MemberAdd extends Component {
       weight_id: values.weight_id ? values.weight_id.id : '',
       dan: values.dan ? values.dan.value : '',
       identity: values.identity,
-      organization_id: values.organization_id.id,
+      org_type: values.organization_type ? values.organization_type.value : '',
+      organization_id: values.club_id ? values.club_id.id : (values.organization_id ? values.organization_id.id : 1),
       role_id: values.role_id.id,
       profile_image: imagePreviewUrl || '',
       position: values.position || '',
@@ -130,14 +145,18 @@ class MemberAdd extends Component {
       register_date: moment(values.register_date).format('YYYY-MM-DD')
     };
 
-    if (values.role_id && values.role_id.is_player === 1 && values.organization_id.is_club !== 1) {
-      bags.setStatus({
-        color: 'danger',
-        children: 'Regional Federation should been Club.'
-      });
+    if (values.role_id && values.organization_type && values.organization_type.value != 'nf' && !values.organization_id) {
       bags.setSubmitting(false);
       return;
     }
+
+    if (values.role_id && values.role_id.id != 4 && 
+        values.organization_type && values.organization_type.value == 'club' &&
+        values.organization_id && !values.club_id) {
+      bags.setSubmitting(false);
+      return;
+    }
+
     if (values.role_id && values.role_id.is_player === 1 && (!values.weight_id || !values.dan)) {
       bags.setSubmitting(false);
       return;
@@ -157,6 +176,7 @@ class MemberAdd extends Component {
           messageStatus: true,
           successMessage: 'Added Successfully!'
         });
+
         setTimeout(() => {
           this.setState({ alertVisible: false });
           this.props.history.goBack();
@@ -185,11 +205,11 @@ class MemberAdd extends Component {
     bags.setSubmitting(false);
   }
 
-
   render() {
     const {
       imagePreviewUrl,
       org_list,
+      club_list,
       roles,
       weights
     } = this.state;
@@ -200,6 +220,7 @@ class MemberAdd extends Component {
     } else {
       $imagePreview = (<div className="previewText">Please select an Image for Preview</div>);
     }
+    
     return (
       <Fragment>
         <MainTopBar />
@@ -214,9 +235,12 @@ class MemberAdd extends Component {
             </div>
             <Formik
               ref={this.formikRef}
+
               initialValues={{
-                organization_id: null,
                 role_id: null,
+                organization_type: null,
+                organization_id: null,
+                club_id: null,
                 profile_image: null,
                 register_date: null,
                 name: '',
@@ -238,9 +262,9 @@ class MemberAdd extends Component {
                 position: '',
                 skill: ''
               }}
+
               validationSchema={
                 Yup.object().shape({
-                  organization_id: Yup.mixed().required('This field is required!'),
                   role_id: Yup.mixed().required('This field is required!'),
                   // profile_image: Yup.mixed().required('Image is required!'),
                   register_date: Yup.mixed().required('This field is required!'),
@@ -258,7 +282,9 @@ class MemberAdd extends Component {
                   identity: Yup.string().required('This field is required!')
                 })
               }
+
               onSubmit={this.handleSubmit.bind(this)}
+              
               render={({
                 values,
                 errors,
@@ -284,8 +310,12 @@ class MemberAdd extends Component {
                           getOptionValue={option => option.id}
                           getOptionLabel={option => option.name}
                           value={values.role_id}
+                          invalid={!!errors.role_id && touched.role_id}
                           onChange={(value) => {
                             setFieldValue('role_id', value);
+
+                            setFieldValue('organization_id', null);
+                            setFieldValue('club_id', null);
                           }}
                           onBlur={this.handleBlur}
                         />
@@ -295,44 +325,108 @@ class MemberAdd extends Component {
                       </FormGroup>
                     </Col>
                     <Col sm="6" md="3">
-                      <FormGroup>
-                          <Label for="organization_type">
-                            Organization Type
-                          </Label>
+                      {
+                        values.role_id && values.role_id.id == 1 && (
+                          <FormGroup>
+                            <Label for="organization_type">Organization Type</Label>
+                            <Select
+                              name="organization_type"
+                              classNamePrefix={
+                                values.role_id && values.role_id.id == 1 &&
+                                !values.organization_type && touched.organization_type ? 
+                                'invalid react-select-lg' : 'react-select-lg'}
+                              indicatorSeparator={null}
+                              options={OrganizationType}
+                              getOptionValue={option => option.value}
+                              getOptionLabel={option => option.label}
+                              value={values.organization_type}
+                              invalid={!!errors.organization_type && touched.organization_type}
+                              onChange={(value) => {
+                                setFieldValue('organization_type', value);
+
+                                setFieldValue('organization_id', null);
+                                setFieldValue('club_id', null);
+                              }}
+                              onBlur={this.handleBlur}
+                            />
+                            {values.role_id && values.role_id.id == 1 && !values.organization_type && touched.organization_type && (
+                              <FormFeedback className="d-block">This field is required!</FormFeedback>
+                            )}
+                          </FormGroup>
+                        )
+                      }
+                    </Col>
+                    <Col sm="6" md="3">
+                      {
+                        ((values.role_id && values.role_id.id != 1) || 
+                          (values.organization_type && values.organization_type.value != 'nf')) && (
+                          <FormGroup>
+                            <Label for="organization_id">Regional Federation</Label>
+                            <Select
+                              name="organization_id"
+                              classNamePrefix={
+                                (!values.organization_id || (values.organization_id && values.organization_id == '')) &&
+                                  touched.organization_id ? 'invalid react-select-lg' : 'react-select-lg'
+                              }
+                              options={org_list}
+                              indicatorSeparator={null}
+                              getOptionValue={option => option.id}
+                              getOptionLabel={option => option.name_o}
+                              value={values.organization_id}
+                              onChange={(value) => {
+                                setFieldValue('organization_id', value);
+                                setFieldValue('club_id', null);
+                              }}
+                              onBlur={this.handleBlur}
+                            />
+                            {
+                              (!values.organization_id || (values.organization_id && values.organization_id == '')) &&
+                                touched.organization_id && (
+                              <FormFeedback className="d-block">This field is required!</FormFeedback>
+                              )
+                            }
+                          </FormGroup>
+                        )
+                      }
+                    </Col>
+                    <Col sm="6" md="3">
+                    {
+                      ((values.role_id && values.role_id.id == 1 &&
+                        values.organization_type && values.organization_type.value == 'club') ||
+                       (values.role_id && (values.role_id.id == 2 || values.role_id.id == 3))) && (
+                        <FormGroup>
+                          <Label for="club_id">Club</Label>
                           <Select
-                            name="organization_type"
-                            
-                          >
-
-                          </Select>
-                      </FormGroup>
-                    </Col>
-                    <Col sm="6" md="3">
-                      <FormGroup>
-                        <Label for="organization_id">
-                          Regional Federation
-                        </Label>
-                        <Select
-                          name="organization_id"
-                          classNamePrefix={!!errors.organization_id && touched.organization_id ? 'invalid react-select-lg' : 'react-select-lg'}
-                          indicatorSeparator={null}
-                          options={values.role_id && values.role_id.is_player === 1 ? org_list.filter(org => org.is_club === 1) : org_list}
-                          getOptionValue={option => option.id}
-                          getOptionLabel={option => option.name_o}
-                          value={values.organization_id}
-                          invalid={!!errors.organization_id && touched.organization_id}
-                          onChange={(value) => {
-                            setFieldValue('organization_id', value);
-                          }}
-                          onBlur={this.handleBlur}
-                        />
-                        {!!errors.organization_id && touched.organization_id && (
-                          <FormFeedback className="d-block">{errors.organization_id}</FormFeedback>
-                        )}
-                      </FormGroup>
-                    </Col>
-                    <Col sm="6" md="3">
-
+                            name="club_id"
+                            classNamePrefix={
+                              (values.role_id && values.role_id != 4) &&
+                              (!values.club_id || (values.club_id && values.club_id == '')) &&
+                              touched.club_id ? 
+                              'invalid react-select-lg' : 'react-select-lg'}
+                            options={
+                              values.organization_id && values.organization_id.id != '' ? (
+                                club_list.filter(club => club.parent_id == values.organization_id.id)
+                              ) : club_list
+                            }
+                            getOptionValue={option => option.id}
+                            getOptionLabel={option => option.name_o}
+                            value={values.club_id}
+                            invalid={values.role_id && values.role_id != 4 && touched.club_id}
+                            onChange={(value) => {
+                              setFieldValue('club_id', value);
+                              setFieldValue('organization_id', org_list.filter(org => org.id == value.parent_id));
+                            }}
+                            onBlur={this.handleBlur}
+                          />
+                          {
+                              (values.role_id && values.role_id != 4) &&
+                              (!values.club_id || (values.club_id && values.club_id == '')) &&
+                              touched.club_id && (
+                            <FormFeedback className="d-block">This field is required!</FormFeedback>
+                          )}
+                        </FormGroup>
+                      )
+                    }
                     </Col>
                     <Col xs="12" sm="6">
                       <FormGroup>
@@ -431,7 +525,7 @@ class MemberAdd extends Component {
                         )}
                       </FormGroup>
                     </Col>
-                    <Col sm="8">
+                    <Col sm="4">
                       <FormGroup>
                         <Label for="birthday">Birthday</Label>
                         <Input
@@ -446,7 +540,7 @@ class MemberAdd extends Component {
                         {!!errors.birthday && touched.birthday && <FormFeedback className="d-block">{errors.birthday}</FormFeedback> }
                       </FormGroup>
                     </Col>
-                    <Col sm="6">
+                    <Col sm="4">
                       <FormGroup>
                         <Label for="email">Email</Label>
                         <Input
@@ -472,6 +566,20 @@ class MemberAdd extends Component {
                           invalid={!!errors.mobile_phone && touched.mobile_phone}
                         />
                         <FormFeedback>{errors.mobile_phone}</FormFeedback>
+                      </FormGroup>
+                    </Col>
+                    <Col sm="6">
+                      <FormGroup>
+                        <Label for="identity">Identity</Label>
+                        <Input
+                          name="identity"
+                          type="text"
+                          value={values.identity || ''}
+                          onChange={handleChange}
+                          onBlur={handleBlur}
+                          invalid={!!errors.identity && touched.identity}
+                        />
+                        <FormFeedback>{errors.identity}</FormFeedback>
                       </FormGroup>
                     </Col>
                     <Col sm="6">
@@ -563,21 +671,25 @@ class MemberAdd extends Component {
                         <FormFeedback>{errors.zip_code}</FormFeedback>
                       </FormGroup>
                     </Col>
-                    <Col sm="4" xs="6">
-                      <FormGroup>
-                        <Label for="identity">Identity</Label>
-                        <Input
-                          name="identity"
-                          type="text"
-                          value={values.identity || ''}
-                          onChange={handleChange}
-                          onBlur={handleBlur}
-                          invalid={!!errors.identity && touched.identity}
-                        />
-                        <FormFeedback>{errors.identity}</FormFeedback>
-                      </FormGroup>
-                    </Col>
-                    <Col sm="4" xs="6">
+                    {
+                      values.role_id && values.role_id.is_player !== 1 && (
+                        <Col xs="6">
+                          <FormGroup>
+                            <Label for="position">Position</Label>
+                            <Input
+                              name="position"
+                              type="text"
+                              value={values.position || ''}
+                              onChange={handleChange}
+                              onBlur={handleBlur}
+                              invalid={values.role_id && values.role_id.is_player !== 1 && !values.position && touched.position}
+                              />
+                            {values.role_id && values.role_id.is_player !== 1 && !values.position && touched.position && (<FormFeedback className="d-block">This field is required!</FormFeedback>)}
+                          </FormGroup>
+                        </Col>
+                      )
+                    }
+                    <Col sm="3" xs="6">
                       {
                         values.role_id && values.role_id.is_player === 1 && (
                           <FormGroup>
@@ -599,7 +711,7 @@ class MemberAdd extends Component {
                         )
                       }
                     </Col>
-                    <Col sm="4" xs="6">
+                    <Col sm="3" xs="6">
                       {
                         values.role_id && values.role_id.is_player === 1 && (
                           <FormGroup>
@@ -621,24 +733,6 @@ class MemberAdd extends Component {
                         )
                       }
                     </Col>
-                    {
-                      values.role_id && values.role_id.is_player !== 1 && (
-                        <Col xs="6">
-                          <FormGroup>
-                            <Label for="position">Position</Label>
-                            <Input
-                              name="position"
-                              type="text"
-                              value={values.position || ''}
-                              onChange={handleChange}
-                              onBlur={handleBlur}
-                              invalid={values.role_id && values.role_id.is_player !== 1 && !values.position && touched.position}
-                              />
-                            {values.role_id && values.role_id.is_player !== 1 && !values.position && touched.position && (<FormFeedback className="d-block">This field is required!</FormFeedback>)}
-                          </FormGroup>
-                        </Col>
-                      )
-                    }
                     {
                       values.role_id && values.role_id.is_player === 1 && (
                         <Col xs="6">
