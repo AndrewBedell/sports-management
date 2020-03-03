@@ -28,7 +28,6 @@ class Organization extends Model
         'state',
         'city',
         'zip_code',
-        'readable_id',
         'level',
         'is_club'
     ];

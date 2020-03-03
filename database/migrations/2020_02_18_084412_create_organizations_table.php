@@ -31,7 +31,6 @@ class CreateOrganizationsTable extends Migration
             $table->string('city', 50);
             $table->string('zip_code', 20);
 
-            $table->string('readable_id', 20)->unique();
             $table->tinyInteger('level');
             $table->boolean('is_club');
             
@@ -54,7 +53,6 @@ class CreateOrganizationsTable extends Migration
                 'state' => '',
                 'city' => '',
                 'zip_code' => '',
-                'readable_id' => '',
                 'level' => 1,
                 'is_club' => false,
                 'created_at' => date('Y-m-d H:i:s'),

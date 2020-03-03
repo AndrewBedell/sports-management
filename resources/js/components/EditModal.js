@@ -125,7 +125,6 @@ class EditModal extends React.Component {
           city: '',
           zip_code: '',
           level: '',
-          readable_id: '',
           is_club: null
         });
       } else {
@@ -194,7 +193,6 @@ class EditModal extends React.Component {
         city: values.city,
         zip_code: values.zip_code,
         level: values.level,
-        readable_id: values.readable_id,
         is_club: SetSwitch.filter(set => set.value === values.is_club)[0]
       });
     }
@@ -274,7 +272,6 @@ class EditModal extends React.Component {
         city: values.city,
         zip_code: values.zip_code,
         level: this.getLevel((values.parent_id && values.parent_id.id) || item.parent_id) || item.level,
-        readable_id: values.readable_id,
         is_club: values.is_club ? values.is_club.value : 0
       };
     } else {
@@ -820,7 +817,6 @@ class EditModal extends React.Component {
                   city: '',
                   zip_code: '',
                   level: '',
-                  readable_id: '',
                   is_club: false
                 }}
                 validationSchema={
@@ -835,8 +831,7 @@ class EditModal extends React.Component {
                     // country: Yup.mixed().required('This field is required!'),
                     // city: Yup.string().required('This field is required!'),
                     // state: Yup.string().required('This field is required!'),
-                    // zip_code: Yup.string().max(6, 'Less than 5 characters!').required('This field is required!'),
-                    readable_id: Yup.string().required('This field is required!')
+                    // zip_code: Yup.string().max(6, 'Less than 5 characters!').required('This field is required!')
                   })
                 }
                 onSubmit={this.handleSubmit.bind(this)}
@@ -948,7 +943,7 @@ class EditModal extends React.Component {
                           <FormFeedback>{errors.name_s}</FormFeedback>
                         </FormGroup>
                       </Col>
-                      <Col sm="6">
+                      <Col sm="3">
                         <FormGroup>
                           <Label for="register_no">
                             Register Number
@@ -964,18 +959,20 @@ class EditModal extends React.Component {
                           <FormFeedback>{errors.register_no}</FormFeedback>
                         </FormGroup>
                       </Col>
-                      <Col sm="6">
+                      <Col sm="3">
                         <FormGroup>
-                          <Label for="readable_id">ID</Label>
+                          <Label for="mobile_phone">
+                            Mobile Phone
+                          </Label>
                           <Input
-                            name="readable_id"
-                            type="text"
-                            value={values.readable_id || ''}
+                            type="phone"
+                            name="mobile_phone"
+                            value={values.mobile_phone}
                             onChange={handleChange}
                             onBlur={handleBlur}
-                            invalid={!!errors.readable_id && touched.readable_id}
+                            invalid={!!errors.mobile_phone && touched.mobile_phone}
                           />
-                          {!!errors.readable_id && touched.readable_id && (<FormFeedback className="d-block">{errors.readable_id}</FormFeedback>)}
+                          <FormFeedback>{errors.mobile_phone}</FormFeedback>
                         </FormGroup>
                       </Col>
                       <Col sm="6">
@@ -992,22 +989,6 @@ class EditModal extends React.Component {
                             invalid={!!errors.email && touched.email}
                           />
                           <FormFeedback>{errors.email}</FormFeedback>
-                        </FormGroup>
-                      </Col>
-                      <Col sm="6">
-                        <FormGroup>
-                          <Label for="mobile_phone">
-                            Mobile Phone
-                          </Label>
-                          <Input
-                            type="phone"
-                            name="mobile_phone"
-                            value={values.mobile_phone}
-                            onChange={handleChange}
-                            onBlur={handleBlur}
-                            invalid={!!errors.mobile_phone && touched.mobile_phone}
-                          />
-                          <FormFeedback>{errors.mobile_phone}</FormFeedback>
                         </FormGroup>
                       </Col>
                       <Col sm="6">

@@ -67,7 +67,6 @@ class OrganizationController extends Controller
             'state' => 'required|string|max:255',
             'city' => 'required|string|max:255',
             'zip_code' => 'required|string|max:255',
-            'readable_id' => 'required|string|max:255|unique:organizations',
             'level' => 'required|integer',
             'is_club' => 'required|boolean',
         ]);
@@ -129,7 +128,6 @@ class OrganizationController extends Controller
                 'state' => $data['state'],
                 'city' => $data['city'],
                 'zip_code' => $data['zip_code'],
-                'readable_id' => $data['readable_id'],
                 'level' => $data['level'],
                 'is_club' => $data['is_club']
             ));
@@ -238,7 +236,6 @@ class OrganizationController extends Controller
                 // 'state' => 'required|string|max:255',
                 // 'city' => 'required|string|max:255',
                 // 'zip_code' => 'required|string|max:255',
-                'readable_id' => 'required|string|max:255',
                 // 'level' => 'required|integer',
                 // 'is_club' => 'required|boolean',
             ]);
@@ -254,7 +251,6 @@ class OrganizationController extends Controller
             } else {
                 $exist1 = Organization::where('email', $data['email'])->where('id', '!=', $id)->withTrashed()->count();
                 $exist2 = Organization::where('register_no', $data['register_no'])->where('id', '!=', $id)->withTrashed()->count();
-                $exist3 = Organization::where('readable_id', $data['readable_id'])->where('id', '!=', $id)->withTrashed()->count();
 
                 $errArr = array();
                 $exist = 0;
@@ -267,11 +263,6 @@ class OrganizationController extends Controller
                 if ($exist2 > 0) {
                     $errArr['register_no'] = 'Register No already exist.';
                     $exist += $exist2;
-                }
-
-                if ($exist3 > 0) {
-                    $errArr['readable_id'] = 'Reable ID already exist.';
-                    $exist += $exist3;
                 }
                 
                 if ($exist > 0) {

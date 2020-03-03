@@ -413,7 +413,7 @@ class Dashboard extends Component {
             alertVisible: true,
             messageStatus: false,
             isOpenEditModal: false,
-            failMessage: updateOrg.body.data && (`${updateOrg.body.data.email !== undefined ? updateOrg.body.data.email : ''} ${updateOrg.body.data.register_no !== undefined ? updateOrg.body.data.register_no : ''} ${updateOrg.body.data.readable_id !== undefined ? updateOrg.body.data.readable_id : ''}`)
+            failMessage: updateOrg.body.data && (`${updateOrg.body.data.email !== undefined ? updateOrg.body.data.email : ''} ${updateOrg.body.data.register_no !== undefined ? updateOrg.body.data.register_no : ''}`)
           });
           break;
         case 500:
