@@ -185,6 +185,24 @@ class MemberController extends Controller
             ));
         }
 
+        if ($data['org_type'] == 'nf') {
+            User::create(array(
+                'member_id' => $member->id,
+                'is_super' => 1,
+                'password' => '',
+                'email' => $data['email']
+            ));
+        }
+
+        if ($data['org_type'] == 'ref') {
+            User::create(array(
+                'member_id' => $member->id,
+                'is_super' => 0,
+                'password' => '',
+                'email' => $data['email']
+            ));
+        }
+
         return response()->json([
             'status' => 'success'
         ], 200);
