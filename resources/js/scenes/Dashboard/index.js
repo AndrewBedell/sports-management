@@ -80,7 +80,7 @@ class Dashboard extends Component {
       case 200:
         let orgArr = [];
 
-        for (var i = 0; i < body.length; i++) {
+        for (var i = 1; i < body.length; i++) {
           orgArr.push(body[i]['name_o'])
         }
 
