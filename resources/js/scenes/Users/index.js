@@ -92,7 +92,7 @@ class GetInviteUsers extends Component {
               <Input
                 value={filter_members}
                 icon='search'
-                placeholder='Search Users'
+                placeholder='Search Invite Users'
                 onChange={this.handleFilterInvite.bind(this)}
               />
             </div>
@@ -101,7 +101,7 @@ class GetInviteUsers extends Component {
                 items={members}
               />
             </div>
-            <div className="my-2">
+            <div className="mt-5 mb-2">
               <Input
                 value={filter_users}
                 icon='search'
