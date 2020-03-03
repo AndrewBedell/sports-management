@@ -210,9 +210,11 @@ class UserController extends Controller
         $members = Member::where('role_id', '!=', $role->id)
                         ->where('members.id', '!=', $user->member_id)
                         ->where('members.active', 0)
+                        ->leftJoin('organizations', 'organizations.id', 'members.organization_id')
                         ->leftJoin('users', 'users.member_id', '=', 'members.id')
                         ->leftJoin('invitations', 'members.email', '=', 'invitations.email')
-                        ->select('members.*', 'users.is_super', 'invitations.created_at AS invited')
+                        ->select('members.*', 'organizations.parent_id', 'organizations.is_club',
+                                'users.is_super', 'invitations.created_at AS invited')
                         ->orderBy('members.name')
                         ->get();
                         
