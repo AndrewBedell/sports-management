@@ -52,7 +52,8 @@ class GetInviteUsers extends Component {
     var filtered = [];
 
     filtered = this.state.init_members.filter(
-      (obj) => obj.name.toUpperCase().includes(data.value.toUpperCase())
+      (obj) => obj.name.toUpperCase().includes(data.value.toUpperCase()) || 
+               obj.surname.toUpperCase().includes(data.value.toUpperCase())
     );
 
     this.setState({
@@ -68,7 +69,8 @@ class GetInviteUsers extends Component {
     var filtered = [];
 
     filtered = this.state.init_users.filter(
-      (obj) => obj.name.toUpperCase().includes(data.value.toUpperCase())
+      (obj) => obj.name.toUpperCase().includes(data.value.toUpperCase()) || 
+               obj.surname.toUpperCase().includes(data.value.toUpperCase())
     );
 
     this.setState({
