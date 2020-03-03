@@ -155,7 +155,7 @@ class DataTable extends Component {
                     sorted={column === 'name_o' ? direction : null}
                     onClick={this.handleSort.bind(this, 'name_o')}
                   >
-                    {mtype.value === 'player' || mtype.value === 'coach' ? 'Club' : 'Regional Federation'}
+                    {mtype.value === 'judoka' || mtype.value === 'coach' ? 'Club' : 'Regional Federation'}
                   </Table.HeaderCell>
                   <Table.HeaderCell
                     className="text-center"
@@ -175,7 +175,7 @@ class DataTable extends Component {
               )
             }
             {
-              mtype.value !== 'player' && (
+              mtype.value !== 'judoka' && (
                 <Fragment>
                   <Table.HeaderCell
                     width="1"
@@ -205,7 +205,7 @@ class DataTable extends Component {
               )
             }
             {
-              stype.value === 'member' && mtype.value === 'player' && (
+              stype.value === 'member' && mtype.value === 'judoka' && (
                 <Fragment>
                   <Table.HeaderCell
                     className="text-center"
@@ -240,7 +240,7 @@ class DataTable extends Component {
                   <Table.Cell>
                     <span className="text-primary mr-2">
                       {
-                        stype.value !== 'player' ? (
+                        stype.value !== 'judoka' ? (
                           <Fragment>
                             <a data-tip data-for={`happyFace_${index}`}><i className="fa fa-users fa-lg" /></a>
                             <ReactTooltip
@@ -296,7 +296,7 @@ class DataTable extends Component {
                     )
                   }
                   {
-                    mtype.value !== 'player' && (
+                    mtype.value !== 'judoka' && (
                       <Fragment>
                         <Table.Cell className="text-center">{item.mobile_phone}</Table.Cell>
                         <Table.Cell className="text-center">{item.email}</Table.Cell>
@@ -311,7 +311,7 @@ class DataTable extends Component {
                     )
                   }
                   {
-                    stype.value === 'member' && mtype.value === 'player' && (
+                    stype.value === 'member' && mtype.value === 'judoka' && (
                       <Fragment>
                         <Table.Cell className="text-center">{item.weight} Kg</Table.Cell>
                         <Table.Cell className="text-center">{item.dan}</Table.Cell>

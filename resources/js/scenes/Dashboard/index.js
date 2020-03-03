@@ -270,20 +270,6 @@ class Dashboard extends Component {
   }
 
   async search(search_params) {
-    // const {
-    //   search_type, search_org, search_name, member_type, search_gender, search_weight, search_dan
-    // } = this.state;
-
-    // const search_params = {
-    //   stype: search_type ? search_type.value : '',
-    //   org: search_org ? search_org.id : '',
-    //   name: search_name,
-    //   mtype: member_type ? member_type.value : '',
-    //   gender: search_gender ? search_gender.value : search_genders[0],
-    //   weight: search_weight ? search_weight.id : '',
-    //   dan: search_dan ? search_dan.value : ''
-    // }
-
     if (search_params.stype == 'member' && !search_params.mtype) {
       return;
     } else {
@@ -671,7 +657,7 @@ class Dashboard extends Component {
                 )
               }
               {
-                search_type.value == 'member' && member_type.value == 'player' && (
+                search_type.value == 'member' && member_type.value == 'judoka' && (
                   <Fragment>
                     <Col xl="2" lg="2" md="3" sm="6" xs="12">
                       <FormGroup>

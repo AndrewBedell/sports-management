@@ -15,9 +15,7 @@ import {
 import Select from 'react-select';
 import MainTopBar from '../../components/TopBar/MainTopBar';
 import Api from '../../apis/app';
-import {
-  countries, Genders, Dans
-} from '../../configs/data';
+import { OrganizationType, countries, Genders, Dans } from '../../configs/data';
 
 class MemberAdd extends Component {
   constructor(props) {
@@ -275,7 +273,7 @@ class MemberAdd extends Component {
                 <Form onSubmit={handleSubmit}>
                   {status && <UncontrolledAlert {...status} />}
                   <Row>
-                    <Col sm="4">
+                    <Col sm="6" md="3">
                       <FormGroup>
                         <Label for="role_id">Role</Label>
                         <Select
@@ -296,7 +294,20 @@ class MemberAdd extends Component {
                         )}
                       </FormGroup>
                     </Col>
-                    <Col sm="8">
+                    <Col sm="6" md="3">
+                      <FormGroup>
+                          <Label for="organization_type">
+                            Organization Type
+                          </Label>
+                          <Select
+                            name="organization_type"
+                            
+                          >
+
+                          </Select>
+                      </FormGroup>
+                    </Col>
+                    <Col sm="6" md="3">
                       <FormGroup>
                         <Label for="organization_id">
                           Regional Federation
@@ -320,7 +331,10 @@ class MemberAdd extends Component {
                         )}
                       </FormGroup>
                     </Col>
-                    <Col xs="6">
+                    <Col sm="6" md="3">
+
+                    </Col>
+                    <Col xs="12" sm="6">
                       <FormGroup>
                         <Label for="profile_image">Profile Image</Label>
                         <Input
@@ -335,7 +349,7 @@ class MemberAdd extends Component {
                         </div>
                       </FormGroup>
                     </Col>
-                    <Col xs="6">
+                    <Col xs="12" sm="6">
                       <FormGroup>
                         <Label for="register_date">Register Date</Label>
                         <Input

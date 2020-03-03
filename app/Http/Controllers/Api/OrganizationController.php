@@ -611,7 +611,7 @@ class OrganizationController extends Controller
                                 ->leftJoin('organizations', 'organizations.id', '=', 'members.organization_id')
                                 ->leftJoin('roles', 'roles.id', '=', 'members.role_id');
                 
-                if ($mtype == 'player')
+                if ($mtype == 'judoka')
                     $result = $result->leftJoin('players', 'players.member_id', '=', 'members.id')
                                     ->leftJoin('weights', 'weights.id', '=', 'players.weight_id');
 
@@ -620,7 +620,7 @@ class OrganizationController extends Controller
                 if ($org != '')
                     $result = $result->where('organization_id', $org);
 
-                if ($mtype == 'player') {
+                if ($mtype == 'judoka') {
                     if ($gender == 0 || $gender == 1)
                         $result = $result->where('members.gender', $gender);
 
