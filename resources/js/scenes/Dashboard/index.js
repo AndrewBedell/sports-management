@@ -15,7 +15,7 @@ import {
   FormFeedback,
   Alert
 } from 'reactstrap';
-import { Input, Search } from 'semantic-ui-react';
+import { Input } from 'semantic-ui-react';
 
 import MainTopBar from '../../components/TopBar/MainTopBar';
 import Api from '../../apis/app';
