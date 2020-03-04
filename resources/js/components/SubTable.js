@@ -288,7 +288,7 @@ class SubTable extends Component {
                     ))
                   ) : (
                     <Table.Row>
-                      <Table.Cell colSpan="6" className="text-center">No Competitors</Table.Cell>
+                      <Table.Cell colSpan="6" className="text-center">No Members</Table.Cell>
                     </Table.Row>
                   )
                 }
