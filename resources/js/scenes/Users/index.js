@@ -30,7 +30,8 @@ class GetInviteUsers extends Component {
       filter_users: ''
     }
 
-    OrganizationType.splice(0, 0, {label: "All", value: ""});
+    if (OrganizationType.length == 3)
+      OrganizationType.splice(0, 0, {label: "All", value: ""});
   }
 
   async componentDidMount() {
