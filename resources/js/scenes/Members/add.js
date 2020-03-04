@@ -273,7 +273,7 @@ class MemberAdd extends Component {
                   gender: Yup.mixed().required('This field is required!'),
                   birthday: Yup.mixed().required('This field is required!'),
                   email: Yup.string().email('Email is not valid!').required('This field is required!'),
-                  mobile_phone: Yup.string().matches(/^(\+\d{1,3}[- ]?)?\d{10}$/, 'Mobile phone is incorrect!').required('This field is required!'),
+                  mobile_phone: Yup.string().matches(/^\d+$/, 'Mobile phone is incorrect!').required('This field is required!'),
                   addressline1: Yup.string().required('This field is required!'),
                   country: Yup.mixed().required('This field is required!'),
                   city: Yup.string().required('This field is required!'),
