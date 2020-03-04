@@ -244,7 +244,7 @@ class ChangeSuperTable extends Component {
                 Address
               </Table.HeaderCell>
               <Table.HeaderCell className="text-center">
-                Is Super ?
+                Status
               </Table.HeaderCell>
               <Table.HeaderCell className="text-center">
                 Action
@@ -297,7 +297,7 @@ class ChangeSuperTable extends Component {
                       )}
                     </Table.Cell>
                     <Table.Cell>
-                      <div className="text-center">
+                      {/* <div className="text-center">
                         <Button
                           title="Change"
                           type="button"
@@ -314,7 +314,7 @@ class ChangeSuperTable extends Component {
                         >
                           <i className="fa fa-trash-alt" />
                         </Button>
-                      </div>
+                      </div> */}
                     </Table.Cell>
                   </Table.Row>
                 ))

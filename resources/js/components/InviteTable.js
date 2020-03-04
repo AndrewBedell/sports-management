@@ -111,10 +111,11 @@ class InviteTable extends Component {
     });
   }
 
-  async handleSendInvite(is_super) {
+  async handleSendInvite(is_super, org = '') {
     const param = {
       email: this.state.invite_email,
-      is_super: is_super ? 1 : 0
+      is_super: is_super ? 1 : 0,
+      org: org
     }
 
     const {data, invite_item} = this.state;

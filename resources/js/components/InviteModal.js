@@ -6,7 +6,10 @@ import {
   Modal, ModalBody, ModalHeader,
 	Button
 } from 'reactstrap';
+import Select from 'react-select';
 import {Checkbox} from 'semantic-ui-react';
+
+import Api from '../apis/app';
 
 class InviteModal extends React.Component {
     constructor(props) {
@@ -14,10 +17,26 @@ class InviteModal extends React.Component {
     
         this.state = {
 					isOpen: true,
-					is_super: false
+          is_super: false,
+          org: '',
+          orgs: []
 				}
 				
 				this.handleCancel = this.handleCancel.bind(this);
+    }
+
+    async componentDidMount() {
+      const org_response = await Api.get('organizations-list');
+      const { response, body } = org_response;
+      switch (response.status) {
+        case 200:
+          this.setState({
+            orgs: body
+          });
+          break;
+        default:
+          break;
+      }
     }
 
 		handleCancel() {
@@ -33,7 +52,13 @@ class InviteModal extends React.Component {
 			this.setState({
 				is_super: !this.state.is_super
 			});
-		}
+    }
+    
+    handleSelectOrg(org) {
+      this.setState({
+        org: org
+      });
+    }
 
 		handleSendBtn() {
 			let {
@@ -42,12 +67,12 @@ class InviteModal extends React.Component {
       
       handleSend = handleSend || (() => {});
 
-      handleSend(this.state.is_super);
+      handleSend(this.state.is_super, this.state.org.id);
     }
 
 		render() {
 			const {
-				isOpen
+				isOpen, is_super, org, orgs
 			} = this.state;
 
 			return (
@@ -66,13 +91,12 @@ class InviteModal extends React.Component {
 									Your invitation will be sent to <span className="text-danger">{this.props.email}</span> now.
 								</h5>
 							</Col>
-							<Col sm="10" className="mt-3">
-								<h5>
-									Do you want to make this account with super permission?
+							<Col sm="9" className="mt-3">
+								<h5 className="text-right">
+									Do you want to make this account with admin permission?
 								</h5>
-								
 							</Col>
-							<Col sm="2" className="mt-3">
+							<Col sm="3" className="mt-3 pr-5">
 								<div className="ui fitted toggle checkbox">
 									<Checkbox 
 										name="is_super"
@@ -80,6 +104,24 @@ class InviteModal extends React.Component {
 										onChange={this.handleChangeSuper.bind(this)} />
 								</div>
 							</Col>
+              {
+                is_super && (
+                  <Col sm="12">
+                    <Select
+                      name="org"
+                      classNamePrefix="react-select-lg"
+                      placeholder="Regional Federation"
+                      value={org}
+                      options={orgs}
+                      getOptionValue={option => option.id}
+                      getOptionLabel={option => option.name_o}
+                      onChange={(org) => {
+                        this.handleSelectOrg(org);
+                      }}
+                    />
+                  </Col>
+                )
+              }
 							<Col sm="12"
 								className="offset-sm-5 mt-5"
 							>
