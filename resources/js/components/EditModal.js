@@ -120,7 +120,7 @@ class EditModal extends React.Component {
           mobile_phone: '',
           addressline1: '',
           addressline2: '',
-          country: null,
+          // country: null,
           state: '',
           city: '',
           zip_code: '',
@@ -142,7 +142,7 @@ class EditModal extends React.Component {
           mobile_phone: '',
           addressline1: '',
           addressline2: '',
-          country: null,
+          // country: null,
           state: '',
           city: '',
           zip_code: '',
@@ -167,7 +167,7 @@ class EditModal extends React.Component {
         mobile_phone: values.mobile_phone,
         addressline1: values.addressline1,
         addressline2: values.addressline2,
-        country: countries.filter(country => country.countryCode === values.country)[0],
+        // country: countries.filter(country => country.countryCode === values.country)[0],
         state: values.state,
         city: values.city,
         zip_code: values.zip_code,
@@ -188,7 +188,7 @@ class EditModal extends React.Component {
         mobile_phone: values.mobile_phone,
         addressline1: values.addressline1,
         addressline2: values.addressline2,
-        country: countries.filter(country => country.countryCode === values.country)[0],
+        // country: countries.filter(country => country.countryCode === values.country)[0],
         state: values.state,
         city: values.city,
         zip_code: values.zip_code,
@@ -267,7 +267,7 @@ class EditModal extends React.Component {
         mobile_phone: values.mobile_phone,
         addressline1: values.addressline1,
         addressline2: values.addressline2,
-        country: values.country.countryCode,
+        // country: values.country.countryCode,
         state: values.state,
         city: values.city,
         zip_code: values.zip_code,
@@ -286,7 +286,7 @@ class EditModal extends React.Component {
         mobile_phone: values.mobile_phone,
         addressline1: values.addressline1,
         addressline2: values.addressline2,
-        country: values.country.countryCode,
+        // country: values.country.countryCode,
         state: values.state,
         city: values.city,
         zip_code: values.zip_code,
@@ -374,7 +374,7 @@ class EditModal extends React.Component {
                   mobile_phone: '',
                   addressline1: '',
                   addressline2: '',
-                  country: null,
+                  // country: null,
                   state: '',
                   city: '',
                   zip_code: '',
@@ -629,7 +629,7 @@ class EditModal extends React.Component {
                           />
                         </FormGroup>
                       </Col>
-                      <Col sm="3" xs="6">
+                      {/* <Col sm="3" xs="6">
                         <FormGroup>
                           <Label for="country">Country</Label>
                           <Select
@@ -649,7 +649,7 @@ class EditModal extends React.Component {
                             <FormFeedback className="d-block">{errors.country}</FormFeedback>
                           )}
                         </FormGroup>
-                      </Col>
+                      </Col> */}
                       <Col sm="3" xs="6">
                         <FormGroup>
                           <Label for="state">State</Label>
@@ -812,7 +812,7 @@ class EditModal extends React.Component {
                   mobile_phone: '',
                   addressline1: '',
                   addressline2: '',
-                  country: null,
+                  // country: null,
                   state: '',
                   city: '',
                   zip_code: '',
@@ -1021,7 +1021,7 @@ class EditModal extends React.Component {
                           />
                         </FormGroup>
                       </Col>
-                      <Col sm="3" xs="6">
+                      {/* <Col sm="3" xs="6">
                         <FormGroup>
                           <Label for="country">Country</Label>
                           <Select
@@ -1041,7 +1041,7 @@ class EditModal extends React.Component {
                             <FormFeedback className="d-block">{errors.country}</FormFeedback>
                           )}
                         </FormGroup>
-                      </Col>
+                      </Col> */}
                       <Col sm="3" xs="6">
                         <FormGroup>
                           <Label for="state">State</Label>
