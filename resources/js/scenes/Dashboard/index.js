@@ -365,15 +365,17 @@ class Dashboard extends Component {
     } = this.state;
     if (search_type.value !== 'member') {
       const updateOrg = await Api.put(`organization/${id}`, item);
+
       switch (updateOrg.response.status) {
         case 200:
           search_data[editIndex] = item;
+
           this.setState({
             isOpenEditModal: false,
             messageStatus: true,
             alertVisible: true,
             successMessage: `${item.name_o} is been update successfully!`,
-            search_data
+            search_data: search_data.filter((data) => data.is_club != item.is_club)
           });
           break;
         case 406:

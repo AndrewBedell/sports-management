@@ -312,6 +312,9 @@ class OrganizationController extends Controller
 
                 if (is_null($data['addressline2']))
                     $data['addressline2'] = "";
+
+                if ($data['is_club'] == 0)
+                    $data['parent_id'] = 1;
                     
                 Organization::where('id', $id)->update($data);
 
