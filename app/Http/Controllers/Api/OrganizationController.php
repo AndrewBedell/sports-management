@@ -344,7 +344,7 @@ class OrganizationController extends Controller
         if ($this->checkPermission($id)) {
             $user = JWTAuth::parseToken()->authenticate();
 
-            if (isset($user) && $user->is_super) {
+            if (isset($user)) {
                 $child_org = Organization::where('parent_id', $id)->get();
 
                 if (sizeof($child_org) == 0) {

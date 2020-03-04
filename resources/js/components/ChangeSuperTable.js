@@ -117,24 +117,21 @@ class ChangeSuperTable extends Component {
     });
   }
 
-  async changeSuper(id, email, is_super) {
-    is_super = !is_super;
+  async changeSuper(id, email) {
+    // const param = {
+    //   email
+    // }
 
-    const param = {
-      email,
-      is_super: is_super ? 1 : 0
-    }
+    // const {data} = this.state;
 
-    const {data} = this.state;
+    // const changed = await Api.get(`change-super`, param);
+    // const { response, body } = changed;
 
-    const changed = await Api.get(`change-super`, param);
-    const { response, body } = changed;
+    // if (response.status == 200) {
+    //   data.filter(item => item.user_id === id)[0] = (body.data == "1");
 
-    if (response.status == 200) {
-      data.filter(item => item.user_id === id)[0].is_super = (body.data == "1");
-
-      this.setState({data});
-    }
+    //   this.setState({data});
+    // }
   }
 
   async handleDeleteUser(id) {
@@ -290,11 +287,7 @@ class ChangeSuperTable extends Component {
                       {item.zip_code}
                     </Table.Cell>
                     <Table.Cell className="text-center">
-                      {item.is_super ? (
-                        <span>Yes</span>
-                      ) : (
-                        <span>No</span>
-                      )}
+                      
                     </Table.Cell>
                     <Table.Cell>
                       {/* <div className="text-center">
@@ -302,7 +295,7 @@ class ChangeSuperTable extends Component {
                           title="Change"
                           type="button"
                           color="purple"
-                          onClick={() => this.changeSuper(item.user_id, item.email, item.is_super)}
+                          onClick={() => this.changeSuper(item.user_id, item.email)}
                         >
                           <i className="fa fa-exchange-alt" />
                         </Button>

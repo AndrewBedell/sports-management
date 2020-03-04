@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Invitation extends Model
 {
     protected $fillable = [
-        'email', 'token', 'is_super'
+        'email', 'token'
     ];
 
     protected $primaryKey = 'email';

@@ -69,7 +69,6 @@ class UserController extends Controller
                     'token' => $token,
                     'user' => [
                         'member_info' => $member,
-                        'is_super' => $user->is_super,
                         'is_club_member' => $org->is_club
                     ]
                 ]
@@ -105,7 +104,6 @@ class UserController extends Controller
 
             User::create(array(
                 'member_id' => $member->id,
-                'is_super' => $exist->is_super,
                 'password' => Hash::make($data['pass']),
                 'email' => $data['email']
             ));
@@ -211,16 +209,11 @@ class UserController extends Controller
                         ->leftJoin('organizations', 'organizations.id', 'members.organization_id')
                         ->leftJoin('users', 'users.member_id', '=', 'members.id')
                         ->leftJoin('invitations', 'members.email', '=', 'invitations.email')
-                        ->select('members.*', 'organizations.parent_id', 'organizations.is_club',
-                                'users.is_super', 'invitations.created_at AS invited')
+                        ->select('members.*', 'organizations.parent_id', 'organizations.is_club', 'invitations.created_at AS invited')
                         ->orderBy('members.name')
                         ->get();
                         
         for ($i = 0; $i < sizeof($members); $i++) {
-            if (is_null($members[$i]->is_super)) {
-                $members[$i]['is_super'] = 0;
-            }
-
             if (is_null($members[$i]->invited))
                 $members[$i]->invited = 0;
             else
@@ -231,7 +224,7 @@ class UserController extends Controller
                         ->where('members.id', '!=', $user->member_id)
                         ->where('members.active', 1)
                         ->leftJoin('users', 'users.member_id', '=', 'members.id')
-                        ->select('members.*', 'users.id AS user_id', 'users.is_super')
+                        ->select('members.*', 'users.id AS user_id')
                         ->orderBy('members.name')
                         ->get();
 
@@ -263,14 +256,12 @@ class UserController extends Controller
             Invitation::create(array(
                 'email' => $data['email'],
                 'token' => $token,
-                'is_super' => $data['is_super'],
                 'created_at' => date('Y-m-d H:i:s')
             ));
         } else {
             Invitation::where('email', $data['email'])->update(array(
                 'email' => $data['email'],
                 'token' => $token,
-                'is_super' => $data['is_super'],
                 'created_at' => date('Y-m-d H:i:s')
             ));
         }        
@@ -316,7 +307,6 @@ class UserController extends Controller
                 Invitation::where('token', $token)->update(array(
                     'email' => $exist[0]->email,
                     'token' => $token,
-                    'is_super' => $exist[0]->is_super,
                     'vcode' => $code,
                     'codesent_at' => date('Y-m-d H:i:s')
                 ));
@@ -341,13 +331,8 @@ class UserController extends Controller
     {
         $data = $request->all();
 
-        User::where('email', $data['email'])->update(array(
-            'is_super' => $data['is_super']
-        ));
-
         return response()->json([
-            'status' => 'success',
-            'data' => $data['is_super']
+            'status' => 'success'
         ], 200);
     }
 }
