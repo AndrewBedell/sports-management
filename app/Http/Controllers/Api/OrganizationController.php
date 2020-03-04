@@ -618,8 +618,15 @@ class OrganizationController extends Controller
 
                 $result = $result->where('roles.description', $mtype);
 
-                if ($org != '')
-                    $result = $result->where('organization_id', $org);
+                if ($org != '') {
+                    $clubs = Organization::where('parent_id', $org)->select('id')->get();
+
+                    if ($mtype == 'staff' || $mtype == 'referee')
+                        $result = $result->where('members.organization_id', $org);
+                    
+                    if ($mtype == 'coach' || $mtype == 'judoka')
+                        $result = $result->whereIn('members.organization_id', $clubs);
+                }
 
                 if ($mtype == 'judoka') {
                     if ($gender == 0 || $gender == 1)
@@ -631,7 +638,8 @@ class OrganizationController extends Controller
                     if ($dan != '')
                         $result = $result->where('players.dan', $dan);
 
-                    $result = $result->select('members.*', 'organizations.name_o', 'weights.weight', 'players.dan', 'players.skill', 'players.expired_date')
+                    $result = $result->select('members.*', 'organizations.name_o', 'weights.weight', 
+                                            'players.dan', 'players.skill', 'players.expired_date')
                                 ->get();
                 } else {
                     $result = $result->select('members.*', 'organizations.name_o', 'roles.name AS role_name')->get();
