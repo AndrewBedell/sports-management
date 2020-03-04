@@ -831,7 +831,7 @@ class EditModal extends React.Component {
                     // country: Yup.mixed().required('This field is required!'),
                     // city: Yup.string().required('This field is required!'),
                     // state: Yup.string().required('This field is required!'),
-                    // zip_code: Yup.string().max(6, 'Less than 5 characters!').required('This field is required!')
+                    // zip_code: Yup.string().required('This field is required!')
                   })
                 }
                 onSubmit={this.handleSubmit.bind(this)}
