@@ -10,13 +10,14 @@
   }
 
   .nav-logo {
-    width: 70px;
-    height: 70px;
-    background-color: $success;
+    width: 60px;
+    height: 60px;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-right: 20px;
+    margin: 5px;
+    border: 1px solid white;
+    border-radius: 50%;
 
     img {
       width: 50px;
@@ -116,6 +117,8 @@
         .nav-item {
           .nav-link {
             color: $white;
+            font-size: $font-size-lg;
+            font-weight: $font-weight-bolder;
 
             i {
               color: $secondary;
@@ -162,8 +165,6 @@
             margin-left: 2.5px;
 
             .nav-link {
-              font-size: $font-size-base;
-              font-weight: $font-weight-bolder;
               padding: 8px 20px;
             }
           }

@@ -58053,13 +58053,14 @@ body {
 }
 
 .top-header .nav-logo {
-  width: 70px;
-  height: 70px;
-  background-color: #00D994;
+  width: 60px;
+  height: 60px;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-right: 20px;
+  margin: 5px;
+  border: 1px solid white;
+  border-radius: 50%;
 }
 
 .top-header .nav-logo img {
@@ -58179,6 +58180,8 @@ body {
 
 .top-header .navbar-collapse .nav .left-nav-bar .nav-item .nav-link {
   color: #FFFFFF;
+  font-size: 18px;
+  font-weight: bolder;
 }
 
 .top-header .navbar-collapse .nav .left-nav-bar .nav-item .nav-link i {
@@ -58225,8 +58228,6 @@ body {
   }
 
   .top-header .navbar-collapse .nav .left-nav-bar .nav-item .nav-link {
-    font-size: 16px;
-    font-weight: bolder;
     padding: 8px 20px;
   }
 }
