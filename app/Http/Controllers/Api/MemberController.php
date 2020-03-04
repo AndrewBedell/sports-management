@@ -226,7 +226,7 @@ class MemberController extends Controller
 
         if (isset($member)) {
             if ($this->checkPermission($member->organization_id)) {
-                $role = DB::table('roles')->where('id', $member->role_id)->first();
+                $role = DB::table('roles')->find($member->role_id);
 
                 if ($role->is_player) {
                     $member = Member::where('members.id', $id)
@@ -250,6 +250,11 @@ class MemberController extends Controller
                         $member['is_admin'] = 0;
                     }
                 }
+
+                $org = Organization::find($member->organization_id);
+                $region = Organization::find($org->parent_id);
+
+                $member['region'] = $region->name_o;
 
                 return response()->json($member);
             } else {

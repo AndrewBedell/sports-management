@@ -75,7 +75,11 @@ class MemberDetail extends Component {
                       <Fragment>
                         <Row>
                           <Col sm="12">
-                            <h5 className="pt-3 py-2"><b>Club Name</b>:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{member.name_o}</h5>
+                            <h5 className="pt-3 py-2">
+                              <b>Culb Name</b>:
+                              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{member.name_o}
+                              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;( Region:&nbsp;&nbsp;{member.region} )
+                            </h5>
                           </Col>
                           <Col md="6" lg="8">
                             <h5 className="py-2">
@@ -91,18 +95,44 @@ class MemberDetail extends Component {
                     ) : (
                       <Fragment>
                         <Row>
-                          <Col sm="12">
-                            <h5 className="pt-3 pb-2"><b>Name</b>:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{member.name} {member.patronymic} {member.surname}</h5>
-                          </Col>
-                          <Col sm="12">
-                            <h5 className="py-2">
-                              <b>{member.role_name == "Coach" ? "Club Name" : "Regional Federation Name"}</b>:
-                              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{member.name_o}
+                          <Col sm="6">
+                            <h5 className="pt-3 pb-2">
+                              <b>Name</b>:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                              {member.name} {member.patronymic != '-' && member.patronymic} {member.surname}
                             </h5>
                           </Col>
-                          <Col sm="4"><h5 className="py-2"><b>Register Date</b>:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{member.register_date}</h5></Col>
-                          <Col sm="4"><h5 className="py-2"><b>Role</b>:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{member.role_name}</h5></Col>
+                          <Col sm="6">
+                            <h5 className="py-2">
+                              <b>Register Date</b>:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{member.register_date}
+                            </h5>
+                          </Col>
+                          <Col sm={member.role_id == 1 || member.role_id == 4 ? "6" : "12"}>
+                              {member.role_id == 2 ? (
+                                <h5 className="py-2">
+                                  <b>Culb Name</b>:
+                                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{member.name_o}
+                                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;( Region:&nbsp;&nbsp;{member.region} )
+                                </h5>
+                              ) : (
+                                <h5 className="py-2">
+                                  <b>Regional Federation Name</b>:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{member.name_o}</h5>
+                              )}
+                          </Col>
+                          {
+                            (member.role_id == 1 || member.role_id == 4) && (
+                              <Col sm="6">
+                                <h5 className="py-2">
+                                  <b>{member.role_id == 1? "Position" : "Referee Type"}</b>:
+                                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{member.position == '' ? '---' : member.position}
+                                </h5>
+                              </Col>
+                            )
+                          }
                           <Col sm="4"><h5 className="py-2"><b>Birthday</b>:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{member.birthday}</h5></Col>
+                          <Col sm="4"><h5 className="py-2">
+                            <b>Gender</b>:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{member.gender ? "Male": "Female"}</h5>
+                          </Col>
+                          <Col sm="4"><h5 className="py-2"><b>Role</b>:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{member.role_name}</h5></Col>
                         </Row>
                       </Fragment>
                     )
