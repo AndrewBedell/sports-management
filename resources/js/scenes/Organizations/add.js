@@ -80,7 +80,7 @@ class OrganizationAdd extends Component {
     let newData = {};
     const { imagePreviewUrl } = this.state;
     newData = {
-      parent_id: parseInt(values.parent_id, 10) || 1,
+      parent_id: values.is_club.value == 1 ? values.parent_id.id : 1,
       name_o: values.name_o,
       name_s: values.name_s,
       register_no: values.register_no,
@@ -89,14 +89,14 @@ class OrganizationAdd extends Component {
       mobile_phone: values.mobile_phone,
       addressline1: values.addressline1,
       addressline2: values.addressline2,
-      country: values.country.countryCode,
+      // country: values.country.countryCode,
       state: values.state,
       city: values.city,
       zip_code: values.zip_code,
       level: this.getLevel(values.parent_id),
       is_club: values.is_club ? values.is_club.value : 0
     };
-console.log(newData);
+
     const data = await Api.post('register-organization', newData);
     const { response, body } = data;
     switch (response.status) {
@@ -168,7 +168,7 @@ console.log(newData);
                 mobile_phone: '',
                 addressline1: '',
                 addressline2: '',
-                country: null,
+                // country: null,
                 state: '',
                 city: '',
                 zip_code: '',
@@ -184,7 +184,7 @@ console.log(newData);
                   // logo: Yup.mixed().required('Logo is required!'),
                   mobile_phone: Yup.string().matches(/^(\+\d{1,3}[- ]?)?\d{10}$/, 'Mobile phone is incorrect!').required('This field is required!'),
                   addressline1: Yup.string().required('This field is required!'),
-                  country: Yup.mixed().required('This field is required!'),
+                  // country: Yup.mixed().required('This field is required!'),
                   city: Yup.string().required('This field is required!'),
                   state: Yup.string().required('This field is required!'),
                   zip_code: Yup.string().required('This field is required!')
@@ -377,7 +377,7 @@ console.log(newData);
                         />
                       </FormGroup>
                     </Col>
-                    <Col sm="3" xs="6">
+                    {/* <Col sm="3" xs="6">
                       <FormGroup>
                         <Label for="country">Country</Label>
                         <Select
@@ -397,7 +397,7 @@ console.log(newData);
                           <FormFeedback className="d-block">{errors.country}</FormFeedback>
                         )}
                       </FormGroup>
-                    </Col>
+                    </Col> */}
                     <Col sm="3" xs="6">
                       <FormGroup>
                         <Label for="state">State</Label>
