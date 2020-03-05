@@ -21,6 +21,8 @@ class MemberAdd extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      user_org: '',
+      user_is_club: false,
       // file: '',
       imagePreviewUrl: '',
       fileKey: 1,
@@ -39,6 +41,15 @@ class MemberAdd extends Component {
   }
 
   componentDidMount() {
+    const user = JSON.parse(localStorage.getItem('auth'));
+    const user_info = user.user.member_info;
+    const user_is_club = user.user.is_club_member == 1 && true;
+    
+    this.setState({
+      user_org: user_info.organization_id,
+      user_is_club: user_is_club
+    });
+
     this.componentWillReceiveProps();
   }
 
@@ -211,6 +222,8 @@ class MemberAdd extends Component {
 
   render() {
     const {
+      user_org,
+      user_is_club,
       imagePreviewUrl,
       org_list,
       club_list,
@@ -341,7 +354,17 @@ class MemberAdd extends Component {
                                 !values.organization_type && touched.organization_type ? 
                                 'invalid react-select-lg' : 'react-select-lg'}
                               indicatorSeparator={null}
-                              options={OrganizationType}
+                              options={
+                                user_org != 1 ? (
+                                  user_is_club ? (
+                                    OrganizationType.filter(item => item.value == 'club')
+                                  ) : (
+                                    OrganizationType.filter(item => item.value != 'nf')
+                                  )
+                                ) : (
+                                  OrganizationType
+                                )
+                              }
                               getOptionValue={option => option.value}
                               getOptionLabel={option => option.label}
                               value={values.organization_type}

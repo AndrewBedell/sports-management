@@ -22,6 +22,7 @@ class OrganizationAdd extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      user_org: '',
       org_list: [],
       // file: '',
       imagePreviewUrl: '',
@@ -37,6 +38,13 @@ class OrganizationAdd extends Component {
   }
 
   async componentDidMount() {
+    const user = JSON.parse(localStorage.getItem('auth'));
+    const user_info = user.user.member_info;
+    
+    this.setState({
+      user_org: user_info.organization_id
+    });
+
     const org_response = await Api.get('organizations-list');
     const { response, body } = org_response;
     switch (response.status) {
@@ -135,7 +143,11 @@ class OrganizationAdd extends Component {
   }
 
   render() {
-    const { imagePreviewUrl, org_list } = this.state;
+    const {
+      user_org,
+      imagePreviewUrl,
+      org_list
+    } = this.state;
 
     let $imagePreview = null;
     if (imagePreviewUrl) {
@@ -228,7 +240,7 @@ class OrganizationAdd extends Component {
                           name="is_club"
                           classNamePrefix="react-select-lg"
                           indicatorSeparator={null}
-                          options={SetSwitch}
+                          options={user_org == 1 ? (SetSwitch) : (SetSwitch.filter(item => item.value == 1))}
                           getOptionValue={option => option.value}
                           getOptionLabel={option => option.label}
                           value={values.is_club}
