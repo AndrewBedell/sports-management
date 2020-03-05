@@ -187,7 +187,8 @@ class OrganizationDetail extends Component {
                     <Col md="6" lg="9">
                       <h5 className="py-2">
                         <b>{ org.is_club ? "Club Name" : "Regional Federation Name" }</b>:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                        {org.name_o} ({org.name_s})
+                        {org.name_o} ({org.name_s})&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        {org.is_club && (" (Regional Federation: " + org.parent + ") ")}
                       </h5>
                       <h5 className="py-2"><b>Register No</b>:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{org.register_no}</h5>
                       <Row>

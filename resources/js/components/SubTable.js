@@ -116,7 +116,7 @@ class SubTable extends Component {
       pageOptions,
       current_perPage
     } = this.state;
-    
+    console.log(data)
     return (
       <Table sortable celled selectable unstackable className="mt-5">
         {
@@ -207,6 +207,13 @@ class SubTable extends Component {
                   </Table.HeaderCell>
                   <Table.HeaderCell
                     className="text-center"
+                    sorted={column === 'role' ? direction : null}
+                    onClick={this.handleSort.bind(this, 'role')}
+                  >
+                    Role
+                  </Table.HeaderCell>
+                  <Table.HeaderCell
+                    className="text-center"
                     sorted={column === 'gender' ? direction : null}
                     onClick={this.handleSort.bind(this, 'gender')}
                   >
@@ -244,7 +251,7 @@ class SubTable extends Component {
                     data.map((item, index) => (
                       <Table.Row 
                         key={index}
-                        disabled={item.active == 0}
+                        disabled={item.role_id == 3 && item.active == 0}
                       >
                         <Table.Cell>
                           <span className="text-primary mr-2">
@@ -253,12 +260,20 @@ class SubTable extends Component {
                             </a>
                           </span>
                         </Table.Cell>
+                        <Table.Cell className="text-center">{item.role_name}</Table.Cell>
                         <Table.Cell className="text-center">{item.gender ? Genders[0].name : Genders[1].name}</Table.Cell>
                         <Table.Cell className="text-center">{item.birthday}</Table.Cell>
-                        <Table.Cell className="text-center">{item.weight} Kg</Table.Cell>
+                        <Table.Cell className="text-center">{item.role_id == 3 && item.weight + " Kg"}</Table.Cell>
                         <Table.Cell className="text-center">{item.dan}</Table.Cell>
+                        {item.role_id != 3 && (
+                          <Table.Cell className="text-center">
+                            <div className="text-success text-center">
+                              <i className="fa fa-user fa-lg" />
+                            </div>
+                          </Table.Cell>
+                        )}
                         {
-                          item.active == 0 && (
+                          item.role_id == 3 && item.active == 0 && (
                             <Table.Cell className="text-center">
                               <div className="text-danger text-center">
                                 <i className="fa fa-user fa-lg" />
@@ -267,7 +282,7 @@ class SubTable extends Component {
                           )
                         }
                         {
-                          item.active == 1 && (
+                          item.role_id == 3 && item.active == 1 && (
                             <Table.Cell className="text-center">
                               <div className="text-success text-center">
                                 <i className="fa fa-user fa-lg" />
@@ -276,7 +291,7 @@ class SubTable extends Component {
                           )
                         }
                         {
-                          item.active == 2 && (
+                          item.role_id == 3 && item.active == 2 && (
                             <Table.Cell className="text-center">
                               <div className="text-warning text-center">
                                 <i className="fa fa-user fa-lg" />
@@ -314,7 +329,7 @@ class SubTable extends Component {
                 }}
               />
             </Table.HeaderCell>
-            <Table.HeaderCell colSpan={type === 'org' ? 4 : 5}>
+            <Table.HeaderCell colSpan={type === 'org' ? 4 : 6}>
               <Menu floated="right" pagination>
                 <Pagination
                   activePage={activePage}
