@@ -48,7 +48,7 @@ class MemberDetail extends Component {
   }
 
   render() {
-    const { user, member } = this.state;
+    const { member } = this.state;
     
     return (
       <Fragment>

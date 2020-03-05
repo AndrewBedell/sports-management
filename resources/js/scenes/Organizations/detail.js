@@ -170,7 +170,7 @@ class OrganizationDetail extends Component {
   }
 
   render() {
-    const { user, org, filter, type, data, memtype, search_gender, search_weight, search_dan } = this.state;
+    const { org, filter, type, data, memtype, search_gender, search_weight, search_dan } = this.state;
     
     return (
       <Fragment>
