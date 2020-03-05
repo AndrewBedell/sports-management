@@ -185,17 +185,16 @@ class MemberAdd extends Component {
     const { response, body } = data;
     switch (response.status) {
       case 200:
-        console.log(body);
-        // this.setState({
-        //   alertVisible: true,
-        //   messageStatus: true,
-        //   successMessage: 'Added Successfully!'
-        // });
+        this.setState({
+          alertVisible: true,
+          messageStatus: true,
+          successMessage: 'Added Successfully!'
+        });
 
-        // setTimeout(() => {
-        //   this.setState({ alertVisible: false });
-        //   this.props.history.goBack();
-        // }, 2000);
+        setTimeout(() => {
+          this.setState({ alertVisible: false });
+          this.props.history.goBack();
+        }, 2000);
         break;
       case 406:
         if (body.message) {
