@@ -116,7 +116,7 @@ class SubTable extends Component {
       pageOptions,
       current_perPage
     } = this.state;
-    console.log(data)
+    
     return (
       <Table sortable celled selectable unstackable className="mt-5">
         {
