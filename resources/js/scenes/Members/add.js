@@ -15,7 +15,7 @@ import {
 import Select from 'react-select';
 import MainTopBar from '../../components/TopBar/MainTopBar';
 import Api from '../../apis/app';
-import { OrganizationType, countries, Genders, Dans } from '../../configs/data';
+import { OrganizationType, RefereeType, Genders, Dans } from '../../configs/data';
 
 class MemberAdd extends Component {
   constructor(props) {
@@ -27,6 +27,7 @@ class MemberAdd extends Component {
       org_list: [],
       club_list: [],
       weights: [],
+      init_weights: [],
       roles: [],
       alertVisible: false,
       messageStatus: false,
@@ -69,7 +70,8 @@ class MemberAdd extends Component {
     switch (weight_list.response.status) {
       case 200:
         this.setState({
-          weights: weight_list.body
+          weights: weight_list.body,
+          init_weights: weight_list.body
         });
         break;
       default:
@@ -118,6 +120,7 @@ class MemberAdd extends Component {
   async handleSubmit(values, bags) {
     let newData = {};
     const { imagePreviewUrl } = this.state;
+    
     newData = {
       name: values.name,
       patronymic: values.patronymic,
@@ -128,7 +131,7 @@ class MemberAdd extends Component {
       mobile_phone: values.mobile_phone,
       addressline1: values.addressline1,
       addressline2: values.addressline2,
-      country: values.country.countryCode,
+      // country: values.country.countryCode,
       state: values.state,
       city: values.city,
       zip_code: values.zip_code,
@@ -139,7 +142,7 @@ class MemberAdd extends Component {
       organization_id: values.club_id ? values.club_id.id : (values.organization_id ? values.organization_id.id : 1),
       role_id: values.role_id.id,
       profile_image: imagePreviewUrl || '',
-      position: values.position || '',
+      position: values.position ? (values.position.value || values.position) : '',
       skill: values.skill ? values.skill : '',
       active: values.is_club || 0,
       register_date: moment(values.register_date).format('YYYY-MM-DD')
@@ -171,16 +174,17 @@ class MemberAdd extends Component {
     const { response, body } = data;
     switch (response.status) {
       case 200:
-        this.setState({
-          alertVisible: true,
-          messageStatus: true,
-          successMessage: 'Added Successfully!'
-        });
+        console.log(body);
+        // this.setState({
+        //   alertVisible: true,
+        //   messageStatus: true,
+        //   successMessage: 'Added Successfully!'
+        // });
 
-        setTimeout(() => {
-          this.setState({ alertVisible: false });
-          this.props.history.goBack();
-        }, 2000);
+        // setTimeout(() => {
+        //   this.setState({ alertVisible: false });
+        //   this.props.history.goBack();
+        // }, 2000);
         break;
       case 406:
         if (body.message) {
@@ -211,7 +215,8 @@ class MemberAdd extends Component {
       org_list,
       club_list,
       roles,
-      weights
+      weights,
+      init_weights
     } = this.state;
 
     let $imagePreview = null;
@@ -252,7 +257,7 @@ class MemberAdd extends Component {
                 mobile_phone: '',
                 addressline1: '',
                 addressline2: '',
-                country: null,
+                // country: null,
                 state: '',
                 city: '',
                 zip_code: '',
@@ -275,7 +280,7 @@ class MemberAdd extends Component {
                   email: Yup.string().email('Email is not valid!').required('This field is required!'),
                   mobile_phone: Yup.string().matches(/^([+])|\d+$/, 'Mobile phone is incorrect!').required('This field is required!'),
                   addressline1: Yup.string().required('This field is required!'),
-                  country: Yup.mixed().required('This field is required!'),
+                  // country: Yup.mixed().required('This field is required!'),
                   city: Yup.string().required('This field is required!'),
                   state: Yup.string().required('This field is required!'),
                   zip_code: Yup.string().max(6, 'Less than 6 characters!').required('This field is required!'),
@@ -517,6 +522,9 @@ class MemberAdd extends Component {
                           value={values.gender}
                           onChange={(value) => {
                             setFieldValue('gender', value);
+                            this.setState({
+                              weights: init_weights.filter(obj => obj.gender == value.id)
+                            })
                           }}
                           onBlur={this.handleBlur}
                         />
@@ -608,7 +616,7 @@ class MemberAdd extends Component {
                         />
                       </FormGroup>
                     </Col>
-                    <Col sm="3" xs="6">
+                    {/* <Col sm="3" xs="6">
                       <FormGroup>
                         <Label for="country">Country</Label>
                         <Select
@@ -628,7 +636,7 @@ class MemberAdd extends Component {
                           <FormFeedback className="d-block">{errors.country}</FormFeedback>
                         )}
                       </FormGroup>
-                    </Col>
+                    </Col> */}
                     <Col sm="3" xs="6">
                       <FormGroup>
                         <Label for="state">State</Label>
@@ -676,15 +684,36 @@ class MemberAdd extends Component {
                         <Col xs="6">
                           <FormGroup>
                             <Label for="position">Position</Label>
-                            <Input
-                              name="position"
-                              type="text"
-                              value={values.position || ''}
-                              onChange={handleChange}
-                              onBlur={handleBlur}
-                              invalid={values.role_id && values.role_id.is_player !== 1 && !values.position && touched.position}
-                              />
-                            {values.role_id && values.role_id.is_player !== 1 && !values.position && touched.position && (<FormFeedback className="d-block">This field is required!</FormFeedback>)}
+                            {
+                              values.role_id.id == 4 ? (
+                                <Select
+                                  name="position"
+                                  classNamePrefix={
+                                    values.role_id && values.role_id.is_player !== 1 && !values.position && touched.position ? 
+                                    'invalid react-select-lg' : 'react-select-lg'}
+                                  indicatorSeparator={null}
+                                  options={RefereeType}
+                                  getOptionValue={option => option.value}
+                                  getOptionLabel={option => option.label}
+                                  value={values.position}
+                                  onChange={(value) => {
+                                    setFieldValue('position', value);
+                                  }}
+                                  onBlur={this.handleBlur}
+                                />
+                              ) : (
+                                <Input
+                                  name="position"
+                                  type="text"
+                                  value={values.position != '[object Object]' && values.position != '' ? values.position : ''}
+                                  onChange={handleChange}
+                                  onBlur={handleBlur}
+                                  invalid={values.role_id && values.role_id.is_player !== 1 && !values.position && touched.position}
+                                />
+                              )
+                            }
+                            {values.role_id && values.role_id.is_player !== 1 && !values.position && touched.position && (
+                            <FormFeedback className="d-block">This field is required!</FormFeedback>)}
                           </FormGroup>
                         </Col>
                       )
@@ -701,7 +730,7 @@ class MemberAdd extends Component {
                               value={values.weight_id}
                               options={weights}
                               getOptionValue={option => option.id}
-                              getOptionLabel={option => option.name}
+                              getOptionLabel={option => option.weight + " Kg"}
                               onChange={(value) => {
                                 setFieldValue('weight_id', value);
                               }}

@@ -246,6 +246,12 @@ export const countries = [
   { name: 'Zimbabwe', countryCode: 'zw' }
 ];
 
+export const RefereeType = [
+  {label: "NF. Referee", value: "nf"},
+  {label: "Conti. Referee", value: "ref"},
+  {label: "Int. Referee", value: "club"},
+];
+
 export const Genders = [
   { id: 1, name: 'Male' },
   { id: 0, name: 'Female' }

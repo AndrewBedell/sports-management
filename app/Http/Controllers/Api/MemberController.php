@@ -48,134 +48,134 @@ class MemberController extends Controller
     public function store(Request $request)
     {
         $data = $request->all();
+return response()->json($data);
+        // $validMember = Validator::make($data, [
+        //     'organization_id' => 'required',
+        //     'role_id' => 'required',
+        //     'name' => 'required|string|max:255',
+        //     'surname' => 'required|string|max:255',
+        //     'gender' => 'required|boolean',
+        //     'birthday' => 'required|date',
+        //     'email' => 'required|string|email|max:255|unique:members',
+        //     'mobile_phone' => 'required|string|max:255',
+        //     'addressline1' => 'required|string|max:255',
+        //     // 'country' => 'required|string|max:255',
+        //     'state' => 'required|string|max:255',
+        //     'city' => 'required|string|max:255',
+        //     'zip_code' => 'required|string|max:255',
+        //     'identity' => 'required|string|max:255|unique:members',
+        //     'active' => 'required|boolean',
+        //     'register_date' => 'required|date'
+        // ]);
 
-        $validMember = Validator::make($data, [
-            'organization_id' => 'required',
-            'role_id' => 'required',
-            'name' => 'required|string|max:255',
-            'surname' => 'required|string|max:255',
-            'gender' => 'required|boolean',
-            'birthday' => 'required|date',
-            'email' => 'required|string|email|max:255|unique:members',
-            'mobile_phone' => 'required|string|max:255',
-            'addressline1' => 'required|string|max:255',
-            // 'country' => 'required|string|max:255',
-            'state' => 'required|string|max:255',
-            'city' => 'required|string|max:255',
-            'zip_code' => 'required|string|max:255',
-            'identity' => 'required|string|max:255|unique:members',
-            'active' => 'required|boolean',
-            'register_date' => 'required|date'
-        ]);
+        // if ($validMember->fails()) {
+        //     return response()->json(
+        //         [
+        //             'status' => 'fail',
+        //             'data' => $validMember->errors(),
+        //         ],
+        //         422
+        //     );
+        // }
 
-        if ($validMember->fails()) {
-            return response()->json(
-                [
-                    'status' => 'fail',
-                    'data' => $validMember->errors(),
-                ],
-                422
-            );
-        }
-
-        $validPlayer = Validator::make($data, [
-            'weight_id' => 'required',
-            'dan' => 'required|integer'
-        ]);
+        // $validPlayer = Validator::make($data, [
+        //     'weight_id' => 'required',
+        //     'dan' => 'required|integer'
+        // ]);
         
-        $role = DB::table('roles')->where('id', $data['role_id'])->first();
+        // $role = DB::table('roles')->where('id', $data['role_id'])->first();
 
-        if ($role->is_player && $validPlayer->fails()) {
-            return response()->json(
-                [
-                    'status' => 'fail',
-                    'data' => $validPlayer->errors(),
-                ],
-                422
-            );
-        }
+        // if ($role->is_player && $validPlayer->fails()) {
+        //     return response()->json(
+        //         [
+        //             'status' => 'fail',
+        //             'data' => $validPlayer->errors(),
+        //         ],
+        //         422
+        //     );
+        // }
 
-        $base64_image = $request->input('profile_image');
+        // $base64_image = $request->input('profile_image');
                     
-        if ($base64_image != '' && preg_match('/^data:image\/(\w+);base64,/', $base64_image)) {
-            $pos  = strpos($base64_image, ';');
-            $type = explode(':', substr($base64_image, 0, $pos))[1];
+        // if ($base64_image != '' && preg_match('/^data:image\/(\w+);base64,/', $base64_image)) {
+        //     $pos  = strpos($base64_image, ';');
+        //     $type = explode(':', substr($base64_image, 0, $pos))[1];
 
-            if (substr($type, 0, 5) == 'image') {
-                $filename = $data['identity'] . '_' . date('Ymd');
+        //     if (substr($type, 0, 5) == 'image') {
+        //         $filename = $data['identity'] . '_' . date('Ymd');
 
-                $type = str_replace('image/', '.', $type);
+        //         $type = str_replace('image/', '.', $type);
 
-                $image = substr($base64_image, strpos($base64_image, ',') + 1);
-                $image = base64_decode($image);
+        //         $image = substr($base64_image, strpos($base64_image, ',') + 1);
+        //         $image = base64_decode($image);
                 
-                Storage::disk('local')->put($filename . $type, $image);
+        //         Storage::disk('local')->put($filename . $type, $image);
 
-                $data['profile_image'] = "photos/" . $filename . $type;
-            } else {
-                return response()->json(
-                    [
-                        'status' => 'error',
-                        'message' => 'File type is not image.'
-                    ],
-                    406
-                );
-            }
-        }
+        //         $data['profile_image'] = "photos/" . $filename . $type;
+        //     } else {
+        //         return response()->json(
+        //             [
+        //                 'status' => 'error',
+        //                 'message' => 'File type is not image.'
+        //             ],
+        //             406
+        //         );
+        //     }
+        // }
 
-        if (!isset($data['profile_image']) || is_null($data['profile_image']))
-            $data['profile_image'] = "";
+        // if (!isset($data['profile_image']) || is_null($data['profile_image']))
+        //     $data['profile_image'] = "";
 
-        if (is_null($data['patronymic']))
-            $data['patronymic'] = "";
+        // if (is_null($data['patronymic']))
+        //     $data['patronymic'] = "";
 
-        if (is_null($data['addressline2']))
-            $data['addressline2'] = "";
+        // if (is_null($data['addressline2']))
+        //     $data['addressline2'] = "";
 
-        if (is_null($data['position']))
-            $data['position'] = "";
+        // if (is_null($data['position']))
+        //     $data['position'] = "";
 
-        $member = Member::create(array(
-            'organization_id' => $data['organization_id'],
-            'role_id' => $data['role_id'],
-            'name' => $data['name'],
-            'patronymic' => $data['patronymic'],
-            'surname' => $data['surname'],
-            'profile_image' => $data['profile_image'],
-            'gender' => $data['gender'],
-            'birthday' => $data['birthday'],
-            'email' => $data['email'],
-            'mobile_phone' => $data['mobile_phone'],
-            'addressline1' => $data['addressline1'],
-            'addressline2' => $data['addressline2'],
-            'country' => 'kz',
-            // 'country' => $data['country'],
-            'state' => $data['state'],
-            'city' => $data['city'],
-            'zip_code' => $data['zip_code'],
-            'position' => $data['position'],
-            'identity' => $data['identity'],
-            'active' => $data['active'],
-            'register_date' => $data['register_date']
-        ));
+        // $member = Member::create(array(
+        //     'organization_id' => $data['organization_id'],
+        //     'role_id' => $data['role_id'],
+        //     'name' => $data['name'],
+        //     'patronymic' => $data['patronymic'],
+        //     'surname' => $data['surname'],
+        //     'profile_image' => $data['profile_image'],
+        //     'gender' => $data['gender'],
+        //     'birthday' => $data['birthday'],
+        //     'email' => $data['email'],
+        //     'mobile_phone' => $data['mobile_phone'],
+        //     'addressline1' => $data['addressline1'],
+        //     'addressline2' => $data['addressline2'],
+        //     'country' => 'kz',
+        //     // 'country' => $data['country'],
+        //     'state' => $data['state'],
+        //     'city' => $data['city'],
+        //     'zip_code' => $data['zip_code'],
+        //     'position' => $data['position'],
+        //     'identity' => $data['identity'],
+        //     'active' => $data['active'],
+        //     'register_date' => $data['register_date']
+        // ));
         
-        $member_id = $member->id;
+        // $member_id = $member->id;
 
-        if ($role->is_player && !$validPlayer->fails()) {
-            if (is_null($data['skill']))
-                $data['skill'] = "";
+        // if ($role->is_player && !$validPlayer->fails()) {
+        //     if (is_null($data['skill']))
+        //         $data['skill'] = "";
 
-            Player::create(array(
-                'member_id' => $member_id,
-                'weight_id' => $data['weight_id'],
-                'dan' => $data['dan'],
-                'skill' => $data['skill']
-            ));
-        }
+        //     Player::create(array(
+        //         'member_id' => $member_id,
+        //         'weight_id' => $data['weight_id'],
+        //         'dan' => $data['dan'],
+        //         'skill' => $data['skill']
+        //     ));
+        // }
 
-        return response()->json([
-            'status' => 'success'
-        ], 200);
+        // return response()->json([
+        //     'status' => 'success'
+        // ], 200);
     }
 
     /**
