@@ -236,11 +236,14 @@ class DataTable extends Component {
           {
             data && data.length > 0 && (
               data.map((item, index) => (
-                <Table.Row key={index}>
+                <Table.Row
+                  key={index}
+                  disabled={mtype.value == 'judoka' && item.active == 0}
+                >
                   <Table.Cell>
                     <span className="text-primary mr-2">
                       {
-                        stype.value !== 'judoka' ? (
+                        stype.value !== 'member' ? (
                           <Fragment>
                             <a data-tip data-for={`happyFace_${index}`}><i className="fa fa-users fa-lg" /></a>
                             <ReactTooltip
