@@ -55,15 +55,6 @@ class MemberDetail extends Component {
         <MainTopBar />
         <div className="main-content detail">
           <Container>
-            <div>
-              Welcome to
-              {' '}
-              {user.name}
-              {' '}
-              {user.patronymic}
-              {' '}
-              {user.surname}
-            </div>
             <Segment>
               <Row>
                 <Col lg="3">

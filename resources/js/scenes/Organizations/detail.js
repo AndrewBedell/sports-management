@@ -177,15 +177,6 @@ class OrganizationDetail extends Component {
         <MainTopBar />
         <div className="main-content detail">
           <Container>
-            <div>
-              Welcome to
-              {' '}
-              {user.name}
-              {' '}
-              {user.patronymic}
-              {' '}
-              {user.surname}
-            </div>
             <Row>
               <Col md={org.is_club == 1 ? 12 : 8}>
                 <Segment>
