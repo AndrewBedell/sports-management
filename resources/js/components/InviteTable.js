@@ -174,6 +174,12 @@ class InviteTable extends Component {
                 Name
               </Table.HeaderCell>
               <Table.HeaderCell className="text-center"
+                sorted={column === 'type' ? direction : null}
+                onClick={this.handleSort.bind(this, 'type')}
+              >
+                Admin Type
+              </Table.HeaderCell>
+              <Table.HeaderCell className="text-center"
               sorted={column === 'gender' ? direction : null}
               onClick={this.handleSort.bind(this, 'gender')}
               >
@@ -235,6 +241,9 @@ class InviteTable extends Component {
                       {' '}
                       {item.surname}
                     </Table.Cell>
+                    <Table.Cell className="text-center">
+                      {item.organization_id == 1 ? "NF" : (item.is_club == 1 ? "Club" : "Ref")}
+                    </Table.Cell>
                     <Table.Cell className="text-center">{item.gender ? Genders[0].name : Genders[1].name}</Table.Cell>
                     <Table.Cell className="text-center">{item.birthday}</Table.Cell>
                     <Table.Cell>{item.email}</Table.Cell>
@@ -265,7 +274,7 @@ class InviteTable extends Component {
                         <Button
                           type="button"
                           color="green"
-                          onClick={() => this.handleInvite(item.id, item.email, item.organization_id, item.is_culb)}
+                          onClick={() => this.handleInvite(item.id, item.email, item.organization_id, item.is_club)}
                         >
                           {item.invited ? "Resend" : "Invite"}
                         </Button>
@@ -294,7 +303,7 @@ class InviteTable extends Component {
                   }}
                 />
               </Table.HeaderCell>
-              <Table.HeaderCell colSpan="7">
+              <Table.HeaderCell colSpan="8">
                 <Menu floated="right" pagination>
                   <Pagination
                     activePage={activePage}

@@ -20,6 +20,10 @@ class GetInviteUsers extends Component {
     super(props);
 
     this.state = {
+      inviteOrgtype: '',
+      changeOrgtype: '',
+      orgs: [],
+      init_orgs: [],
       members: [],
       init_members: [],
       temp_members: [],
@@ -35,12 +39,35 @@ class GetInviteUsers extends Component {
   }
 
   async componentDidMount() {
+    const org_response = await Api.get('organizations-list');
+    switch (org_response.response.status) {
+      case 200:
+        let orgArr = [];
+
+        for (var i = 1; i < org_response.body.length; i++) {
+          orgArr.push(org_response.body[i]['name_o'])
+        }
+
+        const orgList = orgArr.map((org, Index) =>
+          <option key={Index} value={org} />
+        );
+
+        this.setState({
+          orgs: orgList,
+          init_orgs: org_response.body
+        });
+        break;
+      default:
+        break;
+    }
+
     const data = await Api.get('invite-users');
     const { response, body } = data;
     switch (response.status) {
       case 200:
         this.setState({
           init_members: body.members,
+          temp_members: body.members,
           members: body.members,
           init_users: body.users,
           users: body.users
@@ -51,6 +78,24 @@ class GetInviteUsers extends Component {
       default:
         break;
     }
+  }
+
+  handleInviteOrgFilter(value) {
+    let filter;
+    var filter_members = [];
+
+    if (value == '') {
+      filter_members = this.state.temp_members;
+    } else {
+      filter = this.state.init_orgs.filter(org => org.name_o.toUpperCase() == value.toUpperCase());
+
+      if (filter.length > 0)
+        filter_members = this.state.temp_members.filter(obj => obj.organization_id == filter[0].id);
+    }
+
+    this.setState({
+      members: filter_members
+    });
   }
 
   handleSelectInvite(data) {
@@ -78,6 +123,7 @@ class GetInviteUsers extends Component {
     }
 
     this.setState({
+      inviteOrgtype: data,
       members: filtered,
       temp_members: filtered,
       filter_members: ''
@@ -107,6 +153,24 @@ class GetInviteUsers extends Component {
     });
   }
 
+  handleChangeOrgFilter(value) {
+    let filter;
+    var filter_users = [];
+
+    if (value == '') {
+      filter_users = this.state.filter_users;
+    } else {
+      filter = this.state.init_orgs.filter(org => org.name_o.toUpperCase() == value.toUpperCase());
+
+      if (filter.length > 0)
+        filter_members = this.state.filter_users.filter(obj => obj.organization_id == filter[0].id);
+    }
+
+    this.setState({
+      users: filter_users
+    });
+  }
+
   handleSelectChange(data) {
     let value = data.value;
 
@@ -132,6 +196,7 @@ class GetInviteUsers extends Component {
     }
 
     this.setState({
+      changeOrgtype: data,
       users: filtered,
       temp_users: filtered,
       filter_users: ''
@@ -163,24 +228,45 @@ class GetInviteUsers extends Component {
 
   render() {
     const {
+      inviteOrgtype,
+      changeOrgtype,
+      orgs,
       members,
       users,
       filter_members,
       filter_users
     } = this.state;
+    
     return (
       <Fragment>
         <MainTopBar />
         <div className="main-content">
           <Container fluid>
             <Row className="my-2">
-              <Col sm="3">
+              <Col sm="2">
                 <Select
-                  sm="4"
+                  name="inviteOrgtype"
+                  value={inviteOrgtype}
                   options={OrganizationType}
                   onChange={this.handleSelectInvite.bind(this)}
                 />
               </Col>
+              {
+                inviteOrgtype.value != "nf" && (
+                  <Col sm="2">
+                    <Input
+                      className="club-list"
+                      list="orgs"
+                      type="text"
+                      placeholder="Regional Federation"
+                      onChange={event => this.handleInviteOrgFilter(event.target.value)}
+                    />
+                    <datalist id='orgs'>
+                      {orgs}
+                    </datalist>
+                  </Col>
+                )
+              }
               <Col sm="3">
                 <Input
                   value={filter_members}
@@ -197,13 +283,30 @@ class GetInviteUsers extends Component {
             </div>
 
             <Row className="mt-5 mb-2">
-              <Col sm="3">
+              <Col sm="2">
                 <Select
-                  sm="4"
+                  name="changeOrgtype"
+                  value={changeOrgtype}
                   options={OrganizationType}
                   onChange={this.handleSelectChange.bind(this)}
                 />
               </Col>
+              {
+                changeOrgtype.value != "nf" && (
+                  <Col sm="2">
+                    <Input
+                      className="club-list"
+                      list="orgs"
+                      type="text"
+                      placeholder="Regional Federation"
+                      onChange={event => this.handleChangeOrgFilter(event.target.value)}
+                    />
+                    <datalist id='orgs'>
+                      {orgs}
+                    </datalist>
+                  </Col>
+                )
+              }
               <Col sm="3">
                 <Input
                   value={filter_users}
