@@ -34,7 +34,7 @@ class Profile extends Component {
 
   render() {
     const { user } = this.state;
-    console.log(user);
+    
     return (
       <Fragment>
         <MainTopBar />
