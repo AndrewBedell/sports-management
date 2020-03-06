@@ -44,16 +44,7 @@ class OrganizationController extends Controller
      */
     public function store(Request $request)
     {
-        $user = JWTAuth::parseToken()->authenticate();
-
         $data = $request->all();
-
-        if (!isset($data['parent_id'])) {
-            $member_id = $user->member_id;
-            $member = Member::where('id', $member_id)->first();
-
-            $data['parent_id'] = $member->organization_id;
-        }
 
         $validator = Validator::make($data, [
             'parent_id' => 'required|integer',
