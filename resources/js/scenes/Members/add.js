@@ -426,7 +426,7 @@ class MemberAdd extends Component {
                           <Select
                             name="club_id"
                             classNamePrefix={
-                              (values.role_id && values.role_id != 4) &&
+                              (values.role_id && values.role_id.id != 4) &&
                               (!values.club_id || (values.club_id && values.club_id == '')) &&
                               touched.club_id ? 
                               'invalid react-select-lg' : 'react-select-lg'}
@@ -438,7 +438,7 @@ class MemberAdd extends Component {
                             getOptionValue={option => option.id}
                             getOptionLabel={option => option.name_o}
                             value={values.club_id}
-                            invalid={values.role_id && values.role_id != 4 && touched.club_id}
+                            invalid={values.role_id && values.role_id.id != 4 && touched.club_id}
                             onChange={(value) => {
                               setFieldValue('club_id', value);
                               setFieldValue('organization_id', org_list.filter(org => org.id == value.parent_id));
@@ -446,7 +446,7 @@ class MemberAdd extends Component {
                             onBlur={this.handleBlur}
                           />
                           {
-                              (values.role_id && values.role_id != 4) &&
+                              (values.role_id && values.role_id.id != 4) &&
                               (!values.club_id || (values.club_id && values.club_id == '')) &&
                               touched.club_id && (
                             <FormFeedback className="d-block">This field is required!</FormFeedback>
@@ -702,16 +702,28 @@ class MemberAdd extends Component {
                       </FormGroup>
                     </Col>
                     {
-                      values.role_id && values.role_id.is_player !== 1 && (
+                      values.role_id && (values.role_id.id == 1 || values.role_id.id == 4) && (
                         <Col xs="6">
-                          <FormGroup>
-                            <Label for="position">Position</Label>
-                            {
-                              values.role_id.id == 4 ? (
+                          {
+                            values.role_id.id == 1 ? (
+                              <FormGroup>
+                                <Label for="position">Position</Label>
+                                <Input
+                                  name="position"
+                                  type="text"
+                                  value={values.position != '[object Object]' && values.position != '' ? values.position : ''}
+                                  onChange={handleChange}
+                                  onBlur={handleBlur}
+                                  invalid={!values.position && touched.position}
+                                />
+                                {!values.position && touched.position && (<FormFeedback className="d-block">This field is required!</FormFeedback>)}
+                              </FormGroup>
+                            ) : (
+                              <FormGroup>
+                                <Label for="position">Referee Type</Label>
                                 <Select
                                   name="position"
-                                  classNamePrefix={
-                                    values.role_id && values.role_id.is_player !== 1 && !values.position && touched.position ? 
+                                  classNamePrefix={!values.position && touched.position ? 
                                     'invalid react-select-lg' : 'react-select-lg'}
                                   indicatorSeparator={null}
                                   options={RefereeType}
@@ -723,20 +735,10 @@ class MemberAdd extends Component {
                                   }}
                                   onBlur={this.handleBlur}
                                 />
-                              ) : (
-                                <Input
-                                  name="position"
-                                  type="text"
-                                  value={values.position != '[object Object]' && values.position != '' ? values.position : ''}
-                                  onChange={handleChange}
-                                  onBlur={handleBlur}
-                                  invalid={values.role_id && values.role_id.is_player !== 1 && !values.position && touched.position}
-                                />
-                              )
-                            }
-                            {values.role_id && values.role_id.is_player !== 1 && !values.position && touched.position && (
-                            <FormFeedback className="d-block">This field is required!</FormFeedback>)}
-                          </FormGroup>
+                                {!values.position && touched.position && (<FormFeedback className="d-block">This field is required!</FormFeedback>)}
+                              </FormGroup>
+                            )
+                          }
                         </Col>
                       )
                     }
