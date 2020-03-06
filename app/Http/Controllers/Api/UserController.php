@@ -88,9 +88,13 @@ class UserController extends Controller
     {
         $user = JWTAuth::parseToken()->authenticate();
 
-        $member = Member::where('id', $user->member_id)->first();
+        $member = Member::leftJoin('organizations', 'organizations.id', '=', 'members.organization_id')
+                    ->leftJoin('roles', 'roles.id', '=', 'members.role_id')
+                    ->where('members.id', $user->member_id)
+                    ->select('members.*', 'organizations.name_o', 'roles.name AS role')
+                    ->get();
 
-        return response()->json($member);
+        return response()->json($member[0]);
     }
 
     public function store(Request $request)
