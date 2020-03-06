@@ -20,7 +20,7 @@ import AppHelper from '../../helpers/AppHelper';
 
 class Reset extends Component {
   componentDidMount() {
-    console.log(this.props);
+    
   }
 
   async handleSubmit(values, bags) {

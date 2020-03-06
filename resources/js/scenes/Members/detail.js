@@ -48,22 +48,13 @@ class MemberDetail extends Component {
   }
 
   render() {
-    const { user, member } = this.state;
+    const { member } = this.state;
     
     return (
       <Fragment>
         <MainTopBar />
         <div className="main-content detail">
           <Container>
-            <div>
-              Welcome to
-              {' '}
-              {user.name}
-              {' '}
-              {user.patronymic}
-              {' '}
-              {user.surname}
-            </div>
             <Segment>
               <Row>
                 <Col lg="3">

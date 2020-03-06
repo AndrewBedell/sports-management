@@ -33,21 +33,8 @@ class MemberController extends Controller
         $members = Member::where('members.role_id', '!=', $role_id)
                         ->whereIn('members.organization_id', $orgIDs)
                         ->leftJoin('users', 'users.member_id', '=', 'members.id')
-                        ->select('members.*', 'users.id AS uid', 'users.deleted_at AS status', 'users.is_super')
+                        ->select('members.*', 'users.id AS uid', 'users.deleted_at AS status')
                         ->get();
-
-        for ($i = 0; $i < sizeof($members); $i++) {
-            if (is_null($members[$i]->status)) {
-                if (is_null($members[$i]->is_super)) {
-                    $members[$i]['is_admin'] = 0;
-                    $members[$i]['is_super'] = 0;
-                } else {
-                    $members[$i]['is_admin'] = 1;
-                }
-            } else {
-                $members[$i]['is_admin'] = 0;
-            }
-        }
 
         return response()->json($members);
     }
@@ -186,24 +173,6 @@ class MemberController extends Controller
             ));
         }
 
-        if ($data['org_type'] == 'nf') {
-            User::create(array(
-                'member_id' => $member->id,
-                'is_super' => 1,
-                'password' => '',
-                'email' => $data['email']
-            ));
-        }
-
-        if ($data['org_type'] == 'ref') {
-            User::create(array(
-                'member_id' => $member->id,
-                'is_super' => 0,
-                'password' => '',
-                'email' => $data['email']
-            ));
-        }
-
         return response()->json([
             'status' => 'success'
         ], 200);
@@ -222,7 +191,7 @@ class MemberController extends Controller
                         ->leftJoin('roles', 'roles.id', '=', 'members.role_id')
                         ->leftJoin('users', 'users.member_id', '=', 'members.id')
                         ->select('members.*', 'organizations.name_o', 'roles.name AS role_name', 'roles.is_player',
-                                'users.id AS uid', 'users.deleted_at AS status', 'users.is_super')
+                                'users.id AS uid', 'users.deleted_at AS status')
                         ->first();
 
         if (isset($member)) {
@@ -237,19 +206,8 @@ class MemberController extends Controller
                             ->leftJoin('weights', 'weights.id', '=', 'players.weight_id')
                             ->select('members.*', 'organizations.name_o', 'roles.name AS role_name', 'roles.is_player',
                                     'weights.id AS weight_id', 'weights.weight', 'players.dan', 'players.skill', 'players.expired_date',
-                                    DB::raw("null AS uid, null AS status, 0 AS is_super, 0 AS is_admin"))
+                                    DB::raw("null AS uid, null AS status"))
                             ->first();
-                } else {
-                    if (is_null($member->status)) {
-                        if (is_null($member->is_super)) {
-                            $member['is_super'] = 0;
-                            $member['is_admin'] = 0;
-                        } else {
-                            $member['is_admin'] = 1;
-                        }
-                    } else {
-                        $member['is_admin'] = 0;
-                    }
                 }
 
                 $org = Organization::find($member->organization_id);
@@ -512,7 +470,7 @@ class MemberController extends Controller
         if ($this->checkPermission($member->organization_id)) {
             $user = JWTAuth::parseToken()->authenticate();
 
-            if (isset($user) && $user->is_super) {
+            if (isset($user)) {
                 $member = Member::find($id);
 
                 if (isset($member)) {

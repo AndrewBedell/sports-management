@@ -18,8 +18,7 @@ class CreateUsersTable extends Migration
         Schema::create('users', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->integer('member_id');
-                        
-            $table->boolean('is_super');
+
             $table->string('password', 100);
             $table->string('email')->unique();
 
@@ -32,7 +31,6 @@ class CreateUsersTable extends Migration
         DB::table('users')->insert(
             array(
                 'member_id' => 1,
-                'is_super' => true,
                 'password' => Hash::make('123456'),
                 'email' => 'admin@gmail.com',
                 'created_at' => date('Y-m-d H:i:s'),

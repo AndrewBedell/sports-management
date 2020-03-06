@@ -16,7 +16,6 @@ class CreateInvitationsTable extends Migration
         Schema::create('invitations', function (Blueprint $table) {
             $table->string('email')->index();
             $table->string('token');
-            $table->boolean('is_super');
             $table->char('vcode', 6)->nullable();
             $table->timestamp('codesent_at')->nullable();
             $table->timestamp('created_at')->nullable();

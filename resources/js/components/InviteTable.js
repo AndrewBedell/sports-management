@@ -30,7 +30,7 @@ class InviteTable extends Component {
       isOpenInviteModal: false,
       invite_item: '',
       invite_email: '',
-      invite_is_super: false,
+      permission: '',
       activePage: 1,
       per_page: 10,
       current_perPage: { label: 10, value: 10 },
@@ -111,11 +111,9 @@ class InviteTable extends Component {
     });
   }
 
-  async handleSendInvite(is_super, org = '') {
+  async handleSendInvite() {
     const param = {
-      email: this.state.invite_email,
-      is_super: is_super ? 1 : 0,
-      org: org
+      email: this.state.invite_email
     }
 
     const {data, invite_item} = this.state;
@@ -136,13 +134,13 @@ class InviteTable extends Component {
     }
   }
 
-  handleInvite(id, email, is_super) {
+  handleInvite(id, email, org_id, is_club) {
     const { isOpenInviteModal } = this.state;
     this.setState({
       isOpenInviteModal: !isOpenInviteModal,
       invite_item: id,
       invite_email: email,
-      invite_is_super: is_super
+      permission: org_id == 1 ? "National Federation" : (is_club == 1 ? "Club" : "Regional Federation")
     });
   }
 
@@ -157,6 +155,7 @@ class InviteTable extends Component {
       isOpenInviteModal,
       invite_item,
       invite_email,
+      permission,
       activePage,
       per_page,
       pageOptions,
@@ -173,6 +172,12 @@ class InviteTable extends Component {
                 onClick={this.handleSort.bind(this, 'name')}
               >
                 Name
+              </Table.HeaderCell>
+              <Table.HeaderCell className="text-center"
+                sorted={column === 'type' ? direction : null}
+                onClick={this.handleSort.bind(this, 'type')}
+              >
+                Admin Type
               </Table.HeaderCell>
               <Table.HeaderCell className="text-center"
               sorted={column === 'gender' ? direction : null}
@@ -232,9 +237,12 @@ class InviteTable extends Component {
                       </span>
                       {item.name}
                       {' '}
-                      {item.patronymic}
+                      {item.patronymic != '-' && item.patronymic}
                       {' '}
                       {item.surname}
+                    </Table.Cell>
+                    <Table.Cell className="text-center">
+                      {item.organization_id == 1 ? "NF" : (item.is_club == 1 ? "Club" : "Ref")}
                     </Table.Cell>
                     <Table.Cell className="text-center">{item.gender ? Genders[0].name : Genders[1].name}</Table.Cell>
                     <Table.Cell className="text-center">{item.birthday}</Table.Cell>
@@ -266,7 +274,7 @@ class InviteTable extends Component {
                         <Button
                           type="button"
                           color="green"
-                          onClick={() => this.handleInvite(item.id, item.email, item.is_super)}
+                          onClick={() => this.handleInvite(item.id, item.email, item.organization_id, item.is_club)}
                         >
                           {item.invited ? "Resend" : "Invite"}
                         </Button>
@@ -295,7 +303,7 @@ class InviteTable extends Component {
                   }}
                 />
               </Table.HeaderCell>
-              <Table.HeaderCell colSpan="7">
+              <Table.HeaderCell colSpan="8">
                 <Menu floated="right" pagination>
                   <Pagination
                     activePage={activePage}
@@ -312,6 +320,7 @@ class InviteTable extends Component {
           <InviteModal
             id={invite_item}
             email={invite_email}
+            permission={permission}
             handleSend={this.handleSendInvite.bind(this)}
             handleCancel={this.handleInvite.bind(this)}
           />

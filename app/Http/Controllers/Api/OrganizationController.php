@@ -44,16 +44,7 @@ class OrganizationController extends Controller
      */
     public function store(Request $request)
     {
-        $user = JWTAuth::parseToken()->authenticate();
-
         $data = $request->all();
-
-        if (!isset($data['parent_id'])) {
-            $member_id = $user->member_id;
-            $member = Member::where('id', $member_id)->first();
-
-            $data['parent_id'] = $member->organization_id;
-        }
 
         $validator = Validator::make($data, [
             'parent_id' => 'required|integer',
@@ -160,9 +151,10 @@ class OrganizationController extends Controller
                 $org['type'] = 'club';
 
                 $players = Member::where('organization_id', $id)
+                            ->leftJoin('roles', 'roles.id', '=', 'members.role_id')
                             ->leftJoin('players', 'players.member_id', '=', 'members.id')
                             ->leftJoin('weights', 'weights.id', '=', 'players.weight_id')
-                            ->select('members.*', 'weights.weight', 'players.dan')
+                            ->select('members.*', 'roles.name AS role_name', 'weights.weight', 'players.dan')
                             ->get();
 
                 $org['table'] = $players;
@@ -344,7 +336,7 @@ class OrganizationController extends Controller
         if ($this->checkPermission($id)) {
             $user = JWTAuth::parseToken()->authenticate();
 
-            if (isset($user) && $user->is_super) {
+            if (isset($user)) {
                 $child_org = Organization::where('parent_id', $id)->get();
 
                 if (sizeof($child_org) == 0) {
@@ -584,6 +576,33 @@ class OrganizationController extends Controller
      */
     public function search(Request $request)
     {
+        $user = JWTAuth::parseToken()->authenticate();
+        $me = Member::find($user->member_id);
+
+        $myOrg = Organization::find($me->organization_id);
+
+        $orgArr = array();
+
+        if ($me->organization_id != 1)
+            array_push($orgArr, $me->organization_id);
+        
+        if (!$myOrg->is_club) {
+            $myOrgs = Organization::where('parent_id', $me->organization_id)->get();
+
+            foreach ($myOrgs as $org) {
+                array_push($orgArr, $org->id);
+
+                $result = Organization::where('parent_id', $org->id)->get();
+
+                if (sizeof($result) > 0) {
+                    foreach ($result as $val)
+                        array_push($orgArr, $val->id);
+                }
+            }
+        }
+        
+        sort($orgArr);
+
         $stype = $request->input('stype');
         $org = $request->input('org');
         $name = $request->input('name');
@@ -596,13 +615,14 @@ class OrganizationController extends Controller
 
         switch ($stype) {
             case 'org':
-                $result = Organization::where('id', '!=', 1)
+                $result = Organization::whereIn('id', $orgArr)
                                 ->where('name_o', 'like', '%' . $name . '%')
                                 ->where('is_club', 0)
                                 ->get();
                 break;
             case 'club':
-                $result = Organization::where('name_o', 'like', '%' . $name . '%')
+                $result = Organization::whereIn('id', $orgArr)
+                            ->where('name_o', 'like', '%' . $name . '%')
                             ->where('is_club', 1);
 
                 if ($org != '')
@@ -611,17 +631,19 @@ class OrganizationController extends Controller
                 $result = $result->get();
                 break;
             case 'member':
-                $result = Member::where('members.id', '!=', 1)
-                                ->leftJoin('organizations', 'organizations.id', '=', 'members.organization_id')
+                $result = Member::leftJoin('organizations', 'organizations.id', '=', 'members.organization_id')
                                 ->leftJoin('roles', 'roles.id', '=', 'members.role_id');
                 
                 if ($mtype == 'judoka')
                     $result = $result->leftJoin('players', 'players.member_id', '=', 'members.id')
                                     ->leftJoin('weights', 'weights.id', '=', 'players.weight_id');
 
-                $result = $result->where('roles.description', $mtype);
+                $result = $result->where('members.id', '!=', 1)
+                                ->where('roles.description', $mtype);
 
-                if ($org != '') {
+                if ($org == '') {
+                    $result = $result->whereIn('organizations.id', $orgArr);
+                } else {
                     $clubs = Organization::where('parent_id', $org)->select('id')->get();
 
                     if ($mtype == 'staff' || $mtype == 'referee')

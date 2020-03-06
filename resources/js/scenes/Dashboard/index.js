@@ -30,6 +30,8 @@ class Dashboard extends Component {
     super(props);
 
     this.state = {
+      user_org: '',
+      user_is_club: false,
       org_list: [],
       orgs: [],
       weights: [],
@@ -70,6 +72,15 @@ class Dashboard extends Component {
   }
 
   componentDidMount() {
+    const user = JSON.parse(localStorage.getItem('auth'));
+    const user_info = user.user.member_info;
+    const user_is_club = user.user.is_club_member == 1 && true;
+    
+    this.setState({
+      user_org: user_info.organization_id,
+      user_is_club: user_is_club
+    });
+    
     this.componentWillReceiveProps();
   }
 
@@ -180,9 +191,19 @@ class Dashboard extends Component {
         });
         break;
       case 'search_org':
-        const clubsFiltered = this.state.original_clubs.filter((club) => club.id == value.id).map((club, Index) =>
-          <option key={Index} id={club.id} value={club.value} />
-        );
+        let filtered = [];
+
+        if (value == null) {
+          filtered = this.state.original_clubs.map((club, Index) =>
+            <option key={Index} id={club.id} value={club.value} />
+          );
+        } else {
+          filtered = this.state.original_clubs.filter((club) => club.id == value.id).map((club, Index) =>
+            <option key={Index} id={club.id} value={club.value} />
+          );
+        }
+
+        const clubsFiltered = filtered;
         
         this.setState({
           search_org: value,
@@ -492,6 +513,8 @@ class Dashboard extends Component {
 
   render() {
     const {
+      user_org,
+      user_is_club,
       org_list,
       orgs,
       roles,
@@ -521,14 +544,22 @@ class Dashboard extends Component {
           <Container fluid>
             <h3 className="text-danger text-center mb-5">Welcome to National Sports Federation Management System!</h3>
               <div className="text-center mb-4">
-                <Button
-                  className="mr-5"
-                  type="button"
-                  color="secondary"
-                  onClick={this.handleCreateAccount.bind(this)}
-                >
-                  Register Federation / Club
-                </Button>
+                {
+                  !user_is_club && (
+                    <Button
+                      className="mr-5"
+                      type="button"
+                      color="secondary"
+                      onClick={this.handleCreateAccount.bind(this)}
+                    >
+                      {user_org == 1 ? (
+                        "Register Federation / Club"
+                      ) : (
+                        "Register Club"
+                      )}
+                    </Button>
+                  )
+                }
                 <Button
                   className="ml-5"
                   type="button"
@@ -547,7 +578,17 @@ class Dashboard extends Component {
                     placeholder="Search Type"
                     indicatorSeparator={null}
                     value={search_type}
-                    options={search_type_options}
+                    options={
+                      user_org != 1 ? (
+                        user_is_club ? (
+                          search_type_options.filter(item => item.value == 'member')
+                        ) : (
+                          search_type_options.filter(item => item.value != 'org')
+                        )
+                      ) : (
+                        search_type_options
+                      )
+                    }
                     getOptionValue={option => option.value}
                     getOptionLabel={option => option.label}
                     onChange={(type) => {
@@ -562,7 +603,7 @@ class Dashboard extends Component {
                 </FormGroup>
               </Col>
               {
-                search_type.value == 'org' && (
+                user_org == 1 && search_type.value == 'org' && (
                   <Col xl="3" lg="3" md="4" sm="6" xs="12">
                     <FormGroup>
                       <Input
@@ -582,13 +623,14 @@ class Dashboard extends Component {
                 )
               }
               {
-                (search_type.value == 'club' || search_type.value == 'member') && (
+                user_org == 1 && (search_type.value == 'club' || search_type.value == 'member') && (
                 <Col xl="2" lg="3" md="4" sm="6" xs="12">
                   <FormGroup>
                     <Select
                       name="search_org"
                       classNamePrefix="react-select-lg"
                       placeholder="Regional Federation"
+                      isClearable={true}
                       // isMulti
                       value={search_org}
                       options={org_list}

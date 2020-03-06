@@ -6,37 +6,16 @@ import {
   Modal, ModalBody, ModalHeader,
 	Button
 } from 'reactstrap';
-import Select from 'react-select';
-import {Checkbox} from 'semantic-ui-react';
-
-import Api from '../apis/app';
 
 class InviteModal extends React.Component {
     constructor(props) {
         super(props);
     
         this.state = {
-					isOpen: true,
-          is_super: false,
-          org: '',
-          orgs: []
+					isOpen: true
 				}
 				
 				this.handleCancel = this.handleCancel.bind(this);
-    }
-
-    async componentDidMount() {
-      const org_response = await Api.get('organizations-list');
-      const { response, body } = org_response;
-      switch (response.status) {
-        case 200:
-          this.setState({
-            orgs: body
-          });
-          break;
-        default:
-          break;
-      }
     }
 
 		handleCancel() {
@@ -48,18 +27,6 @@ class InviteModal extends React.Component {
 			handleCancel();
 		}
 
-		handleChangeSuper() {
-			this.setState({
-				is_super: !this.state.is_super
-			});
-    }
-    
-    handleSelectOrg(org) {
-      this.setState({
-        org: org
-      });
-    }
-
 		handleSendBtn() {
 			let {
         handleSend
@@ -67,13 +34,15 @@ class InviteModal extends React.Component {
       
       handleSend = handleSend || (() => {});
 
-      handleSend(this.state.is_super, this.state.org.id);
+      handleSend();
     }
 
 		render() {
 			const {
-				isOpen, is_super, org, orgs
-			} = this.state;
+				isOpen
+      } = this.state;
+      
+      const {permission} = this.props;
 
 			return (
 				<Modal
@@ -91,37 +60,11 @@ class InviteModal extends React.Component {
 									Your invitation will be sent to <span className="text-danger">{this.props.email}</span> now.
 								</h5>
 							</Col>
-							<Col sm="9" className="mt-3">
-								<h5 className="text-right">
-									Do you want to make this account with admin permission?
+							<Col sm="12" className="mt-3">
+								<h5 className="text-center">
+									Do you want to make this account with "{permission} permission" ?
 								</h5>
 							</Col>
-							<Col sm="3" className="mt-3 pr-5">
-								<div className="ui fitted toggle checkbox">
-									<Checkbox 
-										name="is_super"
-										className="hidden"
-										onChange={this.handleChangeSuper.bind(this)} />
-								</div>
-							</Col>
-              {
-                is_super && (
-                  <Col sm="12">
-                    <Select
-                      name="org"
-                      classNamePrefix="react-select-lg"
-                      placeholder="Regional Federation"
-                      value={org}
-                      options={orgs}
-                      getOptionValue={option => option.id}
-                      getOptionLabel={option => option.name_o}
-                      onChange={(org) => {
-                        this.handleSelectOrg(org);
-                      }}
-                    />
-                  </Col>
-                )
-              }
 							<Col sm="12"
 								className="offset-sm-5 mt-5"
 							>

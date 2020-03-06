@@ -22,6 +22,7 @@ class OrganizationAdd extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      user_org: '',
       org_list: [],
       // file: '',
       imagePreviewUrl: '',
@@ -37,6 +38,13 @@ class OrganizationAdd extends Component {
   }
 
   async componentDidMount() {
+    const user = JSON.parse(localStorage.getItem('auth'));
+    const user_info = user.user.member_info;
+    
+    this.setState({
+      user_org: user_info.organization_id
+    });
+
     const org_response = await Api.get('organizations-list');
     const { response, body } = org_response;
     switch (response.status) {
@@ -77,10 +85,21 @@ class OrganizationAdd extends Component {
   }
 
   async handleSubmit(values, bags) {
+    if (this.state.user_org == 1 && !values.is_club) {
+      bags.setSubmitting(false);
+      return;
+    }
+
+    if (this.state.user_org == 1 && values.is_club.value == 1 && values.parent_id == '') {
+      bags.setSubmitting(false);
+      return;
+    }
+
     let newData = {};
     const { imagePreviewUrl } = this.state;
+
     newData = {
-      parent_id: values.is_club.value == 1 ? values.parent_id.id : 1,
+      parent_id: values.is_club && values.is_club.value == 1 ? values.parent_id.id : this.state.user_org,
       name_o: values.name_o,
       name_s: values.name_s,
       register_no: values.register_no,
@@ -94,7 +113,7 @@ class OrganizationAdd extends Component {
       city: values.city,
       zip_code: values.zip_code,
       level: this.getLevel(values.parent_id),
-      is_club: values.is_club ? values.is_club.value : 0
+      is_club: values.is_club === null || (values.is_club && values.is_club.value) == 1 ? 1 : 0
     };
 
     const data = await Api.post('register-organization', newData);
@@ -135,7 +154,11 @@ class OrganizationAdd extends Component {
   }
 
   render() {
-    const { imagePreviewUrl, org_list } = this.state;
+    const {
+      user_org,
+      imagePreviewUrl,
+      org_list
+    } = this.state;
 
     let $imagePreview = null;
     if (imagePreviewUrl) {
@@ -172,7 +195,7 @@ class OrganizationAdd extends Component {
                 state: '',
                 city: '',
                 zip_code: '',
-                is_club: false
+                is_club: null
               }}
               validationSchema={
                 Yup.object().shape({
@@ -182,7 +205,7 @@ class OrganizationAdd extends Component {
                   register_no: Yup.string().required('This field is required!'),
                   email: Yup.string().email('Email is not valid!').required('This field is required!'),
                   // logo: Yup.mixed().required('Logo is required!'),
-                  mobile_phone: Yup.string().matches(/^(\+\d{1,3}[- ]?)?\d{10}$/, 'Mobile phone is incorrect!').required('This field is required!'),
+                  mobile_phone: Yup.string().matches(/^([+])|\d+$/, 'Mobile phone is incorrect!').required('This field is required!'),
                   addressline1: Yup.string().required('This field is required!'),
                   // country: Yup.mixed().required('This field is required!'),
                   city: Yup.string().required('This field is required!'),
@@ -221,56 +244,67 @@ class OrganizationAdd extends Component {
                       </FormGroup>
                     </Col>
                     <Col xs="6"></Col>
-                    <Col xs="6">
-                      <FormGroup>
-                        <Label for="is_club">Organization Type</Label>
-                        <Select
-                          name="is_club"
-                          classNamePrefix="react-select-lg"
-                          indicatorSeparator={null}
-                          options={SetSwitch}
-                          getOptionValue={option => option.value}
-                          getOptionLabel={option => option.label}
-                          value={values.is_club}
-                          onChange={(value) => {
-                            setFieldValue('is_club', value);
-                          }}
-                          onBlur={this.handleBlur}
-                        />
-                      </FormGroup>
-                    </Col>
-                    <Col sm="6">
-                      {
-                        values.is_club && values.is_club.value == 1 && (
-                        <FormGroup>
-                          <Label for="parent_id">
-                            Regional Federation
-                          </Label>
-                          <Select
-                            name="parent_id"
-                            classNamePrefix={!!errors.parent_id && touched.parent_id ? 'invalid react-select-lg' : 'react-select-lg'}
-                            indicatorSeparator={null}
-                            options={org_list}
-                            getOptionValue={option => option.id}
-                            getOptionLabel={option => option.name_o}
-                            value={values.parent_id}
-                            invalid={!!errors.parent_id && touched.parent_id}
-                            onChange={(value) => {
-                              setFieldValue('parent_id', value);
-                            }}
-                            onBlur={this.handleBlur}
-                          />
-                          {!!errors.parent_id && touched.parent_id && (
-                            <FormFeedback className="d-block">{errors.parent_id}</FormFeedback>
-                          )}
-                        </FormGroup>
-                        )
-                      }
-                    </Col>
+                    {
+                      user_org == 1 && (
+                        <Col xs="6">
+                          <FormGroup>
+                            <Label for="is_club">Organization Type</Label>
+                            <Select
+                              name="is_club"
+                              classNamePrefix={!values.is_club && touched.is_club ? 'invalid react-select-lg' : 'react-select-lg'}
+                              indicatorSeparator={null}
+                              options={SetSwitch}
+                              getOptionValue={option => option.value}
+                              getOptionLabel={option => option.label}
+                              value={values.is_club}
+                              onChange={(value) => {
+                                setFieldValue('is_club', value);
+                              }}
+                              onBlur={this.handleBlur}
+                            />
+                            {!values.is_club && touched.is_club && (
+                              <FormFeedback className="d-block">This field is required!</FormFeedback>
+                            )}
+                          </FormGroup>
+                        </Col>
+                      )
+                    }
+                    {
+                      user_org == 1 && (
+                        <Col sm="6">
+                          {
+                            values.is_club && values.is_club.value == 1 && (
+                            <FormGroup>
+                              <Label for="parent_id">
+                                Regional Federation
+                              </Label>
+                              <Select
+                                name="parent_id"
+                                classNamePrefix={values.parent_id == '' && touched.parent_id ? 'invalid react-select-lg' : 'react-select-lg'}
+                                indicatorSeparator={null}
+                                options={org_list}
+                                getOptionValue={option => option.id}
+                                getOptionLabel={option => option.name_o}
+                                value={values.parent_id}
+                                invalid={!!errors.parent_id && touched.parent_id}
+                                onChange={(value) => {
+                                  setFieldValue('parent_id', value);
+                                }}
+                                onBlur={this.handleBlur}
+                              />
+                              {values.parent_id == '' && touched.parent_id && (
+                                <FormFeedback className="d-block">This field is required!</FormFeedback>
+                              )}
+                            </FormGroup>
+                            )
+                          }
+                        </Col>
+                      )
+                    }
                     <Col sm="6">
                       <FormGroup>
                         <Label for="name_o">
-                          Organization Name
+                          {user_org == 1 ? "Organization Name" : "Club Name"}
                         </Label>
                         <Input
                           type="text"
