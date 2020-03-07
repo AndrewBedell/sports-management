@@ -12,13 +12,15 @@ import Members from './Members/index';
 import MemberDetail from './Members/detail';
 import OrganizationAdd from './Organizations/add';
 import MemberAdd from './Members/add';
-import GetInviteUsers from './Users/';
+import GetInviteUsers from './Users';
+import Payment from './Payment';
 
 class Main extends Component {
   render() {
     return (
       <Router history={history}>
         <Switch>
+          <Route exact path="/payment-player" name="Payment" component={Payment} />
           <Route exact path="/member/register" name="MemberAdd" component={MemberAdd} />
           <Route exact path="/member/detail" name="MemberDetail" component={MemberDetail} />
           <Route exact path="/members" name="Members" component={Members} />
