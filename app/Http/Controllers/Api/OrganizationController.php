@@ -539,12 +539,13 @@ class OrganizationController extends Controller
         if ($org->is_club) {
             $role = DB::table('roles')->where('is_player', true)->first();
 
-            $players = Member::where('role_id', $role->id)
-                    ->where('organization_id', $org->id)
-                    ->leftJoin('players', 'players.member_id', '=', 'members.id')
-                    ->leftJoin('weights', 'players.weight_id', '=', 'players.weight_id')
-                    ->select('members.*', 'weights.name', 'weights.weight', 'players.dan', 'players.skill', 'players.expired_date')
-                    ->get();
+            $players = Member::leftJoin('players', 'players.member_id', '=', 'members.id')
+                            ->leftJoin('weights', 'weights.id', '=', 'players.weight_id')
+                            ->where('members.organization_id', $org->id)
+                            ->where('members.role_id', $role->id)
+                            ->where('members.active', 0)
+                            ->select('members.*', 'weights.weight', 'players.dan', 'players.skill')
+                            ->get();
 
             return response()->json($players);
         } else {
