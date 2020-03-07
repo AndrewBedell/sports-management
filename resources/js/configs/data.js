@@ -247,9 +247,9 @@ export const countries = [
 ];
 
 export const RefereeType = [
-  {label: "NF. Referee", value: "nf"},
-  {label: "Conti. Referee", value: "ref"},
-  {label: "Int. Referee", value: "club"},
+  { label: 'NF. Referee', value: 'nf' },
+  { label: 'Conti. Referee', value: 'ref' },
+  { label: 'Int. Referee', value: 'club' }
 ];
 
 export const Genders = [
@@ -258,7 +258,7 @@ export const Genders = [
 ];
 
 export const Dans = [
-  { value: '', label: 'All Dan'},
+  { value: '', label: 'All Dan' },
   { value: 1, label: '1' },
   { value: 2, label: '2' },
   { value: 3, label: '3' },
@@ -272,10 +272,10 @@ export const Dans = [
 ];
 
 export const search_genders = [
-  {label: "All Genders", value: 2},
-  {label: "Male", value: 1},
-  {label: "Female", value: 0}
-  
+  { label: 'All Genders', value: 2 },
+  { label: 'Male', value: 1 },
+  { label: 'Female', value: 0 }
+
 ];
 
 export const search_type_options = [
@@ -287,7 +287,7 @@ export const search_type_options = [
 export const member_type_options = [
   { label: 'Official Staff', value: 'staff' },
   { label: 'Coach', value: 'coach' },
-  { label: 'Referee', value: 'referee'},
+  { label: 'Referee', value: 'referee' },
   { label: 'Judoka', value: 'judoka' }
 ];
 
@@ -299,5 +299,5 @@ export const SetSwitch = [
 export const OrganizationType = [
   { label: 'National Federation', value: 'nf' },
   { label: 'Regional Federation', value: 'ref' },
-  { label: 'Club', value: 'club' },
+  { label: 'Club', value: 'club' }
 ];
