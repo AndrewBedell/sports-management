@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import {
-  Container, Row, Col, Label, Input, Button, Form, FormGroup
+  Container, Row, Col, Label, Input, Button, Form, FormGroup, FormFeedback
 } from 'reactstrap';
 import {
   withRouter
@@ -17,13 +17,15 @@ class Payment extends Component {
       pay_status: false,
       players: null,
       payPlayers: [],
+      price: 0.00,
+      per_price: 1.99,
+      isSubmitting: false,
       priceData: {
         card_number: '',
         card_expiry_date: '',
-        cvc: '',
-        name: '',
-        price: 0,
-        per_price: 1
+        card_cvc: '',
+        card_name: '',
+        price: 0.00
       }
     };
   }
@@ -47,32 +49,56 @@ class Payment extends Component {
     }
   }
 
-  handleChange(field, event) {
-    console.log(field, event.target.value);
-  }
-
-  handleSelectAll(players) {
-    console.log(players);
-  }
-
-  handleSelectPlayer(player, index, event) {
-    const { players, payPlayers } = this.state;
-    if (event.target.checked === true) {
-      players[index].checked = true;
-      payPlayers.push(player);
-    } else {
-      players[index].checked = false;
-      payPlayers.filter(item => item.id !== player.id);
-    }
+  handleChangeCardInfo(field, event) {
+    const { priceData } = this.state;
+    priceData[field] = event.target.value;
     this.setState({
+      priceData
+    });
+  }
+
+  handleSelectAll(data, event) {
+    const { players, per_price, priceData } = this.state;
+    for (let i = 0; i < players.length; i++) {
+      const player = players[i];
+      for (let j = 0; j < data.length; j++) {
+        const item = data[j];
+        if (item.id === player.id) {
+          player.checked = event.target.checked;
+        }
+      }
+    }
+    priceData.price = (players.filter(item => item.checked === true).length * per_price).toFixed(2);
+    this.setState({
+      price: players.filter(item => item.checked === true).length * per_price,
       players,
-      payPlayers
+      payPlayers: players.filter(item => item.checked === true),
+      priceData
+    });
+  }
+
+  handleSelectPlayer(player, checked) {
+    const { players, per_price, priceData } = this.state;
+    for (let i = 0; i < players.length; i++) {
+      const item = players[i];
+      if (item.id === player) {
+        item.checked = checked;
+      }
+    }
+
+    priceData.price = (players.filter(item => item.checked === true).length * per_price).toFixed(2);
+
+    this.setState({
+      price: players.filter(item => item.checked === true).length * per_price,
+      players,
+      payPlayers: players.filter(item => item.checked === true),
+      priceData
     });
   }
 
   handlePayNow() {
-    const { priceData, payPlayers } = this.state;
-    if (!priceData.price && payPlayers && payPlayers.length > 0) {
+    const { payPlayers } = this.state;
+    if (payPlayers && payPlayers.length > 0) {
       this.setState({
         pay_status: true
       });
@@ -82,13 +108,21 @@ class Payment extends Component {
   }
 
   handleBackTable() {
+    const { players } = this.state;
+    for (let i = 0; i < players.length; i++) {
+      const player = players[i];
+      player.checked = false;
+    }
     this.setState({
       pay_status: false,
-      payPlayers: null
+      players
     });
   }
 
   handlePay() {
+    this.setState({
+      isSubmitting: true
+    });
     console.log(this.state.priceData);
   }
 
@@ -101,7 +135,9 @@ class Payment extends Component {
       payPlayers,
       pay_status,
       players,
-      priceData
+      price,
+      priceData,
+      isSubmitting
     } = this.state;
     return (
       <Fragment>
@@ -136,19 +172,19 @@ class Payment extends Component {
               <Container>
                 {
                   payPlayers && payPlayers.length > 0 && (
-                    <h3 className="text-center text-success mb-4">
-                      {`You can pay about ${payPlayers.length} players now.`}
+                    <h3 className="text-center text-warning mb-5">
+                      {`You are able to pay for ${payPlayers.length} ${payPlayers.length === 1 ? 'player' : 'players'} now.`}
                     </h3>
                   )
                 }
                 {
-                  priceData.price !== 0 && (
+                  price !== 0 && (
                     <Card
                       container="card_container"
                       formInputsNames={{
                         number: 'card_number',
                         expiry: 'card_expiry_date',
-                        cvc: 'card_cvv',
+                        cvc: 'card_cvc',
                         name: 'card_name'
                       }}
                       classes={{
@@ -158,7 +194,7 @@ class Payment extends Component {
                       initialValues={
                         {
                           number: priceData.card_number,
-                          cvc: priceData.card_cvv,
+                          cvc: priceData.card_cvc,
                           expiry: priceData.card_expiry_date,
                           name: priceData.card_name
                         }
@@ -172,7 +208,11 @@ class Payment extends Component {
                           <Form>
                             <FormGroup>
                               <Label for="price">Pay Today</Label>
-                              <span className="d-block">{priceData ? `$${priceData.price}` : null}</span>
+                              <span className="d-block">
+                                Total :
+                                {' '}
+                                {price ? `$${price}` : null}
+                              </span>
                             </FormGroup>
                             <FormGroup>
                               <Label for="card_name">Name on card</Label>
@@ -180,8 +220,9 @@ class Payment extends Component {
                                 type="text"
                                 name="card_name"
                                 id="card_name"
-                                onChange={this.handleChange.bind(this, 'card_name')}
+                                onChange={this.handleChangeCardInfo.bind(this, 'card_name')}
                               />
+                              {isSubmitting && !priceData.card_name && <FormFeedback className="d-block">This field is required!</FormFeedback>}
                             </FormGroup>
 
                             <Row>
@@ -192,19 +233,21 @@ class Payment extends Component {
                                     type="text"
                                     name="card_number"
                                     id="card_number"
-                                    onChange={this.handleChange.bind(this, 'card_number')}
+                                    onChange={this.handleChangeCardInfo.bind(this, 'card_number')}
                                   />
+                                  {isSubmitting && !priceData.card_number && <FormFeedback className="d-block">This field is required!</FormFeedback>}
                                 </FormGroup>
                               </Col>
                               <Col md="3">
                                 <FormGroup>
-                                  <Label for="card_cvv">CVV</Label>
+                                  <Label for="card_cvc">CVC</Label>
                                   <Input
                                     type="text"
-                                    name="card_cvv"
-                                    id="card_cvv"
-                                    onChange={this.handleChange.bind(this, 'card_cvv')}
+                                    name="card_cvc"
+                                    id="card_cvc"
+                                    onChange={this.handleChangeCardInfo.bind(this, 'card_cvc')}
                                   />
+                                  {isSubmitting && !priceData.card_cvc && <FormFeedback className="d-block">This field is required!</FormFeedback>}
                                 </FormGroup>
                               </Col>
                             </Row>
@@ -217,8 +260,9 @@ class Payment extends Component {
                                     type="text"
                                     name="card_expiry_date"
                                     id="card_expiry_date"
-                                    onChange={this.handleChange.bind(this, 'card_expiry_date')}
+                                    onChange={this.handleChangeCardInfo.bind(this, 'card_expiry_date')}
                                   />
+                                  {isSubmitting && !priceData.card_expiry_date && <FormFeedback className="d-block">This field is required!</FormFeedback>}
                                 </FormGroup>
                               </Col>
                             </Row>

@@ -21,7 +21,6 @@ class PlayerTable extends Component {
     super(props);
     this.state = {
       user: {},
-      selectedPlayers: [],
       column: null,
       data: [],
       direction: null,
@@ -38,26 +37,26 @@ class PlayerTable extends Component {
   }
 
   componentDidMount() {
+    if (this.props.items.length > 0) {
+      this.setState({
+        activePage: 1
+      });
+    }
+    const { items } = this.props;
+    const { per_page } = this.state;
+    this.setState({
+      data: items.slice(0, per_page)
+    });
     this.componentWillReceiveProps(this.props);
   }
 
-  componentWillReceiveProps(props) {
+  componentWillReceiveProps() {
     const user_info = JSON.parse(localStorage.getItem('auth'));
     if (user_info.user) {
       this.setState({
         user: user_info.user.member_info
       });
     }
-    if (props.items.length > 0) {
-      this.setState({
-        activePage: 1
-      });
-    }
-    const { items } = props;
-    const { per_page } = this.state;
-    this.setState({
-      data: items.slice(0, per_page)
-    });
   }
 
   handlePaginationChange(e, { activePage }) {
@@ -105,28 +104,10 @@ class PlayerTable extends Component {
     });
   }
 
-  handleSelect(player, index, event) {
-    const { selectedPlayers, data } = this.state;
-    if (event.target.checked) {
-      data[index].checked = true;
-      selectedPlayers.push(player);
-    } else {
-      data[index].checked = false;
-      selectedPlayers.filter(item => item.id !== player.id);
-    }
-    this.setState({
-      selectedPlayers
-    });
-    console.log(selectedPlayers);
-  }
-
-  handleSelectAll() {
-    const { data, selectedPlayers } = this.state;
-    console.log(data);
-  }
-
   render() {
     const {
+      onSelect,
+      onSelectAll,
       onDetail,
       items
     } = this.props;
@@ -138,8 +119,7 @@ class PlayerTable extends Component {
       activePage,
       per_page,
       pageOptions,
-      current_perPage,
-      selectedAll
+      current_perPage
     } = this.state;
 
     return (
@@ -155,14 +135,6 @@ class PlayerTable extends Component {
             </Table.HeaderCell>
             <Table.HeaderCell
               className="text-center"
-              width="2"
-              sorted={column === 'name_o' ? direction : null}
-              onClick={this.handleSort.bind(this, 'name_o')}
-            >
-              Club
-            </Table.HeaderCell>
-            <Table.HeaderCell
-              className="text-center"
               sorted={column === 'gender' ? direction : null}
               onClick={this.handleSort.bind(this, 'gender')}
             >
@@ -174,6 +146,14 @@ class PlayerTable extends Component {
               onClick={this.handleSort.bind(this, 'birthday')}
             >
               Birthday
+            </Table.HeaderCell>
+            <Table.HeaderCell
+              className="text-center"
+              width="2"
+              sorted={column === 'email' ? direction : null}
+              onClick={this.handleSort.bind(this, 'email')}
+            >
+              Email
             </Table.HeaderCell>
             <Table.HeaderCell
               className="text-center"
@@ -196,8 +176,8 @@ class PlayerTable extends Component {
               <CustomInput
                 id="selectAll"
                 type="checkbox"
-                checked={selectedAll}
-                onChange={this.handleSelectAll.bind(this)}
+                checked={data.filter(item => item.checked === true).length === data.length}
+                onChange={(event) => { onSelectAll(data, event); this.setState({ checkedAll: event.target.checked }); }}
               />
             </Table.HeaderCell>
           </Table.Row>
@@ -230,9 +210,9 @@ class PlayerTable extends Component {
                       {item.name}
                     </a>
                   </Table.Cell>
-                  <Table.Cell>{item.name_o}</Table.Cell>
                   <Table.Cell className="text-center">{item.gender && item.gender === 1 ? Genders[0].name : Genders[1].name}</Table.Cell>
                   <Table.Cell className="text-center">{item.birthday}</Table.Cell>
+                  <Table.Cell>{item.email}</Table.Cell>
                   <Table.Cell className="text-center">
                     {item.weight}
                     {' '}
@@ -270,8 +250,8 @@ class PlayerTable extends Component {
                     <CustomInput
                       id={item.id}
                       type="checkbox"
-                      checked={item.checked}
-                      onChange={this.handleSelect.bind(this, item, index)}
+                      checked={!!item.checked}
+                      onChange={(event) => { onSelect(item.id, event.target.checked); }}
                     />
                   </Table.Cell>
                 </Table.Row>
