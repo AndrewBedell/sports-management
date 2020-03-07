@@ -31,12 +31,12 @@ class Payment extends Component {
   async componentDidMount() {
     const user_info = JSON.parse(localStorage.getItem('auth'));
     if (user_info.user) {
-      const data = await Api.get(`club-players/${user_info.user.member_info.id}`);
+      const data = await Api.get(`club-players/${user_info.user.member_info.organization_id}`);
       const { response, body } = data;
       switch (response.status) {
         case 200:
           this.setState({
-            players: body.members
+            players: body
           });
           break;
         case 406:
@@ -57,12 +57,11 @@ class Payment extends Component {
 
   handleSelectPlayer(player, index, event) {
     const { players, payPlayers } = this.state;
-    if (event === true) {
+    if (event.target.checked === true) {
       players[index].checked = true;
       payPlayers.push(player);
     } else {
       players[index].checked = false;
-      console.log(payPlayers);
       payPlayers.filter(item => item.id !== player.id);
     }
     this.setState({

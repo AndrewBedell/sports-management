@@ -21,6 +21,7 @@ class PlayerTable extends Component {
     super(props);
     this.state = {
       user: {},
+      selectedPlayers: [],
       column: null,
       data: [],
       direction: null,
@@ -104,10 +105,28 @@ class PlayerTable extends Component {
     });
   }
 
+  handleSelect(player, index, event) {
+    const { selectedPlayers, data } = this.state;
+    if (event.target.checked) {
+      data[index].checked = true;
+      selectedPlayers.push(player);
+    } else {
+      data[index].checked = false;
+      selectedPlayers.filter(item => item.id !== player.id);
+    }
+    this.setState({
+      selectedPlayers
+    });
+    console.log(selectedPlayers);
+  }
+
+  handleSelectAll() {
+    const { data, selectedPlayers } = this.state;
+    console.log(data);
+  }
+
   render() {
     const {
-      onSelect,
-      onSelectAll,
       onDetail,
       items
     } = this.props;
@@ -178,7 +197,7 @@ class PlayerTable extends Component {
                 id="selectAll"
                 type="checkbox"
                 checked={selectedAll}
-                onChange={() => onSelectAll(data)}
+                onChange={this.handleSelectAll.bind(this)}
               />
             </Table.HeaderCell>
           </Table.Row>
@@ -252,7 +271,7 @@ class PlayerTable extends Component {
                       id={item.id}
                       type="checkbox"
                       checked={item.checked}
-                      onChange={(event) => { onSelect(item, index, event.target.checked) }}
+                      onChange={this.handleSelect.bind(this, item, index)}
                     />
                   </Table.Cell>
                 </Table.Row>
