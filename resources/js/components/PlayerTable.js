@@ -210,7 +210,7 @@ class PlayerTable extends Component {
                       {item.name}
                     </a>
                   </Table.Cell>
-                  <Table.Cell className="text-center">{item.gender && item.gender === 1 ? Genders[0].name : Genders[1].name}</Table.Cell>
+                  <Table.Cell className="text-center">{item.gender && item.gender == 1 ? Genders[0].name : Genders[1].name}</Table.Cell>
                   <Table.Cell className="text-center">{item.birthday}</Table.Cell>
                   <Table.Cell>{item.email}</Table.Cell>
                   <Table.Cell className="text-center">
@@ -220,7 +220,7 @@ class PlayerTable extends Component {
                   </Table.Cell>
                   <Table.Cell className="text-center">{item.dan}</Table.Cell>
                   {
-                    item.active === 0 && (
+                    item.active == 0 && (
                       <Table.Cell className="text-center">
                         <div className="text-danger text-center">
                           <i className="fa fa-user fa-lg" />
@@ -229,7 +229,7 @@ class PlayerTable extends Component {
                     )
                   }
                   {
-                    item.active === 1 && (
+                    item.active == 1 && (
                       <Table.Cell className="text-center">
                         <div className="text-success text-center">
                           <i className="fa fa-user fa-lg" />
@@ -238,7 +238,7 @@ class PlayerTable extends Component {
                     )
                   }
                   {
-                    item.active === 2 && (
+                    item.active == 2 && (
                       <Table.Cell className="text-center">
                         <div className="text-warning text-center">
                           <i className="fa fa-user fa-lg" />
