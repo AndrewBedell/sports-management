@@ -534,34 +534,24 @@ class OrganizationController extends Controller
      */
     public function players($id)
     {
-        if ($this->checkPermission($id)) {
-            $org = Organization::find($id);
+        $org = Organization::find($id);
 
-            if ($org->is_club) {
-                $role = DB::table('roles')->where('is_player', true)->first();
+        if ($org->is_club) {
+            $role = DB::table('roles')->where('is_player', true)->first();
 
-                $players = Member::where('role_id', $role->id)
-                        ->where('organization_id', $org->id)
-                        ->leftJoin('players', 'players.member_id', '=', 'members.id')
-                        ->leftJoin('weights', 'players.weight_id', '=', 'players.weight_id')
-                        ->select('members.*', 'weights.name', 'weights.weight', 'players.dan', 'players.skill', 'players.expired_date')
-                        ->get();
+            $players = Member::where('role_id', $role->id)
+                    ->where('organization_id', $org->id)
+                    ->leftJoin('players', 'players.member_id', '=', 'members.id')
+                    ->leftJoin('weights', 'players.weight_id', '=', 'players.weight_id')
+                    ->select('members.*', 'weights.name', 'weights.weight', 'players.dan', 'players.skill', 'players.expired_date')
+                    ->get();
 
-                return response()->json($players);
-            } else {
-                return response()->json(
-                    [
-                        'status' => 'error',
-                        'message' => 'This is not club.'
-                    ],
-                    406
-                );
-            }
+            return response()->json($players);
         } else {
             return response()->json(
                 [
                     'status' => 'error',
-                    'message' => 'Access permission denied.'
+                    'message' => 'This is not club.'
                 ],
                 406
             );
