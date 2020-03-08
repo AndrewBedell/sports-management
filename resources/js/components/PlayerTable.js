@@ -50,13 +50,18 @@ class PlayerTable extends Component {
     this.componentWillReceiveProps(this.props);
   }
 
-  componentWillReceiveProps() {
+  componentWillReceiveProps(props) {
     const user_info = JSON.parse(localStorage.getItem('auth'));
     if (user_info.user) {
       this.setState({
         user: user_info.user.member_info
       });
     }
+    const { items } = props;
+    const { per_page } = this.state;
+    this.setState({
+      data: items.slice(0, per_page)
+    });
   }
 
   handlePaginationChange(e, { activePage }) {

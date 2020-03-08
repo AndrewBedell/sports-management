@@ -36,16 +36,6 @@ class DataTable extends Component {
   }
 
   componentDidMount() {
-    if (this.props.items.length > 0) {
-      this.setState({
-        activePage: 1
-      });
-    }
-    const { items } = this.props;
-    const { per_page } = this.state;
-    this.setState({
-      data: items.slice(0, per_page)
-    });
     this.componentWillReceiveProps(this.props);
   }
 
@@ -56,6 +46,16 @@ class DataTable extends Component {
         user: user_info.user.member_info
       });
     }
+    if (this.props.items.length > 0) {
+      this.setState({
+        activePage: 1
+      });
+    }
+    const { items } = this.props;
+    const { per_page } = this.state;
+    this.setState({
+      data: items.slice(0, per_page)
+    });
   }
 
   handlePaginationChange(e, { activePage }) {

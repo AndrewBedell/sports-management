@@ -16,6 +16,8 @@ class Payment extends Component {
     this.state = {
       pay_status: false,
       players: null,
+      player_list: null,
+      filter_players: '',
       payPlayers: [],
       price: 0.00,
       per_price: 1.99,
@@ -38,12 +40,14 @@ class Payment extends Component {
       switch (response.status) {
         case 200:
           this.setState({
-            players: body
+            players: body,
+            player_list: body
           });
           break;
         case 406:
           this.setState({
-            players: []
+            players: [],
+            player_list: []
           });
           break;
         default:
@@ -133,11 +137,36 @@ class Payment extends Component {
     this.props.history.push('/member/detail', id);
   }
 
+  // handleSearchPlayer(data) {
+  //   console.log(data.target.value);
+  //   this.setState({
+  //     filter_players: data.target.value
+  //   });
+
+  //   const { player_list } = this.state;
+
+  //   let filtered = [];
+
+  //   filtered = player_list.filter(
+  //     obj => obj.name.toUpperCase().includes(data.target.value.toUpperCase()) || obj.surname.toUpperCase().includes(data.target.value.toUpperCase())
+  //   );
+  //   if (!data.target.value) {
+  //     this.setState({
+  //       players: player_list
+  //     });
+  //   } else {
+  //     this.setState({
+  //       players: filtered
+  //     });
+  //   }
+  // }
+
   render() {
     const {
       payPlayers,
       pay_status,
       players,
+      filter_players,
       price,
       priceData,
       isSubmitting
@@ -169,15 +198,30 @@ class Payment extends Component {
                     )
                   }
                 </div>
+                {/* <Row>
+                  <Col lg="2" md="3" sm="4">
+                    <FormGroup>
+                      <Input
+                        value={filter_players || ''}
+                        placeholder="Search Players"
+                        onChange={this.handleSearchPlayer.bind(this)}
+                      />
+                    </FormGroup>
+                  </Col>
+                </Row> */}
                 <div className="table-responsive mb-3">
                   {
-                    players && players.length > 0 && (
+                    players && players.length > 0 ? (
                       <PlayerTable
                         items={players}
                         onSelect={this.handleSelectPlayer.bind(this)}
                         onSelectAll={this.handleSelectAll.bind(this)}
                         onDetail={this.handleDetailPlayer.bind(this)}
                       />
+                    ) : (
+                      <h3 className="text-center my-5">
+                        No Results!
+                      </h3>
                     )
                   }
                 </div>
