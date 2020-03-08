@@ -42,6 +42,9 @@ class Payment extends Component {
           });
           break;
         case 406:
+          this.setState({
+            players: []
+          });
           break;
         default:
           break;
@@ -147,13 +150,24 @@ class Payment extends Component {
             !pay_status ? (
               <Container fluid>
                 <div className="text-center mb-4">
-                  <Button
-                    type="button"
-                    color="success"
-                    onClick={this.handlePayNow.bind(this)}
-                  >
-                    Pay Now
-                  </Button>
+                  {
+                    players && players.length > 0 && (
+                      <Button
+                        type="button"
+                        color="success"
+                        onClick={this.handlePayNow.bind(this)}
+                      >
+                        Pay Now
+                      </Button>
+                    )
+                  }
+                  {
+                    (players !== null && players.length === 0) && (
+                      <h3 className="text-center text-danger">
+                        There is no player for pay now.
+                      </h3>
+                    )
+                  }
                 </div>
                 <div className="table-responsive mb-3">
                   {
@@ -279,6 +293,7 @@ class Payment extends Component {
                                   className="float-right"
                                   type="button"
                                   color="primary"
+                                  disabled={isSubmitting || !priceData.card_name || !priceData.card_number || !priceData.card_cvc || !priceData.card_expiry_date}
                                   onClick={this.handlePay.bind(this)}
                                 >
                                   Next

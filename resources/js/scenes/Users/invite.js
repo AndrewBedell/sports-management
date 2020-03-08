@@ -5,7 +5,7 @@ import {
   Container,
   Toast, ToastBody, ToastHeader,
   Row, Col, Input, Button,
-  Form, FormGroup, FormFeedback,
+  Form, FormGroup, FormFeedback
 } from 'reactstrap';
 import {
   withRouter
@@ -20,7 +20,7 @@ class InviteAccept extends Component {
       member: [],
       status: true,
       msg: ''
-    }
+    };
 
     this.formikRef = React.createRef();
   }
@@ -34,8 +34,8 @@ class InviteAccept extends Component {
   async handleResend() {
     const urlParams = new URLSearchParams(window.location.search);
     const token = urlParams.get('token');
-    
-    const data = await Api.get('invite-accept', {token: token});
+
+    const data = await Api.get('invite-accept', { token });
     const { response, body } = data;
     switch (response.status) {
       case 200:
@@ -44,13 +44,14 @@ class InviteAccept extends Component {
         });
         break;
       case 406:
-        if (body.message == 'Empty token.')
+        if (body.message === 'Empty token.') {
           this.props.history.push('/');
-        else
+        } else {
           this.setState({
             status: false,
             msg: body.message
           });
+        }
         break;
       default:
         break;
@@ -64,7 +65,7 @@ class InviteAccept extends Component {
       email: this.state.member.email,
       code: values.code,
       pass: values.pass
-    }
+    };
 
     const data = await Api.post('register-user', newData);
 
@@ -76,7 +77,6 @@ class InviteAccept extends Component {
           status: false,
           msg: 'Congratulations!'
         });
-
         break;
       case 422:
         if (body.message) {
@@ -85,9 +85,9 @@ class InviteAccept extends Component {
             children: body.message
           });
         }
-
         bags.setErrors(body.data);
-
+        break;
+      default:
         break;
     }
 
@@ -113,121 +113,122 @@ class InviteAccept extends Component {
                     <h1 className="text-danger text-center mb-5 font-weight-bold">{this.state.msg}</h1>
                   )}
                 </ToastHeader>
-                  {this.state.status ? (
-                    <ToastBody>
-                      <h2 className="text-center mb-4">Welcome to our LiveMedia.</h2>
-                      <h5 className="text-center">
+                {this.state.status ? (
+                  <ToastBody>
+                    <h2 className="text-center mb-4">Welcome to our LiveMedia.</h2>
+                    <h5 className="text-center">
                         Please confirm the verification code from email and generate your own password.
-                      </h5>
+                    </h5>
 
-                      <Formik
-                        ref={this.formikRef}
-                        initialValues={{
-                          code: '',
-                          pass: ''
-                        }}
-                        validationSchema={
+                    <Formik
+                      ref={this.formikRef}
+                      initialValues={{
+                        code: '',
+                        pass: ''
+                      }}
+                      validationSchema={
                           Yup.object().shape({
                             code: Yup.string().required('Verification Code is required.'),
                             pass: Yup.string().min(6, 'Password must be 6 characters at least.').required('Password is required.')
                           })
                         }
-                        onSubmit={this.handleSubmit.bind(this)}
-                        render={({
-                          values,
-                          errors,
-                          touched,
-                          handleBlur,
-                          handleChange,
-                          handleSubmit,
-                          isSubmitting
-                        }) => (
-                          <Form onSubmit={handleSubmit}>
-                            <Row>
-                              <Col className="offset-sm-2 mt-5" sm="3">
-                                <h5 className="text-right">Your Email Address : </h5>
-                              </Col>
-                              <Col className="mt-5" sm="2">
-                                <h5>{member.email}</h5>
-                              </Col>
-                            </Row>
-                            <FormGroup>
-                              <Row>
-                                <Col className="offset-sm-3 mt-5" sm="2">
-                                  <h5 className="text-right mt-2">Verification Code : </h5>
-                                </Col>
-                                <Col className="mt-5" sm="2">
-                                  <Input
-                                    type="text"
-                                    name="code"
-                                    values={values.code}
-                                    onChange={handleChange}
-                                    onBlur={handleBlur}
-                                    invalid={!!errors.code && touched.code}
-                                  />
-                                  <FormFeedback>{errors.code}</FormFeedback>
-                                </Col>
-                                <Col className="mt-5" sm="2">
-                                  <Button
-                                    className="mt-1"
-                                    type="button"
-                                    onClick={this.handleResend.bind(this)}
-                                  >
-                                    <i className="fa fa-lg fa-sync" />&nbsp;&nbsp;&nbsp;Resend
-                                  </Button>
-                                </Col>
-                              </Row>
-                            </FormGroup>
-                            <FormGroup>
-                              <Row>
-                                <Col className="offset-sm-3 mt-5" sm="2">
-                                  <h5 className="text-right mt-2">Password : </h5>
-                                </Col>
-                                <Col className="mt-5" sm="4">
-                                  <Input
-                                    type="password"
-                                    name="pass"
-                                    values={values.pass}
-                                    onChange={handleChange}
-                                    onBlur={handleBlur}
-                                    invalid={!!errors.pass && touched.pass}
-                                  />
-                                  <FormFeedback>{errors.pass}</FormFeedback>
-                                </Col>
-                              </Row>
-                            </FormGroup>
-                            <FormGroup>
-                              <Row>
-                                <Col className="mt-5 text-center" sm="12">
-                                  <Button
-                                    color="success"
-                                    type="submit"
-                                    disabled={isSubmitting}
-                                  >
+                      onSubmit={this.handleSubmit.bind(this)}
+                      render={({
+                        values,
+                        errors,
+                        touched,
+                        handleBlur,
+                        handleChange,
+                        handleSubmit,
+                        isSubmitting
+                      }) => (
+                        <Form onSubmit={handleSubmit}>
+                          <Row>
+                            <Col className="offset-sm-2 mt-5" sm="3">
+                              <h5 className="text-right">Your Email Address : </h5>
+                            </Col>
+                            <Col className="mt-5" sm="2">
+                              <h5>{member.email}</h5>
+                            </Col>
+                          </Row>
+                          <Row>
+                            <Col className="offset-sm-3 mt-5" sm="3">
+                              <h5 className="text-right mt-2">Verification Code : </h5>
+                            </Col>
+                            <Col className="mt-5" sm="2">
+                              <FormGroup>
+                                <Input
+                                  type="text"
+                                  name="code"
+                                  values={values.code}
+                                  onChange={handleChange}
+                                  onBlur={handleBlur}
+                                  invalid={!!errors.code && touched.code}
+                                />
+                                <FormFeedback>{errors.code}</FormFeedback>
+                              </FormGroup>
+                            </Col>
+                            <Col className="mt-5" sm="2">
+                              <FormGroup>
+                                <Button
+                                  className="mt-1"
+                                  type="button"
+                                  onClick={this.handleResend.bind(this)}
+                                >
+                                  <i className="fa fa-lg fa-sync" />
+                                  &nbsp;&nbsp;&nbsp;Resend
+                                </Button>
+                              </FormGroup>
+                            </Col>
+                          </Row>
+                          <Row>
+                            <Col className="offset-sm-3 mt-5" sm="3">
+                              <h5 className="text-right mt-2">Password : </h5>
+                            </Col>
+                            <Col className="mt-5" sm="4">
+                              <FormGroup>
+                                <Input
+                                  type="password"
+                                  name="pass"
+                                  values={values.pass}
+                                  onChange={handleChange}
+                                  onBlur={handleBlur}
+                                  invalid={!!errors.pass && touched.pass}
+                                />
+                                <FormFeedback>{errors.pass}</FormFeedback>
+                              </FormGroup>
+                            </Col>
+                          </Row>
+                          <Row>
+                            <Col className="mt-5 text-center" sm="12">
+                              <FormGroup>
+                                <Button
+                                  color="success"
+                                  type="submit"
+                                  disabled={isSubmitting}
+                                >
                                     Accept
-                                  </Button>
-                                </Col>
-                              </Row>
-                            </FormGroup>
-                          </Form>
-                        )}
-                      >
+                                </Button>
+                              </FormGroup>
+                            </Col>
+                          </Row>
+                        </Form>
+                      )}
+                       />
 
-                      </Formik>
 
-                      
-                    </ToastBody>
-                  ) : (
-                    <ToastBody className="text-center">
-                      <Button
-                        className="mt-5"
-                        type="button"
-                        onClick={this.handleLogin.bind(this)}
+                  </ToastBody>
+                ) : (
+                  <ToastBody className="text-center">
+                    <Button
+                      className="mt-5"
+                      type="button"
+                      onClick={this.handleLogin.bind(this)}
                       >
                         Login
-                      </Button>
-                    </ToastBody>
-                  )}
+                    </Button>
+                  </ToastBody>
+                )}
               </Toast>
             </div>
           </Container>

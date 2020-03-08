@@ -57871,6 +57871,14 @@ body {
   background-image: none;
 }
 
+.form-group .input {
+  width: 100%;
+}
+
+.fields .input {
+  width: 100%;
+}
+
 .row-form form {
   display: flex;
   justify-content: center;

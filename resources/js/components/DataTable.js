@@ -28,10 +28,10 @@ class DataTable extends Component {
       current_perPage: { label: 10, value: 10 },
       pageOptions: [
         { label: 10, value: 10 },
-        { label: 20, value: 20 }
+        { label: 20, value: 20 },
+        { label: 50, value: 50 }
       ]
     };
-    
     this.handleChangePerPage = this.handleChangePerPage.bind(this);
   }
 

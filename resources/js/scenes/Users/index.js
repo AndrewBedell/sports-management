@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import {
-  Container, Row, Col
+  Container, Row, Col, FormGroup
 } from 'reactstrap';
 import {
   withRouter
@@ -32,25 +32,22 @@ class GetInviteUsers extends Component {
       init_users: [],
       temp_users: [],
       filter_users: ''
-    }
+    };
 
-    if (OrganizationType.length == 3)
-      OrganizationType.splice(0, 0, {label: "All", value: ""});
+    if (OrganizationType.length == 3) OrganizationType.splice(0, 0, { label: 'All', value: '' });
   }
 
   async componentDidMount() {
     const org_response = await Api.get('organizations-list');
     switch (org_response.response.status) {
       case 200:
-        let orgArr = [];
+        const orgArr = [];
 
-        for (var i = 1; i < org_response.body.length; i++) {
-          orgArr.push(org_response.body[i]['name_o'])
+        for (let i = 1; i < org_response.body.length; i++) {
+          orgArr.push(org_response.body[i].name_o);
         }
 
-        const orgList = orgArr.map((org, Index) =>
-          <option key={Index} value={org} />
-        );
+        const orgList = orgArr.map((org, Index) => <option key={Index} value={org} />);
 
         this.setState({
           orgs: orgList,
@@ -82,15 +79,14 @@ class GetInviteUsers extends Component {
 
   handleInviteOrgFilter(value) {
     let filter;
-    var filter_members = [];
+    let filter_members = [];
 
-    if (value == '') {
+    if (value === '') {
       filter_members = this.state.temp_members;
     } else {
       filter = this.state.init_orgs.filter(org => org.name_o.toUpperCase() == value.toUpperCase());
 
-      if (filter.length > 0)
-        filter_members = this.state.temp_members.filter(obj => obj.organization_id == filter[0].id);
+      if (filter.length > 0) filter_members = this.state.temp_members.filter(obj => obj.organization_id == filter[0].id);
     }
 
     this.setState({
@@ -99,21 +95,21 @@ class GetInviteUsers extends Component {
   }
 
   handleSelectInvite(data) {
-    let value = data.value;
+    const { value } = data;
 
-    var filtered = [];
+    let filtered = [];
 
     switch (value) {
-      case "nf":
-        filtered = this.state.init_members.filter((obj) => obj.parent_id == 0);
+      case 'nf':
+        filtered = this.state.init_members.filter(obj => obj.parent_id == 0);
 
         break;
-      case "ref":
-        filtered = this.state.init_members.filter((obj) => obj.parent_id == 1);
+      case 'ref':
+        filtered = this.state.init_members.filter(obj => obj.parent_id == 1);
 
         break;
-      case "club":
-        filtered = this.state.init_members.filter((obj) => obj.is_club == 1);
+      case 'club':
+        filtered = this.state.init_members.filter(obj => obj.is_club == 1);
 
         break;
       default:
@@ -135,17 +131,19 @@ class GetInviteUsers extends Component {
       filter_members: data.value
     });
 
-    var filtered = [];
+    const { init_members } = this.state;
 
-    if (this.state.temp_members.length == 0) {
+    let filtered = [];
+
+    if (this.state.temp_members.length === 0) {
       this.setState({
-        temp_members: this.state.init_members
+        temp_members: init_members
       });
     }
 
     filtered = this.state.temp_members.filter(
-      (obj) => obj.name.toUpperCase().includes(data.value.toUpperCase()) || 
-               obj.surname.toUpperCase().includes(data.value.toUpperCase())
+      obj => obj.name.toUpperCase().includes(data.value.toUpperCase())
+               || obj.surname.toUpperCase().includes(data.value.toUpperCase())
     );
 
     this.setState({
@@ -155,15 +153,14 @@ class GetInviteUsers extends Component {
 
   handleChangeOrgFilter(value) {
     let filter;
-    var filter_users = [];
+    let filter_users = [];
 
-    if (value == '') {
+    if (value === '') {
       filter_users = this.state.filter_users;
     } else {
       filter = this.state.init_orgs.filter(org => org.name_o.toUpperCase() == value.toUpperCase());
 
-      if (filter.length > 0)
-        filter_members = this.state.filter_users.filter(obj => obj.organization_id == filter[0].id);
+      if (filter.length > 0) filter_members = this.state.filter_users.filter(obj => obj.organization_id == filter[0].id);
     }
 
     this.setState({
@@ -172,21 +169,21 @@ class GetInviteUsers extends Component {
   }
 
   handleSelectChange(data) {
-    let value = data.value;
+    const { value } = data;
 
-    var filtered = [];
+    let filtered = [];
 
     switch (value) {
-      case "nf":
-        filtered = this.state.init_users.filter((obj) => obj.parent_id == 0);
+      case 'nf':
+        filtered = this.state.init_users.filter(obj => obj.parent_id == 0);
 
         break;
-      case "ref":
-        filtered = this.state.init_users.filter((obj) => obj.parent_id == 1);
+      case 'ref':
+        filtered = this.state.init_users.filter(obj => obj.parent_id == 1);
 
         break;
-      case "club":
-        filtered = this.state.init_users.filter((obj) => obj.is_club == 1);
+      case 'club':
+        filtered = this.state.init_users.filter(obj => obj.is_club == 1);
 
         break;
       default:
@@ -208,21 +205,21 @@ class GetInviteUsers extends Component {
       filter_users: data.value
     });
 
-    var filtered = [];
+    let filtered = [];
 
-    if (this.state.temp_users.length == 0) {
+    if (this.state.temp_users.length === 0) {
       this.setState({
         temp_users: this.state.init_users
       });
     }
 
     filtered = this.state.temp_users.filter(
-      (obj) => obj.name.toUpperCase().includes(data.value.toUpperCase()) || 
-               obj.surname.toUpperCase().includes(data.value.toUpperCase())
+      obj => obj.name.toUpperCase().includes(data.value.toUpperCase())
+               || obj.surname.toUpperCase().includes(data.value.toUpperCase())
     );
 
     this.setState({
-      users: filtered,
+      users: filtered
     });
   }
 
@@ -236,44 +233,50 @@ class GetInviteUsers extends Component {
       filter_members,
       filter_users
     } = this.state;
-    
+
     return (
       <Fragment>
         <MainTopBar />
         <div className="main-content">
           <Container fluid>
             <Row className="my-2">
-              <Col sm="2">
-                <Select
-                  name="inviteOrgtype"
-                  value={inviteOrgtype}
-                  options={OrganizationType}
-                  onChange={this.handleSelectInvite.bind(this)}
-                />
+              <Col lg="2" md="3" sm="4">
+                <FormGroup>
+                  <Select
+                    name="inviteOrgtype"
+                    value={inviteOrgtype}
+                    options={OrganizationType}
+                    onChange={this.handleSelectInvite.bind(this)}
+                  />
+                </FormGroup>
               </Col>
               {
-                inviteOrgtype.value != "nf" && (
-                  <Col sm="2">
-                    <Input
-                      className="club-list"
-                      list="orgs"
-                      type="text"
-                      placeholder="Regional Federation"
-                      onChange={event => this.handleInviteOrgFilter(event.target.value)}
-                    />
-                    <datalist id='orgs'>
-                      {orgs}
-                    </datalist>
+                inviteOrgtype.value !== 'nf' && (
+                  <Col lg="2" md="3" sm="4">
+                    <FormGroup>
+                      <Input
+                        className="club-list"
+                        list="orgs"
+                        type="text"
+                        placeholder="Regional Federation"
+                        onChange={event => this.handleInviteOrgFilter(event.target.value)}
+                      />
+                      <datalist id="orgs">
+                        {orgs}
+                      </datalist>
+                    </FormGroup>
                   </Col>
                 )
               }
-              <Col sm="3">
-                <Input
-                  value={filter_members}
-                  icon='search'
-                  placeholder='Search Invite Users'
-                  onChange={this.handleFilterInvite.bind(this)}
-                />
+              <Col lg="2" md="3" sm="4">
+                <FormGroup>
+                  <Input
+                    value={filter_members}
+                    icon="search"
+                    placeholder="Search Invite Users"
+                    onChange={this.handleFilterInvite.bind(this)}
+                  />
+                </FormGroup>
               </Col>
             </Row>
             <div className="table-responsive">
@@ -283,37 +286,43 @@ class GetInviteUsers extends Component {
             </div>
 
             <Row className="mt-5 mb-2">
-              <Col sm="2">
-                <Select
-                  name="changeOrgtype"
-                  value={changeOrgtype}
-                  options={OrganizationType}
-                  onChange={this.handleSelectChange.bind(this)}
-                />
+              <Col lg="2" md="3" sm="4">
+                <FormGroup>
+                  <Select
+                    name="changeOrgtype"
+                    value={changeOrgtype}
+                    options={OrganizationType}
+                    onChange={this.handleSelectChange.bind(this)}
+                  />
+                </FormGroup>
               </Col>
               {
-                changeOrgtype.value != "nf" && (
-                  <Col sm="2">
-                    <Input
-                      className="club-list"
-                      list="orgs"
-                      type="text"
-                      placeholder="Regional Federation"
-                      onChange={event => this.handleChangeOrgFilter(event.target.value)}
-                    />
-                    <datalist id='orgs'>
-                      {orgs}
-                    </datalist>
+                changeOrgtype.value !== 'nf' && (
+                  <Col lg="2" md="3" sm="4">
+                    <FormGroup>
+                      <Input
+                        className="club-list"
+                        list="orgs"
+                        type="text"
+                        placeholder="Regional Federation"
+                        onChange={event => this.handleChangeOrgFilter(event.target.value)}
+                      />
+                      <datalist id="orgs">
+                        {orgs}
+                      </datalist>
+                    </FormGroup>
                   </Col>
                 )
               }
-              <Col sm="3">
-                <Input
-                  value={filter_users}
-                  icon='search'
-                  placeholder='Search Users'
-                  onChange={this.handleFilterChange.bind(this)}
-                />
+              <Col lg="2" md="3" sm="4">
+                <FormGroup>
+                  <Input
+                    value={filter_users}
+                    icon="search"
+                    placeholder="Search Users"
+                    onChange={this.handleFilterChange.bind(this)}
+                  />
+                </FormGroup>
               </Col>
             </Row>
             <div className="table-responsive">
