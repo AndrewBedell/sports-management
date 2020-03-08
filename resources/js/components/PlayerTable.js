@@ -30,13 +30,15 @@ class PlayerTable extends Component {
       pageOptions: [
         { label: 10, value: 10 },
         { label: 20, value: 20 },
-        { label: 50, value: 50 }
+        { label: 50, value: 50 },
+        { label: 100, value: 100 }
       ]
     };
     this.handleChangePerPage = this.handleChangePerPage.bind(this);
   }
 
   componentDidMount() {
+    this.componentWillReceiveProps(this.props);
     if (this.props.items.length > 0) {
       this.setState({
         activePage: 1
@@ -47,21 +49,15 @@ class PlayerTable extends Component {
     this.setState({
       data: items.slice(0, per_page)
     });
-    this.componentWillReceiveProps(this.props);
   }
 
-  componentWillReceiveProps(props) {
+  componentWillReceiveProps() {
     const user_info = JSON.parse(localStorage.getItem('auth'));
     if (user_info.user) {
       this.setState({
         user: user_info.user.member_info
       });
     }
-    const { items } = props;
-    const { per_page } = this.state;
-    this.setState({
-      data: items.slice(0, per_page)
-    });
   }
 
   handlePaginationChange(e, { activePage }) {

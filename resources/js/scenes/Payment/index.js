@@ -16,8 +16,8 @@ class Payment extends Component {
     this.state = {
       pay_status: false,
       players: null,
-      player_list: null,
-      filter_players: '',
+      // player_list: null,
+      // filter_players: '',
       payPlayers: [],
       price: 0.00,
       per_price: 1.99,
@@ -40,14 +40,14 @@ class Payment extends Component {
       switch (response.status) {
         case 200:
           this.setState({
-            players: body,
-            player_list: body
+            // player_list: body,
+            players: body
           });
           break;
         case 406:
           this.setState({
-            players: [],
-            player_list: []
+            // player_list: [],
+            players: []
           });
           break;
         default:
@@ -79,6 +79,7 @@ class Payment extends Component {
     this.setState({
       price: players.filter(item => item.checked === true).length * per_price,
       players,
+      // player_list: players,
       payPlayers: players.filter(item => item.checked === true),
       priceData
     });
@@ -98,6 +99,7 @@ class Payment extends Component {
     this.setState({
       price: players.filter(item => item.checked === true).length * per_price,
       players,
+      // player_list: players,
       payPlayers: players.filter(item => item.checked === true),
       priceData
     });
@@ -138,7 +140,6 @@ class Payment extends Component {
   }
 
   // handleSearchPlayer(data) {
-  //   console.log(data.target.value);
   //   this.setState({
   //     filter_players: data.target.value
   //   });
@@ -166,7 +167,7 @@ class Payment extends Component {
       payPlayers,
       pay_status,
       players,
-      filter_players,
+      // filter_players,
       price,
       priceData,
       isSubmitting
@@ -211,17 +212,13 @@ class Payment extends Component {
                 </Row> */}
                 <div className="table-responsive mb-3">
                   {
-                    players && players.length > 0 ? (
+                    players !== null && (
                       <PlayerTable
                         items={players}
                         onSelect={this.handleSelectPlayer.bind(this)}
                         onSelectAll={this.handleSelectAll.bind(this)}
                         onDetail={this.handleDetailPlayer.bind(this)}
                       />
-                    ) : (
-                      <h3 className="text-center my-5">
-                        No Results!
-                      </h3>
                     )
                   }
                 </div>
