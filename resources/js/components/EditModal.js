@@ -17,7 +17,7 @@ import Select from 'react-select';
 
 import Api from '../apis/app';
 import {
-  Genders, countries, Dans, SetSwitch
+  Genders, Dans, SetSwitch
 } from '../configs/data';
 
 class EditModal extends React.Component {
@@ -65,7 +65,7 @@ class EditModal extends React.Component {
         case 200: {
           this.setState({
             item: body,
-            imagePreviewUrl: body.length > 0 ? body[0].profile_image : ''
+            imagePreviewUrl: body.profile_image
           });
           break;
         }
@@ -300,7 +300,7 @@ class EditModal extends React.Component {
         skill: values.skill ? values.skill : '',
         active: item.active,
         register_date: moment(values.register_date).format('YYYY-MM-DD'),
-        name_o: values.organization_id.name_o,
+        name_o: values.organization_id.name_o
       };
     }
     let {
