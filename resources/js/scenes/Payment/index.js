@@ -147,6 +147,7 @@ class Payment extends Component {
       pay_status: false,
       players: player_list,
       payPlayers: null,
+      isSubmitting: false,
       filter_players: {
         search: '',
         gender: null,
