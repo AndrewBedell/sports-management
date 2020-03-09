@@ -20,7 +20,7 @@ class PlayerTable extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      user: {},
+      // user: {},
       column: null,
       data: [],
       direction: null,
@@ -38,7 +38,12 @@ class PlayerTable extends Component {
   }
 
   componentDidMount() {
-    this.componentWillReceiveProps(this.props);
+    // const user_info = JSON.parse(localStorage.getItem('auth'));
+    // if (user_info.user) {
+    //   this.setState({
+    //     user: user_info.user.member_info
+    //   });
+    // }
     if (this.props.items.length > 0) {
       this.setState({
         activePage: 1
@@ -51,11 +56,17 @@ class PlayerTable extends Component {
     });
   }
 
-  componentWillReceiveProps() {
-    const user_info = JSON.parse(localStorage.getItem('auth'));
-    if (user_info.user) {
+  componentWillReceiveProps(props) {
+    const { filter, items } = props;
+    if (this.props.items !== items) {
+      if (props.items.length > 0) {
+        this.setState({
+          activePage: 1
+        });
+      }
+      const { per_page } = this.state;
       this.setState({
-        user: user_info.user.member_info
+        data: items.slice(0, per_page)
       });
     }
   }
