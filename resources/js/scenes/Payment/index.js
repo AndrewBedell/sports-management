@@ -101,7 +101,6 @@ class Payment extends Component {
     this.setState({
       price: players.filter(item => item.checked === true).length * per_price,
       players,
-      filter_data: players,
       payPlayers: players.filter(item => item.checked === true),
       priceData
     });
@@ -122,7 +121,6 @@ class Payment extends Component {
     this.setState({
       price: players.filter(item => item.checked === true).length * per_price,
       players,
-      filter_data: players,
       payPlayers: players.filter(item => item.checked === true),
       priceData
     });
