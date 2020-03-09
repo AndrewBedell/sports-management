@@ -648,7 +648,7 @@ class OrganizationController extends Controller
                     if ($gender == 0 || $gender == 1)
                         $result = $result->where('members.gender', $gender);
 
-                    if ($weight != '')
+                    if ($weight != '' || $weight != 0)
                         $result = $result->where('players.weight_id', $weight);
 
                     if ($dan != '')
