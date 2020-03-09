@@ -8,6 +8,8 @@ import mastercard from '../../img/payment/mastercard.png';
 import visa from '../../img/payment/visa.png';
 import payme from '../../img/payment/payme.png';
 import paymeLogo from '../../img/payment/payme-logo.jpg';
+import maleAvatar from '../../img/male-avatar.jpg';
+import femaleAvatar from '../../img/female-avatar.png';
 
 export default {
   intro,
@@ -18,5 +20,7 @@ export default {
   mastercard,
   visa,
   payme,
-  paymeLogo
+  paymeLogo,
+  maleAvatar,
+  femaleAvatar
 };

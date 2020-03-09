@@ -249,7 +249,7 @@ class DataTable extends Component {
                           </Fragment>
                         ) : (
                           <Fragment>
-                            <img src={item.profile_image ? item.profile_image : Bitmaps.logo} className="table-avatar mr-2" />
+                            <img src={item.profile_image ? item.profile_image : (item.gender == 1 ? Bitmaps.maleAvatar : Bitmaps.femaleAvatar)} className="table-avatar mr-2" />
                           </Fragment>
                         )
                       }
