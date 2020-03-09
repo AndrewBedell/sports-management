@@ -58,7 +58,9 @@ class MemberDetail extends Component {
             <Segment>
               <Row>
                 <Col lg="3">
-                  <Image className="m-auto" src={member.profile_image ? member.profile_image : (member.gender == 1 ? Bitmaps.maleAvatar : Bitmaps.femaleAvatar)} size='small' />
+                  <div className="detail-image">
+                    <Image className="m-auto" src={member.profile_image ? member.profile_image : (member.gender == 1 ? Bitmaps.maleAvatar : Bitmaps.femaleAvatar)} />
+                  </div>
                 </Col>
                 <Col lg="9">
                   {

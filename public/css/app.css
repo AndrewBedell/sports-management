@@ -57804,6 +57804,14 @@ body {
      object-fit: cover;
 }
 
+.detail-image img {
+  width: 200px;
+  height: 200px;
+  border-radius: 200px;
+  -o-object-fit: cover;
+     object-fit: cover;
+}
+
 .table-avatar {
   width: 35px;
   height: 35px;
@@ -57835,6 +57843,7 @@ body {
      object-fit: cover;
   width: 240px;
   height: 240px;
+  border-radius: 240px;
 }
 
 .alert-dismissible .close {

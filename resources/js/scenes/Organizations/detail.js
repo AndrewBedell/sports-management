@@ -182,7 +182,9 @@ class OrganizationDetail extends Component {
                 <Segment>
                   <Row>
                     <Col md="6" lg="3">
-                      <Image className="m-auto" src={org.logo ? org.logo : Bitmaps.logo} size='small' />
+                      <div className="detail-image">
+                        <Image className="m-auto" src={org.logo ? org.logo : Bitmaps.logo} />
+                      </div>
                     </Col>
                     <Col md="6" lg="9">
                       <h5 className="py-2">
