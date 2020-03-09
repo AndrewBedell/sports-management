@@ -146,6 +146,7 @@ class Payment extends Component {
     this.setState({
       pay_status: false,
       players: player_list,
+      payPlayers: null,
       filter_players: {
         search: '',
         gender: null,
@@ -159,7 +160,7 @@ class Payment extends Component {
     this.setState({
       isSubmitting: true
     });
-    console.log(this.state.priceData);
+    console.log(this.state.priceData, this.state.payPlayers);
   }
 
   handleDetailPlayer(id) {

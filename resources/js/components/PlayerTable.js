@@ -20,7 +20,6 @@ class PlayerTable extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      // user: {},
       column: null,
       data: [],
       direction: null,
@@ -38,12 +37,6 @@ class PlayerTable extends Component {
   }
 
   componentDidMount() {
-    // const user_info = JSON.parse(localStorage.getItem('auth'));
-    // if (user_info.user) {
-    //   this.setState({
-    //     user: user_info.user.member_info
-    //   });
-    // }
     if (this.props.items.length > 0) {
       this.setState({
         activePage: 1
@@ -57,7 +50,7 @@ class PlayerTable extends Component {
   }
 
   componentWillReceiveProps(props) {
-    const { filter, items } = props;
+    const { items } = props;
     if (this.props.items !== items) {
       if (props.items.length > 0) {
         this.setState({
@@ -202,18 +195,8 @@ class PlayerTable extends Component {
                   key={index}
                 >
                   <Table.Cell>
-                    <span className="text-primary mr-2">
-                      <a data-tip data-for={`happyFace_${index}`}><i className="fa fa-user fa-lg" /></a>
-                      <ReactTooltip
-                        id={`happyFace_${index}`}
-                        type="light"
-                        effect="float"
-                        place="right"
-                        className="avatar-tooltip"
-                      >
-                        <div className="avatar-preview"><img src={item.profile_image ? item.profile_image : Bitmaps.logo} /></div>
-                      </ReactTooltip>
-                    </span>
+                    <img src={item.profile_image ? item.profile_image : Bitmaps.logo} className="table-avatar mr-2" />
+                    {' '}
                     <a className="detail-link" onClick={() => onDetail(item.id)}>
                       {item.surname && item.surname.toUpperCase()}
                       {' '}

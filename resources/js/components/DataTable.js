@@ -245,29 +245,11 @@ class DataTable extends Component {
                       {
                         stype.value !== 'member' ? (
                           <Fragment>
-                            <a data-tip data-for={`happyFace_${index}`}><i className="fa fa-users fa-lg" /></a>
-                            <ReactTooltip
-                              id={`happyFace_${index}`}
-                              type="light"
-                              effect="float"
-                              place="right"
-                              className="avatar-tooltip"
-                            >
-                              <div className="avatar-preview"><img src={item.logo ? item.logo : Bitmaps.logo} /></div>
-                            </ReactTooltip>
+                            <img src={item.logo ? item.logo : Bitmaps.logo} className="table-avatar mr-2" />
                           </Fragment>
                         ) : (
                           <Fragment>
-                            <a data-tip data-for={`happyFace_${index}`}><i className="fa fa-user fa-lg" /></a>
-                            <ReactTooltip
-                              id={`happyFace_${index}`}
-                              type="light"
-                              effect="float"
-                              place="right"
-                              className="avatar-tooltip"
-                            >
-                              <div className="avatar-preview"><img src={item.profile_image ? item.profile_image : Bitmaps.logo} /></div>
-                            </ReactTooltip>
+                            <img src={item.profile_image ? item.profile_image : Bitmaps.logo} className="table-avatar mr-2" />
                           </Fragment>
                         )
                       }

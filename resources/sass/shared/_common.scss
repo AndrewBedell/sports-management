@@ -18,6 +18,13 @@ body {
   }
 }
 
+.table-avatar {
+  width: 35px;
+  height: 35px;
+  border-radius: 40px;
+  object-fit: cover;
+}
+
 .avatar-tooltip {
   padding: 8px !important;
   border-radius: 20% !important;
