@@ -556,7 +556,17 @@ class Payment extends Component {
                           </Card>
                         </TabPane>
                         <TabPane tabId="payme">
-                          <div className="py-3">Payme Payment Method</div>
+                          <div className="py-3">
+                            <FormGroup>
+                              <Label for="price">Pay Today</Label>
+                              <span className="d-block">
+                                Total :
+                                {' '}
+                                {price ? `$${price}` : null}
+                              </span>
+                            </FormGroup>
+                            <div>Payme Payment Method</div>
+                          </div>
                         </TabPane>
                       </TabContent>
                     </div>
