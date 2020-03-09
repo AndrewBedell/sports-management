@@ -58571,6 +58571,8 @@ body {
 
 .nav-tabs .nav-item .nav-link {
   text-align: center;
+  border: none;
+  border-bottom: 1px solid #17a2b8;
 }
 
 .nav-tabs .nav-item .nav-link.active {

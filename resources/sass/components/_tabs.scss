@@ -4,6 +4,8 @@
     cursor: pointer;
     .nav-link {
       text-align: center;
+      border: none;
+      border-bottom: 1px solid $info;
       &.active {
         background-color: $info;
       }

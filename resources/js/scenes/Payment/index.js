@@ -38,6 +38,7 @@ class Payment extends Component {
       price: 0.00,
       per_price: 1.99,
       isSubmitting: false,
+      payme_data: null,
       priceData: {
         card_number: '',
         card_expiry_date: '',
@@ -153,6 +154,7 @@ class Payment extends Component {
       players: player_list,
       payPlayers: null,
       isSubmitting: false,
+      payme_data: null,
       filter_players: {
         search: '',
         gender: null,
@@ -167,6 +169,16 @@ class Payment extends Component {
       isSubmitting: true
     });
     console.log(this.state.priceData, this.state.payPlayers);
+    this.setState({
+      isSubmitting: false
+    });
+  }
+
+  handlePayMe() {
+    this.setState({
+      isSubmitting: true
+    });
+    console.log(this.state.payme_data, this.state.payPlayers);
     this.setState({
       isSubmitting: false
     });
@@ -295,6 +307,7 @@ class Payment extends Component {
       filter_players,
       price,
       priceData,
+      payme_data,
       isSubmitting,
       pay_method
     } = this.state;
@@ -556,17 +569,43 @@ class Payment extends Component {
                           </Card>
                         </TabPane>
                         <TabPane tabId="payme">
-                          <div className="py-3">
-                            <FormGroup>
-                              <Label for="price">Pay Today</Label>
-                              <span className="d-block">
-                                Total :
-                                {' '}
-                                {price ? `$${price}` : null}
-                              </span>
-                            </FormGroup>
-                            <div>Payme Payment Method</div>
-                          </div>
+                          <Row className="d-flex flex-column flex-md-row bg-info">
+                            <Col md="6" className="bg-light p-3">
+                              <FormGroup>
+                                <Label for="price">Pay Today</Label>
+                                <span className="d-block">
+                                  Total :
+                                  {' '}
+                                  {price ? `$${price}` : null}
+                                </span>
+                                <div>
+                                  {payme_data && payme_data.email}
+                                </div>
+                              </FormGroup>
+                              <Row>
+                                <Col md="12">
+                                  <Button
+                                    className="btn btn-outline-primary float-left"
+                                    type="button"
+                                    onClick={this.handleBackTable.bind(this)}>
+                                    Back
+                                  </Button>
+                                  <Button
+                                    className="float-right"
+                                    type="button"
+                                    color="primary"
+                                    disabled={isSubmitting}
+                                    onClick={this.handlePayMe.bind(this)}
+                                  >
+                                    Next
+                                  </Button>
+                                </Col>
+                              </Row>
+                            </Col>
+                            <Col md="6" className="d-flex justify-content-center align-items-center">
+                              <Image src={Bitmaps.paymeLogo} />
+                            </Col>
+                          </Row>
                         </TabPane>
                       </TabContent>
                     </div>
