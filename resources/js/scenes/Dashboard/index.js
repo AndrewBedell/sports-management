@@ -667,7 +667,6 @@ class Dashboard extends Component {
                         name="member_type"
                         classNamePrefix={!member_required ? 'invalid react-select-lg' : 'react-select-lg'}
                         placeholder="Member Type"
-                        classNamePrefix="react-select-lg"
                         value={member_type}
                         options={member_type_options}
                         getOptionValue={option => option.value}

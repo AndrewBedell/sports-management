@@ -58564,6 +58564,61 @@ body {
   padding: 20px;
 }
 
+.nav-tabs .nav-item {
+  width: 50%;
+  cursor: pointer;
+}
+
+.nav-tabs .nav-item .nav-link {
+  text-align: center;
+}
+
+.nav-tabs .nav-item .nav-link.active {
+  background-color: #17a2b8;
+}
+
+.nav-tabs .nav-item .nav-link .payments {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.nav-tabs .nav-item .nav-link .payments img {
+  width: 40px;
+  height: 40px;
+  margin-right: 10px;
+}
+
+.nav-tabs .nav-item .nav-link .payments img:last-child {
+  margin-right: 0;
+}
+
+@media (max-width: 767.98px) {
+  .nav-tabs .nav-item .nav-link .payments img {
+    width: 24px;
+    height: 24px;
+  }
+}
+
+.nav-tabs .nav-item .nav-link .payment {
+  display: flex;
+  justify-content: center;
+}
+
+.nav-tabs .nav-item .nav-link .payment img {
+  width: 120px;
+}
+
+@media (max-width: 767.98px) {
+  .nav-tabs .nav-item .nav-link .payment img {
+    width: 76px;
+  }
+}
+
+.tab-content {
+  padding: 0 15px;
+}
+
 .site-intro {
   min-height: 100vh;
 }
