@@ -6,15 +6,13 @@ import { Alert } from 'reactstrap';
 import {
   Table,
   Pagination,
-  Menu,
-  Flag,
-  Button
+  Menu
 } from 'semantic-ui-react';
 import Select from 'react-select';
 import ReactTooltip from 'react-tooltip';
 
 import _ from 'lodash';
-import { countries, Genders } from '../configs/data';
+import { Genders } from '../configs/data';
 import Bitmaps from '../theme/Bitmaps';
 
 import Api from '../apis/app';
@@ -45,7 +43,6 @@ class ChangeSuperTable extends Component {
         { label: 20, value: 20 }
       ]
     };
-    
     this.handleChangePerPage = this.handleChangePerPage.bind(this);
   }
 
@@ -135,8 +132,8 @@ class ChangeSuperTable extends Component {
   }
 
   async handleDeleteUser(id) {
-    const {data} = this.state;
-    
+    const { data } = this.state;
+
     const delUser = await Api.delete(`user/${id}`);
 
     if (delUser.response.status == 200) {
@@ -187,7 +184,7 @@ class ChangeSuperTable extends Component {
       data,
       isOpenDeleteModal,
       confirmationMessage,
-      isOpenEditModal,
+      // isOpenEditModal,
       activePage,
       per_page,
       pageOptions,
@@ -204,37 +201,45 @@ class ChangeSuperTable extends Component {
         <Table sortable celled selectable unstackable>
           <Table.Header>
             <Table.Row>
-              <Table.HeaderCell width="2" className="text-center"
+              <Table.HeaderCell
+                width="2"
+                className="text-center"
                 sorted={column === 'name' ? direction : null}
                 onClick={this.handleSort.bind(this, 'name')}
               >
                 Name
               </Table.HeaderCell>
-              <Table.HeaderCell className="text-center"
-              sorted={column === 'gender' ? direction : null}
-              onClick={this.handleSort.bind(this, 'gender')}
+              <Table.HeaderCell
+                className="text-center"
+                sorted={column === 'gender' ? direction : null}
+                onClick={this.handleSort.bind(this, 'gender')}
               >
                 Gender
               </Table.HeaderCell>
-              <Table.HeaderCell className="text-center"
-              sorted={column === 'birthday' ? direction : null}
-              onClick={this.handleSort.bind(this, 'birthday')}
+              <Table.HeaderCell
+                className="text-center"
+                sorted={column === 'birthday' ? direction : null}
+                onClick={this.handleSort.bind(this, 'birthday')}
               >
                 Birthday
               </Table.HeaderCell>
-              <Table.HeaderCell className="text-center"
+              <Table.HeaderCell
+                className="text-center"
                 sorted={column === 'email' ? direction : null}
                 onClick={this.handleSort.bind(this, 'email')}
               >
                 Email
               </Table.HeaderCell>
-              <Table.HeaderCell className="text-center"
+              <Table.HeaderCell
+                className="text-center"
                 sorted={column === 'mobile_phone' ? direction : null}
                 onClick={this.handleSort.bind(this, 'mobile_phone')}
               >
                 Mobile
               </Table.HeaderCell>
-              <Table.HeaderCell width="4" className="text-center"
+              <Table.HeaderCell
+                width="4"
+                className="text-center"
                 sorted={column === 'addressline1' ? direction : null}
                 onClick={this.handleSort.bind(this, 'addressline1')}
               >
@@ -254,18 +259,7 @@ class ChangeSuperTable extends Component {
                 data.map((item, index) => (
                   <Table.Row key={index}>
                     <Table.Cell>
-                      <span className="text-primary mr-2">
-                        <a data-tip data-for={`happyFace_${index}`}><i className="fa fa-user fa-lg" /></a>
-                        <ReactTooltip
-                          id={`happyFace_${index}`}
-                          type="light"
-                          effect="float"
-                          place="right"
-                          className="avatar-tooltip"
-                        >
-                        <div className="avatar-preview"><img src={item.profile_image ? item.profile_image : Bitmaps.logo} /></div>
-                        </ReactTooltip>
-                      </span>
+                      <img src={item.profile_image ? item.profile_image : Bitmaps.logo} className="table-avatar mr-2" />
                       {item.name}
                       {' '}
                       {item.patronymic == '-' ? '' : item.patronymic}
@@ -287,7 +281,7 @@ class ChangeSuperTable extends Component {
                       {item.zip_code}
                     </Table.Cell>
                     <Table.Cell className="text-center">
-                      
+
                     </Table.Cell>
                     <Table.Cell>
                       {/* <div className="text-center">
@@ -344,21 +338,17 @@ class ChangeSuperTable extends Component {
             </Table.Row>
           </Table.Footer>
         </Table>
-        { 
+        {/* { 
           isOpenDeleteModal && 
           <Prompt title={confirmationMessage} 
             id={this.state.userID}
             handleAccept={this.handleDeleteUser.bind(this)} 
             handleCancel={this.handleConfirmationClose.bind(this)} 
           /> 
-        }
+        } */}
       </Fragment>
     );
   }
 }
-
-ChangeSuperTable.defaultProps = {
-  
-};
 
 export default ChangeSuperTable;
