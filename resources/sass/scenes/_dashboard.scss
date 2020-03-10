@@ -27,4 +27,29 @@
       text-decoration: underline;
     }
   }
+  &.has-hand-card {
+    position: relative;
+    .hand-card {
+      position: fixed;
+      right: -400px;
+      top: 105px;
+      width: 390px;
+      height: 300px;
+      background-image: url('../img/homehand.png');
+      background-position: left;
+      background-size: cover;
+      opacity: 0;
+      @media screen and (max-width: 1480px) {
+        width: 20%;
+      }
+      @include media-breakpoint-down('lg') {
+        display: none;
+      }
+      &.right-handle {
+        right: 0;
+        opacity: 1;
+        transition: all 1s ease;
+      }
+    }
+  }
 }

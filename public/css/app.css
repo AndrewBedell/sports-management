@@ -59053,3 +59053,37 @@ body .main-content {
   text-decoration: underline;
 }
 
+.main-content.has-hand-card {
+  position: relative;
+}
+
+.main-content.has-hand-card .hand-card {
+  position: fixed;
+  right: -400px;
+  top: 105px;
+  width: 390px;
+  height: 300px;
+  background-image: url(/images/homehand.png?569e2ff10419dff3e52eb6a1604212b5);
+  background-position: left;
+  background-size: cover;
+  opacity: 0;
+}
+
+@media screen and (max-width: 1480px) {
+  .main-content.has-hand-card .hand-card {
+    width: 20%;
+  }
+}
+
+@media (max-width: 1199.98px) {
+  .main-content.has-hand-card .hand-card {
+    display: none;
+  }
+}
+
+.main-content.has-hand-card .hand-card.right-handle {
+  right: 0;
+  opacity: 1;
+  transition: all 1s ease;
+}
+

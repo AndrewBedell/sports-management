@@ -314,7 +314,7 @@ class Payment extends Component {
     return (
       <Fragment>
         <MainTopBar />
-        <div className="main-content detail">
+        <div className="main-content detail has-hand-card">
           {
             !pay_status ? (
               <Container fluid>
@@ -614,6 +614,7 @@ class Payment extends Component {
               </Container>
             )
           }
+          <div className={pay_status ? 'hand-card right-handle' : 'hand-card'} />
         </div>
       </Fragment>
     );
