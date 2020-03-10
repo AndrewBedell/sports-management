@@ -787,7 +787,7 @@ class MemberAdd extends Component {
                     }
                     <Col sm="3" xs="6">
                       {
-                        (user_is_club === 1 || (values.role_id && values.role_id.is_player === 1)) && (
+                        ((values.role_id && values.role_id.is_player === 1)) && (
                           <FormGroup>
                             <Label for="weight_id">Weight</Label>
                             <Select
@@ -809,7 +809,7 @@ class MemberAdd extends Component {
                     </Col>
                     <Col sm="3" xs="6">
                       {
-                        (user_is_club === 1 || (values.role_id && values.role_id.is_player === 1)) && (
+                        ((values.role_id && values.role_id.is_player === 1)) && (
                           <FormGroup>
                             <Label for="dan">Dan</Label>
                             <Select
@@ -833,7 +833,7 @@ class MemberAdd extends Component {
                     </Col>
                     <Col xs="6">
                       {
-                        (user_is_club === 1 || (values.role_id && values.role_id.is_player === 1)) && (
+                        ((values.role_id && values.role_id.is_player === 1)) && (
                           <FormGroup>
                             <Label for="skill">Skill</Label>
                             <Input
