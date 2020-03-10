@@ -89,9 +89,11 @@ class UserController extends Controller
         $user = JWTAuth::parseToken()->authenticate();
 
         $member = Member::leftJoin('organizations', 'organizations.id', '=', 'members.organization_id')
+                    ->leftJoin('settings', 'settings.organization_id', '=', 'members.organization_id')
                     ->leftJoin('roles', 'roles.id', '=', 'members.role_id')
                     ->where('members.id', $user->member_id)
-                    ->select('members.*', 'organizations.name_o', 'roles.name AS role')
+                    ->select('members.*', 'organizations.parent_id', 'organizations.name_o', 'roles.name AS role',
+                            'settings.price', 'settings.percent')
                     ->get();
 
         return response()->json($member[0]);

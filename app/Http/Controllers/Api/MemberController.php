@@ -6,6 +6,7 @@ use App\User;
 use App\Member;
 use App\Player;
 use App\Organization;
+use App\Setting;
 
 use JWTAuth;
 use Illuminate\Http\Request;
@@ -244,208 +245,216 @@ class MemberController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
-    {   
+    {
         $member = Member::find($id);
 
         if (isset($member)) {
-            if ($this->checkPermission($member->organization_id)) {
-                $data = $request->all();
+            $data = $request->all();
 
-                $validMember = Validator::make($data, [
-                    'organization_id' => 'required',
-                    'role_id' => 'required',
-                    'name' => 'required|string|max:255',
-                    'surname' => 'required|string|max:255',
-                    'gender' => 'required|boolean',
-                    'birthday' => 'required|date',
-                    'email' => 'required|string|email|max:255',
-                    // 'mobile_phone' => 'required|string|max:255',
-                    // 'addressline1' => 'required|string|max:255',
-                    // 'country' => 'required|string|max:255',
-                    // 'state' => 'required|string|max:255',
-                    // 'city' => 'required|string|max:255',
-                    // 'zip_code' => 'required|string|max:255',
-                    'identity' => 'required|string|max:255',
-                    // 'active' => 'required|boolean',
-                    // 'register_date' => 'required|date'
-                ]);
+            $org = Organization::find($member->organization_id);
 
-                if ($validMember->fails()) {
-                    return response()->json(
-                        [
-                            'status' => 'fail',
-                            'data' => $validMember->errors(),
-                        ],
-                        422
-                    );
-                }
+            if ($org->parent_id == 0) {
+                $setting = Setting::where('organization_id', $member->organization_id)->get();
 
-                $role = DB::table('roles')->where('id', $data['role_id'])->first();
-
-                if ($role->is_player) {
-                    $validPlayer = Validator::make($data, [
-                        'weight_id' => 'required',
-                        'dan' => 'required|integer'
-                    ]);
-
-                    if ($validPlayer->fails()) {
-                        return response()->json(
-                            [
-                                'status' => 'fail',
-                                'data' => $validPlayer->errors(),
-                            ],
-                            422
-                        );
-                    }
-                }
-
-                $exist1 = Member::where('email', $data['email'])->where('id', '!=', $id)->withTrashed()->count();
-                $exist2 = Member::where('identity', $data['identity'])->where('id', '!=', $id)->withTrashed()->count();
-
-                $errArr = array();
-                $exist = 0;
-
-                if ($exist1 > 0) {
-                    $errArr['email'] = 'Email already exist.';
-                    $exist += $exist1;
-                }
-
-                if ($exist2 > 0) {
-                    $errArr['identity'] = 'Identity No already exist.';
-                    $exist += $exist2;
-                }
-
-                if ($exist > 0) {
-                    return response()->json(
-                        [
-                            'status' => 'fail',
-                            'data' => $errArr
-                        ],
-                        422
-                    );
-                }
-
-                $current = Member::where('id', $id)->first();
-
-                if ($current->role_id != $role->id) {
-                    if ($role->is_player) {
-                        User::where('member_id', $id)->delete();
-
-                        $checkDeleted = Player::withTrashed()->where('member_id', $id)->count();
-
-                        if ($checkDeleted == 0) {
-                            if (is_null($data['skill']))
-                                $data['skill'] = "";
-                            
-                            Player::create(array(
-                                'member_id' => $id,
-                                'weight_id' => $data['weight_id'],
-                                'dan' => $data['dan'],
-                                'skill' => $data['skill']
-                            ));
-                        } else {
-                            Player::withTrashed()->where('member_id', $id)->restore();
-                        }
-                    } else {
-                        Player::where('member_id', $id)->delete();
-                    }
-                }
-
-                $base64_image = $request->input('profile_image');
-                
-                if ($base64_image != '' && preg_match('/^data:image\/(\w+);base64,/', $base64_image)) {
-                    $pos  = strpos($base64_image, ';');
-                    $type = explode(':', substr($base64_image, 0, $pos))[1];
-
-                    if (substr($type, 0, 5) == 'image') {
-                        $filename = $data['identity'] . '_' . date('Ymd');
-
-                        $type = str_replace('image/', '.', $type);
-
-                        $image = substr($base64_image, strpos($base64_image, ',') + 1);
-                        $image = base64_decode($image);
-                        
-                        Storage::disk('local')->delete(str_replace('photos/', '', $current->profile_image));
-                        Storage::disk('local')->put($filename . $type, $image);
-
-                        $data['profile_image'] = "photos/" . $filename . $type;
-                    } else {
-                        return response()->json(
-                            [
-                                'status' => 'error',
-                                'message' => 'File type is not image.'
-                            ],
-                            406
-                        );
-                    }
-                }
-
-                if (!isset($data['profile_image']) || is_null($data['profile_image'])) {
-                    $data['profile_image'] = "";
-                }
-
-                if (is_null($data['patronymic']))
-                    $data['patronymic'] = "";
-
-                if (is_null($data['addressline2']))
-                    $data['addressline2'] = "";
-
-                if (is_null($data['position']))
-                    $data['position'] = "";
-
-                Member::where('id', $id)->update(array(
-                    'organization_id' => $data['organization_id'],
-                    'role_id' => $data['role_id'],
-                    'name' => $data['name'],
-                    'patronymic' => $data['patronymic'],
-                    'surname' => $data['surname'],
-                    'profile_image' => $data['profile_image'],
-                    'gender' => $data['gender'],
-                    'birthday' => $data['birthday'],
-                    'email' => $data['email'],
-                    'mobile_phone' => $data['mobile_phone'],
-                    'addressline1' => $data['addressline1'],
-                    'addressline2' => $data['addressline2'],
-                    'country' => 'kz',
-                    // 'country' => $data['country'],
-                    'state' => $data['state'],
-                    'city' => $data['city'],
-                    'zip_code' => $data['zip_code'],
-                    'position' => $data['position'],
-                    'identity' => $data['identity'],
-                    'register_date' => $data['register_date']
-                ));
-
-                $member_id = $member->id;
-
-                if ($role->is_player) {
-                    if (is_null($data['skill']))
-                        $data['skill'] = "";
-
-                    Player::where('member_id', $member_id)->update(array(
-                        'weight_id' => $data['weight_id'],
-                        'dan' => $data['dan'],
-                        'skill' => $data['skill']
+                if (sizeof($setting) > 0) {
+                    Setting::where('organization_id', $member->organization_id)->update(array(
+                        'price' => $data['price']
                     ));
                 } else {
-                    User::where('member_id', $member_id)->update(array(
-                        'email' => $data['email']
+                    Setting::create(array(
+                        'organization_id' => $member->organization_id,
+                        'price' => $data['price'],
+                        'percent' => 0.0
                     ));
                 }
+            }
 
-                return response()->json([
-                    'status' => 'success',
-                    'data' => $data
-                ], 200);
-            } else {
+            $validMember = Validator::make($data, [
+                'organization_id' => 'required',
+                'role_id' => 'required',
+                'name' => 'required|string|max:255',
+                'surname' => 'required|string|max:255',
+                'gender' => 'required|boolean',
+                'birthday' => 'required|date',
+                'email' => 'required|string|email|max:255',
+                // 'mobile_phone' => 'required|string|max:255',
+                // 'addressline1' => 'required|string|max:255',
+                // 'country' => 'required|string|max:255',
+                // 'state' => 'required|string|max:255',
+                // 'city' => 'required|string|max:255',
+                // 'zip_code' => 'required|string|max:255',
+                'identity' => 'required|string|max:255',
+                // 'active' => 'required|boolean',
+                // 'register_date' => 'required|date'
+            ]);
+
+            if ($validMember->fails()) {
                 return response()->json(
                     [
-                        'status' => 'error',
-                        'message' => 'Access permission denied.'
+                        'status' => 'fail',
+                        'data' => $validMember->errors(),
                     ],
-                    406
+                    422
                 );
             }
+
+            $role = DB::table('roles')->where('id', $data['role_id'])->first();
+
+            if ($role->is_player) {
+                $validPlayer = Validator::make($data, [
+                    'weight_id' => 'required',
+                    'dan' => 'required|integer'
+                ]);
+
+                if ($validPlayer->fails()) {
+                    return response()->json(
+                        [
+                            'status' => 'fail',
+                            'data' => $validPlayer->errors(),
+                        ],
+                        422
+                    );
+                }
+            }
+
+            $exist1 = Member::where('email', $data['email'])->where('id', '!=', $id)->withTrashed()->count();
+            $exist2 = Member::where('identity', $data['identity'])->where('id', '!=', $id)->withTrashed()->count();
+
+            $errArr = array();
+            $exist = 0;
+
+            if ($exist1 > 0) {
+                $errArr['email'] = 'Email already exist.';
+                $exist += $exist1;
+            }
+
+            if ($exist2 > 0) {
+                $errArr['identity'] = 'Identity No already exist.';
+                $exist += $exist2;
+            }
+
+            if ($exist > 0) {
+                return response()->json(
+                    [
+                        'status' => 'fail',
+                        'data' => $errArr
+                    ],
+                    422
+                );
+            }
+
+            $current = Member::where('id', $id)->first();
+
+            if ($current->role_id != $role->id) {
+                if ($role->is_player) {
+                    User::where('member_id', $id)->delete();
+
+                    $checkDeleted = Player::withTrashed()->where('member_id', $id)->count();
+
+                    if ($checkDeleted == 0) {
+                        if (is_null($data['skill']))
+                            $data['skill'] = "";
+                        
+                        Player::create(array(
+                            'member_id' => $id,
+                            'weight_id' => $data['weight_id'],
+                            'dan' => $data['dan'],
+                            'skill' => $data['skill']
+                        ));
+                    } else {
+                        Player::withTrashed()->where('member_id', $id)->restore();
+                    }
+                } else {
+                    Player::where('member_id', $id)->delete();
+                }
+            }
+
+            $base64_image = $request->input('profile_image');
+            
+            if ($base64_image != '' && preg_match('/^data:image\/(\w+);base64,/', $base64_image)) {
+                $pos  = strpos($base64_image, ';');
+                $type = explode(':', substr($base64_image, 0, $pos))[1];
+
+                if (substr($type, 0, 5) == 'image') {
+                    $filename = $data['identity'] . '_' . date('Ymd');
+
+                    $type = str_replace('image/', '.', $type);
+
+                    $image = substr($base64_image, strpos($base64_image, ',') + 1);
+                    $image = base64_decode($image);
+                    
+                    Storage::disk('local')->delete(str_replace('photos/', '', $current->profile_image));
+                    Storage::disk('local')->put($filename . $type, $image);
+
+                    $data['profile_image'] = "photos/" . $filename . $type;
+                } else {
+                    return response()->json(
+                        [
+                            'status' => 'error',
+                            'message' => 'File type is not image.'
+                        ],
+                        406
+                    );
+                }
+            }
+
+            if (!isset($data['profile_image']) || is_null($data['profile_image'])) {
+                $data['profile_image'] = "";
+            }
+
+            if (is_null($data['patronymic']))
+                $data['patronymic'] = "";
+
+            if (is_null($data['addressline2']))
+                $data['addressline2'] = "";
+
+            if (is_null($data['position']))
+                $data['position'] = "";
+
+            Member::where('id', $id)->update(array(
+                'organization_id' => $data['organization_id'],
+                'role_id' => $data['role_id'],
+                'name' => $data['name'],
+                'patronymic' => $data['patronymic'],
+                'surname' => $data['surname'],
+                'profile_image' => $data['profile_image'],
+                'gender' => $data['gender'],
+                'birthday' => $data['birthday'],
+                'email' => $data['email'],
+                'mobile_phone' => $data['mobile_phone'],
+                'addressline1' => $data['addressline1'],
+                'addressline2' => $data['addressline2'],
+                'country' => 'kz',
+                // 'country' => $data['country'],
+                'state' => $data['state'],
+                'city' => $data['city'],
+                'zip_code' => $data['zip_code'],
+                'position' => $data['position'],
+                'identity' => $data['identity'],
+                'register_date' => $data['register_date']
+            ));
+
+            $member_id = $member->id;
+
+            if ($role->is_player) {
+                if (is_null($data['skill']))
+                    $data['skill'] = "";
+
+                Player::where('member_id', $member_id)->update(array(
+                    'weight_id' => $data['weight_id'],
+                    'dan' => $data['dan'],
+                    'skill' => $data['skill']
+                ));
+            } else {
+                User::where('member_id', $member_id)->update(array(
+                    'email' => $data['email']
+                ));
+            }
+
+            return response()->json([
+                'status' => 'success',
+                'data' => $data
+            ], 200);
         } else {
             return response()->json(
                 [
