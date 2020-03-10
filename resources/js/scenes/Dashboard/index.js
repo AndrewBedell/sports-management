@@ -26,7 +26,7 @@ import DataTable from '../../components/DataTable';
 import Prompt from '../../components/Prompt';
 import EditModal from '../../components/EditModal';
 import {
-  Dans, search_genders, search_type_options, member_type_options
+  Dans, search_genders, search_type_options, member_type_options, referee_type_options
 } from '../../configs/data';
 
 class Dashboard extends Component {
@@ -46,6 +46,7 @@ class Dashboard extends Component {
       member_required: true,
       search_type: '',
       member_type: '',
+      referee_type: referee_type_options[0],
       search_org: '',
       search_name: '',
       search_gender: search_genders[0],
@@ -73,6 +74,8 @@ class Dashboard extends Component {
     this.handleSaveItem = this.handleSaveItem.bind(this);
     this.getWeights = this.getWeights.bind(this);
     this.search = this.search.bind(this);
+
+    if (referee_type_options.length == 3) referee_type_options.splice(0, 0, { label: 'All', value: 'all' });
   }
 
   componentDidMount() {
@@ -166,6 +169,9 @@ class Dashboard extends Component {
       search_org: search.org ? (org_response.body.find(org => org.id == search.org) || '') : '',
       search_name: search.name || '',
       member_type: search.mtype ? (member_type_options.find(option => option.value == search.mtype) || '') : '',
+      referee_type: search.rtype 
+        ? (referee_type_options.find(option => option.value == search.rtype) || referee_type_options[0]) 
+        : referee_type_options[0],
       search_gender: search.gender
         ? (search_genders.find(gender => gender.value == search.gender) || search_genders[0])
         : search_genders[0],
@@ -221,6 +227,14 @@ class Dashboard extends Component {
           search_data: null
         });
         break;
+      case 'referee_type':
+        this.setState({
+          referee_type: value,
+          search_required: true,
+          member_required: true,
+          search_data: null
+        });
+        break;
       case 'search_gender':
         this.setState({
           search_gender: value,
@@ -246,7 +260,7 @@ class Dashboard extends Component {
 
   async handleSearch() {
     const {
-      search_type, search_org, search_name, member_type, search_gender, search_weight, search_dan
+      search_type, search_org, search_name, member_type, referee_type, search_gender, search_weight, search_dan
     } = this.state;
 
     const search_params = {
@@ -254,6 +268,7 @@ class Dashboard extends Component {
       org: search_org ? search_org.id : '',
       name: search_name,
       mtype: member_type ? member_type.value : '',
+      rtype: referee_type ? referee_type.value : '',
       gender: search_gender ? search_gender.value : search_genders[0],
       weight: search_weight && search_weight.id && search_weight.id != 0 ? search_weight.id : '',
       dan: search_dan ? search_dan.value : ''
@@ -277,21 +292,17 @@ class Dashboard extends Component {
   }
 
   async search(search_params) {
-    if (search_params.stype == 'member' && !search_params.mtype) {
+    const search_response = await Api.get('search', search_params);
+    const { response, body } = search_response;
 
-    } else {
-      const search_response = await Api.get('search', search_params);
-      const { response, body } = search_response;
-
-      switch (response.status) {
-        case 200:
-          this.setState({
-            search_data: body
-          });
-          break;
-        default:
-          break;
-      }
+    switch (response.status) {
+      case 200:
+        this.setState({
+          search_data: body
+        });
+        break;
+      default:
+        break;
     }
   }
 
@@ -515,6 +526,7 @@ class Dashboard extends Component {
       roles,
       search_type,
       member_type,
+      referee_type,
       weights,
       clubs,
       search_org,
@@ -685,9 +697,29 @@ class Dashboard extends Component {
                 )
               }
               {
+                search_type.value == 'member' && member_type.value == 'referee' && (
+                  <Col xl="2" lg="3" md="4" sm="6" xs="12">
+                    <FormGroup>
+                      <Select
+                        name="referee_type"
+                        classNamePrefix="react-select-lg"
+                        placeholder="Referee Type"
+                        value={referee_type}
+                        options={referee_type_options}
+                        getOptionValue={option => option.value}
+                        getOptionLabel={option => option.label}
+                        onChange={(type) => {
+                          this.handleSearchFilter('referee_type', type);
+                        }}
+                      />
+                    </FormGroup>
+                  </Col>
+                )
+              }
+              {
                 search_type.value == 'member' && member_type.value == 'judoka' && (
                   <Fragment>
-                    <Col xl="2" lg="2" md="3" sm="6" xs="12">
+                    <Col xl="2" lg="2" md="4" sm="6" xs="12">
                       <FormGroup>
                         <Select
                           name="search_gender"

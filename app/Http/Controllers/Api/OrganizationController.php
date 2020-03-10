@@ -598,6 +598,7 @@ class OrganizationController extends Controller
         $org = $request->input('org');
         $name = $request->input('name');
         $mtype = $request->input('mtype');
+        $rtype = $request->input('rtype');
         $gender = $request->input('gender');
         $weight = $request->input('weight');
         $dan = $request->input('dan');
@@ -660,6 +661,9 @@ class OrganizationController extends Controller
                 } else {
                     if ($mtype == 'staff')
                         $result = $result->where('organizations.is_club', 0);
+
+                    if ($mtype == 'referee' && $rtype != '' && $rtype != 'all')
+                        $result = $result->where('members.position', $rtype);
                         
                     $result = $result->select('members.*', 'organizations.name_o', 'roles.name AS role_name')->get();
                 }
