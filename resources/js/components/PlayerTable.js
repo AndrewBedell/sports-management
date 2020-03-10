@@ -10,7 +10,6 @@ import {
 } from 'semantic-ui-react';
 import { CustomInput } from 'reactstrap';
 import Select from 'react-select';
-import ReactTooltip from 'react-tooltip';
 
 import _ from 'lodash';
 import { Genders } from '../configs/data';
@@ -20,7 +19,6 @@ class PlayerTable extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      user: {},
       column: null,
       data: [],
       direction: null,
@@ -38,7 +36,6 @@ class PlayerTable extends Component {
   }
 
   componentDidMount() {
-    this.componentWillReceiveProps(this.props);
     if (this.props.items.length > 0) {
       this.setState({
         activePage: 1
@@ -51,11 +48,17 @@ class PlayerTable extends Component {
     });
   }
 
-  componentWillReceiveProps() {
-    const user_info = JSON.parse(localStorage.getItem('auth'));
-    if (user_info.user) {
+  componentWillReceiveProps(props) {
+    const { items } = props;
+    if (this.props.items !== items) {
+      if (props.items.length > 0) {
+        this.setState({
+          activePage: 1
+        });
+      }
+      const { per_page } = this.state;
       this.setState({
-        user: user_info.user.member_info
+        data: items.slice(0, per_page)
       });
     }
   }
@@ -191,18 +194,8 @@ class PlayerTable extends Component {
                   key={index}
                 >
                   <Table.Cell>
-                    <span className="text-primary mr-2">
-                      <a data-tip data-for={`happyFace_${index}`}><i className="fa fa-user fa-lg" /></a>
-                      <ReactTooltip
-                        id={`happyFace_${index}`}
-                        type="light"
-                        effect="float"
-                        place="right"
-                        className="avatar-tooltip"
-                      >
-                        <div className="avatar-preview"><img src={item.profile_image ? item.profile_image : Bitmaps.logo} /></div>
-                      </ReactTooltip>
-                    </span>
+                    <img src={item.profile_image ? item.profile_image : (item.gender == 1 ? Bitmaps.maleAvatar : Bitmaps.femaleAvatar)} className="table-avatar mr-2" />
+                    {' '}
                     <a className="detail-link" onClick={() => onDetail(item.id)}>
                       {item.surname && item.surname.toUpperCase()}
                       {' '}

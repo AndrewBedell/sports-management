@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/click-events-have-key-events */
 /* eslint-disable jsx-a11y/alt-text */
 /* eslint-disable jsx-a11y/anchor-is-valid */
 
@@ -123,7 +124,7 @@ class DataTable extends Component {
       pageOptions,
       current_perPage
     } = this.state;
-    
+
     return (
       <Table sortable celled selectable unstackable>
         <Table.Header>
@@ -238,36 +239,18 @@ class DataTable extends Component {
               data.map((item, index) => (
                 <Table.Row
                   key={index}
-                  disabled={mtype.value == 'judoka' && item.active == 0}
+                  disabled={mtype.value === 'judoka' && item.active == 0}
                 >
                   <Table.Cell>
                     <span className="text-primary mr-2">
                       {
                         stype.value !== 'member' ? (
                           <Fragment>
-                            <a data-tip data-for={`happyFace_${index}`}><i className="fa fa-users fa-lg" /></a>
-                            <ReactTooltip
-                              id={`happyFace_${index}`}
-                              type="light"
-                              effect="float"
-                              place="right"
-                              className="avatar-tooltip"
-                            >
-                              <div className="avatar-preview"><img src={item.logo ? item.logo : Bitmaps.logo} /></div>
-                            </ReactTooltip>
+                            <img src={item.logo ? item.logo : Bitmaps.logo} className="table-avatar mr-2" />
                           </Fragment>
                         ) : (
                           <Fragment>
-                            <a data-tip data-for={`happyFace_${index}`}><i className="fa fa-user fa-lg" /></a>
-                            <ReactTooltip
-                              id={`happyFace_${index}`}
-                              type="light"
-                              effect="float"
-                              place="right"
-                              className="avatar-tooltip"
-                            >
-                              <div className="avatar-preview"><img src={item.profile_image ? item.profile_image : Bitmaps.logo} /></div>
-                            </ReactTooltip>
+                            <img src={item.profile_image ? item.profile_image : (item.gender == 1 ? Bitmaps.maleAvatar : Bitmaps.femaleAvatar)} className="table-avatar mr-2" />
                           </Fragment>
                         )
                       }
@@ -275,7 +258,11 @@ class DataTable extends Component {
                     {
                       stype.value === 'member' ? (
                         <a className="detail-link" onClick={() => onSelect(item.id)}>
-                          {item.surname && item.surname.toUpperCase()} {item.patronymic != '-' && item.patronymic} {item.name}
+                          {item.surname && item.surname.toUpperCase()}
+                          {' '}
+                          {item.patronymic != '-' && item.patronymic}
+                          {' '}
+                          {item.name}
                         </a>
                       ) : (
                         <a className="detail-link" onClick={() => onSelect(item.id)}>{item.name_o}</a>
@@ -304,10 +291,10 @@ class DataTable extends Component {
                         <Table.Cell className="text-center">{item.mobile_phone}</Table.Cell>
                         <Table.Cell className="text-center">{item.email}</Table.Cell>
                         <Table.Cell>
-                          {(item.addressline1 && item.addressline1 != '' && item.addressline1 != '-') ? item.addressline1 + ', ' : '' }
-                          {(item.addressline2 && item.addressline2 != '' && item.addressline2 != '-') ? item.addressline2 + ', ' : '' }
-                          {(item.city && item.city != '' && item.city != '-') ? item.city + ', ' : '' }
-                          {(item.state && item.state != '' && item.state != '-') ? item.state + ', ' : '' }
+                          {(item.addressline1 && item.addressline1 !== '' && item.addressline1 !== '-') ? `${item.addressline1}, ` : '' }
+                          {(item.addressline2 && item.addressline2 !== '' && item.addressline2 !== '-') ? `${item.addressline2}, ` : '' }
+                          {(item.city && item.city !== '' && item.city !== '-') ? `${item.city}, ` : '' }
+                          {(item.state && item.state !== '' && item.state !== '-') ? `${item.state}, ` : '' }
                           {item.zip_code}
                         </Table.Cell>
                       </Fragment>
@@ -316,7 +303,11 @@ class DataTable extends Component {
                   {
                     stype.value === 'member' && mtype.value === 'judoka' && (
                       <Fragment>
-                        <Table.Cell className="text-center">{item.weight} Kg</Table.Cell>
+                        <Table.Cell className="text-center">
+                          {item.weight}
+                          {' '}
+                          Kg
+                        </Table.Cell>
                         <Table.Cell className="text-center">{item.dan}</Table.Cell>
                           {
                             item.active == 0 && (
@@ -367,7 +358,7 @@ class DataTable extends Component {
                           >
                             <i className="fa fa-trash-alt fa-lg" />
                           </Button>
-                        ) : <div className="px-3"></div>
+                        ) : <div className="px-3" />
                       }
                     </div>
                   </Table.Cell>

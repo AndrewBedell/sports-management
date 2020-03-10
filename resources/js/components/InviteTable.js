@@ -6,11 +6,10 @@ import {
   Table,
   Pagination,
   Menu,
-  Flag,
   Button
 } from 'semantic-ui-react';
 import Select from 'react-select';
-import ReactTooltip from 'react-tooltip';
+// import ReactTooltip from 'react-tooltip';
 
 import _ from 'lodash';
 import { Genders } from '../configs/data';
@@ -117,7 +116,7 @@ class InviteTable extends Component {
       email: this.state.invite_email
     }
 
-    const {data, invite_item} = this.state;
+    const { data, invite_item } = this.state;
 
     const inviteSend = await Api.get(`invite-send`, param);
     const { response } = inviteSend;
@@ -131,7 +130,7 @@ class InviteTable extends Component {
         });
         break;
       default:
-          break;
+        break;
     }
   }
 
@@ -168,43 +167,50 @@ class InviteTable extends Component {
         <Table sortable celled selectable unstackable>
           <Table.Header>
             <Table.Row>
-              <Table.HeaderCell className="text-center"
+              <Table.HeaderCell
+                className="text-center"
                 sorted={column === 'name' ? direction : null}
                 onClick={this.handleSort.bind(this, 'name')}
               >
                 Name
               </Table.HeaderCell>
-              <Table.HeaderCell className="text-center"
+              <Table.HeaderCell
+                className="text-center"
                 sorted={column === 'type' ? direction : null}
                 onClick={this.handleSort.bind(this, 'type')}
               >
                 Admin Type
               </Table.HeaderCell>
-              <Table.HeaderCell className="text-center"
-              sorted={column === 'gender' ? direction : null}
-              onClick={this.handleSort.bind(this, 'gender')}
+              <Table.HeaderCell
+                className="text-center"
+                sorted={column === 'gender' ? direction : null}
+                onClick={this.handleSort.bind(this, 'gender')}
               >
                 Gender
               </Table.HeaderCell>
-              <Table.HeaderCell className="text-center"
-              sorted={column === 'birthday' ? direction : null}
-              onClick={this.handleSort.bind(this, 'birthday')}
+              <Table.HeaderCell
+                className="text-center"
+                sorted={column === 'birthday' ? direction : null}
+                onClick={this.handleSort.bind(this, 'birthday')}
               >
                 Birthday
               </Table.HeaderCell>
-              <Table.HeaderCell className="text-center"
+              <Table.HeaderCell
+                className="text-center"
                 sorted={column === 'email' ? direction : null}
                 onClick={this.handleSort.bind(this, 'email')}
               >
                 Email
               </Table.HeaderCell>
-              <Table.HeaderCell className="text-center"
+              <Table.HeaderCell
+                className="text-center"
                 sorted={column === 'mobile_phone' ? direction : null}
                 onClick={this.handleSort.bind(this, 'mobile_phone')}
               >
                 Mobile
               </Table.HeaderCell>
-              <Table.HeaderCell className="text-center"
+              <Table.HeaderCell
+                className="text-center"
                 sorted={column === 'addressline1' ? direction : null}
                 onClick={this.handleSort.bind(this, 'addressline1')}
               >
@@ -224,18 +230,7 @@ class InviteTable extends Component {
                 data.map((item, index) => (
                   <Table.Row key={index}>
                     <Table.Cell>
-                      <span className="text-primary mr-2">
-                        <a data-tip data-for={`happyFace_${index}`}><i className="fa fa-user fa-lg" /></a>
-                        <ReactTooltip
-                          id={`happyFace_${index}`}
-                          type="light"
-                          effect="float"
-                          place="right"
-                          className="avatar-tooltip"
-                        >
-                        <div className="avatar-preview"><img src={item.profile_image ? item.profile_image : Bitmaps.logo} /></div>
-                        </ReactTooltip>
-                      </span>
+                      <img src={item.profile_image ? item.profile_image : (item.gender == 1 ? Bitmaps.maleAvatar : Bitmaps.femaleAvatar)} className="table-avatar mr-2" />
                       {item.name}
                       {' '}
                       {item.patronymic != '-' && item.patronymic}
@@ -263,10 +258,12 @@ class InviteTable extends Component {
                       {
                         item.invited ? (
                           <div className="text-center text-success mt-2">
-                            <i className="fa fa-lg fa-check" /> <span className="font-weight-bold">Invited</span>
+                            <i className="fa fa-lg fa-check" />
+                            {' '}
+                            <span className="font-weight-bold">Invited</span>
                           </div>
                         ) : (
-                          <div className="text-center"></div>
+                          <div className="text-center" />
                         )
                       }
                     </Table.Cell>
@@ -277,7 +274,7 @@ class InviteTable extends Component {
                           color="green"
                           onClick={() => this.handleInvite(item.id, item.email, item.organization_id, item.is_club)}
                         >
-                          {item.invited ? "Resend" : "Invite"}
+                          {item.invited ? 'Resend' : 'Invite'}
                         </Button>
                       </div>
                     </Table.Cell>

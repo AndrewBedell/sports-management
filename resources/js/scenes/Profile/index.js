@@ -43,7 +43,7 @@ class Profile extends Component {
             <Row>
               <Col xs="12" sm="6" md="4" lg="3">
                 <div className="avatar-preview">
-                  <img src={user.profile_image ? user.profile_image : Bitmaps.logo} />
+                  <img src={user.profile_image ? user.profile_image : (user.gender == 1 ? Bitmaps.maleAvatar : Bitmaps.femaleAvatar)} />
                 </div>
               </Col>
               <Col xs="12" sm="6" md="8" lg="9">

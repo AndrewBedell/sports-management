@@ -1,3 +1,5 @@
+/* eslint-disable no-case-declarations */
+/* eslint-disable react/sort-comp */
 /* eslint-disable react/no-unused-state */
 import React, {
   Component, Fragment
@@ -17,13 +19,15 @@ import {
 } from 'reactstrap';
 import { Input } from 'semantic-ui-react';
 
+import QueryString from 'qs';
 import MainTopBar from '../../components/TopBar/MainTopBar';
 import Api from '../../apis/app';
 import DataTable from '../../components/DataTable';
 import Prompt from '../../components/Prompt';
 import EditModal from '../../components/EditModal';
-import { Dans, search_genders, search_type_options, member_type_options } from '../../configs/data';
-import QueryString from 'qs';
+import {
+  Dans, search_genders, search_type_options, member_type_options
+} from '../../configs/data';
 
 class Dashboard extends Component {
   constructor(props) {
@@ -75,12 +79,12 @@ class Dashboard extends Component {
     const user = JSON.parse(localStorage.getItem('auth'));
     const user_info = user.user.member_info;
     const user_is_club = user.user.is_club_member == 1 && true;
-    
+
     this.setState({
       user_org: user_info.organization_id,
-      user_is_club: user_is_club
+      user_is_club
     });
-    
+
     this.componentWillReceiveProps();
   }
 
@@ -89,15 +93,13 @@ class Dashboard extends Component {
     const { response, body } = org_response;
     switch (response.status) {
       case 200:
-        let orgArr = [];
+        const orgArr = [];
 
-        for (var i = 1; i < body.length; i++) {
-          orgArr.push(body[i]['name_o'])
+        for (let i = 1; i < body.length; i++) {
+          orgArr.push(body[i].name_o);
         }
 
-        const orgList = orgArr.map((org, Index) =>
-          <option key={Index} value={org} />
-        );
+        const orgList = orgArr.map((org, Index) => <option key={Index} value={org} />);
 
         this.setState({
           orgs: orgList,
@@ -107,7 +109,7 @@ class Dashboard extends Component {
       default:
         break;
     }
-    
+
     const weight_list = await Api.get('weights');
     switch (weight_list.response.status) {
       case 200:
@@ -134,16 +136,16 @@ class Dashboard extends Component {
     }
 
     const club_list = await Api.get('clubs');
-    let clubArr = [];
+    const clubArr = [];
     switch (club_list.response.status) {
       case 200:
 
-        for (var i = 0; i < club_list.body.length; i++) {
-          clubArr.push({id: club_list.body[i]['parent_id'], value: club_list.body[i]['name_o']});
+        for (let i = 0; i < club_list.body.length; i++) {
+          clubArr.push({ id: club_list.body[i].parent_id, value: club_list.body[i].name_o });
         }
-        
+
         this.setState({
-          original_clubs: clubArr,
+          original_clubs: clubArr
         });
         break;
       default:
@@ -151,30 +153,28 @@ class Dashboard extends Component {
     }
 
     const search = QueryString.parse(this.props.location.search, { ignoreQueryPrefix: true });
-    
+
     let clubs1 = clubArr;
     if (search.org != '') {
       clubs1 = clubArr.filter(club => club.id == search.org);
     }
 
-    const clubList = clubs1.map((club, Index) =>
-      <option key={Index} id={club.id} value={club.value} />
-    );
+    const clubList = clubs1.map((club, Index) => <option key={Index} id={club.id} value={club.value} />);
 
     this.setState({
       search_type: search.stype ? (search_type_options.find(type => type.value == search.stype) || '') : '',
       search_org: search.org ? (org_response.body.find(org => org.id == search.org) || '') : '',
       search_name: search.name || '',
       member_type: search.mtype ? (member_type_options.find(option => option.value == search.mtype) || '') : '',
-      search_gender: search.gender ?
-                      (search_genders.find(gender => gender.value == search.gender) || search_genders[0])
-                    : search_genders[0],
+      search_gender: search.gender
+        ? (search_genders.find(gender => gender.value == search.gender) || search_genders[0])
+        : search_genders[0],
       search_weight: search.weight ? (weight_list.body.find(weight => weight.id == search.weight) || '') : '',
       search_dan: search.dan ? (Dans.find(dan => dan.value == search.dan) || '') : '',
       search_data: null,
-      clubs: clubList,
+      clubs: clubList
     });
-    
+
     if (search.stype) {
       this.search(search);
     }
@@ -194,17 +194,13 @@ class Dashboard extends Component {
         let filtered = [];
 
         if (value == null) {
-          filtered = this.state.original_clubs.map((club, Index) =>
-            <option key={Index} id={club.id} value={club.value} />
-          );
+          filtered = this.state.original_clubs.map((club, Index) => <option key={Index} id={club.id} value={club.value} />);
         } else {
-          filtered = this.state.original_clubs.filter((club) => club.id == value.id).map((club, Index) =>
-            <option key={Index} id={club.id} value={club.value} />
-          );
+          filtered = this.state.original_clubs.filter(club => club.id == value.id).map((club, Index) => <option key={Index} id={club.id} value={club.value} />);
         }
 
         const clubsFiltered = filtered;
-        
+
         this.setState({
           search_org: value,
           clubs: clubsFiltered,
@@ -259,7 +255,7 @@ class Dashboard extends Component {
       name: search_name,
       mtype: member_type ? member_type.value : '',
       gender: search_gender ? search_gender.value : search_genders[0],
-      weight: search_weight ? search_weight.id : '',
+      weight: search_weight && search_weight.id && search_weight.id != 0 ? search_weight.id : '',
       dan: search_dan ? search_dan.value : ''
     };
 
@@ -272,9 +268,9 @@ class Dashboard extends Component {
 
     if (search_params.stype == 'member' && !search_params.mtype) {
       this.setState({
-        member_required: false,
+        member_required: false
       });
-      return
+      return;
     }
 
     this.props.history.push(`/${QueryString.stringify(search_params, { addQueryPrefix: true })}`);
@@ -282,7 +278,7 @@ class Dashboard extends Component {
 
   async search(search_params) {
     if (search_params.stype == 'member' && !search_params.mtype) {
-      return;
+
     } else {
       const search_response = await Api.get('search', search_params);
       const { response, body } = search_response;
@@ -317,12 +313,12 @@ class Dashboard extends Component {
         delItem = item;
       }
     }
-    
+
     this.setState({
       isOpenDeleteModal: true,
       deleteId: id,
-      confirmationMessage: `Are you sure you want to delete "${search_type.value == 'member' ? 
-        `${delItem.name} ${delItem.surname}` : delItem.name_o}"?`
+      confirmationMessage: `Are you sure you want to delete "${search_type.value == 'member'
+        ? `${delItem.name} ${delItem.surname}` : delItem.name_o}"?`
     });
   }
 
@@ -396,7 +392,7 @@ class Dashboard extends Component {
             messageStatus: true,
             alertVisible: true,
             successMessage: `${item.name_o} is been update successfully!`,
-            search_data: search_data.filter((data) => data.is_club != item.is_club)
+            search_data: search_data.filter(data => data.is_club != item.is_club)
           });
           break;
         case 406:
@@ -436,13 +432,13 @@ class Dashboard extends Component {
             alertVisible: true,
             successMessage: `${item.name} ${item.surname} is been update successfully!`
           });
-          
+
           search_data[editIndex] = item;
 
           this.setState({
             search_data
           });
-          
+
           break;
         case 406:
           this.setState({
@@ -502,13 +498,12 @@ class Dashboard extends Component {
   }
 
   getWeights(gender) {
-    return this.state.weights.filter(weight => {
-      if (gender + '' == '2') {
+    return this.state.weights.filter((weight) => {
+      if (`${gender}` == '2') {
         return true;
-      } else {
-        return weight.gender + '' == gender + '';
       }
-    })
+      return `${weight.gender}` == `${gender}`;
+    });
   }
 
   render() {
@@ -536,15 +531,15 @@ class Dashboard extends Component {
       isOpenEditModal,
       edit_item
     } = this.state;
-    
+
     return (
       <Fragment>
         <MainTopBar />
         <div className="main-content dashboard">
           <Container fluid>
             <h3 className="text-danger text-center mb-5">Welcome to National Sports Federation Management System!</h3>
-              <div className="text-center mb-4">
-                {
+            <div className="text-center mb-4">
+              {
                   !user_is_club && (
                     <Button
                       className="mr-5"
@@ -553,22 +548,22 @@ class Dashboard extends Component {
                       onClick={this.handleCreateAccount.bind(this)}
                     >
                       {user_org == 1 ? (
-                        "Register Federation / Club"
+                        'Register Federation / Club'
                       ) : (
-                        "Register Club"
+                        'Register Club'
                       )}
                     </Button>
                   )
                 }
-                <Button
-                  className="ml-5"
-                  type="button"
-                  color="secondary"
-                  onClick={this.handleRegisterMember.bind(this)}
+              <Button
+                className="ml-5"
+                type="button"
+                color="secondary"
+                onClick={this.handleRegisterMember.bind(this)}
                 >
                   Register Member
-                </Button>
-              </div>
+              </Button>
+            </div>
             <Row>
               <Col xl="2" lg="3" md="4" sm="6" xs="12">
                 <FormGroup>
@@ -615,7 +610,7 @@ class Dashboard extends Component {
                         placeholder="Regional Federation Name"
                         onChange={event => this.handleSearchFilter('search_name', event.target.value)}
                       />
-                      <datalist id='orgs'>
+                      <datalist id="orgs">
                         {orgs}
                       </datalist>
                     </FormGroup>
@@ -630,7 +625,7 @@ class Dashboard extends Component {
                       name="search_org"
                       classNamePrefix="react-select-lg"
                       placeholder="Regional Federation"
-                      isClearable={true}
+                      isClearable
                       // isMulti
                       value={search_org}
                       options={org_list}
@@ -657,7 +652,7 @@ class Dashboard extends Component {
                         placeholder="Club Name"
                         onChange={event => this.handleSearchFilter('search_name', event.target.value)}
                       />
-                      <datalist id='clubs'>
+                      <datalist id="clubs">
                         {clubs}
                       </datalist>
                     </FormGroup>
@@ -672,7 +667,6 @@ class Dashboard extends Component {
                         name="member_type"
                         classNamePrefix={!member_required ? 'invalid react-select-lg' : 'react-select-lg'}
                         placeholder="Member Type"
-                        classNamePrefix="react-select-lg"
                         value={member_type}
                         options={member_type_options}
                         getOptionValue={option => option.value}
@@ -687,7 +681,7 @@ class Dashboard extends Component {
                         )
                       }
                     </FormGroup>
-                  </Col>                  
+                  </Col>
                 )
               }
               {
@@ -719,8 +713,7 @@ class Dashboard extends Component {
                           value={search_weight}
                           options={this.getWeights(search_gender ? search_gender.value : '')}
                           getOptionValue={option => option.id}
-                          getOptionLabel=
-                            {option => option.weight + "Kg"}
+                          getOptionLabel={option => `${option.weight} Kg`}
                           onChange={(weight) => {
                             this.handleSearchFilter('search_weight', weight);
                           }}
@@ -810,7 +803,7 @@ class Dashboard extends Component {
           }
         </div>
       </Fragment>
-    )
+    );
   }
 }
 
