@@ -261,7 +261,7 @@ class SubTable extends Component {
                           </span>
                         </Table.Cell>
                         <Table.Cell className="text-center">{item.role_name}</Table.Cell>
-                        <Table.Cell className="text-center">{item.gender ? Genders[0].name : Genders[1].name}</Table.Cell>
+                        <Table.Cell className="text-center">{item.gender == 1 ? Genders[0].name : Genders[1].name}</Table.Cell>
                         <Table.Cell className="text-center">{item.birthday}</Table.Cell>
                         <Table.Cell className="text-center">{item.role_id == 3 && item.weight + " Kg"}</Table.Cell>
                         <Table.Cell className="text-center">{item.dan}</Table.Cell>

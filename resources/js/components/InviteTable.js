@@ -240,7 +240,7 @@ class InviteTable extends Component {
                     <Table.Cell className="text-center">
                       {item.organization_id == 1 ? "NF" : (item.is_club == 1 ? "Club" : "Ref")}
                     </Table.Cell>
-                    <Table.Cell className="text-center">{item.gender ? Genders[0].name : Genders[1].name}</Table.Cell>
+                    <Table.Cell className="text-center">{item.gender == 1 ? Genders[0].name : Genders[1].name}</Table.Cell>
                     <Table.Cell className="text-center">{item.birthday}</Table.Cell>
                     <Table.Cell>{item.email}</Table.Cell>
                     <Table.Cell className="text-center">{item.mobile_phone}</Table.Cell>

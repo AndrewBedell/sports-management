@@ -266,7 +266,7 @@ class ChangeSuperTable extends Component {
                       {' '}
                       {item.surname}
                     </Table.Cell>
-                    <Table.Cell className="text-center">{item.gender ? Genders[0].name : Genders[1].name}</Table.Cell>
+                    <Table.Cell className="text-center">{item.gender == 1 ? Genders[0].name : Genders[1].name}</Table.Cell>
                     <Table.Cell className="text-center">{item.birthday}</Table.Cell>
                     <Table.Cell>{item.email}</Table.Cell>
                     <Table.Cell className="text-center">{item.mobile_phone}</Table.Cell>

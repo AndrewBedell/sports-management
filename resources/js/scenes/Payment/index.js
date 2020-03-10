@@ -195,7 +195,7 @@ class Payment extends Component {
     if (filter_players.weight && filter_players.weight.weight === 'All') {
       filter_players.weight = null;
     }
-    if (filter_players.gender && filter_players.gender.value === 2) {
+    if (filter_players.gender && filter_players.gender.value === 0) {
       filter_players.gender = null;
     }
     if (filter_players.dan && filter_players.dan.value === '') {
@@ -291,7 +291,7 @@ class Payment extends Component {
   getWeights(gender) {
     const { weights } = this.state;
     return weights.filter((weight) => {
-      if (`${gender}` == '2') {
+      if (`${gender}` == '0') {
         return true;
       }
       return `${weight.gender}` == `${gender}`;
@@ -314,7 +314,7 @@ class Payment extends Component {
     return (
       <Fragment>
         <MainTopBar />
-        <div className="main-content detail">
+        <div className="main-content detail has-hand-card">
           {
             !pay_status ? (
               <Container fluid>
@@ -614,6 +614,7 @@ class Payment extends Component {
               </Container>
             )
           }
+          <div className={pay_status ? 'hand-card right-handle' : 'hand-card'} />
         </div>
       </Fragment>
     );
