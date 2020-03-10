@@ -15,7 +15,7 @@ import {
 import Select from 'react-select';
 import MainTopBar from '../../components/TopBar/MainTopBar';
 import Api from '../../apis/app';
-import { OrganizationType, RefereeType, Genders, Dans } from '../../configs/data';
+import { OrganizationType, referee_type_options, Genders, Dans } from '../../configs/data';
 
 class MemberAdd extends Component {
   constructor(props) {
@@ -768,7 +768,7 @@ class MemberAdd extends Component {
                                   classNamePrefix={(!values.position || (values.position && !values.position.value)) && touched.position ? 
                                     'invalid react-select-lg' : 'react-select-lg'}
                                   indicatorSeparator={null}
-                                  options={RefereeType}
+                                  options={referee_type_options}
                                   getOptionValue={option => option.value}
                                   getOptionLabel={option => option.label}
                                   value={values.position}

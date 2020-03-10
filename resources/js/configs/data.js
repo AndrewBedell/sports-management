@@ -246,12 +246,6 @@ export const countries = [
   { name: 'Zimbabwe', countryCode: 'zw' }
 ];
 
-export const RefereeType = [
-  { label: 'NF. Referee', value: 'nf' },
-  { label: 'Conti. Referee', value: 'ref' },
-  { label: 'Int. Referee', value: 'club' }
-];
-
 export const Genders = [
   { id: 1, name: 'Male' },
   { id: 0, name: 'Female' }
@@ -289,6 +283,12 @@ export const member_type_options = [
   { label: 'Coach', value: 'coach' },
   { label: 'Referee', value: 'referee' },
   { label: 'Judoka', value: 'judoka' }
+];
+
+export const referee_type_options = [
+  { label: 'NF. Referee', value: 'nf' },
+  { label: 'Conti. Referee', value: 'conti' },
+  { label: 'Int. Referee', value: 'inter' }
 ];
 
 export const SetSwitch = [
