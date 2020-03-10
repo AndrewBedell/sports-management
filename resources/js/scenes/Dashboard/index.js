@@ -75,7 +75,7 @@ class Dashboard extends Component {
     this.getWeights = this.getWeights.bind(this);
     this.search = this.search.bind(this);
 
-    if (referee_type_options.length == 3) referee_type_options.splice(0, 0, { label: 'All', value: 'all' });
+    if (referee_type_options.length == 3) referee_type_options.splice(0, 0, { label: 'All Referee', value: 'all' });
   }
 
   componentDidMount() {
