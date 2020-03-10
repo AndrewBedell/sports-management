@@ -195,7 +195,7 @@ class Payment extends Component {
     if (filter_players.weight && filter_players.weight.weight === 'All') {
       filter_players.weight = null;
     }
-    if (filter_players.gender && filter_players.gender.value === 2) {
+    if (filter_players.gender && filter_players.gender.value === 0) {
       filter_players.gender = null;
     }
     if (filter_players.dan && filter_players.dan.value === '') {
@@ -291,7 +291,7 @@ class Payment extends Component {
   getWeights(gender) {
     const { weights } = this.state;
     return weights.filter((weight) => {
-      if (`${gender}` == '2') {
+      if (`${gender}` == '0') {
         return true;
       }
       return `${weight.gender}` == `${gender}`;

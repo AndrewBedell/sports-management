@@ -254,7 +254,7 @@ export const RefereeType = [
 
 export const Genders = [
   { id: 1, name: 'Male' },
-  { id: 0, name: 'Female' }
+  { id: 2, name: 'Female' }
 ];
 
 export const Dans = [
@@ -272,9 +272,9 @@ export const Dans = [
 ];
 
 export const search_genders = [
-  { label: 'All Genders', value: 2 },
+  { label: 'All Genders', value: 0 },
   { label: 'Male', value: 1 },
-  { label: 'Female', value: 0 }
+  { label: 'Female', value: 2 }
 
 ];
 

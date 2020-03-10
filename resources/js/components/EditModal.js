@@ -157,7 +157,7 @@ class EditModal extends React.Component {
         name: values.name,
         patronymic: values.patronymic,
         surname: values.surname,
-        gender: values.gender ? Genders[0] : Genders[1],
+        gender: values.gender == 1 ? Genders[0] : Genders[1],
         organization_id: org_list.filter(org => org.id === values.organization_id)[0],
         role_id: roles.filter(role => role.id === values.role_id)[0],
         profile_image: values.profile_image,

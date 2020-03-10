@@ -645,7 +645,7 @@ class OrganizationController extends Controller
                 }
 
                 if ($mtype == 'judoka') {
-                    if ($gender == 0 || $gender == 1)
+                    if ($gender == 2 || $gender == 1)
                         $result = $result->where('members.gender', $gender);
 
                     if ($weight != '')
