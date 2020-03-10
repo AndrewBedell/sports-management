@@ -22,7 +22,7 @@ class MemberAdd extends Component {
     super(props);
     this.state = {
       user_org: '',
-      user_is_club: false,
+      user_is_club: 0,
       // file: '',
       imagePreviewUrl: '',
       fileKey: 1,
@@ -43,7 +43,7 @@ class MemberAdd extends Component {
   componentDidMount() {
     const user = JSON.parse(localStorage.getItem('auth'));
     const user_info = user.user.member_info;
-    const user_is_club = user.user.is_club_member == 1 && true;
+    const user_is_club = user.user.is_club_member == 1 && 1;
     
     this.setState({
       user_org: user_info.organization_id,
@@ -346,14 +346,14 @@ class MemberAdd extends Component {
                   <Row>
                     <Col sm="6" md="3">
                       {
-                        !user_is_club && (
+                        user_is_club != 1 && (
                           <FormGroup>
                             <Label for="role_id">Role</Label>
                             <Select
                               name="role_id"
                               classNamePrefix={!values.role_id && touched.role_id ? 'invalid react-select-lg' : 'react-select-lg'}
                               indicatorSeparator={null}
-                              options={user_is_club == 1 ? roles.filter(item => item.is_player == 1) : roles}
+                              options={roles}
                               getOptionValue={option => option.id}
                               getOptionLabel={option => option.name}
                               value={values.role_id}
@@ -393,7 +393,7 @@ class MemberAdd extends Component {
                               indicatorSeparator={null}
                               options={
                                 user_org != 1 ? (
-                                  user_is_club ? (
+                                  user_is_club == 1 ? (
                                     OrganizationType.filter(item => item.value == 'club')
                                   ) : (
                                     OrganizationType.filter(item => item.value != 'nf')
@@ -426,7 +426,7 @@ class MemberAdd extends Component {
                     </Col>
                     <Col sm="6" md="3">
                       {
-                        !user_is_club && (((values.role_id && values.role_id.id != 1) || 
+                        user_is_club != 1 && (((values.role_id && values.role_id.id != 1) || 
                           (values.organization_type && values.organization_type.value != 'nf'))) && (
                           <FormGroup>
                             <Label for="organization_id">Regional Federation</Label>
@@ -459,7 +459,7 @@ class MemberAdd extends Component {
                     </Col>
                     <Col sm="6" md="3">
                     {
-                      !user_is_club && (((values.role_id && values.role_id.id == 1 &&
+                      user_is_club != 1 && (((values.role_id && values.role_id.id == 1 &&
                         values.organization_type && values.organization_type.value == 'club') ||
                        (values.role_id && (values.role_id.id == 2 || values.role_id.id == 3)))) && (
                         <FormGroup>
@@ -787,7 +787,7 @@ class MemberAdd extends Component {
                     }
                     <Col sm="3" xs="6">
                       {
-                        (user_is_club || (values.role_id && values.role_id.is_player === 1)) && (
+                        (user_is_club == 1 || (values.role_id && values.role_id.is_player === 1)) && (
                           <FormGroup>
                             <Label for="weight_id">Weight</Label>
                             <Select
@@ -809,7 +809,7 @@ class MemberAdd extends Component {
                     </Col>
                     <Col sm="3" xs="6">
                       {
-                        (user_is_club || (values.role_id && values.role_id.is_player === 1)) && (
+                        (user_is_club == 1 || (values.role_id && values.role_id.is_player === 1)) && (
                           <FormGroup>
                             <Label for="dan">Dan</Label>
                             <Select
@@ -833,7 +833,7 @@ class MemberAdd extends Component {
                     </Col>
                     <Col xs="6">
                       {
-                        (user_is_club || (values.role_id && values.role_id.is_player === 1)) && (
+                        (user_is_club == 1 || (values.role_id && values.role_id.is_player === 1)) && (
                           <FormGroup>
                             <Label for="skill">Skill</Label>
                             <Input
