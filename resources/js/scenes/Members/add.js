@@ -786,7 +786,7 @@ class MemberAdd extends Component {
                       )
                     }
                     {
-                      (user_is_club || (values.role_id && values.role_id.is_player && values.role_id.is_player == 1)) && (
+                      (user_is_club || (values.role_id && values.role_id.is_player == 1)) && (
                         <Fragment>
                           <Col sm="3" xs="6">
                             <FormGroup>
