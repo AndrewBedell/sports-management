@@ -550,7 +550,17 @@ class Dashboard extends Component {
         <MainTopBar />
         <div className="main-content dashboard">
           <Container fluid>
-            <h3 className="text-danger text-center mb-5">Welcome to National Sports Federation Management System!</h3>
+            <h3 className="text-danger text-center mb-5">
+              Welcome to&nbsp;
+              {
+                user_is_club ? (
+                  "Club"
+                ) : (
+                  user_org == 1 ? "National Federation" : "Regional Federation"
+                )
+              }
+              &nbsp;Management System!
+            </h3>
             <div className="text-center mb-4">
               {
                   !user_is_club && (
