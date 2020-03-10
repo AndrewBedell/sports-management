@@ -636,13 +636,12 @@ class OrganizationController extends Controller
                 if ($org == '') {
                     $result = $result->whereIn('organizations.id', $orgArr);
                 } else {
-                    $clubs = Organization::where('parent_id', $org)->select('id')->get();
-
-                    if ($mtype == 'staff' || $mtype == 'referee')
-                        $result = $result->where('members.organization_id', $org);
+                    $clubs = Organization::where('parent_id', $org)
+                                ->where('name_o', 'like', '%' . $name . '%')
+                                ->select('id')
+                                ->get();
                     
-                    if ($mtype == 'coach' || $mtype == 'judoka')
-                        $result = $result->whereIn('members.organization_id', $clubs);
+                    $result = $result->whereIn('members.organization_id', $clubs);
                 }
 
                 if ($mtype == 'judoka') {

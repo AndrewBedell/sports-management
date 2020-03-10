@@ -210,6 +210,7 @@ class Dashboard extends Component {
         this.setState({
           search_org: value,
           clubs: clubsFiltered,
+          search_name: '',
           search_data: null
         });
         break;
@@ -652,7 +653,7 @@ class Dashboard extends Component {
                 )
               }
               {
-                search_type.value == 'club' && (
+                (search_type.value == 'club' || search_type.value == 'member') && (
                   <Col xl="2" lg="3" md="4" sm="6" xs="12">
                     <FormGroup>
                       <Input
