@@ -60,22 +60,22 @@ class Admin extends Component {
         break;
     }
 
-    let nflabels = [];
+    let labels = [];
     let amounts = [];
 
     for (var i = 0; i < this.state.nfs.length; i++) {
-      nflabels.push(this.state.nfs[i].name_o);
+      labels.push(this.state.nfs[i].name_o);
       amounts.push(this.state.total[i] / 100);
     }
 
     this.pieChart = new Chart(this.chartRef1.current, {
       type: 'pie',
       data: {
-        labels: nflabels,
+        labels: labels,
         datasets: [{
           data: amounts,
           fill: 'none',
-          backgroundColor: ['#00FF00', '#0000FF'],
+          backgroundColor: '#00FF00',
           pointRadius: 5,
           borderColor: '#FF0000',
           borderWidth: 2
@@ -83,7 +83,7 @@ class Admin extends Component {
       }
     });
 
-    let labels = [];
+    labels = [];
     amounts = [];
 
     for (var i = 0; i < this.state.subtotal[0].length; i++) {
@@ -97,7 +97,7 @@ class Admin extends Component {
       data: {
         labels: labels,
         datasets: [{
-          label: nflabels[0],
+          label: 'Organization1 Line Chart',
           data: amounts,
           fill: 'none',
           backgroundColor: '#00FF00',
@@ -123,7 +123,7 @@ class Admin extends Component {
       data: {
         labels: labels,
         datasets: [{
-          label: nflabels[1],
+          label: 'Organization2 Line Chart',
           data: amounts,
           fill: 'none',
           backgroundColor: '#00FF00',
