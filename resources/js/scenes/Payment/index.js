@@ -3,7 +3,7 @@
 import React, { Component, Fragment } from 'react';
 import {
   Container, Row, Col, Label, Input, Button, Form, FormGroup, FormFeedback,
-  TabContent, TabPane, Nav, NavItem, NavLink
+  TabContent, TabPane, Nav, NavItem, NavLink, Alert
 } from 'reactstrap';
 import classnames from 'classnames';
 import {
@@ -28,6 +28,10 @@ class Payment extends Component {
       player_list: null,
       filter_data: null,
       weights: null,
+      alertVisible: false,
+      messageStatus: false,
+      successMessage: '',
+      failMessage: '',
       pay_method: 'basic_card',
       filter_players: {
         search: '',
@@ -50,6 +54,20 @@ class Payment extends Component {
   }
 
   async componentDidMount() {
+    const weight_list = await Api.get('weights');
+    switch (weight_list.response.status) {
+      case 200:
+        this.setState({
+          weights: weight_list.body
+        });
+        break;
+      default:
+        break;
+    }
+    this.getPlayers();
+  }
+
+  async getPlayers() {
     const user_info = JSON.parse(localStorage.getItem('auth'));
     this.setState({
       user: user_info.user.member_info
@@ -62,7 +80,16 @@ class Payment extends Component {
           this.setState({
             filter_data: body,
             player_list: body,
-            players: body
+            players: body,
+            pay_status: false,
+            payPlayers: null,
+            isSubmitting: false,
+            filter_players: {
+              search: '',
+              gender: null,
+              weight: null,
+              dan: null
+            }
           });
           break;
         case 406:
@@ -75,16 +102,6 @@ class Payment extends Component {
         default:
           break;
       }
-    }
-    const weight_list = await Api.get('weights');
-    switch (weight_list.response.status) {
-      case 200:
-        this.setState({
-          weights: weight_list.body
-        });
-        break;
-      default:
-        break;
     }
   }
 
@@ -182,7 +199,7 @@ class Payment extends Component {
     params.payer_id = user.id;
     params.club_id = user.organization_id;
     params.pay_method = pay_method;
-    params.pay_players = payPlayers.map(item => item.id);
+    params.players = payPlayers.map(item => item.id);
     params.amount = price;
     if (pay_method === 'basic_card') {
       params.price_data = priceData;
@@ -190,33 +207,54 @@ class Payment extends Component {
       const { response, body } = data;
       switch (response.status) {
         case 200:
-          console.log(body);
           this.setState({
-            isSubmitting: false
+            alertVisible: true,
+            messageStatus: true,
+            successMessage: 'Successfully Paid. Please wait message!'
           });
+          setTimeout(() => {
+            this.getPlayers();
+          }, 4000);
           break;
         case 406:
+          this.setState({
+            alertVisible: true,
+            messageStatus: true,
+            failMessage: body.message
+          });
           break;
         default:
           break;
       }
-    } else {
+    } else if (pay_method === 'payme') {
       params.price_data = payme_data;
       const data = await Api.post('pay-now', params);
       const { response, body } = data;
       switch (response.status) {
         case 200:
-          console.log(body);
           this.setState({
-            isSubmitting: false
+            alertVisible: true,
+            messageStatus: true,
+            successMessage: 'Successfully Paid. Please wait message!'
           });
+          setTimeout(() => {
+            this.getPlayers();
+          }, 4000);
           break;
         case 406:
+          this.setState({
+            alertVisible: true,
+            messageStatus: true,
+            failMessage: body.message
+          });
           break;
         default:
           break;
       }
     }
+    setTimeout(() => {
+      this.setState({ alertVisible: false });
+    }, 3000);
   }
 
   handleDetailPlayer(id) {
@@ -459,6 +497,11 @@ class Payment extends Component {
                     </h3>
                   )
                 }
+                <Alert color="danger" isOpen={this.state.alertVisible}>
+                  {
+                    this.state.messageStatus ? this.state.successMessage : this.state.failMessage
+                  }
+                </Alert>
                 {
                   price !== 0 && (
                     <div>

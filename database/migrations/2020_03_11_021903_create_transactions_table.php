@@ -20,7 +20,7 @@ class CreateTransactionsTable extends Migration
             $table->string('players', 2000);
             $table->double('amount', 10, 2);
             $table->double('price', 10, 2);
-            $table->double('percent', 2, 2);
+            $table->double('percent', 3, 2);
 
             $table->timestamps();
             $table->softDeletes();
