@@ -14,6 +14,7 @@ import OrganizationAdd from './Organizations/add';
 import MemberAdd from './Members/add';
 import GetInviteUsers from './Users';
 import Payment from './Payment';
+import Admin from './Admin';
 
 class Main extends Component {
   render() {
@@ -30,6 +31,7 @@ class Main extends Component {
           <Route exact path="/organizations" name="Organizations" component={Organizations} />
           <Route exact path="/setting" name="Profile" component={Profile} />
           <Route exact path="/" name="Dashboard" component={Dashboard} />
+          <Route exact path="/admin" name="Admin" component={Admin} />
         </Switch>
       </Router>
     );

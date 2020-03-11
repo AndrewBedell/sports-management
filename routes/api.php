@@ -48,5 +48,7 @@ Route::namespace('Api')->group(function () {
         Route::delete('user/{id}', 'UserController@destroy');
 
         Route::get('weights', 'PlayerController@weights');
+
+        Route::get('finance', 'UserController@finance');
     });
 });
