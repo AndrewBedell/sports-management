@@ -276,7 +276,7 @@ class Dashboard extends Component {
       mtype: member_type ? member_type.value : '',
       rtype: referee_type ? referee_type.value : '',
       gender: search_gender ? search_gender.value : search_genders[0],
-      weight: search_weight && search_weight.id && search_weight.id != 0 ? search_weight.id : '',
+      weight: search_weight && search_weight.id && search_weight.weight !== 'All' ? search_weight.id : '',
       dan: search_dan ? search_dan.value : ''
     };
 

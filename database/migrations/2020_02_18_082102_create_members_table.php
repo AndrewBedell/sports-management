@@ -52,7 +52,7 @@ class CreateMembersTable extends Migration
                 'surname' => 'User',
                 'patronymic' => '',
                 'profile_image' => '',
-                'gender' => true,
+                'gender' => 1,
                 'birthday' => '2000-01-01',
                 'email' => 'admin@gmail.com',
                 'mobile_phone' => '',
@@ -64,7 +64,7 @@ class CreateMembersTable extends Migration
                 'zip_code' => '',
                 'position' => '',
                 'identity' => '',
-                'active' => true,
+                'active' => 1,
                 'register_date' => '2020-02-18',
                 'created_at' => date('Y-m-d H:i:s'),
                 'updated_at' => date('Y-m-d H:i:s')

@@ -25,6 +25,17 @@ class CreateWeightsTable extends Migration
             $table->timestamps();
             $table->softDeletes();
         });
+        DB::table('weights')->insert(
+            array(
+                'name' => 'All',
+                'weight' => 'All',
+                'description' => 'All Weights',
+                'gender' => 0,
+                'order' => 0,
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s')
+            )
+        );
     }
 
     /**

@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\User;
 use App\Member;
-use App\Settings;
+use App\Setting;
 use App\Organization;
 use App\Transaction;
 
@@ -117,8 +117,12 @@ class TransactionController extends Controller
         $price_data = $request->input('payme_data');
       }
 
-      $setting = Settings::where('organization_id', $data['club_id']);
-
+      $settings = Setting::where('organization_id', $data['club_id'])
+                          ->get();
+      $setting = array();
+      if (sizeOf($settings) > 0) {
+        $setting = $settings[0];
+      }
       Transaction::create(array(
         'club_id' => $data['club_id'],
         'payer_id' => $data['payer_id'],
