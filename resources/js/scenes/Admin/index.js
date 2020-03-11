@@ -20,6 +20,11 @@ class Admin extends Component {
   constructor(props) {
     super(props);
 
+    const user = JSON.parse(localStorage.getItem('auth'));
+    
+    if (user.user.is_super == 0)
+      this.props.history.push('/');
+
     this.state = {
       total: [],
       subtotal: [],
@@ -49,8 +54,7 @@ class Admin extends Component {
       default:
         break;
     }
-console.log(this.state.data);
-console.log(this.state.subtotal);
+
     let labels = [];
     let amounts = [];
 
