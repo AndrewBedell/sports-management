@@ -22,12 +22,13 @@ class Payment extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      user: {},
       pay_status: false,
       players: null,
       player_list: null,
       filter_data: null,
       weights: null,
-      pay_method: 'directly',
+      pay_method: 'basic_card',
       filter_players: {
         search: '',
         gender: null,
@@ -41,16 +42,18 @@ class Payment extends Component {
       payme_data: null,
       priceData: {
         card_number: '',
-        card_expiry_date: '',
-        card_cvc: '',
         card_name: '',
-        price: 0.00
+        card_expiry_date: '',
+        card_cvc: ''
       }
     };
   }
 
   async componentDidMount() {
     const user_info = JSON.parse(localStorage.getItem('auth'));
+    this.setState({
+      user: user_info.user.member_info
+    });
     if (user_info.user) {
       const data = await Api.get(`club-players/${user_info.user.member_info.organization_id}`);
       const { response, body } = data;
@@ -102,7 +105,9 @@ class Payment extends Component {
       }
     }
 
-    priceData.price = (players.filter(item => item.checked === true).length * per_price).toFixed(2);
+    this.setState({
+      price: (players.filter(item => item.checked === true).length * per_price).toFixed(2)
+    });
 
     this.setState({
       price: players.filter(item => item.checked === true).length * per_price,
@@ -123,7 +128,9 @@ class Payment extends Component {
         }
       }
     }
-    priceData.price = (players.filter(item => item.checked === true).length * per_price).toFixed(2);
+    this.setState({
+      price: (players.filter(item => item.checked === true).length * per_price).toFixed(2)
+    });
     this.setState({
       price: players.filter(item => item.checked === true).length * per_price,
       players,
@@ -164,24 +171,52 @@ class Payment extends Component {
     });
   }
 
-  handlePay() {
+  async handlePay() {
     this.setState({
       isSubmitting: true
     });
-    console.log(this.state.priceData, this.state.payPlayers);
-    this.setState({
-      isSubmitting: false
-    });
-  }
-
-  handlePayMe() {
-    this.setState({
-      isSubmitting: true
-    });
-    console.log(this.state.payme_data, this.state.payPlayers);
-    this.setState({
-      isSubmitting: false
-    });
+    const {
+      user, pay_method, payPlayers, price, priceData, payme_data
+    } = this.state;
+    const params = {};
+    params.payer_id = user.id;
+    params.club_id = user.organization_id;
+    params.pay_method = pay_method;
+    params.pay_players = payPlayers.map(item => item.id);
+    params.amount = price;
+    if (pay_method === 'basic_card') {
+      params.price_data = priceData;
+      const data = await Api.post('pay-now', params);
+      const { response, body } = data;
+      switch (response.status) {
+        case 200:
+          console.log(body);
+          this.setState({
+            isSubmitting: false
+          });
+          break;
+        case 406:
+          break;
+        default:
+          break;
+      }
+    } else {
+      params.price_data = payme_data;
+      const data = await Api.post('pay-now', params);
+      const { response, body } = data;
+      switch (response.status) {
+        case 200:
+          console.log(body);
+          this.setState({
+            isSubmitting: false
+          });
+          break;
+        case 406:
+          break;
+        default:
+          break;
+      }
+    }
   }
 
   handleDetailPlayer(id) {
@@ -326,7 +361,7 @@ class Payment extends Component {
                         color="success"
                         onClick={this.handlePayNow.bind(this)}
                       >
-                        Pay Now
+                        Pay Today
                       </Button>
                     )
                   }
@@ -430,8 +465,8 @@ class Payment extends Component {
                       <Nav tabs>
                         <NavItem>
                           <NavLink
-                            className={classnames({ active: pay_method === 'directly' })}
-                            onClick={() => { this.setState({ pay_method: 'directly' }); }}
+                            className={classnames({ active: pay_method === 'basic_card' })}
+                            onClick={() => { this.setState({ pay_method: 'basic_card' }); }}
                           >
                             <div className="payments">
                               <Image src={Bitmaps.visa} />
@@ -454,7 +489,7 @@ class Payment extends Component {
                         </NavItem>
                       </Nav>
                       <TabContent activeTab={pay_method}>
-                        <TabPane tabId="directly">
+                        <TabPane tabId="basic_card">
                           <Card
                             container="card_container"
                             formInputsNames={{
@@ -558,7 +593,7 @@ class Payment extends Component {
                                         disabled={isSubmitting || !priceData.card_name || !priceData.card_number || !priceData.card_cvc || !priceData.card_expiry_date}
                                         onClick={this.handlePay.bind(this)}
                                       >
-                                        Next
+                                        Pay Now
                                       </Button>
                                     </Col>
                                   </Row>
@@ -595,9 +630,9 @@ class Payment extends Component {
                                     type="button"
                                     color="primary"
                                     disabled={isSubmitting}
-                                    onClick={this.handlePayMe.bind(this)}
+                                    onClick={this.handlePay.bind(this)}
                                   >
-                                    Next
+                                    Pay Now
                                   </Button>
                                 </Col>
                               </Row>
