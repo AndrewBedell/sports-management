@@ -374,8 +374,13 @@ class UserController extends Controller
         }
 
         $detail[$i] = Transaction::whereIn('club_id', $clubs[$i])
-                     ->where('created_at', 'like', date('Y') . '%')
-                     ->orderBy('created_at')
+                     ->leftJoin('organizations AS org1', 'org1.id', '=', 'transactions.club_id')
+                     ->leftJoin('organizations AS org2', 'org2.id', '=', 'org1.parent_id')
+                     ->leftJoin('members', 'members.id', '=', 'transactions.payer_id')
+                     ->where('transactions.created_at', 'like', date('Y') . '%')
+                     ->select('transactions.*', 'org2.name_o AS Reg', 'org1.name_o AS Club',
+                              'members.name', 'members.surname')
+                     ->orderBy('transactions.created_at', 'desc')
                      ->get();
 
         $data[$i] = Transaction::whereIn('club_id', $clubs[$i])

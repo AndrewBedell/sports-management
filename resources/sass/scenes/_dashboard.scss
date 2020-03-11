@@ -22,6 +22,7 @@
 
   table tr td a.detail-link {
     cursor: pointer;
+    &.text-underline,
     &:hover {
       color: #1a0dab;
       text-decoration: underline;

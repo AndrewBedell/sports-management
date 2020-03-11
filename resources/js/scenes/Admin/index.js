@@ -1,9 +1,7 @@
 /* eslint-disable no-case-declarations */
 /* eslint-disable react/sort-comp */
 /* eslint-disable react/no-unused-state */
-import React, {
-  Component, Fragment
-} from 'react';
+import React, { Component, Fragment } from 'react';
 import {
   withRouter
 } from 'react-router-dom';
@@ -16,6 +14,8 @@ import Chart from 'chart.js';
 import AdminTopBar from '../../components/TopBar/AdminTopBar';
 import Api from '../../apis/app';
 
+import TransactionTable from '../../components/TransactionTable';
+
 class Admin extends Component {
   constructor(props) {
     super(props);
@@ -26,11 +26,14 @@ class Admin extends Component {
       this.props.history.push('/');
 
     this.state = {
+      items: [],
       total: [],
       subtotal: [],
       detail: [],
       data: [],
-      nfs: []
+      nfs: [],
+      line1: false,
+      line2: false,
     }
     
     this.chartRef1 = React.createRef();
@@ -47,7 +50,7 @@ class Admin extends Component {
           total: body.total,
           subtotal: body.subtotal,
           detail: body.detail,
-          data: body.data,
+          // data: body.data,
           nfs: body.nfs
         })
         break;
@@ -130,11 +133,46 @@ class Admin extends Component {
         }]
       }
     });
+
+    if (this.state.items.length > 0) {
+      this.setState({
+        activePage: 1
+      });
+    }
+    const { items } = this.state;
+    const { per_page } = this.state;
+    this.setState({
+      data: items.slice(0, per_page)
+    });
+  }
+
+  detail(chart) {
+    this.setState({
+      line1: (chart == 'line1' ? true : false),
+      line2: (chart == 'line2' ? true : false),
+    });
   }
 
   render() {
-    const {detail, data, nfs} = this.state;
+    const {
+      detail, 
+      line1, 
+      line2,
+    } = this.state;
     
+    if (line1)
+      var index = 0;
+
+    if (line2)
+      var index = 1;
+
+    if (index == 0 || index == 1) {
+      for (var i = 0; i < detail[index].length; i++) {
+        if (!Array.isArray(detail[index][i]['players']))
+          detail[index][i]['players'] = detail[index][i]['players'].split(',');
+      }
+    }
+
     return (
       <Fragment>
         <AdminTopBar/>
@@ -152,13 +190,38 @@ class Admin extends Component {
                 <canvas
                   id="lineChart1"
                   ref={this.chartRef2}
+                  onClick={this.detail.bind(this, 'line1')}
                 />
               </Col>
               <Col sm="4">
                 <canvas
                   id="lineChart2"
                   ref={this.chartRef3}
+                  onClick={this.detail.bind(this, 'line2')}
                 />
+              </Col>
+            </Row>
+            <Row>
+              <Col sm="3">
+                
+                </Col>
+              <Col sm="9">
+                <div className="table-responsive mt-5">
+                  {
+                    line1 && (
+                    <TransactionTable
+                      items={detail[0]}
+                    />
+                    )
+                  }
+                  {
+                    line2 && (
+                    <TransactionTable
+                      items={detail[1]}
+                    />
+                    )
+                  }
+                </div>
               </Col>
             </Row>
           </Container>

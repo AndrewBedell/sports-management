@@ -59048,6 +59048,7 @@ body .main-content {
   cursor: pointer;
 }
 
+.main-content table tr td a.detail-link.text-underline,
 .main-content table tr td a.detail-link:hover {
   color: #1a0dab;
   text-decoration: underline;
