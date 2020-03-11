@@ -68,6 +68,10 @@ class Admin extends Component {
       amounts.push(this.state.total[i] / 100);
     }
 
+    let color = [];
+    color[0] = '#00FF00';
+    color[1] = '#0000FF';
+
     this.pieChart = new Chart(this.chartRef1.current, {
       type: 'pie',
       data: {
@@ -75,7 +79,7 @@ class Admin extends Component {
         datasets: [{
           data: amounts,
           fill: 'none',
-          backgroundColor: ['#00FF00', '#0000FF'],
+          backgroundColor: color,
           pointRadius: 5,
           borderColor: '#FF0000',
           borderWidth: 2
@@ -218,7 +222,7 @@ class Admin extends Component {
               </Col>
             </Row>
             <Row>
-              <Col sm="8">
+              <Col sm="6" md="8">
                 <div className="table-responsive mt-5">
                   {
                     line1 && (
@@ -238,7 +242,7 @@ class Admin extends Component {
                   }
                 </div>
               </Col>
-              <Col sm="4">
+              <Col sm="6" md="4">
                 <div className="table-responsive mt-5">
                 {
                   players.length > 0 && (
