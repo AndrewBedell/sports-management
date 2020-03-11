@@ -33,6 +33,11 @@ class Dashboard extends Component {
   constructor(props) {
     super(props);
 
+    const user = JSON.parse(localStorage.getItem('auth'));
+    
+    if (user.user.is_super == 1)
+      this.props.history.push('/admin');
+
     this.state = {
       user_org: '',
       user_is_club: false,
