@@ -5,6 +5,7 @@ use App\User;
 use App\Member;
 use App\Organization;
 use App\Invitation;
+use App\Transaction;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -57,11 +58,11 @@ class UserController extends Controller
             );
         }
 
-        $member = Member::where('email', $request->email)->first();
-        $user = User::where('member_id', $member->id)->first();
+        $user = User::where('email', $request->email)->first();
+        $member = Member::where('id', $user->member_id)->get();
 
-        if ($member->active) {
-            $org = Organization::find($member->organization_id);
+        if (sizeof($member) > 0 && $member[0]->active) {
+            $org = Organization::find($member[0]->organization_id);
 
             return response()->json([
                 'status' => 'success',
@@ -69,18 +70,23 @@ class UserController extends Controller
                     'token' => $token,
                     'user' => [
                         'member_info' => $member,
+                        'is_super' => 0,
                         'is_club_member' => $org->is_club
                     ]
                 ]
             ], 200);
         } else {
-            return response()->json(
-                [
-                    'status' => 'error',
-                    'message' => 'Account is inactive.'
-                ],
-                406
-            );
+            return response()->json([
+                'status' => 'success',
+                'data' => [
+                    'token' => $token,
+                    'user' => [
+                        'member_info' => $member,
+                        'is_super' => 1,
+                        'is_club_member' => 0
+                    ]
+                ]
+            ], 200);
         }
     }
 
@@ -89,9 +95,11 @@ class UserController extends Controller
         $user = JWTAuth::parseToken()->authenticate();
 
         $member = Member::leftJoin('organizations', 'organizations.id', '=', 'members.organization_id')
+                    ->leftJoin('settings', 'settings.organization_id', '=', 'members.organization_id')
                     ->leftJoin('roles', 'roles.id', '=', 'members.role_id')
                     ->where('members.id', $user->member_id)
-                    ->select('members.*', 'organizations.name_o', 'roles.name AS role')
+                    ->select('members.*', 'organizations.parent_id', 'organizations.name_o', 'roles.name AS role',
+                            'settings.price', 'settings.percent')
                     ->get();
 
         return response()->json($member[0]);
@@ -338,5 +346,76 @@ class UserController extends Controller
         return response()->json([
             'status' => 'success'
         ], 200);
+    }
+
+    public function finance()
+    {
+      $nfs = array();
+      $clubs = array();
+
+      $data = array();
+      $detail = array();
+      $total = array();
+      $subtotal = array();
+
+      $nfs = Organization::where('parent_id', 0)->get();
+
+      for ($i = 0; $i < sizeof($nfs); $i++) {
+        $clubs[$i] = array();
+
+        $orgs = Organization::where('parent_id', $nfs[$i]->id)->get();
+
+        foreach ($orgs as $org) {
+          $club = Organization::where('parent_id', $org->id)->get();
+
+          foreach ($club as $c) {
+            array_push($clubs[$i], $c->id);
+          }
+        }
+
+        $detail[$i] = Transaction::whereIn('club_id', $clubs[$i])
+                     ->leftJoin('organizations AS org1', 'org1.id', '=', 'transactions.club_id')
+                     ->leftJoin('organizations AS org2', 'org2.id', '=', 'org1.parent_id')
+                     ->leftJoin('members', 'members.id', '=', 'transactions.payer_id')
+                     ->where('transactions.created_at', 'like', date('Y') . '%')
+                     ->select('transactions.*', 'org2.name_o AS Reg', 'org1.name_o AS Club',
+                              'members.name', 'members.surname')
+                     ->orderBy('transactions.created_at', 'desc')
+                     ->get();
+
+        $data[$i] = Transaction::whereIn('club_id', $clubs[$i])
+                     ->where('created_at', 'like', date('Y') . '%')
+                     ->select('club_id', DB::raw('DATE_FORMAT(created_at, "%Y-%m") new_date'), DB::raw('sum(amount) as amount'))
+                     ->groupBy('club_id', 'new_date')
+                     ->get();
+
+        $subtotal[$i] = Transaction::whereIn('club_id', $clubs[$i])
+                     ->where('created_at', 'like', date('Y') . '%')
+                     ->select(DB::raw('DATE_FORMAT(created_at, "%Y-%m") new_date'), DB::raw('sum(amount) as amount'))
+                     ->groupBy('new_date')
+                     ->get();
+      }
+
+      for ($i = 0; $i < sizeof($clubs); $i++) {
+        $sum = Transaction::whereIn('club_id', $clubs[$i])
+                    ->where('created_at', 'like', date('Y') . '%')
+                    ->select(DB::raw('sum(amount) as amount'))
+                    ->groupBy('club_id')
+                    ->get();
+
+        $total[$i] = 0;
+        foreach ($sum as $value) {
+          $total[$i] += round($value->amount * 100);
+        }
+      }
+
+      return response()->json([
+        'status' => 'success',
+        'total' => $total,
+        'subtotal' => $subtotal,
+        'detail' => $detail,
+        'data' => $data,
+        'nfs' => $nfs
+      ], 200);
     }
 }

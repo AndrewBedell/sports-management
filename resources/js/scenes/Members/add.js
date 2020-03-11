@@ -318,12 +318,12 @@ class MemberAdd extends Component {
                   gender: Yup.mixed().required('This field is required!'),
                   birthday: Yup.mixed().required('This field is required!'),
                   email: Yup.string().email('Email is not valid!').required('This field is required!'),
-                  mobile_phone: Yup.string().matches(/^([+])|\d+$/, 'Mobile phone is incorrect!').required('This field is required!'),
+                  mobile_phone: Yup.string().matches(/^\+?[0-9]\s?[-]\s|[0-9]$/, 'Mobile phone is incorrect!').required('This field is required!'),
                   addressline1: Yup.string().required('This field is required!'),
                   // country: Yup.mixed().required('This field is required!'),
                   city: Yup.string().required('This field is required!'),
                   state: Yup.string().required('This field is required!'),
-                  zip_code: Yup.string().max(6, 'Less than 6 characters!').required('This field is required!'),
+                  zip_code: Yup.string().required('This field is required!'),
                   identity: Yup.string().required('This field is required!')
                 })
               }
@@ -353,7 +353,7 @@ class MemberAdd extends Component {
                               name="role_id"
                               classNamePrefix={!values.role_id && touched.role_id ? 'invalid react-select-lg' : 'react-select-lg'}
                               indicatorSeparator={null}
-                              options={user_is_club == 1 ? roles.filter(item => item.is_player == 1) : roles}
+                              options={roles}
                               getOptionValue={option => option.id}
                               getOptionLabel={option => option.name}
                               value={values.role_id}
@@ -785,68 +785,62 @@ class MemberAdd extends Component {
                         </Col>
                       )
                     }
-                    <Col sm="3" xs="6">
-                      {
-                        (user_is_club || (values.role_id && values.role_id.is_player === 1)) && (
-                          <FormGroup>
-                            <Label for="weight_id">Weight</Label>
-                            <Select
-                              name="weight_id"
-                              menuPlacement="top"
-                              classNamePrefix={!values.weight_id && touched.weight_id ? 'invalid react-select-lg' : 'react-select-lg'}
-                              value={values.weight_id}
-                              options={weights}
-                              getOptionValue={option => option.id}
-                              getOptionLabel={option => option.weight + " Kg"}
-                              onChange={(value) => {
-                                setFieldValue('weight_id', value);
-                              }}
-                            />
-                            {!values.weight_id && touched.weight_id && <FormFeedback className="d-block">This field is required!</FormFeedback>}
-                          </FormGroup>
-                        )
-                      }
-                    </Col>
-                    <Col sm="3" xs="6">
-                      {
-                        (user_is_club || (values.role_id && values.role_id.is_player === 1)) && (
-                          <FormGroup>
-                            <Label for="dan">Dan</Label>
-                            <Select
-                              name="dan"
-                              menuPlacement="top"
-                              classNamePrefix={(!values.dan || (values.dan && values.dan.value == '')) && touched.dan ? 
-                                'invalid react-select-lg' : 'react-select-lg'}
-                              value={values.dan}
-                              options={Dans}
-                              getOptionValue={option => option.value}
-                              getOptionLabel={option => option.label}
-                              onChange={(value) => {
-                                setFieldValue('dan', value);
-                              }}
-                            />
-                            {(!values.dan || (values.dan && values.dan.value == '')) && touched.dan &&
-                              <FormFeedback className="d-block">This field is required!</FormFeedback>}
-                          </FormGroup>
-                        )
-                      }
-                    </Col>
-                    <Col xs="6">
-                      {
-                        (user_is_club || (values.role_id && values.role_id.is_player === 1)) && (
-                          <FormGroup>
-                            <Label for="skill">Skill</Label>
-                            <Input
-                              name="skill"
-                              type="text"
-                              value={values.skill || ''}
-                              onChange={handleChange}
-                              onBlur={handleBlur}
-                            />
-                          </FormGroup>
-                        )
-                      }
-                    </Col>
+                    {
+                      (user_is_club || (values.role_id && values.role_id.is_player == 1)) && (
+                        <Fragment>
+                          <Col sm="3" xs="6">
+                            <FormGroup>
+                              <Label for="weight_id">Weight</Label>
+                              <Select
+                                name="weight_id"
+                                menuPlacement="top"
+                                classNamePrefix={!values.weight_id && touched.weight_id ? 'invalid react-select-lg' : 'react-select-lg'}
+                                value={values.weight_id}
+                                options={weights}
+                                getOptionValue={option => option.id}
+                                getOptionLabel={option => option.weight + " Kg"}
+                                onChange={(value) => {
+                                  setFieldValue('weight_id', value);
+                                }}
+                              />
+                              {!values.weight_id && touched.weight_id && <FormFeedback className="d-block">This field is required!</FormFeedback>}
+                            </FormGroup>
+                          </Col>
+                          <Col sm="3" xs="6">
+                            <FormGroup>
+                              <Label for="dan">Dan</Label>
+                              <Select
+                                name="dan"
+                                menuPlacement="top"
+                                classNamePrefix={(!values.dan || (values.dan && values.dan.value == '')) && touched.dan ? 
+                                  'invalid react-select-lg' : 'react-select-lg'}
+                                value={values.dan}
+                                options={Dans}
+                                getOptionValue={option => option.value}
+                                getOptionLabel={option => option.label}
+                                onChange={(value) => {
+                                  setFieldValue('dan', value);
+                                }}
+                              />
+                              {(!values.dan || (values.dan && values.dan.value == '')) && touched.dan &&
+                                <FormFeedback className="d-block">This field is required!</FormFeedback>}
+                            </FormGroup>
+                          </Col>
+                          <Col xs="6">
+                            <FormGroup>
+                              <Label for="skill">Skill</Label>
+                              <Input
+                                name="skill"
+                                type="text"
+                                value={values.skill || ''}
+                                onChange={handleChange}
+                                onBlur={handleBlur}
+                              />
+                            </FormGroup>
+                          </Col>
+                        </Fragment>
+                      )
+                    }
                   </Row>
                   <div className="w-100 d-flex justify-content-end">
                     <div>

@@ -40,7 +40,15 @@ class Login extends Component {
 
   async login(auth) {
     await this.props.login(auth);
-    this.props.history.push('/');
+
+    const user = JSON.parse(localStorage.getItem('auth'));
+    const is_super = user.user.is_super;
+    
+    if (is_super == 1) {
+      this.props.history.push('/admin');
+    } else {
+      this.props.history.push('/');
+    }
   }
 
   render() {

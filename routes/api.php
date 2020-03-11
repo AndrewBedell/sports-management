@@ -50,5 +50,7 @@ Route::namespace('Api')->group(function () {
         Route::post('pay-now', 'PayController@store');
 
         Route::get('weights', 'PlayerController@weights');
+
+        Route::get('finance', 'UserController@finance');
     });
 });
