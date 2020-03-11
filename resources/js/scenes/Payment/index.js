@@ -497,7 +497,7 @@ class Payment extends Component {
                     </h3>
                   )
                 }
-                <Alert color="danger" isOpen={this.state.alertVisible}>
+                <Alert color={this.state.messageStatus ? 'success' : 'danger'} isOpen={this.state.alertVisible}>
                   {
                     this.state.messageStatus ? this.state.successMessage : this.state.failMessage
                   }

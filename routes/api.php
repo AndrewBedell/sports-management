@@ -47,10 +47,9 @@ Route::namespace('Api')->group(function () {
         Route::get('change-super', 'UserController@change_super');
         Route::delete('user/{id}', 'UserController@destroy');
 
-        Route::post('pay-now', 'PayController@store');
-
         Route::get('weights', 'PlayerController@weights');
 
+        Route::post('pay-now', 'TransactionController@store');
         Route::get('finance', 'TransactionController@finance');
         Route::get('transdetail/{id}', 'TransactionController@detail');
     });
