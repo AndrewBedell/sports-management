@@ -51,6 +51,7 @@ Route::namespace('Api')->group(function () {
 
         Route::get('weights', 'PlayerController@weights');
 
-        Route::get('finance', 'UserController@finance');
+        Route::get('finance', 'TransactionController@finance');
+        Route::get('transdetail/{id}', 'TransactionController@detail');
     });
 });

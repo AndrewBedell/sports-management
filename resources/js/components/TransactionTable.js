@@ -2,14 +2,13 @@
 /* eslint-disable jsx-a11y/alt-text */
 /* eslint-disable jsx-a11y/anchor-is-valid */
 
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 import {
   Table,
   Pagination,
   Menu
 } from 'semantic-ui-react';
 import Select from 'react-select';
-
 import _ from 'lodash';
 
 class TransactionTable extends Component {
@@ -95,12 +94,8 @@ class TransactionTable extends Component {
 
   render() {
     const {
-      onSelect,
-      onDelete,
-      onEdit,
       items,
-      stype,
-      mtype
+      onSelect
     } = this.props;
 
     const {
@@ -120,12 +115,14 @@ class TransactionTable extends Component {
             <Table.HeaderCell
               width="2"
               className="text-center"
+              sorted={column === 'club' ? direction : null}
               onClick={this.handleSort.bind(this, 'club')}
             >
               Regional Federation/Club
             </Table.HeaderCell>
             <Table.HeaderCell
               className="text-center"
+              sorted={column === 'name' ? direction : null}
               onClick={this.handleSort.bind(this, 'name')}
             >
               Name
@@ -156,6 +153,7 @@ class TransactionTable extends Component {
             </Table.HeaderCell>
             <Table.HeaderCell
               className="text-center"
+              sorted={column === 'date' ? direction : null}
               onClick={this.handleSort.bind(this, 'date')}
             >
               Date
@@ -218,8 +216,6 @@ class TransactionTable extends Component {
 }
 
 TransactionTable.defaultProps = {
-  onDelete: () => {},
-  onEdit: () => {},
   onSelect: () => {}
 };
 
