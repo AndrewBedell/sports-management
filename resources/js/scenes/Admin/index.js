@@ -15,6 +15,7 @@ import AdminTopBar from '../../components/TopBar/AdminTopBar';
 import Api from '../../apis/app';
 
 import TransactionTable from '../../components/TransactionTable';
+import PlayerPayTable from '../../components/PlayerPayTable';
 
 class Admin extends Component {
   constructor(props) {
@@ -27,6 +28,7 @@ class Admin extends Component {
 
     this.state = {
       items: [],
+      players: [],
       total: [],
       subtotal: [],
       detail: [],
@@ -146,6 +148,20 @@ class Admin extends Component {
     });
   }
 
+  async handleSelectItem(id) {
+    const trans = await Api.get(`transdetail/${id}`);
+    const { response, body } = trans;
+    switch (response.status) {
+      case 200:
+        this.setState({
+          players: body.members
+        });
+        break;
+      default:
+        break;
+    }
+  }
+
   detail(chart) {
     this.setState({
       line1: (chart == 'line1' ? true : false),
@@ -155,6 +171,7 @@ class Admin extends Component {
 
   render() {
     const {
+      players,
       detail, 
       line1, 
       line2,
@@ -202,15 +219,13 @@ class Admin extends Component {
               </Col>
             </Row>
             <Row>
-              <Col sm="3">
-                
-                </Col>
-              <Col sm="9">
+              <Col sm="8">
                 <div className="table-responsive mt-5">
                   {
                     line1 && (
                     <TransactionTable
                       items={detail[0]}
+                      onSelect={this.handleSelectItem.bind(this)}
                     />
                     )
                   }
@@ -218,9 +233,21 @@ class Admin extends Component {
                     line2 && (
                     <TransactionTable
                       items={detail[1]}
+                      onSelect={this.handleSelectItem.bind(this)}
                     />
                     )
                   }
+                </div>
+              </Col>
+              <Col sm="4">
+                <div className="table-responsive mt-5">
+                {
+                  players.length > 0 && (
+                    <PlayerPayTable
+                      players={players}
+                    />  
+                  )
+                }
                 </div>
               </Col>
             </Row>
