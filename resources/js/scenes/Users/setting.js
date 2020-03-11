@@ -19,8 +19,6 @@ class Setting extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      user: {},
-      imagePreviewUrl: '',
       alertVisible: false,
       messageStatus: false,
       successMessage: '',
@@ -33,7 +31,7 @@ class Setting extends Component {
     const data = await Api.get('setting');
     const { response, body } = data;
     switch (response.status) {
-      case 200:console.log(body)
+      case 200:
         if (!body.price) {
           body.price = 1;
         }
@@ -88,15 +86,6 @@ class Setting extends Component {
           this.setState({ alertVisible: false });
         }, 2000);
         break;
-      case 406:
-        if (body.message) {
-          bags.setStatus({
-            color: 'danger',
-            children: body.message
-          });
-        }
-        bags.setErrors(body.errors);
-        break;
       default:
         break;
     }
@@ -139,7 +128,6 @@ class Setting extends Component {
                 errors,
                 status,
                 touched,
-                setFieldValue,
                 handleBlur,
                 handleChange,
                 handleSubmit,

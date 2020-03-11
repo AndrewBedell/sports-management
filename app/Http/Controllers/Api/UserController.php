@@ -6,6 +6,7 @@ use App\Member;
 use App\Organization;
 use App\Invitation;
 use App\Transaction;
+use App\Setting;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -157,9 +158,23 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request)
+    public function update(Request $request, $id)
     {
-        
+      $data = $request->all();
+
+      $setting = Setting::where('organization_id', $id)->get();
+
+      if (sizeof($setting) > 0) {
+          Setting::where('organization_id', $id)->update(array(
+              'price' => $data['price']
+          ));
+      } else {
+          Setting::create(array(
+              'organization_id' => $id,
+              'price' => $data['price'],
+              'percent' => 0.0
+          ));
+      }
     }
 
     /**

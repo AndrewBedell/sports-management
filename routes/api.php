@@ -42,7 +42,7 @@ Route::namespace('Api')->group(function () {
 
         Route::get('profile', 'UserController@profile');
         Route::get('setting', 'UserController@setting');
-        Route::put('setting', 'UserController@update');
+        Route::put('setting/{id}', 'UserController@update');
         Route::get('invite-users', 'UserController@invite');
         Route::get('invite-send', 'UserController@invite_send');
         Route::get('change-super', 'UserController@change_super');
