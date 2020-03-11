@@ -251,24 +251,6 @@ class MemberController extends Controller
         if (isset($member)) {
             $data = $request->all();
 
-            $org = Organization::find($member->organization_id);
-
-            if ($org->parent_id == 0) {
-                $setting = Setting::where('organization_id', $member->organization_id)->get();
-
-                if (sizeof($setting) > 0) {
-                    Setting::where('organization_id', $member->organization_id)->update(array(
-                        'price' => $data['price']
-                    ));
-                } else {
-                    Setting::create(array(
-                        'organization_id' => $member->organization_id,
-                        'price' => $data['price'],
-                        'percent' => 0.0
-                    ));
-                }
-            }
-
             $validMember = Validator::make($data, [
                 'organization_id' => 'required',
                 'role_id' => 'required',

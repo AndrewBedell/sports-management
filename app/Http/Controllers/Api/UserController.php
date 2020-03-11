@@ -6,6 +6,7 @@ use App\Member;
 use App\Organization;
 use App\Invitation;
 use App\Transaction;
+use App\Setting;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -69,7 +70,7 @@ class UserController extends Controller
                 'data' => [
                     'token' => $token,
                     'user' => [
-                        'member_info' => $member,
+                        'member_info' => $member[0],
                         'is_super' => 0,
                         'is_club_member' => $org->is_club
                     ]
@@ -95,14 +96,24 @@ class UserController extends Controller
         $user = JWTAuth::parseToken()->authenticate();
 
         $member = Member::leftJoin('organizations', 'organizations.id', '=', 'members.organization_id')
-                    ->leftJoin('settings', 'settings.organization_id', '=', 'members.organization_id')
                     ->leftJoin('roles', 'roles.id', '=', 'members.role_id')
                     ->where('members.id', $user->member_id)
-                    ->select('members.*', 'organizations.parent_id', 'organizations.name_o', 'roles.name AS role',
-                            'settings.price', 'settings.percent')
+                    ->select('members.*', 'organizations.parent_id', 'organizations.name_o', 'roles.name AS role')
                     ->get();
 
         return response()->json($member[0]);
+    }
+
+    public function setting()
+    {
+        $user = JWTAuth::parseToken()->authenticate();
+
+        $setting = Member::leftJoin('settings', 'settings.organization_id', '=', 'members.organization_id')
+                    ->where('members.id', $user->member_id)
+                    ->select('settings.*')
+                    ->get();
+
+        return response()->json($setting[0]);
     }
 
     public function store(Request $request)
@@ -147,48 +158,23 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request)
+    public function update(Request $request, $id)
     {
-        $user = JWTAuth::parseToken()->authenticate();
+      $data = $request->all();
 
-        $data = $request->all();
+      $setting = Setting::where('organization_id', $id)->get();
 
-        $validMember = Validator::make($data, [
-            'name' => 'required|string|max:255',
-            'surname' => 'required|string|max:255',
-            'profile_image' => 'required|string|max:255',
-            'gender' => 'required|boolean',
-            'birthday' => 'required|date',
-            'mobile_phone' => 'required|string|max:255',
-            'addressline1' => 'required|string|max:255',
-            'country' => 'required|string|max:255',
-            'state' => 'required|string|max:255',
-            'city' => 'required|string|max:255',
-            'zip_code' => 'required|string|max:255',
-            'position' => 'required|string|max:255',
-            'identity' => 'required|string|max:255',
-        ]);
-
-        if ($validMember->fails()) {
-            return response()->json(
-                [
-                    'status' => 'fail',
-                    'data' => $validMember->errors(),
-                ],
-                422
-            );
-        } else {
-            Member::where('id', $user->member_id)->update($data);
-
-            $member = Member::where('id', $user->member_id)->first();
-
-            return response()->json([
-                'status' => 'success',
-                'data' => [
-                    'member' => $member
-                ]
-            ], 200);
-        }
+      if (sizeof($setting) > 0) {
+          Setting::where('organization_id', $id)->update(array(
+              'price' => $data['price']
+          ));
+      } else {
+          Setting::create(array(
+              'organization_id' => $id,
+              'price' => $data['price'],
+              'percent' => 0.0
+          ));
+      }
     }
 
     /**

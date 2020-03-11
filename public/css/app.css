@@ -58973,10 +58973,6 @@ body {
   padding: 8px 0;
 }
 
-.top-header .navbar-collapse .nav .right-nav-bar .nav-item i {
-  color: #FFFFFF !important;
-}
-
 @media (min-width: 992px) {
   .top-header .navbar-collapse {
     display: block;
