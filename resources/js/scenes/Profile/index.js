@@ -82,6 +82,7 @@ class Profile extends Component {
       state: values.state,
       city: values.city,
       zip_code: values.zip_code,
+      parent_id: values.parent_id,
       identity: values.identity,
       price: values.price
     });
@@ -491,27 +492,30 @@ class Profile extends Component {
                       </Col>
                   </Row>
                   <hr/>
-                  <Row>
-                    <Col sm="4" xs="6">
-                      <FormGroup>
-                        <Label for="price">Price per Player</Label>
-                        <InputGroup>
-                          <InputGroupAddon addonType="prepend">$</InputGroupAddon>
-                          <Input 
-                            name="price"
-                            type="text"
-                            placeholder="price" 
-                            value={values.price || 1}
-                            onChange={handleChange}
-                            onBlur={handleBlur}
-                            invalid={!!errors.price && touched.price}
-                          />
-                          <FormFeedback>{errors.price}</FormFeedback>
-                        </InputGroup>
-                      </FormGroup>
-                    </Col>
-                  </Row>
-                  <hr/>
+                  {
+                    values.parent_id == 0 && values.role_id == 1 && (
+                    <Row>
+                      <Col sm="4" xs="6">
+                        <FormGroup>
+                          <Label for="price">Price per Player</Label>
+                          <InputGroup>
+                            <InputGroupAddon addonType="prepend">$</InputGroupAddon>
+                            <Input 
+                              name="price"
+                              type="text"
+                              placeholder="price" 
+                              value={values.price || 1}
+                              onChange={handleChange}
+                              onBlur={handleBlur}
+                              invalid={!!errors.price && touched.price}
+                            />
+                            <FormFeedback>{errors.price}</FormFeedback>
+                          </InputGroup>
+                        </FormGroup>
+                      </Col>
+                    </Row>
+                    )
+                  }                  
                   <div className="w-100 d-flex justify-content-end">
                     <div>
                       <Button
