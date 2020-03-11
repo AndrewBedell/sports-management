@@ -173,7 +173,7 @@ class Setting extends Component {
                           type="submit"
                           color="primary"
                         >
-                          Update Setting
+                          Update Membership
                         </Button>
                       </div>
                     </Col>
