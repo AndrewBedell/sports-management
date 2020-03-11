@@ -75,7 +75,7 @@ class Admin extends Component {
         datasets: [{
           data: amounts,
           fill: 'none',
-          backgroundColor: '#00FF00',
+          backgroundColor: ['#00FF00', '#0000FF'],
           pointRadius: 5,
           borderColor: '#FF0000',
           borderWidth: 2
