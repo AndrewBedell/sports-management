@@ -122,6 +122,14 @@ class TransactionController extends Controller
       $setting = array();
       if (sizeOf($settings) > 0) {
         $setting = $settings[0];
+      } else {
+        return response()->json(
+          [
+              'status' => 'error',
+              'message' => 'Please setting per price.'
+          ],
+          406
+        );
       }
       Transaction::create(array(
         'club_id' => $data['club_id'],

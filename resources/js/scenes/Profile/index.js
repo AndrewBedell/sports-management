@@ -27,7 +27,7 @@ class Profile extends Component {
       alertVisible: false,
       messageStatus: false,
       successMessage: '',
-      failMessage: '',
+      failMessage: ''
     };
     this.formikRef = React.createRef();
   }
@@ -106,10 +106,8 @@ class Profile extends Component {
   async handleSubmit(values, bags) {
     let newData = {};
     const { imagePreviewUrl } = this.state;
-    const id = values.id;
-    
     newData = {
-      id,
+      id: values.id,
       organization_id: values.organization_id,
       role_id: values.role_id,
       name: values.name,
@@ -132,7 +130,7 @@ class Profile extends Component {
       price: values.price
     };
 
-    const data = await Api.put(`member/${id}`, newData);
+    const data = await Api.put(`member/${values.id}`, newData);
     const { response, body } = data;
     switch (response.status) {
       case 200:
@@ -180,7 +178,7 @@ class Profile extends Component {
     } else {
       $imagePreview = (<div className="previewText">Please select an Image for Preview</div>);
     }
-    
+
     return (
       <Fragment>
         <MainTopBar />
