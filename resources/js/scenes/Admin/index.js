@@ -218,7 +218,7 @@ class Admin extends Component {
               </Col>
             </Row>
             <Row>
-              <Col sm="8">
+              <Col sm="6" md="8">
                 <div className="table-responsive mt-5">
                   {
                     line1 && (
@@ -238,7 +238,7 @@ class Admin extends Component {
                   }
                 </div>
               </Col>
-              <Col sm="4">
+              <Col sm="6" md="4">
                 <div className="table-responsive mt-5">
                 {
                   players.length > 0 && (
