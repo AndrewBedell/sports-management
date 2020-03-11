@@ -17,7 +17,7 @@ class CreateSettingsTable extends Migration
             $table->bigIncrements('id');
             $table->integer('organization_id');
             $table->double('price', 10, 2);
-            $table->double('percent', 3, 2);
+            $table->double('percent', 4, 2);
 
             $table->timestamps();
             $table->softDeletes();

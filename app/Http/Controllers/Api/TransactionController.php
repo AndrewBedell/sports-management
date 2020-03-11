@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\User;
 use App\Member;
+use App\Settings;
 use App\Organization;
 use App\Transaction;
 
@@ -116,13 +117,15 @@ class TransactionController extends Controller
         $price_data = $request->input('payme_data');
       }
 
+      $setting = Settings::where('organization_id', $data['club_id']);
+
       Transaction::create(array(
         'club_id' => $data['club_id'],
         'payer_id' => $data['payer_id'],
         'players' => $players,
         'amount' => $data['amount'],
-        'price' => 1.99,
-        'percent' => 1.0
+        'price' => $setting['price'],
+        'percent' => $setting['percent']
       ));
 
       foreach ($player_list as $player) {
