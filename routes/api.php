@@ -41,7 +41,8 @@ Route::namespace('Api')->group(function () {
         Route::delete('member/{id}', 'MemberController@destroy');
 
         Route::get('profile', 'UserController@profile');
-        Route::post('update-profile', 'UserController@update');
+        Route::get('setting', 'UserController@setting');
+        Route::put('setting', 'UserController@update');
         Route::get('invite-users', 'UserController@invite');
         Route::get('invite-send', 'UserController@invite_send');
         Route::get('change-super', 'UserController@change_super');
