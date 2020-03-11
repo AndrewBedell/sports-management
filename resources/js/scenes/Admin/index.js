@@ -68,6 +68,10 @@ class Admin extends Component {
       amounts.push(this.state.total[i] / 100);
     }
 
+    let color = [];
+    color[0] = '#00FF00';
+    color[1] = '#0000FF';
+
     this.pieChart = new Chart(this.chartRef1.current, {
       type: 'pie',
       data: {
@@ -75,7 +79,7 @@ class Admin extends Component {
         datasets: [{
           data: amounts,
           fill: 'none',
-          backgroundColor: '#00FF00',
+          backgroundColor: color,
           pointRadius: 5,
           borderColor: '#FF0000',
           borderWidth: 2
