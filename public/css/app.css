@@ -7376,7 +7376,7 @@ a.ui.inverted.grey.header:hover {
 @font-face {
   font-family: "Icons";
   src: url(/fonts/icons.eot?8e3c7f5520f5ae906c6cf6d7f3ddcd19);
-  src: url(/fonts/icons.eot?8e3c7f5520f5ae906c6cf6d7f3ddcd19) format("embedded-opentype"), url(/fonts/icons.woff2?0ab54153eeeca0ce03978cc463b257f7) format("woff2"), url(/fonts/icons.woff?faff92145777a3cbaf8e7367b4807987) format("woff"), url(/fonts/icons.ttf?b87b9ba532ace76ae9f6edfe9f72ded2) format("truetype"), url(/fonts/icons.svg?962a1bf31c081691065fe333d9fa8105) format("svg");
+  src: url(/fonts/icons.eot?8e3c7f5520f5ae906c6cf6d7f3ddcd19) format("embedded-opentype"), url(/fonts/icons.woff2?0ab54153eeeca0ce03978cc463b257f7) format("woff2"), url(/fonts/icons.woff?faff92145777a3cbaf8e7367b4807987) format("woff"), url(/fonts/icons.ttf?b87b9ba532ace76ae9f6edfe9f72ded2) format("truetype"), url(/fonts/icons.svg?448f2aaa315fa9dce7b2cf6ce31caed6) format("svg");
   font-style: normal;
   font-weight: normal;
   font-variant: normal;
@@ -12650,7 +12650,7 @@ i.icon.youtube.play:before {
 @font-face {
   font-family: "outline-icons";
   src: url(/fonts/outline-icons.eot?701ae6abd4719e9c2ada3535a497b341);
-  src: url(/fonts/outline-icons.eot?701ae6abd4719e9c2ada3535a497b341) format("embedded-opentype"), url(/fonts/outline-icons.woff2?cd6c777f1945164224dee082abaea03a) format("woff2"), url(/fonts/outline-icons.woff?ef60a4f6c25ef7f39f2d25a748dbecfe) format("woff"), url(/fonts/outline-icons.ttf?ad97afd3337e8cda302d10ff5a4026b8) format("truetype"), url(/fonts/outline-icons.svg?82f60bd0b94a1ed68b1e6e309ce2e8c3) format("svg");
+  src: url(/fonts/outline-icons.eot?701ae6abd4719e9c2ada3535a497b341) format("embedded-opentype"), url(/fonts/outline-icons.woff2?cd6c777f1945164224dee082abaea03a) format("woff2"), url(/fonts/outline-icons.woff?ef60a4f6c25ef7f39f2d25a748dbecfe) format("woff"), url(/fonts/outline-icons.ttf?ad97afd3337e8cda302d10ff5a4026b8) format("truetype"), url(/fonts/outline-icons.svg?b551b554a67e86a840bc80cbb8066c30) format("svg");
   font-style: normal;
   font-weight: normal;
   font-variant: normal;
@@ -13156,7 +13156,7 @@ i.icon.star.empty:before {
 @font-face {
   font-family: "brand-icons";
   src: url(/fonts/brand-icons.eot?13db00b7a34fee4d819ab7f9838cc428);
-  src: url(/fonts/brand-icons.eot?13db00b7a34fee4d819ab7f9838cc428) format("embedded-opentype"), url(/fonts/brand-icons.woff2?e8c322de9658cbeb8a774b6624167c2c) format("woff2"), url(/fonts/brand-icons.woff?a046592bac8f2fd96e994733faf3858c) format("woff"), url(/fonts/brand-icons.ttf?c5ebe0b32dc1b5cc449a76c4204d13bb) format("truetype"), url(/fonts/brand-icons.svg?a1a749e89f578a49306ec2b055c073da) format("svg");
+  src: url(/fonts/brand-icons.eot?13db00b7a34fee4d819ab7f9838cc428) format("embedded-opentype"), url(/fonts/brand-icons.woff2?e8c322de9658cbeb8a774b6624167c2c) format("woff2"), url(/fonts/brand-icons.woff?a046592bac8f2fd96e994733faf3858c) format("woff"), url(/fonts/brand-icons.ttf?c5ebe0b32dc1b5cc449a76c4204d13bb) format("truetype"), url(/fonts/brand-icons.svg?65363c4d55617bbeb57d8ce6dcd46099) format("svg");
   font-style: normal;
   font-weight: normal;
   font-variant: normal;
@@ -48907,7 +48907,7 @@ a.badge-gray.focus {
   font-weight: 300;
   font-display: auto;
   src: url(/fonts/fa-light-300.eot?64805970c4c65f0d9162355b020e33ce);
-  src: url(/fonts/fa-light-300.eot?64805970c4c65f0d9162355b020e33ce) format("embedded-opentype"), url(/fonts/fa-light-300.woff2?67557ec3e55de3bba6df3562dad47ae9) format("woff2"), url(/fonts/fa-light-300.woff?1e4c8262b85b385157e764b89920f7f5) format("woff"), url(/fonts/fa-light-300.ttf?69ecb2bd9d986fdc442f0657eb251f57) format("truetype"), url(/fonts/fa-light-300.svg?b6e4c70226d33b7990bbbb39dde2ba40) format("svg");
+  src: url(/fonts/fa-light-300.eot?64805970c4c65f0d9162355b020e33ce) format("embedded-opentype"), url(/fonts/fa-light-300.woff2?67557ec3e55de3bba6df3562dad47ae9) format("woff2"), url(/fonts/fa-light-300.woff?1e4c8262b85b385157e764b89920f7f5) format("woff"), url(/fonts/fa-light-300.ttf?69ecb2bd9d986fdc442f0657eb251f57) format("truetype"), url(/fonts/fa-light-300.svg?3f10f2e8df2e184f8596aa5ee8c57c7e) format("svg");
 }
 
 .fal {
@@ -48921,7 +48921,7 @@ a.badge-gray.focus {
   font-weight: 400;
   font-display: auto;
   src: url(/fonts/fa-regular-400.eot?dd9e15837df7cd19a34455f5c54ce379);
-  src: url(/fonts/fa-regular-400.eot?dd9e15837df7cd19a34455f5c54ce379) format("embedded-opentype"), url(/fonts/fa-regular-400.woff2?ea1125e0a2bd57c4bdcf2c7e20386767) format("woff2"), url(/fonts/fa-regular-400.woff?b856172881a708c644eb030168551e73) format("woff"), url(/fonts/fa-regular-400.ttf?f18935cdad9fd0543247abe466075237) format("truetype"), url(/fonts/fa-regular-400.svg?1c840fa5ab2437a43f2094fce69f8310) format("svg");
+  src: url(/fonts/fa-regular-400.eot?dd9e15837df7cd19a34455f5c54ce379) format("embedded-opentype"), url(/fonts/fa-regular-400.woff2?ea1125e0a2bd57c4bdcf2c7e20386767) format("woff2"), url(/fonts/fa-regular-400.woff?b856172881a708c644eb030168551e73) format("woff"), url(/fonts/fa-regular-400.ttf?f18935cdad9fd0543247abe466075237) format("truetype"), url(/fonts/fa-regular-400.svg?517ada83537586cb8ad6e859eab9a786) format("svg");
 }
 
 .far {
@@ -48935,7 +48935,7 @@ a.badge-gray.focus {
   font-weight: 900;
   font-display: auto;
   src: url(/fonts/fa-solid-900.eot?3f7e3ac8288953f489dd3706da61b1c8);
-  src: url(/fonts/fa-solid-900.eot?3f7e3ac8288953f489dd3706da61b1c8) format("embedded-opentype"), url(/fonts/fa-solid-900.woff2?00d3012700332144ce43a62a3b7ec4f1) format("woff2"), url(/fonts/fa-solid-900.woff?dddc7b4661a865059856beb6658595aa) format("woff"), url(/fonts/fa-solid-900.ttf?9242dedf4090cbdc546f036ac9b002da) format("truetype"), url(/fonts/fa-solid-900.svg?ad34988acc704c67667121ca56ba6266) format("svg");
+  src: url(/fonts/fa-solid-900.eot?3f7e3ac8288953f489dd3706da61b1c8) format("embedded-opentype"), url(/fonts/fa-solid-900.woff2?00d3012700332144ce43a62a3b7ec4f1) format("woff2"), url(/fonts/fa-solid-900.woff?dddc7b4661a865059856beb6658595aa) format("woff"), url(/fonts/fa-solid-900.ttf?9242dedf4090cbdc546f036ac9b002da) format("truetype"), url(/fonts/fa-solid-900.svg?80aff7f2230b5ec9dbf16d49cba7b3d4) format("svg");
 }
 
 .fa,
@@ -48950,7 +48950,7 @@ a.badge-gray.focus {
   font-weight: normal;
   font-display: auto;
   src: url(/fonts/fa-brands-400.eot?475a26749ff9de9207ac37c4b37fa381);
-  src: url(/fonts/fa-brands-400.eot?475a26749ff9de9207ac37c4b37fa381) format("embedded-opentype"), url(/fonts/fa-brands-400.woff2?99f3121dc63babcf368cb6aee3b535f6) format("woff2"), url(/fonts/fa-brands-400.woff?4acb4cc4916ee2758bcefee86e4814fe) format("woff"), url(/fonts/fa-brands-400.ttf?b00fd7dbf7c0a93f8c7add8d51b337d8) format("truetype"), url(/fonts/fa-brands-400.svg?82110f5de8b68af485945c9eed920734) format("svg");
+  src: url(/fonts/fa-brands-400.eot?475a26749ff9de9207ac37c4b37fa381) format("embedded-opentype"), url(/fonts/fa-brands-400.woff2?99f3121dc63babcf368cb6aee3b535f6) format("woff2"), url(/fonts/fa-brands-400.woff?4acb4cc4916ee2758bcefee86e4814fe) format("woff"), url(/fonts/fa-brands-400.ttf?b00fd7dbf7c0a93f8c7add8d51b337d8) format("truetype"), url(/fonts/fa-brands-400.svg?34eb59218aedb1988692906600affc30) format("svg");
 }
 
 .fab {
@@ -57848,6 +57848,10 @@ body {
 
 .alert-dismissible .close {
   padding: 0;
+}
+
+.reg-member .image-preview.is_image img {
+  border-radius: 20px;
 }
 
 .btn-success {
