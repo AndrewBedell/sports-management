@@ -82,7 +82,7 @@ class UserController extends Controller
                 'data' => [
                     'token' => $token,
                     'user' => [
-                        'member_info' => $member,
+                        'member_info' => $user,
                         'is_super' => 1,
                         'is_club_member' => 0
                     ]
