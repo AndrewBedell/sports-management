@@ -10,7 +10,6 @@ import {
 } from 'semantic-ui-react';
 import { Button } from 'reactstrap';
 import Select from 'react-select';
-import ReactTooltip from 'react-tooltip';
 
 import _ from 'lodash';
 import { Genders } from '../configs/data';
