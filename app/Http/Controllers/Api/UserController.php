@@ -199,6 +199,12 @@ class UserController extends Controller
           ));
         }
       }
+
+      $settings = Setting::leftJoin('organizations', 'settings.organization_id', '=', 'organizations.id')
+                    ->select('settings.*', 'organizations.name_o')
+                    ->get();
+
+      return response()->json($settings);
     }
 
     /**

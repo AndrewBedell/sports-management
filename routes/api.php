@@ -42,8 +42,8 @@ Route::namespace('Api')->group(function () {
 
         Route::get('profile', 'UserController@profile');
         Route::get('setting', 'UserController@setting');
-        Route::get('allsetting', 'UserController@allsetting');
         Route::put('setting/{id}', 'UserController@update');
+        Route::get('allsetting', 'UserController@allsetting');
         Route::get('invite-users', 'UserController@invite');
         Route::get('invite-send', 'UserController@invite_send');
         Route::get('change-super', 'UserController@change_super');

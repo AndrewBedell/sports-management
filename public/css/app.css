@@ -58508,6 +58508,14 @@ body {
   border-radius: 3px;
 }
 
+.setting .table tbody tr td .actions.save button {
+  margin-top: 12px;
+}
+
+.setting .table tbody tr td input.form-control {
+  padding: 5px 10px;
+}
+
 .modal-prompt {
   width: 540px;
   top: 30%;
