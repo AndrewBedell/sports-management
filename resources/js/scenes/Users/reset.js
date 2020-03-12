@@ -39,6 +39,13 @@ class Reset extends Component {
           messageStatus: true,
           successMessage: body.message
         });
+
+        setTimeout(() => {
+          this.setState({ alertVisible: false });
+
+          this.handleLogout();
+        }, 2000);
+
         break;
       case 406:
         this.setState({
@@ -46,17 +53,23 @@ class Reset extends Component {
           messageStatus: false,
           failMessage: body.message
         });
+
+        setTimeout(() => {
+          this.setState({ alertVisible: false });
+        }, 2000);
+
         bags.setStatus(AppHelper.getStatusAlertData(body));
         break;
       default:
         break;
     }
 
-    setTimeout(() => {
-      this.setState({ alertVisible: false });
-    }, 2000);
-
     bags.setSubmitting(false);
+  }
+
+  async handleLogout() {
+    localStorage.clear();
+    this.props.history.push('/logout');
   }
 
   render() {
