@@ -83,14 +83,16 @@ class Payment extends Component {
       default:
         break;
     }
-    const org_response = await Api.get('organizations-list');
+    const org_response = await Api.get(`organization-child/${user_info.organization_id}`);
     const { response, body } = org_response;
     switch (response.status) {
       case 200:
         const orgArr = ['All'];
 
-        for (let i = 1; i < body.length; i++) {
-          orgArr.push(body[i].name_o);
+        for (let i = 0; i < body.length; i++) {
+          if (body[i].is_club !== 1) {
+            orgArr.push(body[i].name_o);
+          }
         }
 
         const orgList = orgArr.map((org, Index) => <option key={Index} value={org} />);
@@ -548,31 +550,39 @@ class Payment extends Component {
                       />
                     </FormGroup>
                   </Col>
-                  <Col lg="2" md="3" sm="4">
-                    <FormGroup>
-                      <Input
-                        className="club-list"
-                        list="orgs"
-                        name="search_name"
-                        type="text"
-                        value={filter_players.region || ''}
-                        placeholder="Regional Federation Name"
-                        onChange={event => this.handleSearchFilter('region', event.target.value)}
-                      />
-                      <datalist id="orgs">
-                        {orgs}
-                      </datalist>
-                    </FormGroup>
-                  </Col>
-                  <Col lg="2" md="3" sm="4">
-                    <FormGroup>
-                      <Input
-                        value={(filter_players && filter_players.club) || ''}
-                        placeholder="Search Club"
-                        onChange={(event) => { this.handleSearchFilter('club', event.target.value); }}
-                      />
-                    </FormGroup>
-                  </Col>
+                  {
+                    !is_club_member && (
+                      <Col lg="2" md="3" sm="4">
+                        <FormGroup>
+                          <Input
+                            className="club-list"
+                            list="orgs"
+                            name="search_name"
+                            type="text"
+                            value={filter_players.region || ''}
+                            placeholder="Regional Federation Name"
+                            onChange={event => this.handleSearchFilter('region', event.target.value)}
+                          />
+                          <datalist id="orgs">
+                            {orgs}
+                          </datalist>
+                        </FormGroup>
+                      </Col>
+                    )
+                  }
+                  {
+                    !is_club_member && (
+                      <Col lg="2" md="3" sm="4">
+                        <FormGroup>
+                          <Input
+                            value={(filter_players && filter_players.club) || ''}
+                            placeholder="Search Club"
+                            onChange={(event) => { this.handleSearchFilter('club', event.target.value); }}
+                          />
+                        </FormGroup>
+                      </Col>
+                    )
+                  }
                   <Col lg="2" md="3" sm="4">
                     <FormGroup>
                       <Select
