@@ -82,7 +82,7 @@ class UserController extends Controller
                 'data' => [
                     'token' => $token,
                     'user' => [
-                        'member_info' => $member,
+                        'member_info' => $user,
                         'is_super' => 1,
                         'is_club_member' => 0
                     ]
@@ -114,6 +114,15 @@ class UserController extends Controller
                     ->get();
 
         return response()->json($setting[0]);
+    }
+
+    public function allsetting()
+    {
+        $setting = Setting::leftJoin('organizations', 'settings.organization_id', '=', 'organizations.id')
+                    ->select('settings.*', 'organizations.name_o')
+                    ->get();
+
+        return response()->json($setting);
     }
 
     public function store(Request $request)
@@ -165,15 +174,30 @@ class UserController extends Controller
       $setting = Setting::where('organization_id', $id)->get();
 
       if (sizeof($setting) > 0) {
+        if (isset($data['percent'])) {
           Setting::where('organization_id', $id)->update(array(
-              'price' => $data['price']
+            'price' => $data['price'],
+            'percent' => $data['percent']
           ));
+        } else {
+          Setting::where('organization_id', $id)->update(array(
+            'price' => $data['price']
+          ));
+        }
       } else {
+        if (isset($data['percent'])) {
           Setting::create(array(
-              'organization_id' => $id,
-              'price' => $data['price'],
-              'percent' => 0.0
+            'organization_id' => $id,
+            'price' => $data['price'],
+            'percent' => $data['percent']
           ));
+        } else {
+          Setting::create(array(
+            'organization_id' => $id,
+            'price' => $data['price'],
+            'percent' => 0.0
+          ));
+        }
       }
     }
 

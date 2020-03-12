@@ -18,11 +18,17 @@ import Api from '../../apis/app';
 class Setting extends Component {
   constructor(props) {
     super(props);
+
+    const user = JSON.parse(localStorage.getItem('auth'));
+    const organization_id = user.user.member_info.organization_id;
+
     this.state = {
+      item: [],
       alertVisible: false,
       messageStatus: false,
       successMessage: '',
-      failMessage: ''
+      failMessage: '',
+      org_id: organization_id
     };
     this.formikRef = React.createRef();
   }
@@ -31,9 +37,10 @@ class Setting extends Component {
     const data = await Api.get('setting');
     const { response, body } = data;
     switch (response.status) {
-      case 200:
+      case 200:console.log(body)
         if (!body.price) {
           body.price = 1;
+          body.organization_id = this.state.org_id;
         }
 
         this.setState({
@@ -73,7 +80,7 @@ class Setting extends Component {
     };
 
     const data = await Api.put(`setting/${values.id}`, newData);
-    const { response, body } = data;
+    const { response } = data;
     switch (response.status) {
       case 200:
         this.setState({

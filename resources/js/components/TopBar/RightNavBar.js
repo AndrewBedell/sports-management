@@ -28,10 +28,12 @@ class RightNavBar extends Component {
     const user = JSON.parse(localStorage.getItem('auth'));
     const is_super = user.user.is_super;
     const is_club_member = user.user.is_club_member;
+    const role_id = user.user.member_info.role_id;
 
     this.state = {
       is_super: is_super,
-      is_club_member: is_club_member
+      is_club_member: is_club_member,
+      role_id: role_id
     }
   }
 
@@ -41,7 +43,7 @@ class RightNavBar extends Component {
   }
 
   render() {
-    const {is_super, is_club_member} = this.state;
+    const {is_super, is_club_member, role_id} = this.state;
 
     return (
       <Navbar className="right-nav-bar">
@@ -78,25 +80,29 @@ class RightNavBar extends Component {
               )
             }
             </DropdownItem>
-            <DropdownItem>
             {
               is_club_member == 0 && (
                 is_super == 1 ? (
-                  <NavItem>
-                    <NavLink tag={Link} to="/admin/setting" >
-                      <i className="fa fa-sliders-v" /> Financial Setting
-                    </NavLink>
-                  </NavItem>
+                  <DropdownItem>
+                    <NavItem>
+                      <NavLink tag={Link} to="/admin/setting" >
+                        <i className="fa fa-sliders-v" /> Financial Setting
+                      </NavLink>
+                    </NavItem>
+                  </DropdownItem>
                 ) : (
-                  <NavItem>
-                    <NavLink tag={Link} to="/setting" >
-                      <i className="fa fa-sliders-v" /> Financial Setting
-                    </NavLink>
-                  </NavItem>
+                  role_id == 1 && (
+                    <DropdownItem>
+                      <NavItem>
+                        <NavLink tag={Link} to="/setting" >
+                          <i className="fa fa-sliders-v" /> Financial Setting
+                        </NavLink>
+                      </NavItem>
+                    </DropdownItem>
+                  )
                 )
               )
             }
-            </DropdownItem>
             <DropdownItem divider />
             <DropdownItem>
               <NavItem>
