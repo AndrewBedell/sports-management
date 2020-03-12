@@ -17,9 +17,9 @@ import Api from '../../apis/app';
 class Setting extends Component {
   constructor(props) {
     super(props);
+
     this.state = {
-      user: {},
-      imagePreviewUrl: '',
+      items: [],
       alertVisible: false,
       messageStatus: false,
       successMessage: '',
@@ -29,19 +29,13 @@ class Setting extends Component {
   }
 
   async componentDidMount() {
-    const data = await Api.get('setting');
+    const data = await Api.get('allsetting');
     const { response, body } = data;
     switch (response.status) {
-      case 200:console.log(body)
-        if (!body.price) {
-          body.price = 1;
-        }
-
+      case 200:
         this.setState({
-          item: body
+          items: body
         });
-        break;
-      case 406:
         break;
       default:
         break;
@@ -50,19 +44,19 @@ class Setting extends Component {
   }
 
   settingValues() {
-    const {
-      item
-    } = this.state;
-    const {
-      formikRef
-    } = this;
-    const values = item;
+    // const {
+    //   items
+    // } = this.state;
+    // const {
+    //   formikRef
+    // } = this;
+    // const values = items;
 
-    formikRef.current.setValues({
-      id: values.id,
-      organization_id: values.organization_id,
-      price: values.price
-    });
+    // formikRef.current.setValues({
+    //   organization_id: values.organization_id,
+    //   price: values.price,
+    //   percent: values.percent
+    // });
   }
 
   async handleSubmit(values, bags) {
@@ -70,11 +64,12 @@ class Setting extends Component {
     
     newData = {
       organization_id: values.organization_id,
-      price: values.price
+      price: values.price,
+      percent: values.percent
     };
 
     const data = await Api.put(`setting/${values.id}`, newData);
-    const { response, body } = data;
+    const { response } = data;
     switch (response.status) {
       case 200:
         this.setState({
@@ -86,15 +81,6 @@ class Setting extends Component {
         setTimeout(() => {
           this.setState({ alertVisible: false });
         }, 2000);
-        break;
-      case 406:
-        if (body.message) {
-          bags.setStatus({
-            color: 'danger',
-            children: body.message
-          });
-        }
-        bags.setErrors(body.errors);
         break;
       default:
         break;
@@ -121,12 +107,15 @@ class Setting extends Component {
               ref={this.formikRef}
               initialValues={{
                 organization_id: null,
-                price: 1
+                price: 1,
+                percent: 0
               }}
 
               validationSchema={
                 Yup.object().shape({
                   price: Yup.string().matches(/^[+-]?([0-9]*[.])?[0-9]+$/, 'price is only number.')
+                        .required('This field is required.'),
+                  percent: Yup.string().matches(/^[+-]?([0-9]*[.])?[0-9]+$/, 'price is only number.')
                         .required('This field is required.')
                 })
               }
@@ -138,7 +127,6 @@ class Setting extends Component {
                 errors,
                 status,
                 touched,
-                setFieldValue,
                 handleBlur,
                 handleChange,
                 handleSubmit,
@@ -167,7 +155,7 @@ class Setting extends Component {
                     </Col>
                     <Col sm="4">
                       <FormGroup>
-                        <Label for="percent">Membership Price per Judoka</Label>
+                        <Label for="percent">Percentage of Membership</Label>
                         <InputGroup>
                           <Input 
                             name="percent"

@@ -73,7 +73,7 @@ class Setting extends Component {
     };
 
     const data = await Api.put(`setting/${values.id}`, newData);
-    const { response, body } = data;
+    const { response } = data;
     switch (response.status) {
       case 200:
         this.setState({
