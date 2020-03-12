@@ -57851,7 +57851,7 @@ body {
 }
 
 .reg-member .image-preview.is_image img {
-  border-radius: 0;
+  border-radius: 20px;
 }
 
 .btn-success {
