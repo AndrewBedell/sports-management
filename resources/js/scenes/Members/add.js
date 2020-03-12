@@ -10,6 +10,7 @@ import {
   Form, FormGroup, FormFeedback,
   Input, Label,
   UncontrolledAlert,
+  UncontrolledTooltip ,
   Alert
 } from 'reactstrap';
 import Select from 'react-select';
@@ -519,6 +520,7 @@ class MemberAdd extends Component {
                       <FormGroup>
                         <Label for="register_date">Register Date</Label>
                         <Input
+                          id="register_date"
                           name="register_date"
                           type="date"
                           placeholder="YYYY-MM-DD"
@@ -527,6 +529,9 @@ class MemberAdd extends Component {
                           onBlur={handleBlur}
                           invalid={!!errors.register_date && touched.register_date}
                         />
+                        <UncontrolledTooltip placement="top" target="register_date">
+                          Click triangle icon to select date
+                        </UncontrolledTooltip>
                         {!!errors.register_date && touched.register_date && <FormFeedback className="d-block">{errors.register_date}</FormFeedback> }
                       </FormGroup>
                     </Col>
@@ -604,6 +609,7 @@ class MemberAdd extends Component {
                       <FormGroup>
                         <Label for="birthday">Birthday</Label>
                         <Input
+                          id="birthday"
                           name="birthday"
                           type="date"
                           placeholder="YYYY-MM-DD"
@@ -612,6 +618,9 @@ class MemberAdd extends Component {
                           onBlur={handleBlur}
                           invalid={!!errors.birthday && touched.birthday}
                         />
+                        <UncontrolledTooltip placement="right" target="birthday">
+                          Click triangle icon to select date
+                        </UncontrolledTooltip>
                         {!!errors.birthday && touched.birthday && <FormFeedback className="d-block">{errors.birthday}</FormFeedback> }
                       </FormGroup>
                     </Col>
