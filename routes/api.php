@@ -44,6 +44,7 @@ Route::namespace('Api')->group(function () {
         Route::get('setting', 'UserController@setting');
         Route::put('setting/{id}', 'UserController@update');
         Route::get('allsetting', 'UserController@allsetting');
+        Route::post('resetpass/{token}', 'UserController@reset');
         Route::get('invite-users', 'UserController@invite');
         Route::get('invite-send', 'UserController@invite_send');
         Route::get('change-super', 'UserController@change_super');
