@@ -132,6 +132,13 @@ class PlayerTable extends Component {
           <Table.Row>
             <Table.HeaderCell
               className="text-center"
+              sorted={column === 'club' ? direction : null}
+              onClick={this.handleSort.bind(this, 'club')}
+            >
+              Club Name
+            </Table.HeaderCell>
+            <Table.HeaderCell
+              className="text-center"
               sorted={column === 'name' ? direction : null}
               onClick={this.handleSort.bind(this, 'name')}
             >
@@ -193,6 +200,9 @@ class PlayerTable extends Component {
                 <Table.Row
                   key={index}
                 >
+                  <Table.Cell>
+                    {item.club}
+                  </Table.Cell>
                   <Table.Cell>
                     <img src={item.profile_image ? item.profile_image : (item.gender == 1 ? Bitmaps.maleAvatar : Bitmaps.femaleAvatar)} className="table-avatar mr-2" />
                     {' '}
