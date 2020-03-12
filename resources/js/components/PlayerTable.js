@@ -132,17 +132,17 @@ class PlayerTable extends Component {
           <Table.Row>
             <Table.HeaderCell
               className="text-center"
-              sorted={column === 'club' ? direction : null}
-              onClick={this.handleSort.bind(this, 'club')}
-            >
-              Club Name
-            </Table.HeaderCell>
-            <Table.HeaderCell
-              className="text-center"
               sorted={column === 'name' ? direction : null}
               onClick={this.handleSort.bind(this, 'name')}
             >
               Name
+            </Table.HeaderCell>
+            <Table.HeaderCell
+              className="text-center"
+              sorted={column === 'club' ? direction : null}
+              onClick={this.handleSort.bind(this, 'club')}
+            >
+              Club
             </Table.HeaderCell>
             <Table.HeaderCell
               className="text-center"
@@ -201,9 +201,6 @@ class PlayerTable extends Component {
                   key={index}
                 >
                   <Table.Cell>
-                    {item.club}
-                  </Table.Cell>
-                  <Table.Cell>
                     <img src={item.profile_image ? item.profile_image : (item.gender == 1 ? Bitmaps.maleAvatar : Bitmaps.femaleAvatar)} className="table-avatar mr-2" />
                     {' '}
                     <a className="detail-link" onClick={() => onDetail(item.id)}>
@@ -213,6 +210,9 @@ class PlayerTable extends Component {
                       {' '}
                       {item.name}
                     </a>
+                  </Table.Cell>
+                  <Table.Cell>
+                    {item.club}
                   </Table.Cell>
                   <Table.Cell className="text-center">{item.gender && item.gender == 1 ? Genders[0].name : Genders[1].name}</Table.Cell>
                   <Table.Cell className="text-center">{item.birthday}</Table.Cell>

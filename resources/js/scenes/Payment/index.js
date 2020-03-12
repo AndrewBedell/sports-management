@@ -23,6 +23,7 @@ class Payment extends Component {
     super(props);
     this.state = {
       user: {},
+      is_club_member: 0,
       pay_status: false,
       players: null,
       player_list: null,
@@ -35,12 +36,13 @@ class Payment extends Component {
       pay_method: 'basic_card',
       filter_players: {
         search: '',
+        club: '',
         gender: null,
         weight: null,
         dan: null
       },
       payPlayers: [],
-      price: 0.00,
+      price: 0,
       per_price: 0.00,
       isSubmitting: false,
       payme_data: null,
@@ -85,7 +87,8 @@ class Payment extends Component {
   async getPlayers() {
     const user_info = JSON.parse(localStorage.getItem('auth'));
     this.setState({
-      user: user_info.user.member_info
+      user: user_info.user.member_info,
+      is_club_member: user_info.user.is_club_member
     });
     if (user_info.user) {
       const data = await Api.get(`club-players/${user_info.user.member_info.organization_id}`);
@@ -101,6 +104,7 @@ class Payment extends Component {
             isSubmitting: false,
             filter_players: {
               search: '',
+              club: '',
               gender: null,
               weight: null,
               dan: null
@@ -172,13 +176,18 @@ class Payment extends Component {
   }
 
   handlePayNow() {
-    const { payPlayers } = this.state;
-    if (payPlayers && payPlayers.length > 0) {
-      this.setState({
-        pay_status: true
-      });
+
+    const { payPlayers, per_price } = this.state;
+    if (per_price) {
+      if (payPlayers && payPlayers.length > 0) {
+        this.setState({
+          pay_status: true
+        });
+      } else {
+        window.alert('You should select at least one judoka!');
+      }
     } else {
-      window.alert('You should select at least one judoka!');
+      window.alert('Your National Federation manager should set per price!');
     }
   }
 
@@ -196,6 +205,7 @@ class Payment extends Component {
       payme_data: null,
       filter_players: {
         search: '',
+        club: '',
         gender: null,
         weight: null,
         dan: null
@@ -229,7 +239,7 @@ class Payment extends Component {
           });
           setTimeout(() => {
             this.getPlayers();
-          }, 4000);
+          }, 3000);
           break;
         case 406:
           this.setState({
@@ -254,7 +264,7 @@ class Payment extends Component {
           });
           setTimeout(() => {
             this.getPlayers();
-          }, 4000);
+          }, 3000);
           break;
         case 406:
           this.setState({
@@ -300,78 +310,78 @@ class Payment extends Component {
         if (filter_players.weight && filter_players.weight.weight) {
           if (filter_players.dan && filter_players.dan.value) {
             this.setState({
-              players: filter_data.filter(player => player.gender == filter_players.gender.value && player.weight == filter_players.weight.weight && player.dan == filter_players.dan.value)
+              players: filter_data.filter(player => player.gender == filter_players.gender.value && player.weight == filter_players.weight.weight && player.dan == filter_players.dan.value && player.club.toUpperCase().includes(filter_players.club.toUpperCase()))
             });
           } else {
             this.setState({
-              players: filter_data.filter(player => player.gender == filter_players.gender.value && player.weight == filter_players.weight.weight)
+              players: filter_data.filter(player => player.gender == filter_players.gender.value && player.weight == filter_players.weight.weight && player.club.toUpperCase().includes(filter_players.club.toUpperCase()))
             });
           }
         } else if (filter_players.dan && filter_players.dan.value) {
           this.setState({
-            players: filter_data.filter(player => player.gender == filter_players.gender.value && player.dan == filter_players.dan.value)
+            players: filter_data.filter(player => player.gender == filter_players.gender.value && player.dan == filter_players.dan.value && player.club.toUpperCase().includes(filter_players.club.toUpperCase()))
           });
         } else {
           this.setState({
-            players: filter_data.filter(player => player.gender == filter_players.gender.value)
+            players: filter_data.filter(player => player.gender == filter_players.gender.value && player.club.toUpperCase().includes(filter_players.club.toUpperCase()))
           });
         }
       } else if (filter_players.weight && filter_players.weight.weight) {
         if (filter_players.dan && filter_players.dan.value) {
           this.setState({
-            players: filter_data.filter(player => player.weight == filter_players.weight.weight && player.dan == filter_players.dan.value)
+            players: filter_data.filter(player => player.weight == filter_players.weight.weight && player.dan == filter_players.dan.value && player.club.toUpperCase().includes(filter_players.club.toUpperCase()))
           });
         } else {
           this.setState({
-            players: filter_data.filter(player => player.weight == filter_players.weight.weight)
+            players: filter_data.filter(player => player.weight == filter_players.weight.weight && player.club.toUpperCase().includes(filter_players.club.toUpperCase()))
           });
         }
       } else if (filter_players.dan && filter_players.dan.value) {
         this.setState({
-          players: filter_data.filter(player => player.dan == filter_players.dan.value)
+          players: filter_data.filter(player => player.dan == filter_players.dan.value && player.club.toUpperCase().includes(filter_players.club.toUpperCase()))
         });
       } else {
         this.setState({
-          players: filter_data
+          players: filter_data.filter(player => player.club.toUpperCase().includes(filter_players.club.toUpperCase()))
         });
       }
     } else if (filter_players.gender) {
       if (filter_players.weight && filter_players.weight.weight) {
         if (filter_players.dan && filter_players.dan.value) {
           this.setState({
-            players: filtered.filter(player => player.gender == filter_players.gender.value && player.weight == filter_players.weight.weight && player.dan == filter_players.dan.value)
+            players: filtered.filter(player => player.gender == filter_players.gender.value && player.weight == filter_players.weight.weight && player.dan == filter_players.dan.value && player.club.toUpperCase().includes(filter_players.club.toUpperCase()))
           });
         } else {
           this.setState({
-            players: filtered.filter(player => player.gender == filter_players.gender.value && player.weight == filter_players.weight.weight)
+            players: filtered.filter(player => player.gender == filter_players.gender.value && player.weight == filter_players.weight.weight && player.club.toUpperCase().includes(filter_players.club.toUpperCase()))
           });
         }
       } else if (filter_players.dan && filter_players.dan.value) {
         this.setState({
-          players: filtered.filter(player => player.gender == filter_players.gender.value && player.dan == filter_players.dan.value)
+          players: filtered.filter(player => player.gender == filter_players.gender.value && player.dan == filter_players.dan.value && player.club.toUpperCase().includes(filter_players.club.toUpperCase()))
         });
       } else {
         this.setState({
-          players: filtered.filter(player => player.gender == filter_players.gender.value)
+          players: filtered.filter(player => player.gender == filter_players.gender.value && player.club.toUpperCase().includes(filter_players.club.toUpperCase()))
         });
       }
     } else if (filter_players.weight && filter_players.weight.weight) {
       if (filter_players.dan && filter_players.dan.value) {
         this.setState({
-          players: filtered.filter(player => player.weight == filter_players.weight.weight && player.dan == filter_players.dan.value)
+          players: filtered.filter(player => player.weight == filter_players.weight.weight && player.dan == filter_players.dan.value && player.club.toUpperCase().includes(filter_players.club.toUpperCase()))
         });
       } else {
         this.setState({
-          players: filtered.filter(player => player.weight == filter_players.weight.weight)
+          players: filtered.filter(player => player.weight == filter_players.weight.weight && player.club.toUpperCase().includes(filter_players.club.toUpperCase()))
         });
       }
     } else if (filter_players.dan && filter_players.dan.value) {
       this.setState({
-        players: filtered.filter(player => player.dan == filter_players.dan.value)
+        players: filtered.filter(player => player.dan == filter_players.dan.value && player.club.toUpperCase().includes(filter_players.club.toUpperCase()))
       });
     } else {
       this.setState({
-        players: filtered
+        players: filtered.filter(player => player.club.toUpperCase().includes(filter_players.club.toUpperCase()))
       });
     }
   }
@@ -397,7 +407,8 @@ class Payment extends Component {
       priceData,
       payme_data,
       isSubmitting,
-      pay_method
+      pay_method,
+      is_club_member
     } = this.state;
     return (
       <Fragment>
@@ -408,7 +419,7 @@ class Payment extends Component {
               <Container fluid>
                 <div className="text-center mb-4">
                   {
-                    players && players.length > 0 && (
+                    players && players.length > 0 && is_club_member ? (
                       <Button
                         type="button"
                         color="success"
@@ -416,7 +427,7 @@ class Payment extends Component {
                       >
                         Pay Today
                       </Button>
-                    )
+                    ) : ('')
                   }
                   {
                     (players !== null && players.length === 0) && (
@@ -433,6 +444,15 @@ class Payment extends Component {
                         value={(filter_players && filter_players.search) || ''}
                         placeholder="Search Name"
                         onChange={(event) => { this.handleSearchFilter('search', event.target.value); }}
+                      />
+                    </FormGroup>
+                  </Col>
+                  <Col lg="2" md="3" sm="4">
+                    <FormGroup>
+                      <Input
+                        value={(filter_players && filter_players.club) || ''}
+                        placeholder="Search Club"
+                        onChange={(event) => { this.handleSearchFilter('club', event.target.value); }}
                       />
                     </FormGroup>
                   </Col>
