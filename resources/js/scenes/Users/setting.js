@@ -2,7 +2,6 @@
 /* eslint-disable jsx-a11y/alt-text */
 import React, { Component, Fragment } from 'react';
 import { Formik } from 'formik';
-import moment from 'moment';
 import * as Yup from 'yup';
 import {
   Container, Row, Col,
@@ -37,10 +36,10 @@ class Setting extends Component {
     const data = await Api.get('setting');
     const { response, body } = data;
     switch (response.status) {
-      case 200:console.log(body)
+      case 200:
         if (!body.price) {
-          body.price = 1;
           body.organization_id = this.state.org_id;
+          body.price = 0;
         }
 
         this.setState({
@@ -65,8 +64,7 @@ class Setting extends Component {
     const values = item;
 
     formikRef.current.setValues({
-      id: values.id,
-      organization_id: values.organization_id,
+      id: values.organization_id,
       price: values.price
     });
   }
@@ -75,7 +73,6 @@ class Setting extends Component {
     let newData = {};
     
     newData = {
-      organization_id: values.organization_id,
       price: values.price
     };
 
@@ -152,7 +149,7 @@ class Setting extends Component {
                             name="price"
                             type="text"
                             placeholder="price" 
-                            value={values.price || 1}
+                            value={values.price}
                             onChange={handleChange}
                             onBlur={handleBlur}
                             invalid={!!errors.price && touched.price}
