@@ -444,6 +444,10 @@ class MemberAdd extends Component {
                               onChange={(value) => {
                                 setFieldValue('organization_id', value);
                                 setFieldValue('club_id', null);
+                                setFieldValue('addressline1', value.addressline1);
+                                setFieldValue('addressline2', value.addressline2);
+                                setFieldValue('state', value.state);
+                                setFieldValue('city', value.city);
                               }}
                               onBlur={this.handleBlur}
                             />
