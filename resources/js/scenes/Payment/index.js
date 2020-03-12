@@ -326,7 +326,7 @@ class Payment extends Component {
     filtered = filter_data.filter(
       obj => obj.name.toUpperCase().includes(filter_players.search.toUpperCase()) || obj.surname.toUpperCase().includes(filter_players.search.toUpperCase())
     );
-    if (filter_players.region === 'All') {
+    if (filter_players.region === 'All' || filter_players.region === '') {
       if (!filter_players.search) {
         if (filter_players.gender) {
           if (filter_players.weight && filter_players.weight.weight) {
@@ -411,78 +411,78 @@ class Payment extends Component {
         if (filter_players.weight && filter_players.weight.weight) {
           if (filter_players.dan && filter_players.dan.value) {
             this.setState({
-              players: filter_data.filter(player => player.gender == filter_players.gender.value && player.weight == filter_players.weight.weight && player.dan == filter_players.dan.value && player.region === filter_players.region && player.club.toUpperCase().includes(filter_players.club.toUpperCase()))
+              players: filter_data.filter(player => player.gender == filter_players.gender.value && player.weight == filter_players.weight.weight && player.dan == filter_players.dan.value && player.region.toUpperCase().includes(filter_players.region.toUpperCase()) && player.club.toUpperCase().includes(filter_players.club.toUpperCase()))
             });
           } else {
             this.setState({
-              players: filter_data.filter(player => player.gender == filter_players.gender.value && player.weight == filter_players.weight.weight  && player.region === filter_players.region && player.club.toUpperCase().includes(filter_players.club.toUpperCase()))
+              players: filter_data.filter(player => player.gender == filter_players.gender.value && player.weight == filter_players.weight.weight  && player.region.toUpperCase().includes(filter_players.region.toUpperCase()) && player.club.toUpperCase().includes(filter_players.club.toUpperCase()))
             });
           }
         } else if (filter_players.dan && filter_players.dan.value) {
           this.setState({
-            players: filter_data.filter(player => player.gender == filter_players.gender.value && player.dan == filter_players.dan.value && player.region === filter_players.region && player.club.toUpperCase().includes(filter_players.club.toUpperCase()))
+            players: filter_data.filter(player => player.gender == filter_players.gender.value && player.dan == filter_players.dan.value && player.region.toUpperCase().includes(filter_players.region.toUpperCase()) && player.club.toUpperCase().includes(filter_players.club.toUpperCase()))
           });
         } else {
           this.setState({
-            players: filter_data.filter(player => player.gender == filter_players.gender.value && player.region === filter_players.region && player.club.toUpperCase().includes(filter_players.club.toUpperCase()))
+            players: filter_data.filter(player => player.gender == filter_players.gender.value && player.region.toUpperCase().includes(filter_players.region.toUpperCase()) && player.club.toUpperCase().includes(filter_players.club.toUpperCase()))
           });
         }
       } else if (filter_players.weight && filter_players.weight.weight) {
         if (filter_players.dan && filter_players.dan.value) {
           this.setState({
-            players: filter_data.filter(player => player.weight == filter_players.weight.weight && player.dan == filter_players.dan.value && player.region === filter_players.region && player.club.toUpperCase().includes(filter_players.club.toUpperCase()))
+            players: filter_data.filter(player => player.weight == filter_players.weight.weight && player.dan == filter_players.dan.value && player.region.toUpperCase().includes(filter_players.region.toUpperCase()) && player.club.toUpperCase().includes(filter_players.club.toUpperCase()))
           });
         } else {
           this.setState({
-            players: filter_data.filter(player => player.weight == filter_players.weight.weight && player.region === filter_players.region && player.club.toUpperCase().includes(filter_players.club.toUpperCase()))
+            players: filter_data.filter(player => player.weight == filter_players.weight.weight && player.region.toUpperCase().includes(filter_players.region.toUpperCase()) && player.club.toUpperCase().includes(filter_players.club.toUpperCase()))
           });
         }
       } else if (filter_players.dan && filter_players.dan.value) {
         this.setState({
-          players: filter_data.filter(player => player.dan == filter_players.dan.value && player.region === filter_players.region && player.club.toUpperCase().includes(filter_players.club.toUpperCase()))
+          players: filter_data.filter(player => player.dan == filter_players.dan.value && player.region.toUpperCase().includes(filter_players.region.toUpperCase()) && player.club.toUpperCase().includes(filter_players.club.toUpperCase()))
         });
       } else {
         this.setState({
-          players: filter_data.filter(player => player.club.toUpperCase().includes(filter_players.club.toUpperCase()) && player.region === filter_players.region)
+          players: filter_data.filter(player => player.club.toUpperCase().includes(filter_players.club.toUpperCase()) && player.region.toUpperCase().includes(filter_players.region.toUpperCase()))
         });
       }
     } else if (filter_players.gender) {
       if (filter_players.weight && filter_players.weight.weight) {
         if (filter_players.dan && filter_players.dan.value) {
           this.setState({
-            players: filtered.filter(player => player.gender == filter_players.gender.value && player.weight == filter_players.weight.weight && player.dan == filter_players.dan.value && player.region === filter_players.region && player.club.toUpperCase().includes(filter_players.club.toUpperCase()))
+            players: filtered.filter(player => player.gender == filter_players.gender.value && player.weight == filter_players.weight.weight && player.dan == filter_players.dan.value && player.region.toUpperCase().includes(filter_players.region.toUpperCase()) && player.club.toUpperCase().includes(filter_players.club.toUpperCase()))
           });
         } else {
           this.setState({
-            players: filtered.filter(player => player.gender == filter_players.gender.value && player.weight == filter_players.weight.weight && player.region === filter_players.region && player.club.toUpperCase().includes(filter_players.club.toUpperCase()))
+            players: filtered.filter(player => player.gender == filter_players.gender.value && player.weight == filter_players.weight.weight && player.region.toUpperCase().includes(filter_players.region.toUpperCase()) && player.club.toUpperCase().includes(filter_players.club.toUpperCase()))
           });
         }
       } else if (filter_players.dan && filter_players.dan.value) {
         this.setState({
-          players: filtered.filter(player => player.gender == filter_players.gender.value && player.dan == filter_players.dan.value && player.region === filter_players.region && player.club.toUpperCase().includes(filter_players.club.toUpperCase()))
+          players: filtered.filter(player => player.gender == filter_players.gender.value && player.dan == filter_players.dan.value && player.region.toUpperCase().includes(filter_players.region.toUpperCase()) && player.club.toUpperCase().includes(filter_players.club.toUpperCase()))
         });
       } else {
         this.setState({
-          players: filtered.filter(player => player.gender == filter_players.gender.value && player.region === filter_players.region && player.club.toUpperCase().includes(filter_players.club.toUpperCase()))
+          players: filtered.filter(player => player.gender == filter_players.gender.value && player.region.toUpperCase().includes(filter_players.region.toUpperCase()) && player.club.toUpperCase().includes(filter_players.club.toUpperCase()))
         });
       }
     } else if (filter_players.weight && filter_players.weight.weight) {
       if (filter_players.dan && filter_players.dan.value) {
         this.setState({
-          players: filtered.filter(player => player.weight == filter_players.weight.weight && player.dan == filter_players.dan.value && player.region === filter_players.region && player.club.toUpperCase().includes(filter_players.club.toUpperCase()))
+          players: filtered.filter(player => player.weight == filter_players.weight.weight && player.dan == filter_players.dan.value && player.region.toUpperCase().includes(filter_players.region.toUpperCase()) && player.club.toUpperCase().includes(filter_players.club.toUpperCase()))
         });
       } else {
         this.setState({
-          players: filtered.filter(player => player.weight == filter_players.weight.weight && player.region === filter_players.region && player.club.toUpperCase().includes(filter_players.club.toUpperCase()))
+          players: filtered.filter(player => player.weight == filter_players.weight.weight && player.region.toUpperCase().includes(filter_players.region.toUpperCase()) && player.club.toUpperCase().includes(filter_players.club.toUpperCase()))
         });
       }
     } else if (filter_players.dan && filter_players.dan.value) {
       this.setState({
-        players: filtered.filter(player => player.dan == filter_players.dan.value && player.region === filter_players.region && player.club.toUpperCase().includes(filter_players.club.toUpperCase()))
+        players: filtered.filter(player => player.dan == filter_players.dan.value && player.region.toUpperCase().includes(filter_players.region.toUpperCase()) && player.club.toUpperCase().includes(filter_players.club.toUpperCase()))
       });
     } else {
       this.setState({
-        players: filtered.filter(player => player.club.toUpperCase().includes(filter_players.club.toUpperCase()) && player.region === filter_players.region)
+        players: filtered.filter(player => player.club.toUpperCase().includes(filter_players.club.toUpperCase()) && player.region.toUpperCase().includes(filter_players.region.toUpperCase()))
       });
     }
   }
