@@ -2,7 +2,6 @@
 /* eslint-disable jsx-a11y/alt-text */
 import React, { Component, Fragment } from 'react';
 import { Formik } from 'formik';
-import moment from 'moment';
 import * as Yup from 'yup';
 import {
   Container, Row, Col,
