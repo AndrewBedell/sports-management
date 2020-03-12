@@ -41,7 +41,7 @@ class Payment extends Component {
         dan: null
       },
       payPlayers: [],
-      price: 0.00,
+      price: 0,
       per_price: 1.99,
       isSubmitting: false,
       payme_data: null,
@@ -65,9 +65,6 @@ class Payment extends Component {
       default:
         break;
     }
-
-    const settings = await Api.get('setting');
-    console.log(settings);
     this.getPlayers();
   }
 
@@ -399,7 +396,7 @@ class Payment extends Component {
               <Container fluid>
                 <div className="text-center mb-4">
                   {
-                    players && players.length > 0 && is_club_member && (
+                    players && players.length > 0 && is_club_member ? (
                       <Button
                         type="button"
                         color="success"
@@ -407,7 +404,7 @@ class Payment extends Component {
                       >
                         Pay Today
                       </Button>
-                    )
+                    ) : ('')
                   }
                   {
                     (players !== null && players.length === 0) && (
