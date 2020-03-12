@@ -22,9 +22,8 @@ class Admin extends Component {
     super(props);
 
     const user = JSON.parse(localStorage.getItem('auth'));
-    
-    if (user.user.is_super == 0)
-      this.props.history.push('/');
+
+    if (user.user.is_super == 0) this.props.history.push('/');
 
     this.state = {
       items: [],
@@ -35,9 +34,9 @@ class Admin extends Component {
       data: [],
       nfs: [],
       line1: false,
-      line2: false,
-    }
-    
+      line2: false
+    };
+
     this.chartRef1 = React.createRef();
     this.chartRef2 = React.createRef();
     this.chartRef3 = React.createRef();
@@ -54,21 +53,21 @@ class Admin extends Component {
           detail: body.detail,
           // data: body.data,
           nfs: body.nfs
-        })
+        });
         break;
       default:
         break;
     }
 
-    let nflabels = [];
+    const nflabels = [];
     let amounts = [];
 
-    for (var i = 0; i < this.state.nfs.length; i++) {
+    for (let i = 0; i < this.state.nfs.length; i++) {
       nflabels.push(this.state.nfs[i].name_o);
       amounts.push(this.state.total[i] / 100);
     }
 
-    let color = [];
+    const color = [];
     color[0] = '#00FF00';
     color[1] = '#0000FF';
 
@@ -90,16 +89,16 @@ class Admin extends Component {
     let labels = [];
     amounts = [];
 
-    for (var i = 0; i < this.state.subtotal[0].length; i++) {
+    for (let i = 0; i < this.state.subtotal[0].length; i++) {
       labels.push(this.state.subtotal[0][i].new_date);
       amounts.push(this.state.subtotal[0][i].amount);
     }
 
     this.lineChart1 = new Chart(this.chartRef2.current, {
       type: 'line',
-      
+
       data: {
-        labels: labels,
+        labels,
         datasets: [{
           label: nflabels[0],
           data: amounts,
@@ -116,16 +115,15 @@ class Admin extends Component {
     labels = [];
     amounts = [];
 
-    for (var i = 0; i < this.state.subtotal[1].length; i++) {
+    for (let i = 0; i < this.state.subtotal[1].length; i++) {
       labels.push(this.state.subtotal[1][i].new_date);
       amounts.push(this.state.subtotal[1][i].amount);
     }
 
     this.lineChart2 = new Chart(this.chartRef3.current, {
       type: 'line',
-      
       data: {
-        labels: labels,
+        labels,
         datasets: [{
           label: nflabels[1],
           data: amounts,
@@ -167,35 +165,32 @@ class Admin extends Component {
 
   detail(chart) {
     this.setState({
-      line1: (chart == 'line1' ? true : false),
-      line2: (chart == 'line2' ? true : false),
+      line1: (chart === 'line1'),
+      line2: (chart === 'line2')
     });
   }
 
   render() {
     const {
       players,
-      detail, 
-      line1, 
-      line2,
+      detail,
+      line1,
+      line2
     } = this.state;
-    
-    if (line1)
-      var index = 0;
 
-    if (line2)
-      var index = 1;
+    if (line1) var index = 0;
+
+    if (line2) var index = 1;
 
     if (index == 0 || index == 1) {
-      for (var i = 0; i < detail[index].length; i++) {
-        if (!Array.isArray(detail[index][i]['players']))
-          detail[index][i]['players'] = detail[index][i]['players'].split(',');
+      for (let i = 0; i < detail[index].length; i++) {
+        if (!Array.isArray(detail[index][i].players)) detail[index][i].players = detail[index][i].players.split(',');
       }
     }
 
     return (
       <Fragment>
-        <AdminTopBar/>
+        <AdminTopBar />
 
         <div className="main-content dashboard">
           <Container fluid>
@@ -244,11 +239,11 @@ class Admin extends Component {
               </Col>
               <Col sm="6" md="4">
                 <div className="table-responsive mt-5">
-                {
+                  {
                   players.length > 0 && (
                     <PlayerPayTable
                       players={players}
-                    />  
+                    />
                   )
                 }
                 </div>
@@ -256,7 +251,7 @@ class Admin extends Component {
             </Row>
           </Container>
         </div>
-        
+
       </Fragment>
     );
   }

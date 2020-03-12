@@ -9,15 +9,12 @@ import {
   Menu
 } from 'semantic-ui-react';
 import Select from 'react-select';
-import ReactTooltip from 'react-tooltip';
 
 import _ from 'lodash';
 import { Genders } from '../configs/data';
 import Bitmaps from '../theme/Bitmaps';
 
 import Api from '../apis/app';
-
-import Prompt from '../components/Prompt';
 
 class ChangeSuperTable extends Component {
   constructor(props) {

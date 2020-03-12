@@ -242,7 +242,7 @@ class Profile extends Component {
                   <Row>
                     <Col xs="12" sm="6">
                       <FormGroup>
-                      <Label for="profile_image">Profile Image</Label>
+                        <Label for="profile_image">Profile Image</Label>
                         <Input
                           ref="file"
                           type="file"
