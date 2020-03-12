@@ -23,6 +23,7 @@ class Payment extends Component {
     super(props);
     this.state = {
       user: {},
+      is_club_member: 0,
       pay_status: false,
       players: null,
       player_list: null,
@@ -64,13 +65,17 @@ class Payment extends Component {
       default:
         break;
     }
+
+    const settings = await Api.get('setting');
+    console.log(settings);
     this.getPlayers();
   }
 
   async getPlayers() {
     const user_info = JSON.parse(localStorage.getItem('auth'));
     this.setState({
-      user: user_info.user.member_info
+      user: user_info.user.member_info,
+      is_club_member: user_info.user.is_club_member
     });
     if (user_info.user) {
       const data = await Api.get(`club-players/${user_info.user.member_info.organization_id}`);
@@ -382,7 +387,8 @@ class Payment extends Component {
       priceData,
       payme_data,
       isSubmitting,
-      pay_method
+      pay_method,
+      is_club_member
     } = this.state;
     return (
       <Fragment>
@@ -393,7 +399,7 @@ class Payment extends Component {
               <Container fluid>
                 <div className="text-center mb-4">
                   {
-                    players && players.length > 0 && (
+                    players && players.length > 0 && is_club_member && (
                       <Button
                         type="button"
                         color="success"
