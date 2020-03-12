@@ -38,6 +38,7 @@ class Main extends Component {
           <Route exact path="/" name="Dashboard" component={Dashboard} />
           <Route exact path="/admin" name="Admin" component={Admin} />
           <Route exact path="/admin/setting" name="AdminSetting" component={AdminSetting} />
+          <Route exact path="/admin/reset" name="Reset" component={Reset} />
         </Switch>
       </Router>
     );

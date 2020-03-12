@@ -562,10 +562,11 @@ class OrganizationController extends Controller
 
         $players = Member::leftJoin('players', 'players.member_id', '=', 'members.id')
                         ->leftJoin('weights', 'weights.id', '=', 'players.weight_id')
+                        ->leftJoin('organizations', 'organizations.id', '=', 'members.organization_id')
                         ->whereIn('members.organization_id', $clubs)
                         ->where('members.role_id', $role->id)
                         ->where('members.active', 0)
-                        ->select('members.*', 'weights.weight', 'players.dan', 'players.skill')
+                        ->select('members.*', 'organizations.name_o AS club', 'weights.weight', 'players.dan', 'players.skill')
                         ->get();
 
         return response()->json($players);

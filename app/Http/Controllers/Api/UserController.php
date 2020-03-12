@@ -199,6 +199,12 @@ class UserController extends Controller
           ));
         }
       }
+
+      $settings = Setting::leftJoin('organizations', 'settings.organization_id', '=', 'organizations.id')
+                    ->select('settings.*', 'organizations.name_o')
+                    ->get();
+
+      return response()->json($settings);
     }
 
     /**
@@ -219,6 +225,49 @@ class UserController extends Controller
             'status' => 'success',
             'message' => 'Deleted Successfully'
         ], 200);
+    }
+
+    public function reset(Request $request, $token)
+    {
+      $data = $request->all();
+
+      $user = JWTAuth::parseToken()->authenticate();
+
+      if (!(Hash::check($data['current'], $user->password))) {
+        return response()->json(
+          [
+            'status' => 'error',
+            'message' => 'Your current password does not matches with the password you provided. Please try again.'
+          ],
+          406
+        );
+      }
+
+      if(strcmp($data['current'], $data['password']) == 0){
+        return response()->json(
+          [
+            'status' => 'error',
+            'message' => 'New Password cannot be same as your current password. Please choose a different password.'
+          ],
+          406
+        );
+      }
+
+      $validatedData = $request->validate([
+        'current' => 'required',
+        'password' => 'required|string|min:6|confirmed',
+      ]);
+
+      $user->password = Hash::make($data['password']);
+      $user->save();
+
+      return response()->json(
+        [
+          'status' => 'success',
+          'message' => 'Password changed successfully !'
+        ],
+        200
+      );
     }
 
     public function invite()

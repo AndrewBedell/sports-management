@@ -68,13 +68,13 @@ class RightNavBar extends Component {
               is_super == 1 ? (
                 <NavItem>
                   <NavLink tag={Link} to="/admin/reset">
-                    <i className="fa fa-key" /> Password Change
+                    <i className="fa fa-key" /> Change Password
                   </NavLink>
                 </NavItem>
               ) : (
                 <NavItem>
                   <NavLink tag={Link} to="/reset">
-                    <i className="fa fa-key" /> Password Change
+                    <i className="fa fa-key" /> Change Password
                   </NavLink>
                 </NavItem>
               )
