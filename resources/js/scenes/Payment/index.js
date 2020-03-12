@@ -306,7 +306,6 @@ class Payment extends Component {
   }
 
   handleSearchFilter(type, value) {
-    console.log(value);
     const { filter_data, filter_players } = this.state;
     let filtered = [];
     filter_players[type] = value;
