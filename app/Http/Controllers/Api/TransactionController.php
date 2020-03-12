@@ -110,6 +110,7 @@ class TransactionController extends Controller
       $data = $request->all();
       $player_list = $request->input('players');
       $players = implode(',', $player_list);
+
       $price_data = array();
       if ($data['pay_method'] === 'basic_card') {
         $price_data = $request->input('price_data');
@@ -117,9 +118,14 @@ class TransactionController extends Controller
         $price_data = $request->input('payme_data');
       }
 
-      $settings = Setting::where('organization_id', $data['club_id'])
-                          ->get();
-      $setting = array();
+      
+      
+      $club = Organization::find($data['club_id']);
+      $org = Organization::find($club->parent_id);
+      $nf = Organization::find($org->parent_id);
+
+      $settings = Setting::where('organization_id', $nf->id)->get();
+
       if (sizeOf($settings) > 0) {
         $setting = $settings[0];
       } else {
@@ -131,6 +137,7 @@ class TransactionController extends Controller
           406
         );
       }
+
       Transaction::create(array(
         'club_id' => $data['club_id'],
         'payer_id' => $data['payer_id'],
@@ -149,5 +156,20 @@ class TransactionController extends Controller
       return response()->json([
         'status' => 'success'
       ], 200);
+    }
+
+    public function cost($id)
+    {
+      $club = Organization::find($id);
+      $org = Organization::find($club->parent_id);
+      $nf = Organization::find($org->parent_id);
+
+      $data = Setting::where('organization_id', $nf->id)->select('price')->get();
+
+      $cost = 0.00;
+      if (sizeof($data) > 0)
+        $cost = $data[0]['price'];
+
+      return response()->json($cost);
     }
 }

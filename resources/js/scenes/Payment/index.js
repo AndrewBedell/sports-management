@@ -43,7 +43,7 @@ class Payment extends Component {
       },
       payPlayers: [],
       price: 0,
-      per_price: 1.99,
+      per_price: 0.00,
       isSubmitting: false,
       payme_data: null,
       priceData: {
@@ -56,6 +56,9 @@ class Payment extends Component {
   }
 
   async componentDidMount() {
+    const user = JSON.parse(localStorage.getItem('auth'));
+    const user_info = user.user.member_info;
+
     const weight_list = await Api.get('weights');
     switch (weight_list.response.status) {
       case 200:
@@ -66,6 +69,18 @@ class Payment extends Component {
       default:
         break;
     }
+
+    const cost = await Api.get(`cost/${user_info.organization_id}`);
+    switch (cost.response.status) {
+      case 200:
+        this.setState({
+          per_price: cost.body
+        });
+        break;
+      default:
+        break;
+    }
+
     this.getPlayers();
   }
 
@@ -161,13 +176,18 @@ class Payment extends Component {
   }
 
   handlePayNow() {
-    const { payPlayers } = this.state;
-    if (payPlayers && payPlayers.length > 0) {
-      this.setState({
-        pay_status: true
-      });
+
+    const { payPlayers, per_price } = this.state;
+    if (per_price) {
+      if (payPlayers && payPlayers.length > 0) {
+        this.setState({
+          pay_status: true
+        });
+      } else {
+        window.alert('You should select at least one judoka!');
+      }
     } else {
-      window.alert('You should select at least one player!');
+      window.alert('Your National Federation manager should set per price!');
     }
   }
 
@@ -219,7 +239,7 @@ class Payment extends Component {
           });
           setTimeout(() => {
             this.getPlayers();
-          }, 4000);
+          }, 3000);
           break;
         case 406:
           this.setState({
@@ -244,7 +264,7 @@ class Payment extends Component {
           });
           setTimeout(() => {
             this.getPlayers();
-          }, 4000);
+          }, 3000);
           break;
         case 406:
           this.setState({
