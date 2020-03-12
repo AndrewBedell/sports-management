@@ -1,3 +1,4 @@
+/* eslint-disable no-case-declarations */
 /* eslint-disable no-unused-expressions */
 /* eslint-disable react/sort-comp */
 import React, { Component, Fragment } from 'react';
@@ -29,6 +30,7 @@ class Payment extends Component {
       player_list: null,
       filter_data: null,
       weights: null,
+      orgs: [],
       alertVisible: false,
       messageStatus: false,
       successMessage: '',
@@ -36,6 +38,7 @@ class Payment extends Component {
       pay_method: 'basic_card',
       filter_players: {
         search: '',
+        region: null,
         club: '',
         gender: null,
         weight: null,
@@ -80,7 +83,24 @@ class Payment extends Component {
       default:
         break;
     }
+    const org_response = await Api.get('organizations-list');
+    const { response, body } = org_response;
+    switch (response.status) {
+      case 200:
+        const orgArr = ['All'];
 
+        for (let i = 1; i < body.length; i++) {
+          orgArr.push(body[i].name_o);
+        }
+
+        const orgList = orgArr.map((org, Index) => <option key={Index} value={org} />);
+        this.setState({
+          orgs: orgList
+        });
+        break;
+      default:
+        break;
+    }
     this.getPlayers();
   }
 
@@ -176,7 +196,6 @@ class Payment extends Component {
   }
 
   handlePayNow() {
-
     const { payPlayers, per_price } = this.state;
     if (per_price) {
       if (payPlayers && payPlayers.length > 0) {
@@ -290,6 +309,7 @@ class Payment extends Component {
     const { filter_data, filter_players } = this.state;
     let filtered = [];
     filter_players[type] = value;
+
     if (filter_players.weight && filter_players.weight.weight === 'All') {
       filter_players.weight = null;
     }
@@ -310,78 +330,78 @@ class Payment extends Component {
         if (filter_players.weight && filter_players.weight.weight) {
           if (filter_players.dan && filter_players.dan.value) {
             this.setState({
-              players: filter_data.filter(player => player.gender == filter_players.gender.value && player.weight == filter_players.weight.weight && player.dan == filter_players.dan.value && player.club.toUpperCase().includes(filter_players.club.toUpperCase()))
+              players: filter_data.filter(player => player.gender == filter_players.gender.value && player.weight == filter_players.weight.weight && player.dan == filter_players.dan.value && player.region === (filter_players.region === 'All' ? '' : filter_players.region) && player.club.toUpperCase().includes(filter_players.club.toUpperCase()))
             });
           } else {
             this.setState({
-              players: filter_data.filter(player => player.gender == filter_players.gender.value && player.weight == filter_players.weight.weight && player.club.toUpperCase().includes(filter_players.club.toUpperCase()))
+              players: filter_data.filter(player => player.gender == filter_players.gender.value && player.weight == filter_players.weight.weight && player.region === (filter_players.region === 'All' ? '' : filter_players.region) && player.club.toUpperCase().includes(filter_players.club.toUpperCase()))
             });
           }
         } else if (filter_players.dan && filter_players.dan.value) {
           this.setState({
-            players: filter_data.filter(player => player.gender == filter_players.gender.value && player.dan == filter_players.dan.value && player.club.toUpperCase().includes(filter_players.club.toUpperCase()))
+            players: filter_data.filter(player => player.gender == filter_players.gender.value && player.dan == filter_players.dan.value && player.region === (filter_players.region === 'All' ? '' : filter_players.region) && player.club.toUpperCase().includes(filter_players.club.toUpperCase()))
           });
         } else {
           this.setState({
-            players: filter_data.filter(player => player.gender == filter_players.gender.value && player.club.toUpperCase().includes(filter_players.club.toUpperCase()))
+            players: filter_data.filter(player => player.gender == filter_players.gender.value && player.region === (filter_players.region === 'All' ? '' : filter_players.region) && player.club.toUpperCase().includes(filter_players.club.toUpperCase()))
           });
         }
       } else if (filter_players.weight && filter_players.weight.weight) {
         if (filter_players.dan && filter_players.dan.value) {
           this.setState({
-            players: filter_data.filter(player => player.weight == filter_players.weight.weight && player.dan == filter_players.dan.value && player.club.toUpperCase().includes(filter_players.club.toUpperCase()))
+            players: filter_data.filter(player => player.weight == filter_players.weight.weight && player.dan == filter_players.dan.value && player.region === (filter_players.region === 'All' ? '' : filter_players.region) && player.club.toUpperCase().includes(filter_players.club.toUpperCase()))
           });
         } else {
           this.setState({
-            players: filter_data.filter(player => player.weight == filter_players.weight.weight && player.club.toUpperCase().includes(filter_players.club.toUpperCase()))
+            players: filter_data.filter(player => player.weight == filter_players.weight.weight && player.region === (filter_players.region === 'All' ? '' : filter_players.region) && player.club.toUpperCase().includes(filter_players.club.toUpperCase()))
           });
         }
       } else if (filter_players.dan && filter_players.dan.value) {
         this.setState({
-          players: filter_data.filter(player => player.dan == filter_players.dan.value && player.club.toUpperCase().includes(filter_players.club.toUpperCase()))
+          players: filter_data.filter(player => player.dan == filter_players.dan.value && player.region === (filter_players.region === 'All' ? '' : filter_players.region) && player.club.toUpperCase().includes(filter_players.club.toUpperCase()))
         });
       } else {
         this.setState({
-          players: filter_data.filter(player => player.club.toUpperCase().includes(filter_players.club.toUpperCase()))
+          players: filter_data.filter(player => player.club.toUpperCase().includes(filter_players.club.toUpperCase()) && player.region === (filter_players.region === 'All' ? '' : filter_players.region))
         });
       }
     } else if (filter_players.gender) {
       if (filter_players.weight && filter_players.weight.weight) {
         if (filter_players.dan && filter_players.dan.value) {
           this.setState({
-            players: filtered.filter(player => player.gender == filter_players.gender.value && player.weight == filter_players.weight.weight && player.dan == filter_players.dan.value && player.club.toUpperCase().includes(filter_players.club.toUpperCase()))
+            players: filtered.filter(player => player.gender == filter_players.gender.value && player.weight == filter_players.weight.weight && player.dan == filter_players.dan.value && player.region === (filter_players.region === 'All' ? '' : filter_players.region) && player.club.toUpperCase().includes(filter_players.club.toUpperCase()))
           });
         } else {
           this.setState({
-            players: filtered.filter(player => player.gender == filter_players.gender.value && player.weight == filter_players.weight.weight && player.club.toUpperCase().includes(filter_players.club.toUpperCase()))
+            players: filtered.filter(player => player.gender == filter_players.gender.value && player.weight == filter_players.weight.weight && player.region === (filter_players.region === 'All' ? '' : filter_players.region) && player.club.toUpperCase().includes(filter_players.club.toUpperCase()))
           });
         }
       } else if (filter_players.dan && filter_players.dan.value) {
         this.setState({
-          players: filtered.filter(player => player.gender == filter_players.gender.value && player.dan == filter_players.dan.value && player.club.toUpperCase().includes(filter_players.club.toUpperCase()))
+          players: filtered.filter(player => player.gender == filter_players.gender.value && player.dan == filter_players.dan.value && player.region === (filter_players.region === 'All' ? '' : filter_players.region) && player.club.toUpperCase().includes(filter_players.club.toUpperCase()))
         });
       } else {
         this.setState({
-          players: filtered.filter(player => player.gender == filter_players.gender.value && player.club.toUpperCase().includes(filter_players.club.toUpperCase()))
+          players: filtered.filter(player => player.gender == filter_players.gender.value && player.region === (filter_players.region === 'All' ? '' : filter_players.region) && player.club.toUpperCase().includes(filter_players.club.toUpperCase()))
         });
       }
     } else if (filter_players.weight && filter_players.weight.weight) {
       if (filter_players.dan && filter_players.dan.value) {
         this.setState({
-          players: filtered.filter(player => player.weight == filter_players.weight.weight && player.dan == filter_players.dan.value && player.club.toUpperCase().includes(filter_players.club.toUpperCase()))
+          players: filtered.filter(player => player.weight == filter_players.weight.weight && player.dan == filter_players.dan.value && player.region === (filter_players.region === 'All' ? '' : filter_players.region) && player.club.toUpperCase().includes(filter_players.club.toUpperCase()))
         });
       } else {
         this.setState({
-          players: filtered.filter(player => player.weight == filter_players.weight.weight && player.club.toUpperCase().includes(filter_players.club.toUpperCase()))
+          players: filtered.filter(player => player.weight == filter_players.weight.weight && player.region === (filter_players.region === 'All' ? '' : filter_players.region) && player.club.toUpperCase().includes(filter_players.club.toUpperCase()))
         });
       }
     } else if (filter_players.dan && filter_players.dan.value) {
       this.setState({
-        players: filtered.filter(player => player.dan == filter_players.dan.value && player.club.toUpperCase().includes(filter_players.club.toUpperCase()))
+        players: filtered.filter(player => player.dan == filter_players.dan.value && player.region === (filter_players.region === 'All' ? '' : filter_players.region) && player.club.toUpperCase().includes(filter_players.club.toUpperCase()))
       });
     } else {
       this.setState({
-        players: filtered.filter(player => player.club.toUpperCase().includes(filter_players.club.toUpperCase()))
+        players: filtered.filter(player => player.club.toUpperCase().includes(filter_players.club.toUpperCase()) && player.region === (filter_players.region === 'All' ? '' : filter_players.region))
       });
     }
   }
@@ -399,6 +419,7 @@ class Payment extends Component {
   render() {
     const {
       weights,
+      orgs,
       payPlayers,
       pay_status,
       players,
@@ -445,6 +466,22 @@ class Payment extends Component {
                         placeholder="Search Name"
                         onChange={(event) => { this.handleSearchFilter('search', event.target.value); }}
                       />
+                    </FormGroup>
+                  </Col>
+                  <Col lg="2" md="3" sm="4">
+                    <FormGroup>
+                      <Input
+                        className="club-list"
+                        list="orgs"
+                        name="search_name"
+                        type="text"
+                        value={(filter_players.region === 'All' ? '' : filter_players.region) || ''}
+                        placeholder="Regional Federation Name"
+                        onChange={event => this.handleSearchFilter('region', event.target.value)}
+                      />
+                      <datalist id="orgs">
+                        {orgs}
+                      </datalist>
                     </FormGroup>
                   </Col>
                   <Col lg="2" md="3" sm="4">

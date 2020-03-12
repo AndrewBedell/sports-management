@@ -139,6 +139,13 @@ class PlayerTable extends Component {
             </Table.HeaderCell>
             <Table.HeaderCell
               className="text-center"
+              sorted={column === 'region' ? direction : null}
+              onClick={this.handleSort.bind(this, 'region')}
+            >
+              Region
+            </Table.HeaderCell>
+            <Table.HeaderCell
+              className="text-center"
               sorted={column === 'club' ? direction : null}
               onClick={this.handleSort.bind(this, 'club')}
             >
@@ -212,6 +219,9 @@ class PlayerTable extends Component {
                     </a>
                   </Table.Cell>
                   <Table.Cell>
+                    {item.region}
+                  </Table.Cell>
+                  <Table.Cell>
                     {item.club}
                   </Table.Cell>
                   <Table.Cell className="text-center">{item.gender && item.gender == 1 ? Genders[0].name : Genders[1].name}</Table.Cell>
@@ -281,7 +291,7 @@ class PlayerTable extends Component {
                 }}
               />
             </Table.HeaderCell>
-            <Table.HeaderCell colSpan="8">
+            <Table.HeaderCell colSpan="9">
               <Menu floated="right" pagination>
                 <Pagination
                   activePage={activePage}
