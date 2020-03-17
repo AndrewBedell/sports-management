@@ -211,7 +211,7 @@ class MemberAdd extends Component {
       register_date: moment(values.register_date).format('YYYY-MM-DD')
     };
 
-    const data = await Api.post('register-member', newData);
+    const data = await Api.post('reg-member', newData);
     const { response, body } = data;
     switch (response.status) {
       case 200:

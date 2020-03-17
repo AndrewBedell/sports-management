@@ -67,7 +67,7 @@ class InviteAccept extends Component {
       pass: values.pass
     };
 
-    const data = await Api.post('register-user', newData);
+    const data = await Api.post('reg-user', newData);
 
     const { response, body } = data;
 

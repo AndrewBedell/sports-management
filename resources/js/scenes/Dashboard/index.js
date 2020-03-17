@@ -103,13 +103,13 @@ class Dashboard extends Component {
       case 200:
         const orgArr = [];
 
-        if (body.length > 0)
+        if (body.length > 0 && body[0].parent_id == 0)
           body[0].name_o = "National Federation";
 
-        for (let i = 1; i < body.length; i++) {
+        for (let i = 0; i < body.length; i++) {
           orgArr.push(body[i].name_o);
         }
-
+        
         const orgList = orgArr.map((org, Index) => <option key={Index} value={org} />);
 
         this.setState({

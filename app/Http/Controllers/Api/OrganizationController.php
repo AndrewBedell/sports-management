@@ -55,6 +55,7 @@ class OrganizationController extends Controller
             'email' => 'required|string|email|max:255|unique:organizations',
             'mobile_phone' => 'required|string|max:255',
             'addressline1' => 'required|string|max:255',
+            'country' => 'required|string|max:255',
             'state' => 'required|string|max:255',
             'city' => 'required|string|max:255',
             'zip_code' => 'required|string|max:255',
@@ -105,8 +106,6 @@ class OrganizationController extends Controller
             if (is_null($data['addressline2']))
                 $data['addressline2'] = "";
                 
-	    $parent = array();
-	    $parent = Organization::find($data['parent_id']);
             Organization::create(array(
                 'parent_id' => $data['parent_id'],
                 'register_no' => $data['register_no'],
@@ -117,7 +116,7 @@ class OrganizationController extends Controller
                 'mobile_phone' => $data['mobile_phone'],
                 'addressline1' => $data['addressline1'],
                 'addressline2' => $data['addressline2'],
-                'country' => $parent->country,
+                'country' => $data['country'],
                 'state' => $data['state'],
                 'city' => $data['city'],
                 'zip_code' => $data['zip_code'],
@@ -482,9 +481,17 @@ class OrganizationController extends Controller
      */
     public function list(Request $request)
     {
-        $nf = Organization::where('parent_id', 0)->get();
+        $user = JWTAuth::parseToken()->authenticate();
 
-        $children = Organization::where('parent_id', '!=', 0)->where('is_club', 0)->orderBy('name_o')->get();
+        $me = Member::find($user->member_id);
+
+        $nf = Organization::where('parent_id', 0)->where('id', $me->organization_id)->get();
+
+        $children = Organization::where('parent_id', '!=', 0)
+                        ->where('parent_id', $nf[0]->id)
+                        ->where('is_club', 0)
+                        ->orderBy('name_o')
+                        ->get();
 
         $merged = $nf->merge($children);
 
@@ -589,7 +596,7 @@ class OrganizationController extends Controller
 
         $orgArr = array();
 
-        if ($me->organization_id != 1)
+        if ($me->parent_id != 0)
             array_push($orgArr, $me->organization_id);
         
         if (!$myOrg->is_club) {

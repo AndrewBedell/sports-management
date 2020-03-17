@@ -14,15 +14,14 @@ import {
 import Select from 'react-select';
 import MainTopBar from '../../components/TopBar/MainTopBar';
 import Api from '../../apis/app';
-import {
-  countries, SetSwitch
-} from '../../configs/data';
+import { SetSwitch } from '../../configs/data';
 
 class OrganizationAdd extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      user_org: '',
+      nf_id: '',
+      level: '',
       org_list: [],
       // file: '',
       imagePreviewUrl: '',
@@ -34,21 +33,27 @@ class OrganizationAdd extends Component {
     };
     this.fileRef = React.createRef();
     this.formikRef = React.createRef();
-    this.getLevel = this.getLevel.bind(this);
   }
 
   async componentDidMount() {
     const user = JSON.parse(localStorage.getItem('auth'));
-    const user_info = user.user.member_info;
+    const parent_id = user.user.member_info.organization_id;
+    const country = user.user.member_info.country;
+    const level = user.user.level == 1 && true;
     
     this.setState({
-      user_org: user_info.organization_id
+      parent_id,
+      country,
+      level
     });
 
     const org_response = await Api.get('organizations-list');
     const { response, body } = org_response;
     switch (response.status) {
       case 200:
+        if (body.length > 0 && body[0].parent_id == 0)
+          body[0].name_o = "National Federation";
+
         this.setState({
           org_list: body
         });
@@ -56,16 +61,6 @@ class OrganizationAdd extends Component {
       default:
         break;
     }
-  }
-
-  getLevel(parent_id) {
-    const { org_list } = this.state;
-    for (let i = 0; i < org_list.length; i++) {
-      if (org_list[i].id === parent_id) {
-        return org_list[i].level + 1;
-      }
-    }
-    return 2;
   }
 
   fileUpload(e) {
@@ -85,12 +80,12 @@ class OrganizationAdd extends Component {
   }
 
   async handleSubmit(values, bags) {
-    if (this.state.user_org == 1 && !values.is_club) {
+    if (this.state.level == 1 && !values.is_club) {
       bags.setSubmitting(false);
       return;
     }
 
-    if (this.state.user_org == 1 && values.is_club.value == 1 && values.parent_id == '') {
+    if (this.state.level == 1 && values.is_club.value == 1 && values.parent_id == '') {
       bags.setSubmitting(false);
       return;
     }
@@ -99,7 +94,7 @@ class OrganizationAdd extends Component {
     const { imagePreviewUrl } = this.state;
 
     newData = {
-      parent_id: values.is_club && values.is_club.value == 1 ? values.parent_id.id : this.state.user_org,
+      parent_id: values.is_club && values.is_club.value == 1 ? values.parent_id.id : this.state.parent_id,
       name_o: values.name_o,
       name_s: values.name_s,
       register_no: values.register_no,
@@ -108,15 +103,15 @@ class OrganizationAdd extends Component {
       mobile_phone: values.mobile_phone,
       addressline1: values.addressline1,
       addressline2: values.addressline2,
-      // country: values.country.countryCode,
+      country: this.state.country,
       state: values.state,
       city: values.city,
       zip_code: values.zip_code,
-      level: this.getLevel(values.parent_id),
+      level: values.is_club && values.is_club.value == 1 ? 3 : 2,
       is_club: values.is_club === null || (values.is_club && values.is_club.value) == 1 ? 1 : 0
     };
 
-    const data = await Api.post('register-organization', newData);
+    const data = await Api.post('reg-organization', newData);
     const { response, body } = data;
     switch (response.status) {
       case 200:
@@ -155,7 +150,7 @@ class OrganizationAdd extends Component {
 
   render() {
     const {
-      user_org,
+      level,
       imagePreviewUrl,
       org_list
     } = this.state;
@@ -245,7 +240,7 @@ class OrganizationAdd extends Component {
                     </Col>
                     <Col xs="6"></Col>
                     {
-                      user_org == 1 && (
+                      level == 1 && (
                         <Col xs="6">
                           <FormGroup>
                             <Label for="is_club">Organization Type</Label>
@@ -270,7 +265,7 @@ class OrganizationAdd extends Component {
                       )
                     }
                     {
-                      user_org == 1 && (
+                      level == 1 && (
                         <Col sm="6">
                           {
                             values.is_club && values.is_club.value == 1 && (
@@ -304,7 +299,7 @@ class OrganizationAdd extends Component {
                     <Col sm="6">
                       <FormGroup>
                         <Label for="name_o">
-                          {user_org == 1 ? "Organization Name" : "Club Name"}
+                          {level == 1 ? "Organization Name" : "Club Name"}
                         </Label>
                         <Input
                           type="text"
