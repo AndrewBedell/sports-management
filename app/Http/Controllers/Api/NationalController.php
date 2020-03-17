@@ -145,7 +145,7 @@ class NationalController extends Controller
                 'member_id' => $member->id,
                 'password' => Hash::make('password'),
                 'email' => $data['email'],
-                'is_super' => 1
+                'is_nf' => 1
             ));
         
             $msg = "You were registered into Judo Federation system as a manager.\r\n";

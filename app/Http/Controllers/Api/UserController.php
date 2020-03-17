@@ -145,7 +145,7 @@ class UserController extends Controller
                 'member_id' => $member->id,
                 'password' => Hash::make($data['pass']),
                 'email' => $data['email'],
-                'is_super' => 0
+                'is_nf' => 0
             ));
 
             Member::where('email', $data['email'])->update(['active' => 1]);
