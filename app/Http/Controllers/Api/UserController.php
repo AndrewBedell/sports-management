@@ -67,8 +67,8 @@ class UserController extends Controller
 
             $org = Organization::find($member[0]->organization_id);
 
-            if ($org)
-                $is_club = $org->is_club;
+            $level = $org->level;
+            $is_club = $org->is_club;
 
             return response()->json([
                 'status' => 'success',
@@ -76,6 +76,7 @@ class UserController extends Controller
                     'token' => $token,
                     'user' => [
                         'member_info' => $member[0],
+                        'level' => $level,
                         'is_super' => 0,
                         'is_club_member' => $is_club
                     ]

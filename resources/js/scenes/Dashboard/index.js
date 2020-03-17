@@ -39,7 +39,7 @@ class Dashboard extends Component {
       this.props.history.push('/admin/home');
 
     this.state = {
-      user_org: '',
+      level: '',
       user_is_club: false,
       org_list: [],
       orgs: [],
@@ -85,11 +85,11 @@ class Dashboard extends Component {
 
   componentDidMount() {
     const user = JSON.parse(localStorage.getItem('auth'));
-    const user_info = user.user.member_info;
+    const level = user.user.level == 1 && true;
     const user_is_club = user.user.is_club_member == 1 && true;
 
     this.setState({
-      user_org: user_info.organization_id,
+      level,
       user_is_club
     });
 
@@ -527,7 +527,7 @@ class Dashboard extends Component {
 
   render() {
     const {
-      user_org,
+      level,
       user_is_club,
       org_list,
       orgs,
@@ -563,7 +563,7 @@ class Dashboard extends Component {
                 user_is_club ? (
                   "Club"
                 ) : (
-                  user_org == 1 ? "National Federation" : "Regional Federation"
+                  level == 1 ? "National Federation" : "Regional Federation"
                 )
               }
               &nbsp;Management System!
@@ -577,7 +577,7 @@ class Dashboard extends Component {
                       color="secondary"
                       onClick={this.handleCreateAccount.bind(this)}
                     >
-                      {user_org == 1 ? (
+                      {level == 1 ? (
                         'Register Federation / Club'
                       ) : (
                         'Register Club'
@@ -604,7 +604,7 @@ class Dashboard extends Component {
                     indicatorSeparator={null}
                     value={search_type}
                     options={
-                      user_org != 1 ? (
+                      level != 1 ? (
                         user_is_club ? (
                           search_type_options.filter(item => item.value == 'member')
                         ) : (
@@ -628,7 +628,7 @@ class Dashboard extends Component {
                 </FormGroup>
               </Col>
               {
-                user_org == 1 && search_type.value == 'org' && (
+                level == 1 && search_type.value == 'org' && (
                   <Col xl="3" lg="3" md="4" sm="6" xs="12">
                     <FormGroup>
                       <Input
@@ -648,7 +648,7 @@ class Dashboard extends Component {
                 )
               }
               {
-                user_org == 1 && (search_type.value == 'club' || search_type.value == 'member') && (
+                level == 1 && (search_type.value == 'club' || search_type.value == 'member') && (
                 <Col xl="2" lg="3" md="4" sm="6" xs="12">
                   <FormGroup>
                     <Select
