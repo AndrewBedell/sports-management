@@ -451,7 +451,8 @@ class MemberAdd extends Component {
                                     touched.organization_id ? 'invalid react-select-lg' : 'react-select-lg'
                                 }
                                 options={
-                                  values.organization_type.value == 'ref' ? org_list.filter(item => item.parent_id != 0) : org_list
+                                  values.organization_type && values.organization_type.value == 'ref' 
+                                  ? org_list.filter(item => item.parent_id != 0) : org_list
                                 }
                                 indicatorSeparator={null}
                                 getOptionValue={option => option.id}
