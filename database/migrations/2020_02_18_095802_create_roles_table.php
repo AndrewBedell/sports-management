@@ -46,13 +46,13 @@ class CreateRolesTable extends Migration
                 'updated_at' => date('Y-m-d H:i:s')
             )
         );
-
+        
         DB::table('roles')->insert(
             array(
-                'name' => 'Referee',
-                'description' => 'referee',
-                'is_player' => false,
-                'order' => 3,
+                'name' => 'Judoka',
+                'description' => 'judoka',
+                'is_player' => true,
+                'order' => 4,
                 'created_at' => date('Y-m-d H:i:s'),
                 'updated_at' => date('Y-m-d H:i:s')
             )
@@ -60,10 +60,10 @@ class CreateRolesTable extends Migration
 
         DB::table('roles')->insert(
             array(
-                'name' => 'Judoka',
-                'description' => 'judoka',
-                'is_player' => true,
-                'order' => 4,
+                'name' => 'Referee',
+                'description' => 'referee',
+                'is_player' => false,
+                'order' => 3,
                 'created_at' => date('Y-m-d H:i:s'),
                 'updated_at' => date('Y-m-d H:i:s')
             )

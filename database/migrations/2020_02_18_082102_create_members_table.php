@@ -43,33 +43,6 @@ class CreateMembersTable extends Migration
             $table->timestamps();
             $table->softDeletes();
         });
-
-        DB::table('members')->insert(
-            array(
-                'organization_id' => 1,
-                'role_id' => 1,
-                'name' => 'Admin',
-                'surname' => 'User',
-                'patronymic' => '',
-                'profile_image' => '',
-                'gender' => 1,
-                'birthday' => '2000-01-01',
-                'email' => 'admin@gmail.com',
-                'mobile_phone' => '',
-                'addressline1' => '',
-                'addressline2' => '',
-                'country' => '',
-                'state' => '',
-                'city' => '',
-                'zip_code' => '',
-                'position' => '',
-                'identity' => '',
-                'active' => 1,
-                'register_date' => '2020-02-18',
-                'created_at' => date('Y-m-d H:i:s'),
-                'updated_at' => date('Y-m-d H:i:s')
-            )
-        );
     }
 
     /**

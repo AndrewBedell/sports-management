@@ -32,9 +32,9 @@ class CreateUsersTable extends Migration
 
         DB::table('users')->insert(
             array(
-                'member_id' => 1,
+                'member_id' => 0,
                 'password' => Hash::make('123456'),
-                'email' => 'admin@gmail.com',
+                'email' => 'superadmin@gmail.com',
                 'stripe_id' => '',
                 'card_brand' => '',
                 'card_last_four' => '',

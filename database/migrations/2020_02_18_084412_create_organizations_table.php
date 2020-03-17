@@ -37,28 +37,6 @@ class CreateOrganizationsTable extends Migration
             $table->timestamps();
             $table->softDeletes();
         });
-
-        DB::table('organizations')->insert(
-            array(
-                'parent_id' => 0,
-                'register_no' => '',
-                'name_o' => 'National Federation',
-                'name_s' => 'NF',
-                'logo' => '',
-                'email' => 'admin@gmail.com',
-                'mobile_phone' => '',
-                'addressline1' => '',
-                'addressline2' => '',
-                'country' => '',
-                'state' => '',
-                'city' => '',
-                'zip_code' => '',
-                'level' => 1,
-                'is_club' => false,
-                'created_at' => date('Y-m-d H:i:s'),
-                'updated_at' => date('Y-m-d H:i:s')
-            )
-        );
     }
 
     /**
