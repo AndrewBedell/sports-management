@@ -45,7 +45,7 @@ class Login extends Component {
     const is_super = user.user.is_super;
     
     if (is_super == 1) {
-      this.props.history.push('/admin');
+      this.props.history.push('/admin/home');
     } else {
       this.props.history.push('/');
     }

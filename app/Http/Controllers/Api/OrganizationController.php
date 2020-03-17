@@ -55,7 +55,6 @@ class OrganizationController extends Controller
             'email' => 'required|string|email|max:255|unique:organizations',
             'mobile_phone' => 'required|string|max:255',
             'addressline1' => 'required|string|max:255',
-            // 'country' => 'required|string|max:255',
             'state' => 'required|string|max:255',
             'city' => 'required|string|max:255',
             'zip_code' => 'required|string|max:255',
@@ -106,6 +105,8 @@ class OrganizationController extends Controller
             if (is_null($data['addressline2']))
                 $data['addressline2'] = "";
                 
+	    $parent = array();
+	    $parent = Organization::find($data['parent_id']);
             Organization::create(array(
                 'parent_id' => $data['parent_id'],
                 'register_no' => $data['register_no'],
@@ -116,8 +117,7 @@ class OrganizationController extends Controller
                 'mobile_phone' => $data['mobile_phone'],
                 'addressline1' => $data['addressline1'],
                 'addressline2' => $data['addressline2'],
-                'country' => 'kz',
-                // 'country' => $data['country'],
+                'country' => $parent->country,
                 'state' => $data['state'],
                 'city' => $data['city'],
                 'zip_code' => $data['zip_code'],
@@ -226,7 +226,6 @@ class OrganizationController extends Controller
                 'email' => 'required|string|email|max:255',
                 // 'mobile_phone' => 'required|string|max:255',
                 // 'addressline1' => 'required|string|max:255',
-                // 'country' => 'required|string|max:255',
                 // 'state' => 'required|string|max:255',
                 // 'city' => 'required|string|max:255',
                 // 'zip_code' => 'required|string|max:255',

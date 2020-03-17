@@ -19,7 +19,7 @@ Route::namespace('Api')->group(function () {
     Route::post('reset/{token}', 'ForgotPasswordController@reset');
     
     Route::get('invite-accept', 'UserController@invite_accept');
-    Route::post('register-user', 'UserController@store');
+    Route::post('reg-user', 'UserController@store');
 
     Route::group(['middleware' => ['jwt.verify']], function () {
         Route::get('search', 'OrganizationController@search');
@@ -29,14 +29,14 @@ Route::namespace('Api')->group(function () {
         Route::get('organization-child/{id}', 'OrganizationController@child');
         Route::get('clubs', 'OrganizationController@clubs');
         Route::get('club-players/{id}', 'OrganizationController@players');
-        Route::post('register-organization', 'OrganizationController@store');
+        Route::post('reg-organization', 'OrganizationController@store');
         Route::put('organization/{id}', 'OrganizationController@update');
         Route::delete('organization/{id}', 'OrganizationController@destroy');
 
         Route::get('members', 'MemberController@index');
         Route::get('member/{id}', 'MemberController@show');
         Route::get('roles', 'MemberController@roles');
-        Route::post('register-member', 'MemberController@store');
+        Route::post('reg-member', 'MemberController@store');
         Route::put('member/{id}', 'MemberController@update');
         Route::delete('member/{id}', 'MemberController@destroy');
 
@@ -56,5 +56,8 @@ Route::namespace('Api')->group(function () {
         Route::post('pay-now', 'TransactionController@store');
         Route::get('finance', 'TransactionController@finance');
         Route::get('transdetail/{id}', 'TransactionController@detail');
+
+        Route::get('all-nf', 'NationalController@list');
+        Route::post('create-nf', 'NationalController@store');
     });
 });

@@ -20,7 +20,6 @@ class Auth extends Component {
               <div className="brand-logo">
                 <img src={Bitmaps.logo} alt="Sports-logo" />
               </div>
-              <div className="brand-title">Sports</div>
             </div>
             {form}
           </div>

@@ -17,13 +17,42 @@ import MemberAdd from './Members/add';
 import GetInviteUsers from './Users';
 import Payment from './Payment';
 import Admin from './Admin';
+import AdminFederation from './Admin/federations';
+import AdminCreate from './Admin/create';
 import AdminSetting from './Admin/setting';
+import AdminReset from './Admin/reset';
 
 class Main extends Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {}
+  }
+
+  componentDidMount() {
+    this.componentWillReceiveProps(this.props);
+  }
+
+  componentWillReceiveProps() {
+    const user = JSON.parse(localStorage.getItem('auth'));
+    
+    if (user.user.is_super == 1) {
+      document.body.classList.add('admin');
+    } else {
+      document.body.classList.remove('admin');
+    }
+  }
+
   render() {
     return (
       <Router history={history}>
         <Switch>
+          <Route exact path="/admin/home" name="Admin" component={Admin} />
+          <Route exact path="/admin/federations" name="AdminFederation" component={AdminFederation} />
+          <Route exact path="/admin/create" name="AdminCreate" component={AdminCreate} />
+          <Route exact path="/admin/setting" name="AdminSetting" component={AdminSetting} />
+          <Route exact path="/admin/reset" name="AdminReset" component={AdminReset} />
+
           <Route exact path="/payment-player" name="Payment" component={Payment} />
           <Route exact path="/member/register" name="MemberAdd" component={MemberAdd} />
           <Route exact path="/member/detail" name="MemberDetail" component={MemberDetail} />
@@ -36,9 +65,6 @@ class Main extends Component {
           <Route exact path="/setting" name="Setting" component={Setting} />
           <Route exact path="/reset" name="Reset" component={Reset} />
           <Route exact path="/" name="Dashboard" component={Dashboard} />
-          <Route exact path="/admin" name="Admin" component={Admin} />
-          <Route exact path="/admin/setting" name="AdminSetting" component={AdminSetting} />
-          <Route exact path="/admin/reset" name="Reset" component={Reset} />
         </Switch>
       </Router>
     );

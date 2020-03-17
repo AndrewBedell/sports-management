@@ -805,7 +805,7 @@ class EditModal extends React.Component {
                 initialValues={{
                   name_o: '',
                   name_s: '',
-                  parent_id: 1,
+                  parent_id: '',
                   register_no: '',
                   email: '',
                   logo: null,

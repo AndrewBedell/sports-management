@@ -33,10 +33,10 @@ class Dashboard extends Component {
   constructor(props) {
     super(props);
 
-    // const user = JSON.parse(localStorage.getItem('auth'));
+    const user = JSON.parse(localStorage.getItem('auth'));
     
-    // if (user.user.is_super == 1)
-    //   this.props.history.push('/admin');
+    if (user.user.is_super == 1)
+      this.props.history.push('/admin/home');
 
     this.state = {
       user_org: '',
@@ -103,6 +103,9 @@ class Dashboard extends Component {
       case 200:
         const orgArr = [];
 
+        if (body.length > 0)
+          body[0].name_o = "National Federation";
+
         for (let i = 1; i < body.length; i++) {
           orgArr.push(body[i].name_o);
         }
@@ -147,7 +150,6 @@ class Dashboard extends Component {
     const clubArr = [];
     switch (club_list.response.status) {
       case 200:
-
         for (let i = 0; i < club_list.body.length; i++) {
           clubArr.push({ id: club_list.body[i].parent_id, value: club_list.body[i].name_o });
         }
@@ -409,7 +411,7 @@ class Dashboard extends Component {
             messageStatus: true,
             alertVisible: true,
             successMessage: `${item.name_o} is been update successfully!`,
-            search_data: search_data.filter(data => data.is_club != item.is_club)
+            search_data: search_data.filter(data => data.is_club == item.is_club)
           });
           break;
         case 406:

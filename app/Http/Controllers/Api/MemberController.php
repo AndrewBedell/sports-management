@@ -49,7 +49,7 @@ class MemberController extends Controller
     public function store(Request $request)
     {
         $data = $request->all();
-
+        
         $validMember = Validator::make($data, [
             'organization_id' => 'required',
             'role_id' => 'required',
@@ -78,7 +78,7 @@ class MemberController extends Controller
                 422
             );
         }
-
+        
         $validPlayer = Validator::make($data, [
             'weight_id' => 'required',
             'dan' => 'required|integer'
@@ -95,7 +95,7 @@ class MemberController extends Controller
                 422
             );
         }
-
+        
         $base64_image = $request->input('profile_image');
                     
         if ($base64_image != '' && preg_match('/^data:image\/(\w+);base64,/', $base64_image)) {
@@ -135,6 +135,8 @@ class MemberController extends Controller
 
         if (is_null($data['position']))
             $data['position'] = "";
+	$unit = array();
+	$unit = Organization::find($data['organization_id']);
 
         $member = Member::create(array(
             'organization_id' => $data['organization_id'],
@@ -149,8 +151,7 @@ class MemberController extends Controller
             'mobile_phone' => $data['mobile_phone'],
             'addressline1' => $data['addressline1'],
             'addressline2' => $data['addressline2'],
-            'country' => 'kz',
-            // 'country' => $data['country'],
+            'country' => $unit->country,
             'state' => $data['state'],
             'city' => $data['city'],
             'zip_code' => $data['zip_code'],

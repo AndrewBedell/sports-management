@@ -161,7 +161,7 @@ export const countries = [
   { name: 'Nigeria', countryCode: 'ng' },
   { name: 'Niue', countryCode: 'nu' },
   { name: 'Norfolk Island', countryCode: 'nf' },
-  { name: 'North Korea', countryCode: 'kp' },
+  { name: 'DPR Korea', countryCode: 'kp' },
   { name: 'Northern Mariana Islands', countryCode: 'mp' },
   { name: 'Norway', countryCode: 'no' },
   { name: 'Oman', countryCode: 'om' },

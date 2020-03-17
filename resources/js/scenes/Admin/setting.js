@@ -4,8 +4,10 @@ import React, { Component, Fragment } from 'react';
 import {
   Container
 } from 'reactstrap';
-import MainTopBar from '../../components/TopBar/MainTopBar';
 import Api from '../../apis/app';
+
+import AdminTopBar from '../../components/TopBar/AdminTopBar';
+import AdminBar from '../../components/AdminBar';
 import SettingTable from '../../components/SettingTable';
 
 class Setting extends Component {
@@ -36,10 +38,15 @@ class Setting extends Component {
 
     return (
       <Fragment>
-        <MainTopBar />
-        <div className="main-content">
-          <Container>
-            <div className="setting table-responsive">
+        <AdminTopBar />
+
+        <div className="d-flex">
+          <AdminBar />
+
+          <div className="admin-dashboard">
+            <h4><b>Financial Setting</b></h4>
+            
+            <div className="content setting table-responsive">
               {
                 items.length > 0 && (
                   <SettingTable
@@ -48,7 +55,7 @@ class Setting extends Component {
                 )
               }
             </div>
-          </Container>
+          </div>
         </div>
       </Fragment>
     );
