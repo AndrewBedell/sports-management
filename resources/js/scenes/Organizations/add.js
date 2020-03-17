@@ -20,7 +20,8 @@ class OrganizationAdd extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      nf_id: '',
+      parent_id: '',
+      country: '',
       level: '',
       org_list: [],
       // file: '',

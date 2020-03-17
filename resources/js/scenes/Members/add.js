@@ -22,7 +22,9 @@ class MemberAdd extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      user_org: '',
+      parent_id: '',
+      country: '',
+      level: '',
       user_is_club: false,
       // file: '',
       imagePreviewUrl: '',
@@ -43,12 +45,16 @@ class MemberAdd extends Component {
 
   componentDidMount() {
     const user = JSON.parse(localStorage.getItem('auth'));
-    const user_info = user.user.member_info;
+    const parent_id = user.user.member_info.organization_id;
+    const country = user.user.member_info.country;
+    const level = user.user.level == 1 && true;
     const user_is_club = user.user.is_club_member == 1 && true;
     
     this.setState({
-      user_org: user_info.organization_id,
-      user_is_club: user_is_club
+      parent_id,
+      country,
+      level,
+      user_is_club
     });
 
     this.componentWillReceiveProps();
@@ -59,13 +65,16 @@ class MemberAdd extends Component {
     const { response, body } = org_response;
     switch (response.status) {
       case 200:
-        if (this.state.user_org == 1) {
+        if (body.length > 0 && body[0].parent_id == 0)
+          body[0].name_o = "National Federation";
+          
+        if (this.state.level == 1) {
           this.setState({
             org_list: body
           });
         } else {
           this.setState({
-            org_list: body.filter(item => item.id == this.state.user_org)
+            org_list: body.filter(item => item.id == this.state.level)
           });
         }
 
@@ -77,13 +86,13 @@ class MemberAdd extends Component {
     const club_response = await Api.get('clubs');
     switch (club_response.response.status) {
       case 200:
-        if (this.state.user_org == 1) {
+        if (this.state.level == 1) {
           this.setState({
             club_list: club_response.body
           });
         } else {
           this.setState({
-            club_list: club_response.body.filter(item => item.parent_id == this.state.user_org)
+            club_list: club_response.body.filter(item => item.parent_id == this.state.level)
           });
         }
         
@@ -144,48 +153,51 @@ class MemberAdd extends Component {
   }
 
   async handleSubmit(values, bags) {
-    if (values.role_id && values.role_id.id == 1 && (!values.organization_type) || values.position == '' ) {
+    if (values.role_id && values.role_id.id == 1 && ((!values.organization_type) || values.position == '' )) {
       bags.setSubmitting(false);
       return;
     }
-
+    
     if (values.role_id && values.role_id.id == 1 && values.organization_type.value == 'ref' && 
         (!values.organization_id || values.position == '')) {
       bags.setSubmitting(false);
       return;
     }
-
+    
     if (values.role_id && values.role_id.id == 1 && values.organization_type.value == 'club' && 
         (!values.organization_id || !values.club_id)) {
       bags.setSubmitting(false);
       return;
     }
-
+    
     if (values.role_id && values.role_id.id == 2 && (!values.organization_id || !values.club_id)) {
       bags.setSubmitting(false);
       return;
     }
-
+    
     if (values.role_id && values.role_id.id == 4 && (!values.position.value || !values.organization_id)) {
       bags.setSubmitting(false);
       return;
     }
-
+    
     if (!values.role_id && (!values.weight_id || !values.dan)) {
       bags.setSubmitting(false);
       return;
     }
-
+    
     if (values.role_id && values.role_id.is_player == 1 && 
         (!values.club_id || !values.weight_id || !values.dan || (values.dan && values.dan.value == ''))) {
       bags.setSubmitting(false);
       return;
     }
-
+    
     let newData = {};
     const { imagePreviewUrl } = this.state;
     
     newData = {
+      organization_id: values.club_id ? 
+        values.club_id.id : 
+        (values.organization_id ? values.organization_id.id : this.state.parent_id),
       name: values.name,
       patronymic: values.patronymic,
       surname: values.surname,
@@ -195,14 +207,13 @@ class MemberAdd extends Component {
       mobile_phone: values.mobile_phone,
       addressline1: values.addressline1,
       addressline2: values.addressline2,
-      // country: values.country.countryCode,
+      country: this.state.country,
       state: values.state,
       city: values.city,
       zip_code: values.zip_code,
       weight_id: values.weight_id ? values.weight_id.id : '',
       dan: values.dan ? values.dan.value : '',
       identity: values.identity,
-      organization_id: values.club_id ? values.club_id.id : (values.organization_id ? values.organization_id.id : this.state.user_org),
       role_id: values.role_id ? values.role_id.id : 3,
       profile_image: imagePreviewUrl || '',
       position: values.position ? (values.position.value || values.position) : '',
@@ -251,7 +262,7 @@ class MemberAdd extends Component {
 
   render() {
     const {
-      user_org,
+      level,
       user_is_club,
       imagePreviewUrl,
       org_list,
@@ -286,7 +297,7 @@ class MemberAdd extends Component {
               initialValues={{
                 role_id: null,
                 organization_type: null,
-                organization_id: (user_org !== null && user_org != 1) ? user_org : null,
+                organization_id: (level !== null && level != 1) ? level : null,
                 club_id: null,
                 profile_image: null,
                 register_date: null,
@@ -395,7 +406,7 @@ class MemberAdd extends Component {
                                   'invalid react-select-lg' : 'react-select-lg'}
                                 indicatorSeparator={null}
                                 options={
-                                  user_org != 1 ? (
+                                  level != 1 ? (
                                     user_is_club ? (
                                       OrganizationType.filter(item => item.value == 'club')
                                     ) : (
@@ -439,7 +450,9 @@ class MemberAdd extends Component {
                                   (!values.organization_id || (values.organization_id && values.organization_id == '')) &&
                                     touched.organization_id ? 'invalid react-select-lg' : 'react-select-lg'
                                 }
-                                options={org_list}
+                                options={
+                                  values.organization_type.value == 'ref' ? org_list.filter(item => item.parent_id != 0) : org_list
+                                }
                                 indicatorSeparator={null}
                                 getOptionValue={option => option.id}
                                 getOptionLabel={option => option.name_o}

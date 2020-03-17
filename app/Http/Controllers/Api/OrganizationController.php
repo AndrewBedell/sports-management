@@ -443,9 +443,9 @@ class OrganizationController extends Controller
     {
         $user = JWTAuth::parseToken()->authenticate();
 
-        $member = Member::find($user->member_id);
+        $me = Member::find($user->member_id);
 
-        $parent_id = $member->organization_id;
+        $parent_id = $me->organization_id;
 
         $own = Organization::find($parent_id);
         $children = $this->findChildren($parent_id, '', 1, 0);
@@ -469,7 +469,15 @@ class OrganizationController extends Controller
      */
     public function clubs()
     {
-        $clubs = Organization::where('is_club', 1)->select('id', 'parent_id', 'name_o')->orderBy('name_o')->get();
+        $user = JWTAuth::parseToken()->authenticate();
+
+        $me = Member::find($user->member_id);
+
+        $clubs = Organization::where('is_club', 1)
+                        ->where('country', $me->country)
+                        ->select('id', 'parent_id', 'name_o')
+                        ->orderBy('name_o')
+                        ->get();
 
         return response()->json($clubs);
     }

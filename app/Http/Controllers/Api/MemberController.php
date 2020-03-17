@@ -60,7 +60,7 @@ class MemberController extends Controller
             'email' => 'required|string|email|max:255|unique:members',
             'mobile_phone' => 'required|string|max:255',
             'addressline1' => 'required|string|max:255',
-            // 'country' => 'required|string|max:255',
+            'country' => 'required|string|max:255',
             'state' => 'required|string|max:255',
             'city' => 'required|string|max:255',
             'zip_code' => 'required|string|max:255',
@@ -135,8 +135,6 @@ class MemberController extends Controller
 
         if (is_null($data['position']))
             $data['position'] = "";
-	$unit = array();
-	$unit = Organization::find($data['organization_id']);
 
         $member = Member::create(array(
             'organization_id' => $data['organization_id'],
@@ -151,7 +149,7 @@ class MemberController extends Controller
             'mobile_phone' => $data['mobile_phone'],
             'addressline1' => $data['addressline1'],
             'addressline2' => $data['addressline2'],
-            'country' => $unit->country,
+            'country' => $data['country'],
             'state' => $data['state'],
             'city' => $data['city'],
             'zip_code' => $data['zip_code'],

@@ -23,11 +23,11 @@ class MainTopBar extends Component {
 
   componentDidMount() {
     const user = JSON.parse(localStorage.getItem('auth'));
-    const user_info = user.user.member_info;
+    const level = user.user.level == 1 && true;
     const user_is_club = user.user.is_club_member == 1 && true;
 
     this.setState({
-      user_org: user_info.nf,
+      level,
       user_is_club
     });
   }
@@ -50,7 +50,7 @@ class MainTopBar extends Component {
   }
 
   render() {
-    const { user_org, user_is_club, isOpen } = this.state;
+    const { level, user_is_club, isOpen } = this.state;
     return (
       <Nav className="top-header dashboard-top-bar">
         <NavbarBrand className="nav-logo" tag={Link} to="/" onClick={this.toggleClose}>
@@ -68,7 +68,7 @@ class MainTopBar extends Component {
                 </NavLink>
               </NavItem>
               {
-                ((user_org && user_org == 1) || (user_is_club && user_is_club == 1)) && (
+                ((level && level == 1) || (user_is_club && user_is_club == 1)) && (
                   <Fragment>
                     <NavItem onClick={this.toggleClose}>
                       <NavLink tag={Link} to="/invite-users" exact>
