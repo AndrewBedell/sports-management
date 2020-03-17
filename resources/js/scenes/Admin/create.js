@@ -159,7 +159,7 @@ class CreateNational extends Component {
                 validationSchema={
                   Yup.object().shape({
                     name_o: Yup.string().required('This field is required!'),
-                    name_s: Yup.string().max(5, 'Simple name is less than 5 characters!').required('This field is required!'),
+                    name_s: Yup.string().max(3, 'Country Code is less than 3 characters!').required('This field is required!'),
                     register_no: Yup.string().required('This field is required!'),
                     email: Yup.string().email('Email is not valid!').required('This field is required!'),
                     // logo: Yup.mixed().required('Logo is required!'),
@@ -219,7 +219,7 @@ class CreateNational extends Component {
                       <Col sm="6">
                         <FormGroup>
                           <Label for="name_s">
-                            Simple Name
+                            Country Code
                           </Label>
                           <Input
                             type="text"

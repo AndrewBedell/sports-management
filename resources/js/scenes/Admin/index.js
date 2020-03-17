@@ -174,7 +174,7 @@ class Admin extends Component {
                 <Col sm="6" md="4" lg="2">
                   <Card>
                     <Card.Content className="text-center">
-                      <Card.Header><h5>Total Budget</h5></Card.Header>
+                      <Card.Header><h5>Total Amount</h5></Card.Header>
                       <Card.Description>
                         $ 20,304
                       </Card.Description>
