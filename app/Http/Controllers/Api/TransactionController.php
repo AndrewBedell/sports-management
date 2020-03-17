@@ -190,9 +190,19 @@ class TransactionController extends Controller
 
     public function cost($id)
     {
-      $club = Organization::find($id);
-      $org = Organization::find($club->parent_id);
-      $nf = Organization::find($org->parent_id);
+      $myOrg = Organization::find($id);
+
+      $nf = array();
+      
+      if ($myOrg->is_club == 1) {
+        $org = Organization::find($myOrg->parent_id);
+        $nf = Organization::find($org->parent_id);
+      } else {
+        if ($myOrg->parent_id == 0)
+          $nf = $myOrg;
+        else
+          $nf = Organization::find($myOrg->parent_id);
+      }
 
       $data = Setting::where('organization_id', $nf->id)->select('price')->get();
 

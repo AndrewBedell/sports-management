@@ -24,6 +24,8 @@ class CreateUsersTable extends Migration
             $table->string('stripe_id')->nullable()->collation('utf8mb4_bin');
             $table->string('card_brand')->nullable();
             $table->string('card_last_four', 4)->nullable();
+
+            $table->boolean('is_nf');
             $table->rememberToken();
 
             $table->timestamps();
@@ -38,6 +40,7 @@ class CreateUsersTable extends Migration
                 'stripe_id' => '',
                 'card_brand' => '',
                 'card_last_four' => '',
+                'is_nf' => 1,
                 'created_at' => date('Y-m-d H:i:s'),
                 'updated_at' => date('Y-m-d H:i:s')
             )

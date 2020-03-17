@@ -77,6 +77,7 @@ class UserController extends Controller
                     'user' => [
                         'member_info' => $member[0],
                         'level' => $level,
+                        'is_nf' => $user->is_nf,
                         'is_super' => 0,
                         'is_club_member' => $is_club
                     ]
@@ -143,7 +144,8 @@ class UserController extends Controller
             User::create(array(
                 'member_id' => $member->id,
                 'password' => Hash::make($data['pass']),
-                'email' => $data['email']
+                'email' => $data['email'],
+                'is_super' => 0
             ));
 
             Member::where('email', $data['email'])->update(['active' => 1]);
