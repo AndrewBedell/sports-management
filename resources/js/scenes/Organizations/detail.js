@@ -183,7 +183,7 @@ class OrganizationDetail extends Component {
 (
                         {org.name_s}
 )&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                        {org.is_club && (` (Regional Federation: ${org.parent}) `)}
+                        {org.is_club ? (` (Regional Federation: ${org.parent}) `) : ''}
                       </h5>
                       <h5 className="py-2">
                         <b>Register No</b>
