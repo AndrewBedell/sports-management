@@ -154,7 +154,7 @@ class NationalController extends Controller
             
             $headers = "From: administrator@sports.org";
 
-            mail($data['email'], "Invitation from LiveMedia", $msg, $headers);
+            //mail($data['email'], "Invitation from LiveMedia", $msg, $headers);
 
             return response()->json([
                 'status' => 'success'
