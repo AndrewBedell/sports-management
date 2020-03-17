@@ -51,6 +51,7 @@
         "react-select": "^2.2.0",
         "react-stars": "^2.2.5",
         "react-stripe-checkout": "^2.6.3",
+        "react-stripe-elements": "^6.1.0",
         "react-switch": "^4.1.0",
         "react-tooltip": "^4.0.3",
         "reactstrap": "^8.0.0",

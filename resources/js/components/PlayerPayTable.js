@@ -144,20 +144,24 @@ class PlayerPayTable extends Component {
           </Table.Row>
         </Table.Header>
         <Table.Body>
-        {
-          data && data.length > 0 && (
-            data.map((player, k) => (
-              <Table.Row key={k}>
-                <Table.Cell>{player.name} {player.surname}</Table.Cell>
-                <Table.Cell className="text-center">
-                  {player.gender && player.gender == 1 ? Genders[0].name : Genders[1].name}
-                </Table.Cell>
-                <Table.Cell className="text-center">{player.weight}</Table.Cell>
-                <Table.Cell className="text-center">{player.dan}</Table.Cell>
-              </Table.Row>
-            ))
-          )
-        }
+          {
+            data && data.length > 0 && (
+              data.map((player, k) => (
+                <Table.Row key={k}>
+                  <Table.Cell>
+                    { player.name }
+                    {' '}
+                    {player.surname}
+                  </Table.Cell>
+                  <Table.Cell className="text-center">
+                    {player.gender && player.gender == 1 ? Genders[0].name : Genders[1].name}
+                  </Table.Cell>
+                  <Table.Cell className="text-center">{player.weight}</Table.Cell>
+                  <Table.Cell className="text-center">{player.dan}</Table.Cell>
+                </Table.Row>
+              ))
+            )
+          }
         </Table.Body>
         <Table.Footer fullWidth>
           <Table.Row>

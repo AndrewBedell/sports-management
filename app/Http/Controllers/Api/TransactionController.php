@@ -1,12 +1,13 @@
 <?php
 
 namespace App\Http\Controllers\Api;
-
+use JWTAuth;
 use App\User;
 use App\Member;
 use App\Setting;
 use App\Organization;
 use App\Transaction;
+use App\Plan;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -110,24 +111,24 @@ class TransactionController extends Controller
       $data = $request->all();
       $player_list = $request->input('players');
       $players = implode(',', $player_list);
-
-      $price_data = array();
-      if ($data['pay_method'] === 'basic_card') {
-        $price_data = $request->input('price_data');
-      } else if ($data['pay_method'] === 'payme') {
-        $price_data = $request->input('payme_data');
-      }
-
-      
       
       $club = Organization::find($data['club_id']);
       $org = Organization::find($club->parent_id);
       $nf = Organization::find($org->parent_id);
 
       $settings = Setting::where('organization_id', $nf->id)->get();
-
+      $amount = $request->input('amount');
+      $amount1 = 0;
+      $amount2 = 0;
       if (sizeOf($settings) > 0) {
         $setting = $settings[0];
+        if ($setting['percent']) {
+          $amount1 = $amount * ((100 - $setting['percent']) / 100);
+          $amount2 = $amount * ($setting['percent'] / 100);
+        } else {
+          $amount1 = $amount;
+          $amount2 = $amount;
+        }
       } else {
         return response()->json(
           [
@@ -138,23 +139,52 @@ class TransactionController extends Controller
         );
       }
 
-      Transaction::create(array(
-        'club_id' => $data['club_id'],
-        'payer_id' => $data['payer_id'],
-        'players' => $players,
-        'amount' => $data['amount'],
-        'price' => $setting['price'],
-        'percent' => $setting['percent']
-      ));
+      $plans = Plan::where('price_per_yearly', $setting['price'])->get();
 
-      foreach ($player_list as $player) {
-          Member::where('id', $player)->update(array(
-            'active' => 2
+      if ($data['pay_method'] === 'basic_card') {
+        $user = auth()->user();
+        $card_info = $request->input('card_info');
+        $token = $card_info['id'];
+        $user->newSubscription(Plan::$SUBSCRIPTION_DEFAULT, $plans[0]->stripe_plan_id)->quantity(sizeOf($player_list))->create($token);
+
+        Transaction::create(array(
+          'club_id' => $data['club_id'],
+          'payer_id' => $data['payer_id'],
+          'players' => $players,
+          'amount' => $data['amount'],
+          'price' => $setting['price'],
+          'percent' => $setting['percent']
         ));
-      }
 
+        foreach ($player_list as $player) {
+            Member::where('id', $player)->update(array(
+              'active' => 2
+          ));
+        } 
+      } else if ($data['pay_method'] === 'payme') {
+        
+        // Transaction::create(array(
+        //   'club_id' => $data['club_id'],
+        //   'payer_id' => $data['payer_id'],
+        //   'players' => $players,
+        //   'amount' => $data['amount'],
+        //   'price' => $setting['price'],
+        //   'percent' => $setting['percent']
+        // ));
+
+        // foreach ($player_list as $player) {
+        //     Member::where('id', $player)->update(array(
+        //       'active' => 2
+        //   ));
+        // }
+        return response()->json([
+          'status' => 'error',
+          'message' => 'Paid Failed! Please check your payme again.'
+        ], 406);
+      }
       return response()->json([
-        'status' => 'success'
+        'status' => 'success',
+        'message' => 'Paid Successfully! Please wait a message.'
       ], 200);
     }
 

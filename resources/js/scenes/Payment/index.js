@@ -1,3 +1,4 @@
+/* eslint-disable radix */
 /* eslint-disable no-case-declarations */
 /* eslint-disable no-unused-expressions */
 /* eslint-disable react/sort-comp */
@@ -10,6 +11,7 @@ import classnames from 'classnames';
 import {
   withRouter
 } from 'react-router-dom';
+
 import Select from 'react-select';
 import Card from 'card-react';
 import { Image } from 'semantic-ui-react';
@@ -18,6 +20,7 @@ import Api from '../../apis/app';
 import PlayerTable from '../../components/PlayerTable';
 import { Dans, search_genders } from '../../configs/data';
 import Bitmaps from '../../theme/Bitmaps';
+import ENV from '../../configs/env';
 
 class Payment extends Component {
   constructor(props) {
@@ -61,7 +64,7 @@ class Payment extends Component {
   async componentDidMount() {
     const user = JSON.parse(localStorage.getItem('auth'));
     const user_info = user.user.member_info;
-
+    this.loadStripe();
     const weight_list = await Api.get('weights');
     switch (weight_list.response.status) {
       case 200:
@@ -126,6 +129,7 @@ class Payment extends Component {
             isSubmitting: false,
             filter_players: {
               search: '',
+              region: '',
               club: '',
               gender: null,
               weight: null,
@@ -223,15 +227,68 @@ class Payment extends Component {
       players: player_list,
       payPlayers: null,
       isSubmitting: false,
-      payme_data: null,
       filter_players: {
         search: '',
         club: '',
+        region: '',
         gender: null,
         weight: null,
         dan: null
       }
     });
+  }
+
+  loadStripe() {
+    if (!window.document.getElementById('stripe-script')) {
+      const s = window.document.createElement('script');
+      s.id = 'stripe-script';
+      s.type = 'text/javascript';
+      s.src = 'https://js.stripe.com/v2/';
+      s.onload = () => {
+        window.Stripe.setPublishableKey(`${ENV.STRIPE_KEY}`);
+      };
+      window.document.body.appendChild(s);
+    }
+  }
+
+  async stripePay(params) {
+    if (params.card_info) {
+      const data = await Api.post('pay-now', params);
+      const { response, body } = data;
+      switch (response.status) {
+        case 200:
+          this.setState({
+            alertVisible: true,
+            messageStatus: true,
+            isSubmitting: false,
+            successMessage: body.message
+          });
+          setTimeout(() => {
+            this.getPlayers();
+          }, 4000);
+          break;
+        case 406:
+          this.setState({
+            alertVisible: true,
+            messageStatus: false,
+            isSubmitting: false,
+            failMessage: body.message
+          });
+          break;
+        default:
+          break;
+      }
+    } else {
+      this.setState({
+        alertVisible: true,
+        messageStatus: false,
+        isSubmitting: false,
+        failMessage: params.error
+      });
+    }
+    setTimeout(() => {
+      this.setState({ alertVisible: false });
+    }, 5000);
   }
 
   async handlePay() {
@@ -249,58 +306,28 @@ class Payment extends Component {
     params.amount = price;
     if (pay_method === 'basic_card') {
       params.price_data = priceData;
-      const data = await Api.post('pay-now', params);
-      const { response, body } = data;
-      switch (response.status) {
-        case 200:
-          this.setState({
-            alertVisible: true,
-            messageStatus: true,
-            successMessage: 'Successfully Paid. Please wait message!'
-          });
-          setTimeout(() => {
-            this.getPlayers();
-          }, 3000);
-          break;
-        case 406:
-          this.setState({
-            alertVisible: true,
-            messageStatus: true,
-            failMessage: body.message
-          });
-          break;
-        default:
-          break;
-      }
+      const exp_date = priceData.card_expiry_date.split(' / ');
+      const number = priceData.card_number.replace(' ', '');
+      window.Stripe.card.createToken({
+        number,
+        exp_month: exp_date[0],
+        exp_year: exp_date[1].slice(-2),
+        cvc: priceData.card_cvc,
+        name: priceData.card_name
+      }, (status, response) => {
+        if (status === 200) {
+          params.card_info = response;
+          this.stripePay(params);
+        } else {
+          params.card_info = null;
+          params.error = response.error.message;
+          this.stripePay(params);
+        }
+      });
     } else if (pay_method === 'payme') {
       params.price_data = payme_data;
-      const data = await Api.post('pay-now', params);
-      const { response, body } = data;
-      switch (response.status) {
-        case 200:
-          this.setState({
-            alertVisible: true,
-            messageStatus: true,
-            successMessage: 'Successfully Paid. Please wait message!'
-          });
-          setTimeout(() => {
-            this.getPlayers();
-          }, 3000);
-          break;
-        case 406:
-          this.setState({
-            alertVisible: true,
-            messageStatus: true,
-            failMessage: body.message
-          });
-          break;
-        default:
-          break;
-      }
+      console.log(params);
     }
-    setTimeout(() => {
-      this.setState({ alertVisible: false });
-    }, 3000);
   }
 
   handleDetailPlayer(id) {
@@ -416,7 +443,7 @@ class Payment extends Component {
             });
           } else {
             this.setState({
-              players: filter_data.filter(player => player.gender == filter_players.gender.value && player.weight == filter_players.weight.weight  && player.region.toUpperCase().includes(filter_players.region.toUpperCase()) && player.club.toUpperCase().includes(filter_players.club.toUpperCase()))
+              players: filter_data.filter(player => player.gender == filter_players.gender.value && player.weight == filter_players.weight.weight && player.region.toUpperCase().includes(filter_players.region.toUpperCase()) && player.club.toUpperCase().includes(filter_players.club.toUpperCase()))
             });
           }
         } else if (filter_players.dan && filter_players.dan.value) {
@@ -513,6 +540,7 @@ class Payment extends Component {
       pay_method,
       is_club_member
     } = this.state;
+
     return (
       <Fragment>
         <MainTopBar />
@@ -798,6 +826,7 @@ class Payment extends Component {
                                         disabled={isSubmitting || !priceData.card_name || !priceData.card_number || !priceData.card_cvc || !priceData.card_expiry_date}
                                         onClick={this.handlePay.bind(this)}
                                       >
+                                        {isSubmitting && (<i className="fas fa-sync fa-spin mr-3" />)}
                                         Pay Now
                                       </Button>
                                     </Col>
@@ -837,6 +866,7 @@ class Payment extends Component {
                                     disabled={isSubmitting}
                                     onClick={this.handlePay.bind(this)}
                                   >
+                                    {isSubmitting && (<i className="fas fa-sync fa-spin mr-3" />)}
                                     Pay Now
                                   </Button>
                                 </Col>

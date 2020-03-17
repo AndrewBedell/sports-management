@@ -63,6 +63,6 @@ class User extends Authenticatable implements JWTSubject
 
     public function getSubscribedAttribute()
     {
-        return [];
+        return $this->subscribed('main');
     }
 }
