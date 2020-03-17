@@ -62,7 +62,7 @@ class InviteModal extends React.Component {
 							</Col>
 							<Col sm="12" className="mt-3">
 								<h5 className="text-center">
-									Do you want to make this account with "{permission} permission" ?
+									Do you want to make this account as "{permission} permission" ?
 								</h5>
 							</Col>
 							<Col sm="12"

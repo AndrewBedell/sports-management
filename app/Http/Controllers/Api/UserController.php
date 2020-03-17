@@ -279,9 +279,11 @@ class UserController extends Controller
     public function invite()
     {
         $user = JWTAuth::parseToken()->authenticate();
+        $me = Member::find($user->member_id);
 
         $members = Member::where('role_id', 1)
-                        ->where('members.id', '!=', $user->member_id)
+                        ->where('members.id', '!=', $me->id)
+                        ->where('members.country', $me->country)
                         ->where('members.active', 0)
                         ->leftJoin('organizations', 'organizations.id', 'members.organization_id')
                         ->leftJoin('users', 'users.member_id', '=', 'members.id')
@@ -298,7 +300,8 @@ class UserController extends Controller
         }
 
         $users = Member::where('role_id', 1)
-                        ->where('members.id', '!=', $user->member_id)
+                        ->where('members.id', '!=', $me->id)
+                        ->where('members.country', $me->country)
                         ->where('members.active', 1)
                         ->leftJoin('users', 'users.member_id', '=', 'members.id')
                         ->select('members.*', 'users.id AS user_id')
