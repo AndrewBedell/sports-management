@@ -59245,6 +59245,14 @@ body .admin-dashboard > .content {
   height: calc(100vh - 105px);
 }
 
+body .admin-dashboard > .content .fixed-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: calc(100vh - 500px);
+}
+
 body .admin-dashboard > .content .row .form-group .club-list input {
   height: 48px;
 }

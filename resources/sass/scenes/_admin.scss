@@ -169,6 +169,14 @@ body {
     >.content {
       height: calc(100vh - 105px);
 
+      .fixed-content {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        height: calc(100vh - 500px);
+      }
+
       .row {
         .form-group {
           .club-list {

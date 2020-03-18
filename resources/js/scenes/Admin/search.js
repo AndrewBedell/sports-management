@@ -537,7 +537,7 @@ class Search extends Component {
               {
                 search_data && search_data.length == 0 && (
                   <div className="fixed-content">
-                    <h3 className="text-muted">
+                    <h3 className="text-muted text-center">
                       No results!
                     </h3>
                   </div>
