@@ -672,9 +672,6 @@ class OrganizationController extends Controller
                                             'players.dan', 'players.skill', 'players.expired_date')
                                 ->get();
                 } else {
-                    if ($mtype == 'staff')
-                        $result = $result->where('organizations.is_club', 0);
-
                     if ($mtype == 'referee' && $rtype != '' && $rtype != 'all')
                         $result = $result->where('members.position', $rtype);
                         
