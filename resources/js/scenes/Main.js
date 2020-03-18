@@ -16,8 +16,11 @@ import OrganizationAdd from './Organizations/add';
 import MemberAdd from './Members/add';
 import GetInviteUsers from './Users';
 import Payment from './Payment';
+
 import Admin from './Admin';
+import AdminSearch from './Admin/search';
 import AdminFederation from './Admin/federations';
+import AdminDetail from './Admin/detail';
 import AdminCreate from './Admin/create';
 import AdminSetting from './Admin/setting';
 import AdminReset from './Admin/reset';
@@ -48,7 +51,9 @@ class Main extends Component {
       <Router history={history}>
         <Switch>
           <Route exact path="/admin/home" name="Admin" component={Admin} />
+          <Route exact path="/admin/search" name="Admin" component={AdminSearch} />
           <Route exact path="/admin/federations" name="AdminFederation" component={AdminFederation} />
+          <Route exact path="/admin/detail" name="AdminDetail" component={AdminDetail} />
           <Route exact path="/admin/create" name="AdminCreate" component={AdminCreate} />
           <Route exact path="/admin/setting" name="AdminSetting" component={AdminSetting} />
           <Route exact path="/admin/reset" name="AdminReset" component={AdminReset} />

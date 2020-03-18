@@ -112,6 +112,10 @@ body {
             padding: 0;
           }
 
+          .line-chart {
+            cursor: pointer;
+          }
+
           .row {
             >div {
               &:first-child {
@@ -123,6 +127,15 @@ body {
 
         table {
           td {
+            a.detail-link {
+              cursor: pointer;
+              &.text-underline,
+              
+              &:hover {
+                color: #1a0dab;
+                text-decoration: underline;
+              }
+            }
             .success-div {
               background-color: #c6efce;
               border: 1px solid $success;
@@ -155,6 +168,16 @@ body {
 
     >.content {
       height: calc(100vh - 105px);
+
+      .row {
+        .form-group {
+          .club-list {
+            input {
+              height: 48px;
+            }
+          }
+        }
+      }
     }
   }
 }

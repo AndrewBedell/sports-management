@@ -8,6 +8,7 @@ import {
 import { 
   Row, Col, Progress
 } from 'reactstrap';
+import Api from '../../apis/app';
 import { Table, Card } from 'semantic-ui-react';
 import Chart from 'react-apexcharts';
 
@@ -23,109 +24,157 @@ class Admin extends Component {
     if (user.user.is_super == 0) this.props.history.push('/');
 
     this.state = {
+      nfs: [],
       pieChart: {},
-      lineChart: []
+      lineChart: [],
+      confirmed: [],
+      notpayed: [],
+      pending: [],
+      sum: []
     }
   }
 
-  componentDidMount() {
+  async componentDidMount() {
+    const nfs = await Api.get('all-nf');
+    const { response, body } = nfs;
+
+    switch (response.status) {
+      case 200:
+        this.setState({
+          nfs: body.nfs
+        });
+        break;
+      default:
+        break;
+    }
+
+    const colorList = ['#4661EE', '#66DA26', '#E91E63', '#FF9800', '#546E7A',  
+                       '#EC5657', '#1BCDD1', '#8FAABB', '#B08BEB', '#FAA586'];
+
+    const pieSeries = [];
+    const pieLabels = [];
+    const pieColors = [];
+
+    const lineSeries = [];
+    const lineLabels = [];
+    const lineCharts = [];
+
+    const confirmed = [];
+    const notpayed = [];
+    const pending = [];
+
+    const sum = [];
+
+    for (let i = 0; i < this.state.nfs.length; i++) {
+      pieSeries.push(Math.floor((Math.random() * 100) + 1));
+      pieLabels.push(this.state.nfs[i].name_s);
+      pieColors.push(colorList[i]);
+
+      let lineData = [];
+      for (let j = 0; j < 9; j++) {
+        lineData.push(Math.floor((Math.random() * 50) + 50));
+      }
+
+      lineSeries.push(lineData);
+      lineLabels.push(this.state.nfs[i].name_o);
+
+      let chart = {
+        series: [{
+          name: "Judokas",
+          data: lineSeries[i]
+        }],
+        options: {
+          chart: {
+            zoom: {
+              enabled: false
+            }
+          },
+          colors: [colorList[i]],
+          dataLabels: {
+            enabled: false
+          },
+          stroke: {
+            curve: 'straight'
+          },
+          title: {
+            text: lineLabels[i],
+            align: 'center'
+          },
+          grid: {
+            row: {
+              colors: ['#f3f3f3', 'transparent'],
+              opacity: 0.5
+            },
+          },
+          xaxis: {
+            categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'],
+          }
+        }
+      }
+
+      lineCharts.push(chart);
+
+      let confirm = Math.floor((Math.random() * 100) + 200);
+      confirmed.push(confirm);
+
+      let notpay = Math.floor((Math.random() * 100) + 50);
+      notpayed.push(notpay);
+
+      let pend = Math.floor((Math.random() * 50) + 50);
+      pending.push(pend);
+
+      sum.push(confirm + notpay + pend);
+    }
+
     this.setState({
       pieChart: {
-        series: [44, 55],
+        series: pieSeries,
         chartOptions: {
-          labels: ["CHN", "KAZ"],
+          labels: pieLabels,
           dataLabels: {
             enabled: true
           },
           responsive: [{
             breakpoint: 480,
             options: {
-                chart: {
-                    width: 200
-                },
-                legend: {
-                    show: false
-                }
+              chart: {
+                  width: 200
+              },
+              legend: {
+                  show: false
+              }
             }
           }],
+          fill: {
+            colors: pieColors,
+            type: 'gradient',
+          },
           legend: {
             position: 'right',
+            markers: {
+              fillColors: pieColors
+            },
             offsetY: 0
           }
         }
       },
-      lineChart: [
-        {
-          series: [{
-            name: "Judokas",
-            data: [10, 41, 35, 51, 49, 62, 69, 91, 48]
-          }],
-          options: {
-            chart: {
-              zoom: {
-                enabled: false
-              }
-            },
-            dataLabels: {
-              enabled: false
-            },
-            stroke: {
-              curve: 'straight'
-            },
-            title: {
-              text: 'China Federation',
-              align: 'center'
-            },
-            grid: {
-              row: {
-                colors: ['#f3f3f3', 'transparent'],
-                opacity: 0.5
-              },
-            },
-            xaxis: {
-              categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'],
-            }
-          }
-        },
-        {
-          series: [{
-            name: "Judokas",
-            data: [51,  91, 48, 49, 62, 69, 10, 41, 35]
-          }],
-          options: {
-            chart: {
-              zoom: {
-                enabled: false
-              }
-            },
-            colors: ['#00e396'],
-            dataLabels: {
-              enabled: false
-            },
-            stroke: {
-              curve: 'straight'
-            },
-            title: {
-              text: 'Kazakhstan Federation',
-              align: 'center'
-            },
-            grid: {
-              row: {
-                colors: ['#f3f3f3', 'transparent'],
-                opacity: 0.5
-              },
-            },
-            xaxis: {
-              categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'],
-            }
-          }
-        }
-      ]
+      lineChart: lineCharts,
+      confirmed,
+      notpayed,
+      pending,
+      sum
     });
   }
 
+  handleSelectItem(id) {
+    this.props.history.push('/admin/search', id);
+  }
+
   render() {
-    const { pieChart, lineChart } = this.state;
+    const { 
+      pieChart, lineChart, nfs,
+      confirmed, notpayed, pending, sum
+    } = this.state;
 
     let d = new Date();
     let month = new Array();
@@ -198,7 +247,7 @@ class Admin extends Component {
                   }
                 </Col>
                 <Col sm="12" md="6" lg="9">
-                  <Row>
+                  <Row className="line-chart">
                     <Col md="12" lg="6">
                       {
                         lineChart && lineChart[0] && lineChart[0].series && (
@@ -206,6 +255,7 @@ class Admin extends Component {
                             options={lineChart[0].options}
                             series={lineChart[0].series}
                             type="line"
+                            onClick={() => this.props.history.push('/admin/detail')}
                           />
                         )
                       }
@@ -217,6 +267,7 @@ class Admin extends Component {
                             options={lineChart[1].options}
                             series={lineChart[1].series}
                             type="line"
+                            onClick={() => this.props.history.push('/admin/detail')}
                           />
                         )
                       }
@@ -253,48 +304,46 @@ class Admin extends Component {
                     </Table.Row>
                   </Table.Header>
                   <Table.Body>
-                    <Table.Row>
-                      <Table.Cell>1. China Federation</Table.Cell>
-                      <Table.Cell width="1" className="text-center">284 ( 25% )</Table.Cell>
-                      <Table.Cell width="3" className="bar">
-                        <div className="success-div">
-                          <Progress bar color="success" value="25" />
-                        </div>
-                      </Table.Cell>
-                      <Table.Cell width="1" className="text-center">612 ( 62% )</Table.Cell>
-                      <Table.Cell width="3" className="bar">
-                        <div className="danger-div">
-                          <Progress bar color="danger" value="62" />
-                        </div>
-                      </Table.Cell>
-                      <Table.Cell width="1" className="text-center">144 ( 13% )</Table.Cell>
-                      <Table.Cell width="3" className="bar">
-                        <div className="warning-div">
-                          <Progress bar color="warning" value="13" />
-                        </div>
-                      </Table.Cell>
-                    </Table.Row>
-                    <Table.Row>
-                      <Table.Cell>2. Kazakhstan Federation</Table.Cell>
-                      <Table.Cell className="text-center">88 ( 44% )</Table.Cell>
-                      <Table.Cell width="3" className="bar">
-                        <div className="success-div">
-                          <Progress bar color="success" value="44" />
-                        </div>
-                      </Table.Cell>
-                      <Table.Cell className="text-center">54 ( 27% )</Table.Cell>
-                      <Table.Cell width="3" className="bar">
-                        <div className="danger-div">
-                          <Progress bar color="danger" value="27" />
-                        </div>
-                      </Table.Cell>
-                      <Table.Cell className="text-center">58 ( 29% )</Table.Cell>
-                      <Table.Cell width="3" className="bar">
-                        <div className="warning-div">
-                          <Progress bar color="warning" value="29" />
-                        </div>
-                      </Table.Cell>
-                    </Table.Row>
+                    {
+                      nfs && nfs.length > 0 && (
+                        nfs.map((item, index) => (
+                          <Table.Row key={index}>
+                            <Table.Cell>
+                              <a
+                                className="detail-link" 
+                                onClick={this.handleSelectItem.bind(this, item.id)}
+                              >
+                                {index + 1}. {item.name_o}
+                              </a>
+                            </Table.Cell>
+                            <Table.Cell width="1" className="text-center">
+                              {confirmed[index]} ( {Math.floor(confirmed[index] / sum[index] * 100)}% )
+                            </Table.Cell>
+                            <Table.Cell width="3" className="bar">
+                              <div className="success-div">
+                                <Progress bar color="success" value={Math.floor(confirmed[index] / sum[index] * 100)} />
+                              </div>
+                            </Table.Cell>
+                            <Table.Cell width="1" className="text-center">
+                              {notpayed[index]} ( {Math.floor(notpayed[index] / sum[index] * 100)}% )
+                            </Table.Cell>
+                            <Table.Cell width="3" className="bar">
+                              <div className="danger-div">
+                                <Progress bar color="danger" value={Math.floor(notpayed[index] / sum[index] * 100)} />
+                              </div>
+                            </Table.Cell>
+                            <Table.Cell width="1" className="text-center">
+                              {pending[index]} ( {Math.floor(pending[index] / sum[index] * 100)}% )
+                            </Table.Cell>
+                            <Table.Cell width="3" className="bar">
+                              <div className="warning-div">
+                                <Progress bar color="warning" value={Math.floor(pending[index] / sum[index] * 100)} />
+                              </div>
+                            </Table.Cell>
+                          </Table.Row>
+                        ))
+                      )
+                    }
                   </Table.Body>
                 </Table>
               </Row>

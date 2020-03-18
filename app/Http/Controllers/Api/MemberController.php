@@ -195,31 +195,21 @@ class MemberController extends Controller
                         ->first();
 
         if (isset($member)) {
-            if ($this->checkPermission($member->organization_id)) {
-                $role = DB::table('roles')->find($member->role_id);
-                
-                if ($role->is_player) {
-                    $member = Member::where('members.id', $id)
-                            ->leftJoin('organizations', 'organizations.id', '=', 'members.organization_id')
-                            ->leftJoin('roles', 'roles.id', '=', 'members.role_id')
-                            ->leftJoin('players', 'players.member_id', '=', 'members.id')
-                            ->leftJoin('weights', 'weights.id', '=', 'players.weight_id')
-                            ->select('members.*', 'organizations.name_o', 'roles.name AS role_name', 'roles.is_player',
-                                    'weights.id AS weight_id', 'weights.weight', 'players.dan', 'players.skill', 'players.expired_date',
-                                    DB::raw("null AS uid, null AS status"))
-                            ->first();
-                }
-
-                return response()->json($member);
-            } else {
-                return response()->json(
-                    [
-                        'status' => 'error',
-                        'message' => 'Access permission denied.'
-                    ],
-                    406
-                );
+            $role = DB::table('roles')->find($member->role_id);
+            
+            if ($role->is_player) {
+                $member = Member::where('members.id', $id)
+                        ->leftJoin('organizations', 'organizations.id', '=', 'members.organization_id')
+                        ->leftJoin('roles', 'roles.id', '=', 'members.role_id')
+                        ->leftJoin('players', 'players.member_id', '=', 'members.id')
+                        ->leftJoin('weights', 'weights.id', '=', 'players.weight_id')
+                        ->select('members.*', 'organizations.name_o', 'roles.name AS role_name', 'roles.is_player',
+                                'weights.id AS weight_id', 'weights.weight', 'players.dan', 'players.skill', 'players.expired_date',
+                                DB::raw("null AS uid, null AS status"))
+                        ->first();
             }
+
+            return response()->json($member);
         } else {
             return response()->json(
                 [
@@ -452,41 +442,31 @@ class MemberController extends Controller
     {
         $member = Member::find($id);
 
-        if ($this->checkPermission($member->organization_id)) {
-            $user = JWTAuth::parseToken()->authenticate();
+        $user = JWTAuth::parseToken()->authenticate();
 
-            if (isset($user)) {
-                $member = Member::find($id);
+        if (isset($user)) {
+            $member = Member::find($id);
 
-                if (isset($member)) {
-                    $role = DB::table('roles')->where('id', $member->role_id)->first();
+            if (isset($member)) {
+                $role = DB::table('roles')->where('id', $member->role_id)->first();
 
-                    if ($role->is_player) {
-                        Player::where('member_id', $id)->delete();
-                    } else {
-                        User::where('member_id', $id)->delete();
-                    }
-
-                    Member::where('id', $id)->delete();
-
-                    return response()->json([
-                        'status' => 'success',
-                        'message' => 'Deleted Successfully'
-                    ], 200);
+                if ($role->is_player) {
+                    Player::where('member_id', $id)->delete();
                 } else {
-                    return response()->json(
-                        [
-                            'status' => 'error',
-                            'message' => 'Invalid Member ID'
-                        ],
-                        406
-                    );
+                    User::where('member_id', $id)->delete();
                 }
+
+                Member::where('id', $id)->delete();
+
+                return response()->json([
+                    'status' => 'success',
+                    'message' => 'Deleted Successfully'
+                ], 200);
             } else {
                 return response()->json(
                     [
                         'status' => 'error',
-                        'message' => 'Invalid credentials.'
+                        'message' => 'Invalid Member ID'
                     ],
                     406
                 );
@@ -495,7 +475,7 @@ class MemberController extends Controller
             return response()->json(
                 [
                     'status' => 'error',
-                    'message' => 'Access permission denied.'
+                    'message' => 'Invalid credentials.'
                 ],
                 406
             );
@@ -557,18 +537,6 @@ class MemberController extends Controller
         }
 
         return $orgIDs;
-    }
-
-    /**
-     * Check Permission to get the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function checkPermission($id)
-    {
-        $orgIDs = $this->orgIDList();
-
-        return in_array($id, $orgIDs);
     }
 
     /**

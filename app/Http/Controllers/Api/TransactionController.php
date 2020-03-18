@@ -21,10 +21,8 @@ class TransactionController extends Controller
       $nfs = array();
       $clubs = array();
 
-      $data = array();
       $detail = array();
       $total = array();
-      $subtotal = array();
 
       $nfs = Organization::where('parent_id', 0)->get();
 
@@ -34,10 +32,14 @@ class TransactionController extends Controller
         $orgs = Organization::where('parent_id', $nfs[$i]->id)->get();
 
         foreach ($orgs as $org) {
-          $club = Organization::where('parent_id', $org->id)->get();
+          if ($org->is_club == 1) {
+            array_push($clubs[$i], $org->id);
+          } else {
+            $club = Organization::where('parent_id', $org->id)->get();
 
-          foreach ($club as $c) {
-            array_push($clubs[$i], $c->id);
+            foreach ($club as $c) {
+              array_push($clubs[$i], $c->id);
+            }
           }
         }
 
@@ -49,18 +51,6 @@ class TransactionController extends Controller
                      ->select('transactions.*', 'org2.name_o AS Reg', 'org1.name_o AS Club',
                               'members.name', 'members.surname')
                      ->orderBy('transactions.created_at', 'desc')
-                     ->get();
-
-        $data[$i] = Transaction::whereIn('club_id', $clubs[$i])
-                     ->where('created_at', 'like', date('Y') . '%')
-                     ->select('club_id', DB::raw('DATE_FORMAT(created_at, "%Y-%m") new_date'), DB::raw('sum(amount) as amount'))
-                     ->groupBy('club_id', 'new_date')
-                     ->get();
-
-        $subtotal[$i] = Transaction::whereIn('club_id', $clubs[$i])
-                     ->where('created_at', 'like', date('Y') . '%')
-                     ->select(DB::raw('DATE_FORMAT(created_at, "%Y-%m") new_date'), DB::raw('sum(amount) as amount'))
-                     ->groupBy('new_date')
                      ->get();
       }
 
@@ -80,9 +70,7 @@ class TransactionController extends Controller
       return response()->json([
         'status' => 'success',
         'total' => $total,
-        'subtotal' => $subtotal,
         'detail' => $detail,
-        'data' => $data,
         'nfs' => $nfs
       ], 200);
     }

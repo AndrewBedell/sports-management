@@ -138,69 +138,59 @@ class OrganizationController extends Controller
      */
     public function show($id)
     {
-        if ($this->checkPermission($id)) {
-            $org = Organization::find($id);
+        $org = Organization::find($id);
 
-            $parent = Organization::find($org['parent_id']);
+        $parent = Organization::find($org['parent_id']);
 
-            $org['parent'] = $parent['name_o'];
+        $org['parent'] = $parent['name_o'];
 
-            $org['table'] = array();
+        $org['table'] = array();
 
-            if ($org['is_club']) {
-                $org['type'] = 'club';
+        if ($org['is_club']) {
+            $org['type'] = 'club';
 
-                $players = Member::where('organization_id', $id)
-                            ->leftJoin('roles', 'roles.id', '=', 'members.role_id')
-                            ->leftJoin('players', 'players.member_id', '=', 'members.id')
-                            ->leftJoin('weights', 'weights.id', '=', 'players.weight_id')
-                            ->select('members.*', 'roles.name AS role_name', 'weights.weight', 'players.dan')
-                            ->get();
+            $players = Member::where('organization_id', $id)
+                        ->leftJoin('roles', 'roles.id', '=', 'members.role_id')
+                        ->leftJoin('players', 'players.member_id', '=', 'members.id')
+                        ->leftJoin('weights', 'weights.id', '=', 'players.weight_id')
+                        ->select('members.*', 'roles.name AS role_name', 'weights.weight', 'players.dan')
+                        ->get();
 
-                $org['table'] = $players;
-            } else {
-                $org['type'] = 'org';
-
-                $clubs = Organization::where('parent_id', $id)->get();
-
-                $org['table'] = $clubs;
-
-                $org['president'] = '---';
-
-                $president = Member::where('role_id', '!=',  3)->where('organization_id', $id)->first();
-
-                if ($president && strtolower($president->position) == strtolower('president'))
-                    $org['president'] = $president->name . ' ' . $president->surname;
-
-                $org['clubs'] = sizeof($clubs);
-
-                $mplayers = Member::leftJoin('organizations', 'organizations.id', '=', 'members.organization_id')
-                                ->where('members.role_id', 3)
-                                ->where('members.gender', 1)
-                                ->where('organizations.parent_id', $id)
-                                ->count();
-
-                $fplayers = Member::leftJoin('organizations', 'organizations.id', '=', 'members.organization_id')
-                                ->where('members.role_id', 3)
-                                ->where('members.gender', 0)
-                                ->where('organizations.parent_id', $id)
-                                ->count();
-                
-                $org['players'] = $mplayers + $fplayers;
-                $org['mplayers'] = $mplayers;
-                $org['fplayers'] = $fplayers;
-            }
-
-            return response()->json($org);
+            $org['table'] = $players;
         } else {
-            return response()->json(
-                [
-                    'status' => 'error',
-                    'message' => 'Invalid Organization ID'
-                ],
-                406
-            );
+            $org['type'] = 'org';
+
+            $clubs = Organization::where('parent_id', $id)->get();
+
+            $org['table'] = $clubs;
+
+            $org['president'] = '---';
+
+            $president = Member::where('role_id', '!=',  3)->where('organization_id', $id)->first();
+
+            if ($president && strtolower($president->position) == strtolower('president'))
+                $org['president'] = $president->name . ' ' . $president->surname;
+
+            $org['clubs'] = sizeof($clubs);
+
+            $mplayers = Member::leftJoin('organizations', 'organizations.id', '=', 'members.organization_id')
+                            ->where('members.role_id', 3)
+                            ->where('members.gender', 1)
+                            ->where('organizations.parent_id', $id)
+                            ->count();
+
+            $fplayers = Member::leftJoin('organizations', 'organizations.id', '=', 'members.organization_id')
+                            ->where('members.role_id', 3)
+                            ->where('members.gender', 0)
+                            ->where('organizations.parent_id', $id)
+                            ->count();
+            
+            $org['players'] = $mplayers + $fplayers;
+            $org['mplayers'] = $mplayers;
+            $org['fplayers'] = $fplayers;
         }
+
+        return response()->json($org);
     }
 
     /**
@@ -212,115 +202,105 @@ class OrganizationController extends Controller
      */
     public function update(Request $request, $id)
     {
-        if ($this->checkPermission($id)) {
-            $data = $request->all();
+        $data = $request->all();
 
-            $data['mobile_phone'] = '';
-            $data['zip_code'] = '';
+        $data['mobile_phone'] = '';
+        $data['zip_code'] = '';
 
-            $validator = Validator::make($data, [
-                'register_no' => 'required',
-                'name_o' => 'required|string|max:255',
-                // 'name_s' => 'required|string|max:255',
-                'email' => 'required|string|email|max:255',
-                // 'mobile_phone' => 'required|string|max:255',
-                // 'addressline1' => 'required|string|max:255',
-                // 'state' => 'required|string|max:255',
-                // 'city' => 'required|string|max:255',
-                // 'zip_code' => 'required|string|max:255',
-                // 'level' => 'required|integer',
-                // 'is_club' => 'required|boolean',
-            ]);
+        $validator = Validator::make($data, [
+            'register_no' => 'required',
+            'name_o' => 'required|string|max:255',
+            // 'name_s' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255',
+            // 'mobile_phone' => 'required|string|max:255',
+            // 'addressline1' => 'required|string|max:255',
+            // 'state' => 'required|string|max:255',
+            // 'city' => 'required|string|max:255',
+            // 'zip_code' => 'required|string|max:255',
+            // 'level' => 'required|integer',
+            // 'is_club' => 'required|boolean',
+        ]);
+        
+        if ($validator->fails()) {
+            return response()->json(
+                [
+                    'status' => 'fail',
+                    'data' => $validator->errors(),
+                ],
+                422
+            );
+        } else {
+            $exist1 = Organization::where('email', $data['email'])->where('id', '!=', $id)->withTrashed()->count();
+            $exist2 = Organization::where('register_no', $data['register_no'])->where('id', '!=', $id)->withTrashed()->count();
+
+            $errArr = array();
+            $exist = 0;
+
+            if ($exist1 > 0) {
+                $errArr['email'] = 'Email already exist.';
+                $exist += $exist1;
+            }
+
+            if ($exist2 > 0) {
+                $errArr['register_no'] = 'Register No already exist.';
+                $exist += $exist2;
+            }
             
-            if ($validator->fails()) {
+            if ($exist > 0) {
                 return response()->json(
                     [
                         'status' => 'fail',
-                        'data' => $validator->errors(),
+                        'data' => $errArr
                     ],
                     422
                 );
-            } else {
-                $exist1 = Organization::where('email', $data['email'])->where('id', '!=', $id)->withTrashed()->count();
-                $exist2 = Organization::where('register_no', $data['register_no'])->where('id', '!=', $id)->withTrashed()->count();
+            }
 
-                $errArr = array();
-                $exist = 0;
+            $current = Organization::where('id', $id)->first();
 
-                if ($exist1 > 0) {
-                    $errArr['email'] = 'Email already exist.';
-                    $exist += $exist1;
-                }
+            $base64_image = $request->input('logo');
+            
+            if ($base64_image != '' && preg_match('/^data:image\/(\w+);base64,/', $base64_image)) {
+                $pos  = strpos($base64_image, ';');
+                $type = explode(':', substr($base64_image, 0, $pos))[1];
 
-                if ($exist2 > 0) {
-                    $errArr['register_no'] = 'Register No already exist.';
-                    $exist += $exist2;
-                }
-                
-                if ($exist > 0) {
+                if (substr($type, 0, 5) == 'image') {
+                    $filename = date('Ymd') . '_' . $data['register_no'];
+
+                    $type = str_replace('image/', '.', $type);
+
+                    $image = substr($base64_image, strpos($base64_image, ',') + 1);
+                    $image = base64_decode($image);
+                    
+                    Storage::disk('local')->delete(str_replace('photos/', '', $current->logo));
+                    Storage::disk('local')->put($filename . $type, $image);
+
+                    $data['logo'] = "photos/" . $filename . $type;
+                } else {
                     return response()->json(
                         [
-                            'status' => 'fail',
-                            'data' => $errArr
+                            'status' => 'error',
+                            'message' => 'File type is not image.'
                         ],
-                        422
+                        406
                     );
                 }
-
-                $current = Organization::where('id', $id)->first();
-
-                $base64_image = $request->input('logo');
-                
-                if ($base64_image != '' && preg_match('/^data:image\/(\w+);base64,/', $base64_image)) {
-                    $pos  = strpos($base64_image, ';');
-                    $type = explode(':', substr($base64_image, 0, $pos))[1];
-
-                    if (substr($type, 0, 5) == 'image') {
-                        $filename = date('Ymd') . '_' . $data['register_no'];
-
-                        $type = str_replace('image/', '.', $type);
-
-                        $image = substr($base64_image, strpos($base64_image, ',') + 1);
-                        $image = base64_decode($image);
-                        
-                        Storage::disk('local')->delete(str_replace('photos/', '', $current->logo));
-                        Storage::disk('local')->put($filename . $type, $image);
-
-                        $data['logo'] = "photos/" . $filename . $type;
-                    } else {
-                        return response()->json(
-                            [
-                                'status' => 'error',
-                                'message' => 'File type is not image.'
-                            ],
-                            406
-                        );
-                    }
-                }
-                
-                if (!isset($data['logo']) || is_null($data['logo']))
-                    $data['logo'] = "";
-
-                if (is_null($data['addressline2']))
-                    $data['addressline2'] = "";
-
-                if ($data['is_club'] == 0)
-                    $data['parent_id'] = 1;
-                    
-                Organization::where('id', $id)->update($data);
-
-                return response()->json([
-                    'status' => 'success'
-                ], 200);
             }
-        } else {
-            return response()->json(
-                [
-                    'status' => 'error',
-                    'message' => 'Access Permission Denined.'
-                ],
-                406
-            );
+            
+            if (!isset($data['logo']) || is_null($data['logo']))
+                $data['logo'] = "";
+
+            if (is_null($data['addressline2']))
+                $data['addressline2'] = "";
+
+            if ($data['is_club'] == 0)
+                $data['parent_id'] = 1;
+                
+            Organization::where('id', $id)->update($data);
+
+            return response()->json([
+                'status' => 'success'
+            ], 200);
         }
     }
 
@@ -332,33 +312,23 @@ class OrganizationController extends Controller
      */
     public function destroy($id)
     {
-        if ($this->checkPermission($id)) {
-            $user = JWTAuth::parseToken()->authenticate();
+        $user = JWTAuth::parseToken()->authenticate();
 
-            if (isset($user)) {
-                $child_org = Organization::where('parent_id', $id)->get();
+        if (isset($user)) {
+            $child_org = Organization::where('parent_id', $id)->get();
 
-                if (sizeof($child_org) == 0) {
-                    Organization::where('id', $id)->delete();
+            if (sizeof($child_org) == 0) {
+                Organization::where('id', $id)->delete();
 
-                    return response()->json([
-                        'status' => 'success',
-                        'message' => 'Deleted Successfully'
-                    ], 200);
-                } else {
-                    return response()->json(
-                        [
-                            'status' => 'error',
-                            'message' => 'Child Organization exist.'
-                        ],
-                        406
-                    );
-                }
+                return response()->json([
+                    'status' => 'success',
+                    'message' => 'Deleted Successfully'
+                ], 200);
             } else {
                 return response()->json(
                     [
                         'status' => 'error',
-                        'message' => 'Invalid credentials.'
+                        'message' => 'Child Organization exist.'
                     ],
                     406
                 );
@@ -367,7 +337,7 @@ class OrganizationController extends Controller
             return response()->json(
                 [
                     'status' => 'error',
-                    'message' => 'Access permission denied.'
+                    'message' => 'Invalid credentials.'
                 ],
                 406
             );
@@ -432,34 +402,6 @@ class OrganizationController extends Controller
         }
 
         return $orgs;
-    }
-
-    /**
-     * Check Permission to get the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function checkPermission($id)
-    {
-        $user = JWTAuth::parseToken()->authenticate();
-
-        $me = Member::find($user->member_id);
-
-        $parent_id = $me->organization_id;
-
-        $own = Organization::find($parent_id);
-        $children = $this->findChildren($parent_id, '', 1, 0);
-
-        $orgs = array($own);
-        $orgs = array_merge($orgs, $children);
-
-        $orgIDs = array();
-
-        foreach ($orgs as $org) {
-            array_push($orgIDs, $org->id);
-        }
-
-        return in_array($id, $orgIDs);
     }
 
     /**
@@ -553,29 +495,19 @@ class OrganizationController extends Controller
      */
     public function child($id)
     {
-        if ($this->checkPermission($id)) {
-            $orgs = array();
+        $orgs = array();
 
-            $childs = Organization::where('parent_id', $id)->get();
+        $childs = Organization::where('parent_id', $id)->get();
 
-            foreach ($childs as $child) {
-                $hasChild = Organization::where('parent_id', $child->id)->count();
+        foreach ($childs as $child) {
+            $hasChild = Organization::where('parent_id', $child->id)->count();
 
-                $child->children = $hasChild;
+            $child->children = $hasChild;
 
-                array_push($orgs, $child);
-            }
-
-            return response()->json($orgs);
-        } else {
-            return response()->json(
-                [
-                    'status' => 'error',
-                    'message' => 'Access permission denied.'
-                ],
-                406
-            );
+            array_push($orgs, $child);
         }
+
+        return $orgs;
     }
 
     /**

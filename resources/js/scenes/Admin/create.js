@@ -387,7 +387,7 @@ class CreateNational extends Component {
                         <Button
                           type="button"
                           color="secondary"
-                          onClick={() => this.props.history.push('/admin')}
+                          onClick={() => this.props.history.push('/admin/home')}
                         >
                           Cancel
                         </Button>
