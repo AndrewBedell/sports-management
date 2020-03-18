@@ -9,7 +9,7 @@ import {
 } from 'react-router-dom';
 import { 
   Container, Row, Col,
-  FormGroup, Button
+  FormGroup, FormFeedback, Button
 } from 'reactstrap';
 import { Input } from 'semantic-ui-react';
 import Select from 'react-select';
@@ -30,7 +30,7 @@ class Search extends Component {
     if (referee_type_options.length == 3) referee_type_options.splice(0, 0, { label: 'All Referee', value: 'all' });
 
     this.state = {
-      nf_id: props.history.location.state,
+      nf_id: '',
       nf: [],
       orgs: [],
       org_list: [],
@@ -47,7 +47,10 @@ class Search extends Component {
       search_gender: search_genders[0],
       search_weight: '',
       search_dan: '',
-      search_data: null
+      search_data: null,
+      errors: {
+        required: 'This field is required!'
+      }
     }
 
     this.handleSearchFilter = this.handleSearchFilter.bind(this);
@@ -56,13 +59,16 @@ class Search extends Component {
   }
 
   async componentDidMount() {
-    const nf = await Api.get(`organization/${this.state.nf_id}`);
-    const { response, body } = nf;
+    this.setState({
+      nf_id: JSON.parse(localStorage.getItem('nf_id'))
+    });
 
-    switch (response.status) {
+    const nf = await Api.get(`organization/${JSON.parse(localStorage.getItem('nf_id'))}`);
+
+    switch (nf.response.status) {
       case 200:
         this.setState({
-          nf: body
+          nf: nf.body
         });
         break;
       default:
@@ -100,7 +106,7 @@ class Search extends Component {
               } else {
                 const club_list2 = await Api.get(`organization-child/${club_list1.body[i].id}`);
                 
-                switch (club_list1.response.status) {
+                switch (club_list2.response.status) {
                   case 200:
                     for (let j = 0; j < club_list2.body.length; j++) {
                       clubArr.push({ id: club_list2.body[i].parent_id, value: club_list2.body[i].name_o });
@@ -309,6 +315,7 @@ class Search extends Component {
       member_type,
       referee_type,
       search_data,
+      errors
     } = this.state;
 
     return (

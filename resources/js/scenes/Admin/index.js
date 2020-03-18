@@ -167,7 +167,8 @@ class Admin extends Component {
   }
 
   handleSelectItem(id) {
-    this.props.history.push('/admin/search', id);
+    localStorage.setItem('nf_id', id)
+    this.props.history.push('/admin/search');
   }
 
   render() {
