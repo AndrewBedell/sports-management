@@ -240,6 +240,7 @@ class Organizations extends Component {
               <DataTable
                 type={search_type_options[0]}
                 items={orgs}
+                display={true}
                 onEdit={this.handleEdit.bind(this)}
                 onDelete={this.handleDelete.bind(this)}
                 onSelect={this.handleSelectItem.bind(this)}

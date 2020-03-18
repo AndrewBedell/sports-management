@@ -271,6 +271,7 @@ class Members extends Component {
               <DataTable
                 type={search_type_options[2]}
                 items={members}
+                display={true}
                 onEdit={this.handleEdit.bind(this)}
                 onDelete={this.handleDelete.bind(this)}
                 onSelect={this.handleSelectItem.bind(this)}

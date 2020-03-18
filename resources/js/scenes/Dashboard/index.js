@@ -821,6 +821,7 @@ class Dashboard extends Component {
                     stype={search_type}
                     mtype={member_type}
                     items={search_data}
+                    display={true}
                     onEdit={this.handleEdit.bind(this)}
                     onDelete={this.handleDelete.bind(this)}
                     onSelect={this.handleSelectItem.bind(this)}
