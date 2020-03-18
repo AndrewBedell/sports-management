@@ -473,11 +473,44 @@ class OrganizationController extends Controller
 
         $me = Member::find($user->member_id);
 
-        $clubs = Organization::where('is_club', 1)
-                        ->where('country', $me->country)
+        $myOrg = Organization::find($me->organization_id);
+
+        $clubs = array();
+
+        if ($myOrg->is_club == 1) {
+            $clubs = Organization::where('id', $me->organization_id)
+                        ->select('id', 'parent_id', 'name_o')
+                        ->get();
+        } else {
+            $ids = array();
+
+            if ($myOrg->parent_id == 0) {
+                $orgs = Organization::where('parent_id', $myOrg->id)->get();
+
+                foreach ($orgs as $org) {
+                    if ($org->is_club == 1) {
+                        array_push($ids, $org->id);
+                    } else {
+                        $children = Organization::where('parent_id', $org->id)->get();
+
+                        foreach($children as $child) {
+                            array_push($ids, $child->id);
+                        }
+                    }
+                }
+            } else {
+                $orgs = Organization::where('parent_id', $myOrg->id)->get();
+
+                foreach ($orgs as $org) {
+                    array_push($ids, $org->id);
+                }
+            }
+
+            $clubs = Organization::whereIn('id', $ids)
                         ->select('id', 'parent_id', 'name_o')
                         ->orderBy('name_o')
                         ->get();
+        }
 
         return response()->json($clubs);
     }
@@ -493,17 +526,21 @@ class OrganizationController extends Controller
 
         $me = Member::find($user->member_id);
 
+        $result = array();
+
         $nf = Organization::where('parent_id', 0)->where('id', $me->organization_id)->get();
 
-        $children = Organization::where('parent_id', '!=', 0)
+        if (sizeof($nf) > 0) {
+            $children = Organization::where('parent_id', '!=', 0)
                         ->where('parent_id', $nf[0]->id)
                         ->where('is_club', 0)
                         ->orderBy('name_o')
                         ->get();
 
-        $merged = $nf->merge($children);
+            $merged = $nf->merge($children);
 
-        $result = $merged->all();
+            $result = $merged->all();
+        }
 
         return response()->json($result);
     }
@@ -604,8 +641,7 @@ class OrganizationController extends Controller
 
         $orgArr = array();
 
-        if ($me->parent_id != 0)
-            array_push($orgArr, $me->organization_id);
+        array_push($orgArr, $me->organization_id);
         
         if (!$myOrg->is_club) {
             $myOrgs = Organization::where('parent_id', $me->organization_id)->get();
@@ -639,6 +675,7 @@ class OrganizationController extends Controller
             case 'org':
                 $result = Organization::whereIn('id', $orgArr)
                                 ->where('name_o', 'like', '%' . $name . '%')
+                                ->where('parent_id', '!=', 0)
                                 ->where('is_club', 0)
                                 ->get();
                 break;
@@ -660,18 +697,15 @@ class OrganizationController extends Controller
                     $result = $result->leftJoin('players', 'players.member_id', '=', 'members.id')
                                     ->leftJoin('weights', 'weights.id', '=', 'players.weight_id');
 
-                $result = $result->where('members.id', '!=', 1)
+                $result = $result->where('members.id', '!=', $me->id)
                                 ->where('roles.description', $mtype);
 
                 if ($org == '') {
-                    $result = $result->whereIn('organizations.id', $orgArr);
+                    $result = $result->whereIn('organizations.id', $orgArr)
+                                    ->where('organizations.name_o', 'like', '%' . $name . '%');
                 } else {
-                    $clubs = Organization::where('parent_id', $org)
-                                ->where('name_o', 'like', '%' . $name . '%')
-                                ->select('id')
-                                ->get();
-                    
-                    $result = $result->whereIn('members.organization_id', $clubs);
+                    $result = $result->where('members.organization_id', $org)
+                                    ->where('organizations.name_o', 'like', '%' . $name . '%');
                 }
 
                 if ($mtype == 'judoka') {
@@ -684,7 +718,7 @@ class OrganizationController extends Controller
                     if ($dan != '')
                         $result = $result->where('players.dan', $dan);
 
-                    $result = $result->select('members.*', 'organizations.name_o', 'weights.weight', 
+                    $result = $result->select('members.*', 'organizations.name_o', 'organizations.level', 'weights.weight', 
                                             'players.dan', 'players.skill', 'players.expired_date')
                                 ->get();
                 } else {
@@ -694,7 +728,8 @@ class OrganizationController extends Controller
                     if ($mtype == 'referee' && $rtype != '' && $rtype != 'all')
                         $result = $result->where('members.position', $rtype);
                         
-                    $result = $result->select('members.*', 'organizations.name_o', 'roles.name AS role_name')->get();
+                    $result = $result->select('members.*', 'organizations.name_o', 'organizations.level', 'roles.name AS role_name')
+                                    ->get();
                 }
                 
                 break;

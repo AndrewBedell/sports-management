@@ -197,7 +197,7 @@ class MemberController extends Controller
         if (isset($member)) {
             if ($this->checkPermission($member->organization_id)) {
                 $role = DB::table('roles')->find($member->role_id);
-
+                
                 if ($role->is_player) {
                     $member = Member::where('members.id', $id)
                             ->leftJoin('organizations', 'organizations.id', '=', 'members.organization_id')
@@ -209,11 +209,6 @@ class MemberController extends Controller
                                     DB::raw("null AS uid, null AS status"))
                             ->first();
                 }
-
-                $org = Organization::find($member->organization_id);
-                $region = Organization::find($org->parent_id);
-
-                $member['region'] = $region->name_o;
 
                 return response()->json($member);
             } else {

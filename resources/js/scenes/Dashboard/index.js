@@ -637,7 +637,7 @@ class Dashboard extends Component {
                         name="search_name"
                         type="text"
                         value={search_name}
-                        placeholder="Regional Federation Name"
+                        placeholder="Organization Name"
                         onChange={event => this.handleSearchFilter('search_name', event.target.value)}
                       />
                       <datalist id="orgs">
@@ -654,7 +654,7 @@ class Dashboard extends Component {
                     <Select
                       name="search_org"
                       classNamePrefix="react-select-lg"
-                      placeholder="Regional Federation"
+                      placeholder="Org Search"
                       isClearable
                       // isMulti
                       value={search_org}

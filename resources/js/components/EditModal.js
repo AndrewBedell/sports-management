@@ -449,7 +449,10 @@ class EditModal extends React.Component {
                             name="organization_id"
                             classNamePrefix={!!errors.organization_id && touched.organization_id ? 'invalid react-select-lg' : 'react-select-lg'}
                             indicatorSeparator={null}
-                            options={values.role_id && values.role_id.is_player === 1 ? org_list.filter(org => org.is_club === 1) : org_list}
+                            options={
+                              values.role_id && values.role_id.is_player === 1 ? 
+                                org_list.filter(org => org.is_club === 1) : org_list
+                            }
                             getOptionValue={option => option.id}
                             getOptionLabel={option => option.name_o}
                             value={values.organization_id}

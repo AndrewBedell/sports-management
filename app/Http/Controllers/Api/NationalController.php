@@ -100,7 +100,7 @@ class NationalController extends Controller
                 'state' => $data['state'],
                 'city' => $data['city'],
                 'zip_code' => $data['zip_code'],
-                'level' => 0,
+                'level' => 1,
                 'is_club' => 0
             ));
 
