@@ -235,9 +235,13 @@ class DataTable extends Component {
                 </Fragment>
               )
             }
-            <Table.HeaderCell className="text-center" width="2">
-              Edit / Delete
-            </Table.HeaderCell>
+            {
+              this.props.display && this.props.display == true && (
+                <Table.HeaderCell className="text-center" width="2">
+                  Edit / Delete
+                </Table.HeaderCell>
+              )
+            }
           </Table.Row>
         </Table.Header>
         <Table.Body>
@@ -351,29 +355,33 @@ class DataTable extends Component {
                       </Fragment>
                     )
                   }
-                  <Table.Cell>
-                    <div className="actions d-flex w-100 justify-content-center align-items-center">
-                      <Button
-                        color="success"
-                        type="button"
-                        onClick={() => onEdit(item.id, index)}
-                        style={{ marginRight: '20px' }}
-                      >
-                        <i className="fa fa-pencil-alt fa-lg" />
-                      </Button>
-                      {
-                        (item.parent_id && item.parent_id !== 0) || (item.name && item.id !== user.id) ? (
+                  {
+                    this.props.display && this.props.display == true && (
+                      <Table.Cell>
+                        <div className="actions d-flex w-100 justify-content-center align-items-center">
                           <Button
-                            color="danger"
+                            color="success"
                             type="button"
-                            onClick={() => onDelete(item.id)}
+                            onClick={() => onEdit(item.id, index)}
+                            style={{ marginRight: '20px' }}
                           >
-                            <i className="fa fa-trash-alt fa-lg" />
+                            <i className="fa fa-pencil-alt fa-lg" />
                           </Button>
-                        ) : <div className="px-3" />
-                      }
-                    </div>
-                  </Table.Cell>
+                          {
+                            (item.parent_id && item.parent_id !== 0) || (item.name && item.id !== user.id) ? (
+                              <Button
+                                color="danger"
+                                type="button"
+                                onClick={() => onDelete(item.id)}
+                              >
+                                <i className="fa fa-trash-alt fa-lg" />
+                              </Button>
+                            ) : <div className="px-3" />
+                          }
+                        </div>
+                      </Table.Cell>
+                    )
+                  }
                 </Table.Row>
               ))
             )

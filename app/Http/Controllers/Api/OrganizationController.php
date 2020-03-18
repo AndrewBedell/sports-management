@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Organization;
 use App\Member;
 use App\Player;
+use App\User;
 
 use JWTAuth;
 use Illuminate\Http\Request;
@@ -567,9 +568,26 @@ class OrganizationController extends Controller
     public function search(Request $request)
     {
         $user = JWTAuth::parseToken()->authenticate();
-        $me = Member::find($user->member_id);
+        
+        $me = array();
+        $myOrg = array();
 
-        $myOrg = Organization::find($me->organization_id);
+        if ($user->member_id == 0) {
+            $item = $request->input('item');
+
+            $myOrg = Organization::find($item);
+
+            $manager = User::leftJoin('members', 'members.id', '=', 'users.member_id')
+                        ->where('users.is_nf', 1)
+                        ->where('members.organization_id', $item)
+                        ->select('users.member_id')
+                        ->get();
+
+            $me = Member::find($manager[0]->member_id);
+        } else {
+            $me = Member::find($user->member_id);
+            $myOrg = Organization::find($me->organization_id);
+        }
 
         $orgArr = array();
 
