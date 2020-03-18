@@ -535,6 +535,15 @@ class Search extends Component {
                 </Row>
               </Container>
               {
+                search_data && search_data.length == 0 && (
+                  <div className="fixed-content">
+                    <h3 className="text-muted">
+                      No results!
+                    </h3>
+                  </div>
+                )
+              }
+              {
                 search_data && search_data.length > 0 && (
                   <Container fluid>
                     <div className="table-responsive">
