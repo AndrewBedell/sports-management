@@ -107,7 +107,8 @@ class Dashboard extends Component {
           body[0].name_o = "National Federation";
 
         for (let i = 0; i < body.length; i++) {
-          orgArr.push(body[i].name_o);
+          if (body[i].parent_id != 0)
+            orgArr.push(body[i].name_o);
         }
         
         const orgList = orgArr.map((org, Index) => <option key={Index} value={org} />);
