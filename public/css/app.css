@@ -59174,6 +59174,16 @@ body .admin-dashboard {
   width: 100%;
 }
 
+body .admin-dashboard table td a.detail-link {
+  cursor: pointer;
+}
+
+body .admin-dashboard table td a.detail-link.text-underline,
+body .admin-dashboard table td a.detail-link:hover {
+  color: #1a0dab;
+  text-decoration: underline;
+}
+
 body .admin-dashboard .home-content {
   background-color: #FFFFFF;
   height: calc(100vh - 105px);
@@ -59203,16 +59213,6 @@ body .admin-dashboard .home-content .row-0 > div .line-chart {
 
 body .admin-dashboard .home-content .row-0 > div .row > div:first-child {
   border-right: 1px solid #BDBCC6;
-}
-
-body .admin-dashboard .home-content .row-0 table td a.detail-link {
-  cursor: pointer;
-}
-
-body .admin-dashboard .home-content .row-0 table td a.detail-link.text-underline,
-body .admin-dashboard .home-content .row-0 table td a.detail-link:hover {
-  color: #1a0dab;
-  text-decoration: underline;
 }
 
 body .admin-dashboard .home-content .row-0 table td .success-div {

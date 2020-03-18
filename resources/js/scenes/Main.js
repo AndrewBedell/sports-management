@@ -57,6 +57,8 @@ class Main extends Component {
           <Route exact path="/admin/create" name="AdminCreate" component={AdminCreate} />
           <Route exact path="/admin/setting" name="AdminSetting" component={AdminSetting} />
           <Route exact path="/admin/reset" name="AdminReset" component={AdminReset} />
+          <Route exact path="/admin/organization/detail" name="AdminOrganizationDetail" component={OrganizationDetail} />
+          <Route exact path="/admin/member/detail" name="AdminMemberDetail" component={MemberDetail} />
 
           <Route exact path="/payment-player" name="Payment" component={Payment} />
           <Route exact path="/member/register" name="MemberAdd" component={MemberAdd} />

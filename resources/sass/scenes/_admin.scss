@@ -90,6 +90,20 @@ body {
     padding: 5px 15px 15px;
     width: 100%;
 
+    table {
+      td {
+        a.detail-link {
+          cursor: pointer;
+          &.text-underline,
+          
+          &:hover {
+            color: #1a0dab;
+            text-decoration: underline;
+          }
+        }
+      }
+    }
+
     .home-content {
       background-color: $white;
       height: calc(100vh - 105px);
@@ -127,15 +141,6 @@ body {
 
         table {
           td {
-            a.detail-link {
-              cursor: pointer;
-              &.text-underline,
-              
-              &:hover {
-                color: #1a0dab;
-                text-decoration: underline;
-              }
-            }
             .success-div {
               background-color: #c6efce;
               border: 1px solid $success;

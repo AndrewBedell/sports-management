@@ -86,7 +86,6 @@ class Search extends Component {
         const orgArr = [];
         const data = [];
 
-        orgArr.push(this.state.nf.name_o);
         data.push(this.state.nf);
 
         for (let i = 0; i < body.filter(item => item.is_club == 0).length; i++) {
@@ -298,6 +297,15 @@ class Search extends Component {
     });
   }
 
+  handleSelectItem(id) {
+    const { search_type } = this.state;
+    if (search_type.value == 'member') {
+      this.props.history.push('/admin/member/detail', id);
+    } else {
+      this.props.history.push('/admin/organization/detail', id);
+    }
+  }
+
   render() {
     const { 
       nf,
@@ -328,9 +336,11 @@ class Search extends Component {
           <div className="admin-dashboard">
             <div className="content">
               <Container fluid>
-                <h3 className="text-danger text-center my-3">
-                  Welcome to { nf.name_o }
-                </h3>
+                {nf.name_o != '' && (
+                  <h3 className="text-danger text-center my-3">
+                    Welcome to { nf.name_o }
+                  </h3>
+                )}
 
                 <Row>
                   <Col xl="2" lg="3" md="4" sm="6" xs="12">
@@ -552,6 +562,7 @@ class Search extends Component {
                         mtype={member_type}
                         items={search_data}
                         display={false}
+                        onSelect={this.handleSelectItem.bind(this)}
                       />
                     </div>
                   </Container>
