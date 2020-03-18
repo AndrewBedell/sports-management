@@ -155,7 +155,8 @@ class Dashboard extends Component {
         }
 
         this.setState({
-          original_clubs: clubArr
+          original_clubs: clubArr,
+          clubs: clubArr.map((club, Index) => <option key={Index} id={club.id} value={club.value} />)
         });
         break;
       default:
@@ -163,13 +164,6 @@ class Dashboard extends Component {
     }
 
     const search = QueryString.parse(this.props.location.search, { ignoreQueryPrefix: true });
-
-    let clubs1 = clubArr;
-    if (search.org != '') {
-      clubs1 = clubArr.filter(club => club.id == search.org);
-    }
-
-    const clubList = clubs1.map((club, Index) => <option key={Index} id={club.id} value={club.value} />);
 
     this.setState({
       search_type: search.stype ? (search_type_options.find(type => type.value == search.stype) || '') : '',
@@ -184,8 +178,7 @@ class Dashboard extends Component {
         : search_genders[0],
       search_weight: search.weight ? (weight_list.body.find(weight => weight.id == search.weight) || '') : '',
       search_dan: search.dan ? (Dans.find(dan => dan.value == search.dan) || '') : '',
-      search_data: null,
-      clubs: clubList
+      search_data: null
     });
 
     if (search.stype) {
