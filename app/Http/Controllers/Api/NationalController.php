@@ -165,7 +165,7 @@ class NationalController extends Controller
             ));
         
             $msg = "You were registered into Judo Federation system as a manager.\r\n";
-            $msg .= "Please confirm the below url with the default password 'password'.\r\n";
+            $msg .= "Please confirm the below url with the default password '" . $password . "'.\r\n";
             $msg .= url('/login');
             
             $headers = "From: administrator@sports.org";
