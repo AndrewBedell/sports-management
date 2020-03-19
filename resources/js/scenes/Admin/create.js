@@ -4,7 +4,6 @@ import { withRouter } from 'react-router-dom';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import {
-  Container,
   Row, Col,
   Button,
   Form, FormGroup, FormFeedback,
@@ -96,7 +95,9 @@ class CreateNational extends Component {
         this.setState({
           alertVisible: true,
           messageStatus: false,
-          failMessage: body.data && (`${body.data.email !== undefined ? body.data.email : ''} ${body.data.register_no !== undefined ? body.data.register_no : ''}`)
+          failMessage: body.data && (`${body.data.email !== undefined ? body.data.email : ''} 
+                        ${body.data.register_no !== undefined ? body.data.register_no : ''}
+                        ${body.data.country !== undefined ? body.data.country : ''}`)
         });
         break;
       default:
@@ -202,7 +203,7 @@ class CreateNational extends Component {
                         </FormGroup>
                       </Col>
                       <Col xs="6"></Col>
-                      <Col sm="6">
+                      <Col sm="6" md="4">
                         <FormGroup>
                           <Label for="name_o">National Federation Name</Label>
                           <Input
@@ -216,7 +217,29 @@ class CreateNational extends Component {
                           <FormFeedback>{errors.name_o}</FormFeedback>
                         </FormGroup>
                       </Col>
-                      <Col sm="6">
+                      <Col sm="6" md="4">
+                        <FormGroup>
+                          <Label for="country">Country</Label>
+                          <Select
+                            name="country"
+                            classNamePrefix={!!errors.country && touched.country ? 'invalid react-select-lg' : 'react-select-lg'}
+                            indicatorSeparator={null}
+                            options={countries}
+                            getOptionValue={option => option.countryCode}
+                            getOptionLabel={option => option.name}
+                            value={values.country}
+                            onChange={(value) => {
+                              setFieldValue('country', value);
+                              values.name_s = value.code;
+                            }}
+                            onBlur={this.handleBlur}
+                          />
+                          {!!errors.country && touched.country && (
+                            <FormFeedback className="d-block">{errors.country}</FormFeedback>
+                          )}
+                        </FormGroup>
+                      </Col>
+                      <Col sm="6" md="4">
                         <FormGroup>
                           <Label for="name_s">
                             Country Code
@@ -232,7 +255,7 @@ class CreateNational extends Component {
                           <FormFeedback>{errors.name_s}</FormFeedback>
                         </FormGroup>
                       </Col>
-                      <Col sm="3">
+                      <Col sm="6" md="4">
                         <FormGroup>
                           <Label for="register_no">
                             Register Number
@@ -248,7 +271,7 @@ class CreateNational extends Component {
                           <FormFeedback>{errors.register_no}</FormFeedback>
                         </FormGroup>
                       </Col>
-                      <Col sm="3">
+                      <Col sm="6" md="4">
                         <FormGroup>
                           <Label for="mobile_phone">
                             Mobile Phone
@@ -264,7 +287,7 @@ class CreateNational extends Component {
                           <FormFeedback>{errors.mobile_phone}</FormFeedback>
                         </FormGroup>
                       </Col>
-                      <Col sm="6">
+                      <Col sm="6" md="4">
                         <FormGroup>
                           <Label for="email">
                             Email
@@ -310,28 +333,7 @@ class CreateNational extends Component {
                           />
                         </FormGroup>
                       </Col>
-                      <Col sm="3" xs="6">
-                        <FormGroup>
-                          <Label for="country">Country</Label>
-                          <Select
-                            name="country"
-                            classNamePrefix={!!errors.country && touched.country ? 'invalid react-select-lg' : 'react-select-lg'}
-                            indicatorSeparator={null}
-                            options={countries}
-                            getOptionValue={option => option.countryCode}
-                            getOptionLabel={option => option.name}
-                            value={values.country}
-                            onChange={(value) => {
-                              setFieldValue('country', value);
-                            }}
-                            onBlur={this.handleBlur}
-                          />
-                          {!!errors.country && touched.country && (
-                            <FormFeedback className="d-block">{errors.country}</FormFeedback>
-                          )}
-                        </FormGroup>
-                      </Col>
-                      <Col sm="3" xs="6">
+                      <Col sm="6" md="4">
                         <FormGroup>
                           <Label for="state">State</Label>
                           <Input
@@ -345,7 +347,7 @@ class CreateNational extends Component {
                           {!!errors.state && touched.state && (<FormFeedback className="d-block">{errors.state}</FormFeedback>)}
                         </FormGroup>
                       </Col>
-                      <Col sm="3" xs="6">
+                      <Col sm="6" md="4">
                         <FormGroup>
                           <Label for="city">City</Label>
                           <Input
@@ -359,7 +361,7 @@ class CreateNational extends Component {
                           {!!errors.city && touched.city && (<FormFeedback className="d-block">{errors.city}</FormFeedback>)}
                         </FormGroup>
                       </Col>
-                      <Col sm="3" xs="6">
+                      <Col sm="6" md="4">
                         <FormGroup>
                           <Label for="zip_code">Zip Code</Label>
                           <Input

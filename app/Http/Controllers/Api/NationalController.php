@@ -38,7 +38,7 @@ class NationalController extends Controller
             'email' => 'required|string|email|max:255|unique:organizations',
             'mobile_phone' => 'required|string|max:255',
             'addressline1' => 'required|string|max:255',
-            'country' => 'required|string|max:255',
+            'country' => 'required|string|max:255|unique:organizations',
             'state' => 'required|string|max:255',
             'city' => 'required|string|max:255',
             'zip_code' => 'required|string|max:255'
