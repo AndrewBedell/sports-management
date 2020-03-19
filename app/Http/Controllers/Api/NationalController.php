@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\User;
 use App\Member;
 use App\Organization;
+use App\Setting;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -141,11 +142,26 @@ class NationalController extends Controller
                 'register_date' => date('Y-m-d')
             ));
 
+            $password = '';
+
+            $characters = '0123456789?abcdefghijklmnopqrstuvwxyz_ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            $charactersLength = strlen($characters);
+
+            for ($j = 0; $j < 8; $j++) {
+                $password .= $characters[rand(0, $charactersLength - 1)];
+            }
+
             User::create(array(
                 'member_id' => $member->id,
-                'password' => Hash::make('password'),
+                'password' => Hash::make($password),
                 'email' => $data['email'],
                 'is_nf' => 1
+            ));
+
+            Setting::create(array(
+                'organization_id' => $nf->id,
+                'price' => 0.00,
+                'percent' => 10.00
             ));
         
             $msg = "You were registered into Judo Federation system as a manager.\r\n";
