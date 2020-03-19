@@ -32,25 +32,12 @@ class Detail extends Component {
       }],
       options: {
         chart: {
-          height: 350,
-          width: '100%',
-          type: 'line',
-        },
-        stroke: {
-          width: 7,
-          curve: 'smooth'
-        },
-        xaxis: {
-          type: 'datetime',
-          categories: ['1/11/2000', '2/11/2000', '3/11/2000', '4/11/2000', '5/11/2000', '6/11/2000', '7/11/2000', '8/11/2000', '9/11/2000', '10/11/2000', '11/11/2000', '12/11/2000', '1/11/2001', '2/11/2001', '3/11/2001','4/11/2001' ,'5/11/2001' ,'6/11/2001'],
-        },
-        title: {
-          text: 'Social Media',
-          align: 'left',
-          style: {
-            fontSize: "16px",
-            color: '#666'
+          zoom: {
+            enabled: false
           }
+        },
+        dataLabels: {
+          enabled: false
         },
         fill: {
           type: 'gradient',
@@ -64,23 +51,30 @@ class Detail extends Component {
             stops: [0, 100, 100, 100]
           },
         },
-        markers: {
-          size: 4,
-          colors: ["#FFA41B"],
-          strokeColors: "#fff",
-          strokeWidth: 2,
-          hover: {
-            size: 7,
+        stroke: {
+          width: 3,
+          curve: 'smooth'
+        },
+        title: {
+          text: 'Total',
+          align: 'left',
+          style: {
+            fontSize: "16px",
+            color: '#666'
           }
         },
+        xaxis: {
+          type: 'datetime',
+          categories: ['1/11/2000', '2/11/2000', '3/11/2000', '4/11/2000', '5/11/2000', '6/11/2000', '7/11/2000', '8/11/2000', '9/11/2000', '10/11/2000', '11/11/2000', '12/11/2000', '1/11/2001', '2/11/2001', '3/11/2001','4/11/2001' ,'5/11/2001' ,'6/11/2001'],
+        },
         yaxis: {
-          min: -10,
+          min: 0,
           max: 40,
           title: {
             text: 'Engagement',
           },
         }
-      }
+      },
     };
   }
 
@@ -128,11 +122,14 @@ class Detail extends Component {
 
             <div className="content">
               <Row className="row-0">
-                <Chart
-                  options={this.state.options}
-                  series={this.state.series}
-                  type="line"
-                />
+                <Col sm="12">
+                  <Chart
+                    options={this.state.options}
+                    series={this.state.series}
+                    height="300"
+                    type="line"
+                  />
+                </Col>
               </Row>
               <Row>
                 <Col sm="6">
