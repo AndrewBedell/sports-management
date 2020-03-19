@@ -101,7 +101,7 @@ class FederationTable extends Component {
 
   render() {
     const {
-      items
+      items, onSelect
     } = this.props;
 
     const {
@@ -182,7 +182,9 @@ class FederationTable extends Component {
                 <Table.Row
                   key={index}
                 >
-                  <Table.Cell>{item.name_o}</Table.Cell>
+                  <Table.Cell>
+                    <a className="detail-link" onClick={() => onSelect(item.id)}>{item.name_o}</a>
+                  </Table.Cell>
                   <Table.Cell className="text-center">
                     <a href={"http://" + item.country + ".livemedia.uz"}>{item.country + ".livemedia.uz"}</a>
                   </Table.Cell>
@@ -237,5 +239,9 @@ class FederationTable extends Component {
     );
   }
 }
+
+FederationTable.defaultProps = {
+  onSelect: () => {}
+};
 
 export default FederationTable;

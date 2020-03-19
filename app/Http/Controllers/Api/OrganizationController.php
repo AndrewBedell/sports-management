@@ -167,9 +167,12 @@ class OrganizationController extends Controller
 
             $org['president'] = '---';
 
-            $president = Member::where('role_id', '!=',  3)->where('organization_id', $id)->first();
+            $president = Member::where('role_id', 1)
+                            ->where('organization_id', $id)
+                            ->where('position', 'NF manager')
+                            ->first();
 
-            if ($president && strtolower($president->position) == strtolower('president'))
+            if ($president)
                 $org['president'] = $president->name . ' ' . $president->surname;
 
             $org['clubs'] = sizeof($clubs);

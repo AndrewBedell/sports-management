@@ -53,8 +53,8 @@ class Federation extends Component {
     }
   }
 
-  handleRegisterFederation() {
-    this.props.history.push('/admin/create');
+  handleSelectItem(id) {
+    this.props.history.push('/admin/nfprofile', id);
   }
 
   render() {
@@ -98,6 +98,7 @@ class Federation extends Component {
                   <div className="table-responsive">
                     <FederationTable
                       items={search_nf}
+                      onSelect={this.handleSelectItem.bind(this)}
                     />
                   </div>
                 )

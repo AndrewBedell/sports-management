@@ -19,6 +19,7 @@ import Payment from './Payment';
 
 import Admin from './Admin';
 import AdminSearch from './Admin/search';
+import AdminNFProfile from './Admin/federationprofile';
 import AdminFederation from './Admin/federations';
 import AdminDetail from './Admin/detail';
 import AdminCreate from './Admin/create';
@@ -52,6 +53,7 @@ class Main extends Component {
         <Switch>
           <Route exact path="/admin/home" name="Admin" component={Admin} />
           <Route exact path="/admin/search" name="Admin" component={AdminSearch} />
+          <Route exact path="/admin/nfprofile" name="AdminNFProfile" component={AdminNFProfile} />
           <Route exact path="/admin/federations" name="AdminFederation" component={AdminFederation} />
           <Route exact path="/admin/detail" name="AdminDetail" component={AdminDetail} />
           <Route exact path="/admin/create" name="AdminCreate" component={AdminCreate} />
