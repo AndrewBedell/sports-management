@@ -218,7 +218,7 @@ class OrganizationDetail extends Component {
                             <h5 className="py-2">
                               <b>Phone</b>
                               :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                              {org.mobile}
+                              {org.mobile_phone}
                             </h5>
                           </Col>
                         </Row>
