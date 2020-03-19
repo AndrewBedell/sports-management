@@ -109,6 +109,12 @@ body {
       height: calc(100vh - 105px);
       padding: 15px;
 
+      .apexcharts-canvas {
+        .apexcharts-legend-series {
+          text-decoration: underline;
+        }
+      }
+
       .card {
         .content {
           padding: 5px;

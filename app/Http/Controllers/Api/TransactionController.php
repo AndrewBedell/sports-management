@@ -52,6 +52,12 @@ class TransactionController extends Controller
                               'members.name', 'members.surname')
                      ->orderBy('transactions.created_at', 'desc')
                      ->get();
+
+        $subtotal[$i] = Transaction::whereIn('club_id', $clubs[$i])
+                     ->where('created_at', 'like', date('Y') . '%')
+                     ->select(DB::raw('DATE_FORMAT(created_at, "%Y-%m") new_date'), DB::raw('sum(amount) as amount'))
+                     ->groupBy('new_date')
+                     ->get();
       }
 
       for ($i = 0; $i < sizeof($clubs); $i++) {
@@ -70,6 +76,7 @@ class TransactionController extends Controller
       return response()->json([
         'status' => 'success',
         'total' => $total,
+        'subtotal' => $subtotal,
         'detail' => $detail,
         'nfs' => $nfs
       ], 200);

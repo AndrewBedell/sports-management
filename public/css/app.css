@@ -59190,6 +59190,10 @@ body .admin-dashboard .home-content {
   padding: 15px;
 }
 
+body .admin-dashboard .home-content .apexcharts-canvas .apexcharts-legend-series {
+  text-decoration: underline;
+}
+
 body .admin-dashboard .home-content .card .content {
   padding: 5px;
 }

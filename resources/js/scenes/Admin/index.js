@@ -25,6 +25,7 @@ class Admin extends Component {
 
     this.state = {
       nfs: [],
+      chartOrder: [0, 1],
       pieChart: {},
       lineChart: [],
       confirmed: [],
@@ -35,19 +36,6 @@ class Admin extends Component {
   }
 
   async componentDidMount() {
-    const nfs = await Api.get('all-nf');
-    const { response, body } = nfs;
-
-    switch (response.status) {
-      case 200:
-        this.setState({
-          nfs: body.nfs
-        });
-        break;
-      default:
-        break;
-    }
-
     const colorList = ['#4661EE', '#66DA26', '#E91E63', '#FF9800', '#546E7A',  
                        '#EC5657', '#1BCDD1', '#8FAABB', '#B08BEB', '#FAA586'];
 
@@ -63,68 +51,87 @@ class Admin extends Component {
     const notpayed = [];
     const pending = [];
 
-    const sum = [];
+    const trans = await Api.get('finance');
+    const { response, body } = trans;
+    switch (response.status) {
+      case 200:
+        const sum = [];
 
-    for (let i = 0; i < this.state.nfs.length; i++) {
-      pieSeries.push(Math.floor((Math.random() * 100) + 1));
-      pieLabels.push(this.state.nfs[i].name_s);
-      pieColors.push(colorList[i]);
+        for (let i = 0; i < body.nfs.length; i++) {
+          pieSeries.push(body.total[i] + 1);
+          pieLabels.push(body.nfs[i].name_s);
+          pieColors.push(colorList[i]);
 
-      let lineData = [];
-      for (let j = 0; j < 9; j++) {
-        lineData.push(Math.floor((Math.random() * 50) + 50));
-      }
-
-      lineSeries.push(lineData);
-      lineLabels.push(this.state.nfs[i].name_o);
-
-      let chart = {
-        series: [{
-          name: "Judokas",
-          data: lineSeries[i]
-        }],
-        options: {
-          chart: {
-            zoom: {
-              enabled: false
-            }
-          },
-          colors: [colorList[i]],
-          dataLabels: {
-            enabled: false
-          },
-          stroke: {
-            curve: 'straight'
-          },
-          title: {
-            text: lineLabels[i],
-            align: 'center'
-          },
-          grid: {
-            row: {
-              colors: ['#f3f3f3', 'transparent'],
-              opacity: 0.5
-            },
-          },
-          xaxis: {
-            categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'],
+          let lineData = [0, 0, 0];
+          for (let j = 0; j < body.subtotal[i].length; j++) {
+            lineData.push(body.subtotal[i][j].amount);
           }
+
+          lineSeries.push(lineData);
+          lineLabels.push(body.nfs[i].name_o);
+
+          let chart = {
+            series: [{
+              name: "Amount",
+              data: lineSeries[i]
+            }],
+            options: {
+              chart: {
+                zoom: {
+                  enabled: false
+                }
+              },
+              colors: [colorList[i]],
+              dataLabels: {
+                enabled: false
+              },
+              stroke: {
+                curve: 'straight'
+              },
+              title: {
+                text: lineLabels[i],
+                align: 'center'
+              },
+              grid: {
+                row: {
+                  colors: ['#f3f3f3', 'transparent'],
+                  opacity: 0.5
+                },
+              },
+              xaxis: {
+                categories: ['Jan', 'Feb', 'Mar'],
+              }
+            }
+          }
+
+          lineCharts.push(chart);
+
+          let confirm = Math.floor((Math.random() * 100) + 200);
+          confirmed.push(confirm);
+
+          let notpay = Math.floor((Math.random() * 100) + 50);
+          notpayed.push(notpay);
+
+          let pend = Math.floor((Math.random() * 50) + 50);
+          pending.push(pend);
+
+          sum.push(confirm + notpay + pend);
         }
-      }
 
-      lineCharts.push(chart);
-
-      let confirm = Math.floor((Math.random() * 100) + 200);
-      confirmed.push(confirm);
-
-      let notpay = Math.floor((Math.random() * 100) + 50);
-      notpayed.push(notpay);
-
-      let pend = Math.floor((Math.random() * 50) + 50);
-      pending.push(pend);
-
-      sum.push(confirm + notpay + pend);
+        this.setState({
+          nfs: body.nfs,
+          confirmed,
+          notpayed,
+          pending,
+          sum
+        });
+        break;
+      default:
+        break;
     }
+
+    let order = this.state.chartOrder;
+    const that = this;
 
     this.setState({
       pieChart: {
@@ -134,6 +141,28 @@ class Admin extends Component {
           dataLabels: {
             enabled: true
           },
+          chart: {
+            events: {
+              legendClick: function(chartContext, seriesIndex, config) {
+                if (order.indexOf(seriesIndex) == -1 || order.indexOf(seriesIndex) == 0) {
+                  order.shift();
+                  order.push(seriesIndex);
+                  
+                  that.setState({
+                    chartOrder: order
+                  });
+                }
+              }
+            }
+          },
+          plotOptions: {
+            pie: {
+              donut: {
+                size: '50%'
+              }
+            }
+          },
+          colors: pieColors,
           responsive: [{
             breakpoint: 480,
             options: {
@@ -158,11 +187,7 @@ class Admin extends Component {
           }
         }
       },
-      lineChart: lineCharts,
-      confirmed,
-      notpayed,
-      pending,
-      sum
+      lineChart: lineCharts
     });
   }
 
@@ -173,7 +198,7 @@ class Admin extends Component {
 
   render() {
     const { 
-      pieChart, lineChart, nfs,
+      pieChart, lineChart, nfs, chartOrder,
       confirmed, notpayed, pending, sum
     } = this.state;
 
@@ -251,10 +276,10 @@ class Admin extends Component {
                   <Row className="line-chart">
                     <Col md="12" lg="6">
                       {
-                        lineChart && lineChart[0] && lineChart[0].series && (
+                        lineChart && lineChart[chartOrder[0]] && lineChart[chartOrder[0]].series && (
                           <Chart
-                            options={lineChart[0].options}
-                            series={lineChart[0].series}
+                            options={lineChart[chartOrder[0]].options}
+                            series={lineChart[chartOrder[0]].series}
                             type="line"
                             onClick={() => this.props.history.push('/admin/detail')}
                           />
@@ -263,10 +288,10 @@ class Admin extends Component {
                     </Col>
                     <Col md="12" lg="6">
                       {
-                        lineChart && lineChart[1] && lineChart[1].series && (
+                        lineChart && lineChart[chartOrder[1]] && lineChart[chartOrder[1]].series && (
                           <Chart
-                            options={lineChart[1].options}
-                            series={lineChart[1].series}
+                            options={lineChart[chartOrder[1]].options}
+                            series={lineChart[chartOrder[1]].series}
                             type="line"
                             onClick={() => this.props.history.push('/admin/detail')}
                           />
