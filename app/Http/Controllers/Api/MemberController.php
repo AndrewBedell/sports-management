@@ -206,7 +206,7 @@ class MemberController extends Controller
                         ->leftJoin('roles', 'roles.id', '=', 'members.role_id')
                         ->leftJoin('players', 'players.member_id', '=', 'members.id')
                         ->leftJoin('weights', 'weights.id', '=', 'players.weight_id')
-                        ->select('members.*', 'org.name_o AS org_name', 'club.name_o AS club_name',
+                        ->select('members.*', 'org.name_o AS org_name', 'club.name_o AS club_name', 'club.level',
                                 'roles.name AS role_name', 'roles.is_player',
                                 'weights.id AS weight_id', 'weights.weight',
                                 'players.dan', 'players.skill', 'players.expired_date',

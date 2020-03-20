@@ -194,6 +194,89 @@ class SubTable extends Component {
           )
         }
         {
+          type === 'member' && (
+            <Fragment>
+              <Table.Header>
+                <Table.Row>
+                  <Table.HeaderCell
+                    className="text-center"
+                    sorted={column === 'name' ? direction : null}
+                    onClick={this.handleSort.bind(this, 'name')}
+                  >
+                    Name
+                  </Table.HeaderCell>
+                  <Table.HeaderCell
+                    className="text-center"
+                    sorted={column === 'role' ? direction : null}
+                    onClick={this.handleSort.bind(this, 'role')}
+                  >
+                    Role
+                  </Table.HeaderCell>
+                  <Table.HeaderCell
+                    className="text-center"
+                    sorted={column === 'gender' ? direction : null}
+                    onClick={this.handleSort.bind(this, 'gender')}
+                  >
+                    Gender
+                  </Table.HeaderCell>
+                  <Table.HeaderCell
+                    className="text-center"
+                    sorted={column === 'birthday' ? direction : null}
+                    onClick={this.handleSort.bind(this, 'birthday')}
+                  >
+                    Birthday
+                  </Table.HeaderCell>
+                  <Table.HeaderCell className="text-center">
+                    Status
+                  </Table.HeaderCell>
+                </Table.Row>
+              </Table.Header>
+              <Table.Body>
+                {
+                  (data && data.length > 0) ? (
+                    data.map((item, index) => (
+                      <Table.Row 
+                        key={index}
+                      >
+                        <Table.Cell>
+                          <span className="text-primary mr-2">
+                            <a className="detail-link" onClick={() => onSelect(item.id)}>
+                              {item.surname && item.surname.toUpperCase()} {item.patronymic != '-' && item.patronymic} {item.name}
+                            </a>
+                          </span>
+                        </Table.Cell>
+                        <Table.Cell className="text-center">{item.role_name}</Table.Cell>
+                        <Table.Cell className="text-center">{item.gender == 1 ? Genders[0].name : Genders[1].name}</Table.Cell>
+                        <Table.Cell className="text-center">{item.birthday}</Table.Cell>
+                        {
+                          item.active == 0 ? (
+                            <Table.Cell className="text-center">
+                              <div className="text-danger text-center">
+                                <i className="fa fa-user fa-lg" />
+                              </div>
+                            </Table.Cell>
+                          ) : (
+                            <Table.Cell className="text-center">
+                              <div className="text-success text-center">
+                                <i className="fa fa-user fa-lg" />
+                              </div>
+                            </Table.Cell>
+                          )
+                        }
+                          
+                      </Table.Row>
+                    ))
+                  ) : (
+                    <Table.Row>
+                      <Table.Cell colSpan="5" className="text-center">No Members</Table.Cell>
+                    </Table.Row>
+                  )
+                }
+              </Table.Body>
+            </Fragment>
+          )
+        }
+        {
           type === 'club' && (
             <Fragment>
               <Table.Header>

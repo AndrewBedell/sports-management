@@ -21,9 +21,13 @@ class OrganizationDetail extends Component {
     this.state = {
       org: {},
       filter: '',
+      filterMember: '',
       type: '',
       init_data: [],
       data: [],
+      init_members: [],
+      members:[],
+      membertype: '',
       memtype: '',
       weights: [],
       search_gender: search_genders[0],
@@ -51,7 +55,9 @@ class OrganizationDetail extends Component {
           org: org_data.body,
           type: org_data.body.type,
           init_data: org_data.body.table,
-          data: org_data.body.table
+          data: org_data.body.table,
+          init_members: org_data.body.members,
+          members: org_data.body.members
         });
 
         break;
@@ -126,6 +132,47 @@ class OrganizationDetail extends Component {
     });
   }
 
+  handleSelectMemberType(data) {
+    const membertype = data.value;
+
+    let filtered = [];
+
+    switch (membertype) {
+      case 'staff':
+        filtered = this.state.init_members.filter(obj => obj.role_id == 1);
+        break;
+      case 'coach':
+        filtered = this.state.init_members.filter(obj => obj.role_id == 2);
+        break;
+      case 'referee':
+        filtered = this.state.init_members.filter(obj => obj.role_id == 4);
+        break;
+      default:
+        filtered = this.state.init_members;
+    }
+
+    this.setState({
+      members: filtered,
+      membertype
+    });
+  }
+
+  handleFilterMember(evt, data) {
+    this.setState({
+      filterMember: data.value
+    });
+
+    let filtered = [];
+
+    filtered = this.state.init_members.filter(
+      obj => obj.name.toUpperCase().includes(data.value.toUpperCase())
+               || obj.surname.toUpperCase().includes(data.value.toUpperCase()));
+
+    this.setState({
+      members: filtered
+    });
+  }
+
   async handleSelectItem(id) {
     const option = this.state.type;
 
@@ -154,6 +201,10 @@ class OrganizationDetail extends Component {
     }
   }
 
+  async handleSelectMember(id) {
+    this.props.history.push('/member/detail', id);
+  }
+
   getWeights(gender) {
     return this.state.weights.filter((weight) => {
       if (`${gender}` == '0') {
@@ -165,7 +216,7 @@ class OrganizationDetail extends Component {
 
   render() {
     const {
-      org, filter, type, data, memtype, 
+      org, filter, filterMember, type, data, members, memtype, 
       search_gender, search_weight, search_dan,
       is_super
     } = this.state;
@@ -368,6 +419,37 @@ class OrganizationDetail extends Component {
                 />
               </div>
             </Container>
+            {
+              type == 'org' && (
+                <Container>
+                  <div className="mt-5">
+                    <Row>
+                      <Col sm="3">
+                        <Select
+                          options={member_type_options.filter(item => item.value != 'judoka')}
+                          onChange={this.handleSelectMemberType.bind(this)}
+                          />
+                      </Col>
+                      <Col sm="3">
+                        <Input
+                          value={filterMember}
+                          icon="search"
+                          placeholder="Search Members"
+                          onChange={this.handleFilterMember.bind(this)}
+                        />
+                      </Col>
+                    </Row>
+                    <div className="table-responsive">
+                      <SubTable
+                        type="member"
+                        items={members}
+                        onSelect={this.handleSelectMember.bind(this)}
+                      />
+                    </div>
+                  </div>
+                </Container>
+              )
+            }
           </div>
         </div>
 

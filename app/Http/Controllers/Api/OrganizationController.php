@@ -161,8 +161,13 @@ class OrganizationController extends Controller
         } else {
             $org['type'] = 'org';
 
-            $clubs = Organization::where('parent_id', $id)->get();
+            $members = Member::where('organization_id', $id)
+                        ->leftJoin('roles', 'roles.id', '=', 'members.role_id')
+                        ->select('members.*', 'roles.name AS role_name')
+                        ->get();
+            $org['members'] = $members;
 
+            $clubs = Organization::where('parent_id', $id)->get();
             $org['table'] = $clubs;
 
             $org['president'] = '---';

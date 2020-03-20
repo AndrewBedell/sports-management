@@ -8,6 +8,7 @@ import Bitmaps from '../../theme/Bitmaps';
 import AdminTopBar from '../../components/TopBar/AdminTopBar';
 import MainTopBar from '../../components/TopBar/MainTopBar';
 import AdminBar from '../../components/AdminBar';
+import { referee_type_options } from '../../configs/data';
 
 class MemberDetail extends Component {
   constructor(props) {
@@ -26,11 +27,11 @@ class MemberDetail extends Component {
 
     const mem_id = this.props.location.state;
     const mem_data = await Api.get(`member/${mem_id}`);
-
-    switch (mem_data.response.status) {
+    const { response, body } = mem_data;
+    switch (response.status) {
       case 200:
         this.setState({
-          member: mem_data.body
+          member: body
         });
         break;
       case 406:
@@ -124,14 +125,14 @@ class MemberDetail extends Component {
                               </h5>
                             </Col>
                             <Col sm={member.role_id == 1 || member.role_id == 4 ? '6' : '12'}>
-                              {member.role_id == 2 ? (
+                              {member.level == 3 ? (
                                 <h5 className="py-2">
                                   <b>Club Name</b>
                                     :
                                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                  {member.name_o}
+                                  {member.club_name}
                                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;( Region:&nbsp;&nbsp;
-                                  {member.region}
+                                  {member.org_name}
                                   {' '}
                                   )
                                 </h5>
@@ -139,7 +140,7 @@ class MemberDetail extends Component {
                                 <h5 className="py-2">
                                   <b>Regional Federation Name</b>
                                   :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                  {member.name_o}
+                                  {member.club_name}
                                 </h5>
                               )}
                             </Col>
@@ -150,7 +151,11 @@ class MemberDetail extends Component {
                                     <b>{member.role_id == 1 ? 'Position' : 'Referee Type'}</b>
                                     :
                                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                    {member.position == '' ? '---' : member.position}
+                                    {
+                                      member.role_id == 1 ? (member.position == '' ? '---' : member.position)
+                                      : referee_type_options.filter(item => item.value == member.position)[0].label
+                                    }
+                                    {}
                                   </h5>
                                 </Col>
                               )
