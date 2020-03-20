@@ -149,14 +149,18 @@ class DataTable extends Component {
             {
               stype.value === 'member' && (
                 <Fragment>
-                  <Table.HeaderCell
-                    className="text-center"
-                    width="2"
-                    sorted={column === 'type' ? direction : null}
-                    onClick={this.handleSort.bind(this, 'type')}
-                  >
-                    Org Type
-                  </Table.HeaderCell>
+                  {
+                    mtype.value !== 'judoka' && (
+                      <Table.HeaderCell
+                        className="text-center"
+                        width="2"
+                        sorted={column === 'type' ? direction : null}
+                        onClick={this.handleSort.bind(this, 'type')}
+                      >
+                        Org Type
+                      </Table.HeaderCell>
+                    )
+                  }
                   <Table.HeaderCell
                     className="text-center"
                     width="2"
@@ -290,11 +294,15 @@ class DataTable extends Component {
                   {
                     stype.value === 'member' && (
                       <Fragment>
-                        <Table.Cell>
-                          {item.level == 1 && ('National Federation')}
-                          {item.level == 2 && ('Regional Federation')}
-                          {item.level == 3 && ('Club')}
-                        </Table.Cell>
+                        {
+                          mtype.value !== 'judoka' && (
+                            <Table.Cell className="text-center">
+                              {item.level == 1 && ('National Federation')}
+                              {item.level == 2 && ('Regional Federation')}
+                              {item.level == 3 && ('Club')}
+                            </Table.Cell>
+                          )
+                        }
                         <Table.Cell>{item.name_o}</Table.Cell>
                         <Table.Cell className="text-center">{item.gender && item.gender == 1 ? Genders[0].name : Genders[1].name}</Table.Cell>
                         <Table.Cell className="text-center">{item.birthday}</Table.Cell>
