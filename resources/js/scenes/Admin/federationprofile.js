@@ -10,18 +10,20 @@ import {
 import { Segment, Image } from 'semantic-ui-react';
 import Bitmaps from '../../theme/Bitmaps';
 import Api from '../../apis/app';
-import AdminTopBar from '../../components/TopBar/AdminTopBar';
-import AdminBar from '../../components/AdminBar';
 import {
   withRouter
 } from 'react-router-dom';
+import AdminTopBar from '../../components/TopBar/AdminTopBar';
+import AdminBar from '../../components/AdminBar';
+import NFTransactionTable from '../../components/NFTransactionTable';
 
 class NFProfile extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      nf: []
+      nf: [],
+      detail: []
     };
   }
 
@@ -29,11 +31,21 @@ class NFProfile extends Component {
     const nf_id = this.props.location.state;
     
     const org = await Api.get(`organization/${nf_id}`);
-    const { response, body } = org;
-    switch (response.status) {
+    switch (org.response.status) {
       case 200:
         this.setState({
-          nf: body
+          nf: org.body
+        });
+        break;
+      default:
+        break;
+    }
+
+    const trans = await Api.get(`transdetail/${nf_id}`);
+    switch (trans.response.status) {
+      case 200:
+        this.setState({
+          detail: trans.body.detail
         });
         break;
       default:
@@ -42,7 +54,7 @@ class NFProfile extends Component {
   }
 
   render() {
-    const { nf } = this.state;
+    const { nf, detail } = this.state;
     
     return (
       <Fragment>
@@ -52,7 +64,7 @@ class NFProfile extends Component {
           <AdminBar />
 
           <div className="admin-dashboard">
-            <div className="text-right my-5">
+            <div className="text-right my-3">
               <Button 
                 outline
                 color="info"
@@ -153,7 +165,9 @@ class NFProfile extends Component {
               </Row>
               <Row className="mt-3">
                 <Col sm="12">
-                  
+                  <NFTransactionTable
+                    items={detail}
+                  />
                 </Col>
               </Row>
             </div>

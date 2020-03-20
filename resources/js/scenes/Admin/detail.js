@@ -84,8 +84,7 @@ class Detail extends Component {
     switch (response.status) {
       case 200:
         this.setState({
-          nfs: body.nfs,
-          detail: body.detail
+          nfs: body.nfs
         });
         break;
       default:
@@ -94,7 +93,7 @@ class Detail extends Component {
   }
 
   async handleSelectItem(id) {
-    const trans = await Api.get(`transdetail/${id}`);
+    const trans = await Api.get(`playerdetail/${id}`);
     const { response, body } = trans;
     switch (response.status) {
       case 200:

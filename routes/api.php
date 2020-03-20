@@ -56,6 +56,7 @@ Route::namespace('Api')->group(function () {
         Route::post('pay-now', 'TransactionController@store');
         Route::get('finance', 'TransactionController@finance');
         Route::get('transdetail/{id}', 'TransactionController@detail');
+        Route::get('playerdetail/{id}', 'TransactionController@players');
 
         Route::get('all-nf', 'NationalController@list');
         Route::post('create-nf', 'NationalController@store');

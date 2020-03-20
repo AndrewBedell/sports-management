@@ -21,7 +21,6 @@ class TransactionController extends Controller
       $nfs = array();
       $clubs = array();
 
-      $detail = array();
       $total = array();
 
       $nfs = Organization::where('parent_id', 0)->get();
@@ -42,16 +41,6 @@ class TransactionController extends Controller
             }
           }
         }
-
-        $detail[$i] = Transaction::whereIn('club_id', $clubs[$i])
-                     ->leftJoin('organizations AS org1', 'org1.id', '=', 'transactions.club_id')
-                     ->leftJoin('organizations AS org2', 'org2.id', '=', 'org1.parent_id')
-                     ->leftJoin('members', 'members.id', '=', 'transactions.payer_id')
-                     ->where('transactions.created_at', 'like', date('Y') . '%')
-                     ->select('transactions.*', 'org2.name_o AS Reg', 'org1.name_o AS Club',
-                              'members.name', 'members.surname')
-                     ->orderBy('transactions.created_at', 'desc')
-                     ->get();
 
         $subtotal[$i] = Transaction::whereIn('club_id', $clubs[$i])
                      ->where('created_at', 'like', date('Y') . '%')
@@ -77,12 +66,45 @@ class TransactionController extends Controller
         'status' => 'success',
         'total' => $total,
         'subtotal' => $subtotal,
-        'detail' => $detail,
         'nfs' => $nfs
       ], 200);
     }
 
-    public function detail($id)
+    public function detail($nf_id)
+    {
+      $clubs = array();
+
+      $nf = Organization::find($nf_id);
+
+      $orgs = Organization::where('parent_id', $nf->id)->get();
+
+      foreach ($orgs as $org) {
+        if ($org->is_club == 1) {
+          array_push($clubs, $org->id);
+        } else {
+          $club = Organization::where('parent_id', $org->id)->get();
+
+          foreach ($club as $c) {
+            array_push($clubs, $c->id);
+          }
+        }
+      }
+
+      $detail = Transaction::whereIn('club_id', $clubs)
+                     ->leftJoin('organizations AS org1', 'org1.id', '=', 'transactions.club_id')
+                     ->leftJoin('organizations AS org2', 'org2.id', '=', 'org1.parent_id')
+                     ->where('transactions.created_at', 'like', date('Y') . '%')
+                     ->select('transactions.*', 'org2.name_o AS Reg', 'org1.name_o AS Club')
+                     ->orderBy('transactions.created_at', 'desc')
+                     ->get();
+
+      return response()->json([
+        'status' => 'success',
+        'detail' => $detail,
+      ], 200);
+    }
+
+    public function players($id)
     {
       $trans = Transaction::find($id);
       $players = $trans->players;
