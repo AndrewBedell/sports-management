@@ -32,7 +32,8 @@ class Admin extends Component {
       notpayed: [],
       pending: [],
       sum: [],
-      paid: 0
+      paid: 0,
+      amount: 0
     }
   }
 
@@ -53,6 +54,7 @@ class Admin extends Component {
     const pending = [];
 
     let paid = 0;
+    let amount = 0;
 
     const trans = await Api.get('finance');
     const { response, body } = trans;
@@ -68,6 +70,7 @@ class Admin extends Component {
           let lineData = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
           for (let j = 0; j < body.subtotal[i].length; j++) {
             lineData[parseInt(body.subtotal[i][j].month) - 1] = body.subtotal[i][j].amount;
+            amount += body.subtotal[i][j].amount;
           }
 
           lineSeries.push(lineData);
@@ -129,7 +132,8 @@ class Admin extends Component {
           notpayed,
           pending,
           sum,
-          paid
+          paid,
+          amount
         });
         break;
       default:
@@ -204,7 +208,8 @@ class Admin extends Component {
   render() {
     const { 
       pieChart, lineChart, nfs, chartOrder,
-      confirmed, notpayed, pending, sum, paid
+      confirmed, notpayed, pending, sum,
+      paid, amount
     } = this.state;
 
     let d = new Date();
@@ -256,7 +261,7 @@ class Admin extends Component {
                     <Card.Content className="text-center">
                       <Card.Header><h5>Total Amount</h5></Card.Header>
                       <Card.Description>
-                        $ 20,304
+                        $ {amount}
                       </Card.Description>
                     </Card.Content>
                   </Card>
