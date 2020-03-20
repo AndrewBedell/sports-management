@@ -13,11 +13,10 @@ import {
   UncontrolledAlert
 } from 'reactstrap';
 import Select from 'react-select';
-// import DateRangePicker from '../../components/DateRangePicker';
 
 import Api from '../apis/app';
 import {
-  Genders, Dans, SetSwitch
+  referee_type_options, Genders, Dans, SetSwitch
 } from '../configs/data';
 
 class EditModal extends React.Component {
@@ -149,7 +148,8 @@ class EditModal extends React.Component {
           identity: '',
           weight: null,
           dan: null,
-          position: ''
+          position: '',
+          level: ''
         });
       }
     } else if (type && type.value && type.value === 'member') {
@@ -174,8 +174,9 @@ class EditModal extends React.Component {
         weight_id: weights.filter(weight => weight.id === values.weight_id)[0],
         dan: Dans.filter(dan => dan.value === values.dan)[0],
         identity: values.identity,
-        position: values.position || '',
-        skill: values.skill || 0
+        position: values.role_id == 4 ? referee_type_options.filter(option => option.value == values.position) : values.position,
+        skill: values.skill || 0,
+        level: values.level
       });
     } else {
       formikRef1.current.setValues({
@@ -296,11 +297,13 @@ class EditModal extends React.Component {
         organization_id: values.organization_id.id,
         role_id: values.role_id.id,
         profile_image: imagePreviewUrl || '',
-        position: values.position || '',
+        position: values.position.value ? values.position.value 
+          : values.position.length > 0 && values.position[0].value || values.position,
         skill: values.skill ? values.skill : '',
         active: item.active,
         register_date: moment(values.register_date).format('YYYY-MM-DD'),
-        name_o: values.organization_id.name_o
+        name_o: values.organization_id.name_o,
+        level: values.level
       };
     }
     let {
@@ -321,10 +324,6 @@ class EditModal extends React.Component {
       return;
     }
 
-    if (values.role_id && values.role_id.is_player !== 1 && !values.position) {
-      bags.setSubmitting(false);
-      return;
-    }
     handleSave(id, newData);
     bags.setSubmitting(false);
   }
@@ -389,18 +388,18 @@ class EditModal extends React.Component {
                     organization_id: Yup.mixed().required('This field is required!'),
                     role_id: Yup.mixed().required('This field is required!'),
                     // profile_image: Yup.mixed().required('Image is required!'),
-                    // register_date: Yup.mixed().required('This field is required!'),
+                    register_date: Yup.mixed().required('This field is required!'),
                     name: Yup.string().required('This field is required!'),
                     surname: Yup.string().required('This field is required!'),
                     gender: Yup.mixed().required('This field is required!'),
                     birthday: Yup.mixed().required('This field is required!'),
                     email: Yup.string().email('Email is not valid!').required('This field is required!'),
-                    // mobile_phone: Yup.string().matches(/^\d+$/, 'Mobile phone is incorrect!').required('This field is required!'),
-                    // addressline1: Yup.string().required('This field is required!'),
+                    mobile_phone: Yup.string().matches(/^\d+$/, 'Mobile phone is incorrect!').required('This field is required!'),
+                    addressline1: Yup.string().required('This field is required!'),
                     // country: Yup.mixed().required('This field is required!'),
-                    // city: Yup.string().required('This field is required!'),
-                    // state: Yup.string().required('This field is required!'),
-                    // zip_code: Yup.string().required('This field is required!'),
+                    city: Yup.string().required('This field is required!'),
+                    state: Yup.string().required('This field is required!'),
+                    zip_code: Yup.string().required('This field is required!'),
                     identity: Yup.string().required('This field is required!')
                   })
                 }
@@ -479,6 +478,11 @@ class EditModal extends React.Component {
                           <div className={imagePreviewUrl ? 'image-preview is_image' : 'image-preview'}>
                             {$imagePreview}
                           </div>
+                          <Input
+                            name="level"
+                            type="hidden"
+                            value={values.level || ''}
+                          />
                         </FormGroup>
                       </Col>
                       <Col xs="6">
@@ -709,52 +713,48 @@ class EditModal extends React.Component {
                           <FormFeedback>{errors.identity}</FormFeedback>
                         </FormGroup>
                       </Col>
-                      <Col sm="4" xs="6">
-                        {
-                          values.role_id && values.role_id.is_player === 1 && (
-                            <FormGroup>
-                              <Label for="weight_id">Weight</Label>
-                              <Select
-                                name="weight_id"
-                                menuPlacement="top"
-                                classNamePrefix={values.role_id && values.role_id.is_player === 1 && !values.weight_id && touched.weight_id ? 'invalid react-select-lg' : 'react-select-lg'}
-                                value={values.weight_id}
-                                options={weights}
-                                getOptionValue={option => option.id}
-                                getOptionLabel={option => option.name}
-                                onChange={(value) => {
-                                  setFieldValue('weight_id', value);
-                                }}
-                              />
-                              {values.role_id && values.role_id.is_player === 1 && !values.weight_id && touched.weight_id && <FormFeedback className="d-block">This field is required!</FormFeedback>}
-                            </FormGroup>
-                          )
-                        }
-                      </Col>
-                      <Col sm="4" xs="6">
-                        {
-                          values.role_id && values.role_id.is_player === 1 && (
-                            <FormGroup>
-                              <Label for="dan">Dan</Label>
-                              <Select
-                                name="dan"
-                                menuPlacement="top"
-                                classNamePrefix={values.role_id && values.role_id.is_player === 1 && !values.dan && touched.dan ? 'invalid react-select-lg' : 'react-select-lg'}
-                                value={values.dan}
-                                options={Dans}
-                                getOptionValue={option => option.value}
-                                getOptionLabel={option => option.label}
-                                onChange={(value) => {
-                                  setFieldValue('dan', value);
-                                }}
-                              />
-                              {values.role_id && values.role_id.is_player === 1 && !values.dan && touched.dan && <FormFeedback className="d-block">This field is required!</FormFeedback>}
-                            </FormGroup>
-                          )
-                        }
-                      </Col>
                       {
-                        values.role_id && values.role_id.is_player !== 1 && (
+                        values.role_id && values.role_id.is_player === 1 && (
+                          <Col sm="4" xs="6">
+                            <Label for="weight_id">Weight</Label>
+                            <Select
+                              name="weight_id"
+                              menuPlacement="top"
+                              classNamePrefix={values.role_id && values.role_id.is_player === 1 && !values.weight_id && touched.weight_id ? 'invalid react-select-lg' : 'react-select-lg'}
+                              value={values.weight_id}
+                              options={weights}
+                              getOptionValue={option => option.id}
+                              getOptionLabel={option => option.name}
+                              onChange={(value) => {
+                                setFieldValue('weight_id', value);
+                              }}
+                            />
+                            {values.role_id && values.role_id.is_player === 1 && !values.weight_id && touched.weight_id && <FormFeedback className="d-block">This field is required!</FormFeedback>}
+                            </Col>
+                        )
+                      }
+                      {
+                        values.role_id && values.role_id.is_player === 1 && (
+                          <Col sm="4" xs="6">
+                            <Label for="dan">Dan</Label>
+                            <Select
+                              name="dan"
+                              menuPlacement="top"
+                              classNamePrefix={values.role_id && values.role_id.is_player === 1 && !values.dan && touched.dan ? 'invalid react-select-lg' : 'react-select-lg'}
+                              value={values.dan}
+                              options={Dans}
+                              getOptionValue={option => option.value}
+                              getOptionLabel={option => option.label}
+                              onChange={(value) => {
+                                setFieldValue('dan', value);
+                              }}
+                            />
+                            {values.role_id && values.role_id.is_player === 1 && !values.dan && touched.dan && <FormFeedback className="d-block">This field is required!</FormFeedback>}
+                            </Col>
+                        )
+                      }
+                      {
+                        values.role_id && values.role_id.id == 1 && (
                           <Col xs="6">
                             <FormGroup>
                               <Label for="position">Position</Label>
@@ -767,6 +767,28 @@ class EditModal extends React.Component {
                                 invalid={values.role_id && values.role_id.is_player !== 1 && !values.position && touched.position}
                                 />
                               {values.role_id && values.role_id.is_player !== 1 && !values.position && touched.position && (<FormFeedback className="d-block">This field is required!</FormFeedback>)}
+                            </FormGroup>
+                          </Col>
+                        )
+                      }
+                      {
+                        values.role_id && values.role_id.id == 4 && (
+                          <Col xs="6">
+                            <FormGroup>
+                              <Label for="position">Referee Type</Label>
+                              <Select
+                                name="position"
+                                classNamePrefix="react-select-lg"
+                                indicatorSeparator={null}
+                                options={referee_type_options.filter(item => item.value !== 'all')}
+                                getOptionValue={option => option.value}
+                                getOptionLabel={option => option.label}
+                                value={values.position}
+                                onChange={(value) => {
+                                  setFieldValue('position', value);
+                                }}
+                                onBlur={this.handleBlur}
+                              />
                             </FormGroup>
                           </Col>
                         )
@@ -872,7 +894,7 @@ class EditModal extends React.Component {
                     <Row>
                       <Col xs="6">
                         <FormGroup>
-                          <Label for="is_club">Is Club</Label>
+                          <Label for="is_club">Organization Type</Label>
                           <Select
                             name="is_club"
                             classNamePrefix="react-select-lg"

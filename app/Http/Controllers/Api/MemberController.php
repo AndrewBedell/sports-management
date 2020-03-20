@@ -187,11 +187,13 @@ class MemberController extends Controller
     public function show($id)
     {
         $member = Member::where('members.id', $id)
-                        ->leftJoin('organizations', 'organizations.id', '=', 'members.organization_id')
+                        ->leftJoin('organizations AS club', 'club.id', '=', 'members.organization_id')
+                        ->leftJoin('organizations AS org', 'org.id', '=', 'club.parent_id')
                         ->leftJoin('roles', 'roles.id', '=', 'members.role_id')
                         ->leftJoin('users', 'users.member_id', '=', 'members.id')
-                        ->select('members.*', 'organizations.name_o', 'roles.name AS role_name', 'roles.is_player',
-                                'users.id AS uid', 'users.deleted_at AS status')
+                        ->select('members.*', 'org.name_o AS org_name', 'club.name_o AS club_name',
+                                 'club.level', 'roles.name AS role_name', 'roles.is_player',
+                                 'users.id AS uid', 'users.deleted_at AS status')
                         ->first();
 
         if (isset($member)) {
@@ -199,12 +201,15 @@ class MemberController extends Controller
             
             if ($role->is_player) {
                 $member = Member::where('members.id', $id)
-                        ->leftJoin('organizations', 'organizations.id', '=', 'members.organization_id')
+                        ->leftJoin('organizations AS club', 'club.id', '=', 'members.organization_id')
+                        ->leftJoin('organizations AS org', 'org.id', '=', 'club.parent_id')
                         ->leftJoin('roles', 'roles.id', '=', 'members.role_id')
                         ->leftJoin('players', 'players.member_id', '=', 'members.id')
                         ->leftJoin('weights', 'weights.id', '=', 'players.weight_id')
-                        ->select('members.*', 'organizations.name_o', 'roles.name AS role_name', 'roles.is_player',
-                                'weights.id AS weight_id', 'weights.weight', 'players.dan', 'players.skill', 'players.expired_date',
+                        ->select('members.*', 'org.name_o AS org_name', 'club.name_o AS club_name',
+                                'roles.name AS role_name', 'roles.is_player',
+                                'weights.id AS weight_id', 'weights.weight',
+                                'players.dan', 'players.skill', 'players.expired_date',
                                 DB::raw("null AS uid, null AS status"))
                         ->first();
             }
@@ -243,15 +248,15 @@ class MemberController extends Controller
                 'gender' => 'required|boolean',
                 'birthday' => 'required|date',
                 'email' => 'required|string|email|max:255',
-                // 'mobile_phone' => 'required|string|max:255',
-                // 'addressline1' => 'required|string|max:255',
+                'mobile_phone' => 'required|string|max:255',
+                'addressline1' => 'required|string|max:255',
                 // 'country' => 'required|string|max:255',
-                // 'state' => 'required|string|max:255',
-                // 'city' => 'required|string|max:255',
-                // 'zip_code' => 'required|string|max:255',
+                'state' => 'required|string|max:255',
+                'city' => 'required|string|max:255',
+                'zip_code' => 'required|string|max:255',
                 'identity' => 'required|string|max:255',
                 // 'active' => 'required|boolean',
-                // 'register_date' => 'required|date'
+                'register_date' => 'required|date'
             ]);
 
             if ($validMember->fails()) {
