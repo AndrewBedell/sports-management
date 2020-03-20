@@ -44,6 +44,23 @@ class NFProfile extends Component {
     const trans = await Api.get(`transdetail/${nf_id}`);
     switch (trans.response.status) {
       case 200:
+        for (let i = 0; i < trans.body.detail.length; i++) {
+          trans.body.detail[i].created_at = trans.body.detail[i].created_at.substring(0, 10);
+          trans.body.detail[i].len = trans.body.detail[i].players.split(',').length;
+
+          let d = new Date(trans.body.detail[i].created_at);
+
+          let year = d.getFullYear() + 1;
+
+          let month = d.getMonth() + 1;
+          if (month < 10)
+            month = '0' + month;
+
+          let day = d.getDate();
+
+          trans.body.detail[i].expire = year + '-' + month + '-' + day;
+        }
+        
         this.setState({
           detail: trans.body.detail
         });

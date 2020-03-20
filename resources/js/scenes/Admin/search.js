@@ -96,31 +96,16 @@ class Search extends Component {
         const orgList = orgArr.map((org, Index) => <option key={Index} value={org} />);
 
         const clubArr = [];
-        const club_list1 = await Api.get(`organization-child/${this.state.nf_id}`);
-        switch (club_list1.response.status) {
+        const club_list = await Api.get(`countryclubs/${this.state.nf_id}`);
+        switch (club_list.response.status) {
           case 200:
-            for (let i = 0; i < club_list1.body.length; i++) {
-              if (club_list1.body[i].is_club == 1) {
-                clubArr.push({ id: club_list1.body[i].parent_id, value: club_list1.body[i].name_o });
-              } else {
-                const club_list2 = await Api.get(`organization-child/${club_list1.body[i].id}`);
-                
-                switch (club_list2.response.status) {
-                  case 200:
-                    for (let j = 0; j < club_list2.body.length; j++) {
-                      clubArr.push({ id: club_list2.body[i].parent_id, value: club_list2.body[i].name_o });
-                    }
-                    break;
-                  default:
-                    break;
-                }
-              }
+            for (let i = 0; i < club_list.body.clubs.length; i++) {
+              clubArr.push({ id: club_list.body.clubs[i].parent_id, value: club_list.body.clubs[i].name_o })
             }
             break;
           default:
             break;
         }
-        
         this.setState({
           orgs: orgList,
           org_list: data,

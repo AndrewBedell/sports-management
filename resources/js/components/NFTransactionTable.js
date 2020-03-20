@@ -157,7 +157,7 @@ class NFTransactionTable extends Component {
               sorted={column === 'players' ? direction : null}
               onClick={this.handleSort.bind(this, 'players')}
             >
-              Players
+              Judokas
             </Table.HeaderCell>
             <Table.HeaderCell
               className="text-center"
@@ -184,11 +184,11 @@ class NFTransactionTable extends Component {
                 >
                   <Table.Cell className="text-center">{item.id}</Table.Cell>
                   <Table.Cell className="text-center">{item.created_at}</Table.Cell>
-                  <Table.Cell>{item.region}</Table.Cell>
-                  <Table.Cell>{item.club}</Table.Cell>
-                  <Table.Cell className="text-center">{item.players}</Table.Cell>
+                  <Table.Cell className="text-center">{item.Reg}</Table.Cell>
+                  <Table.Cell className="text-center">{item.Club}</Table.Cell>
+                  <Table.Cell className="text-center">{item.len}</Table.Cell>
                   <Table.Cell className="text-center">{item.amount}</Table.Cell>
-                  <Table.Cell>{item.created_at}</Table.Cell>
+                  <Table.Cell className="text-center">{item.expire}</Table.Cell>
                 </Table.Row>
               ))
             ) : (

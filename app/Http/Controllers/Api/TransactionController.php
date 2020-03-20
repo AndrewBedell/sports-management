@@ -20,6 +20,7 @@ class TransactionController extends Controller
     {
       $nfs = array();
       $clubs = array();
+      $players = array();
 
       $total = array();
 
@@ -42,10 +43,16 @@ class TransactionController extends Controller
           }
         }
 
+        $players[$i] = Member::whereIn('organization_id', $clubs[$i])
+                      ->where('role_id', 3)
+                      ->select('active', DB::raw('count(id) as player'))
+                      ->groupBy('active')
+                      ->get();
+
         $subtotal[$i] = Transaction::whereIn('club_id', $clubs[$i])
                      ->where('created_at', 'like', date('Y') . '%')
-                     ->select(DB::raw('DATE_FORMAT(created_at, "%Y-%m") new_date'), DB::raw('sum(amount) as amount'))
-                     ->groupBy('new_date')
+                     ->select(DB::raw('DATE_FORMAT(created_at, "%m") month'), DB::raw('sum(amount) as amount'))
+                     ->groupBy('month')
                      ->get();
       }
 
@@ -66,7 +73,8 @@ class TransactionController extends Controller
         'status' => 'success',
         'total' => $total,
         'subtotal' => $subtotal,
-        'nfs' => $nfs
+        'nfs' => $nfs,
+        'players' => $players
       ], 200);
     }
 

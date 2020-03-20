@@ -31,7 +31,8 @@ class Admin extends Component {
       confirmed: [],
       notpayed: [],
       pending: [],
-      sum: []
+      sum: [],
+      paid: 0
     }
   }
 
@@ -51,6 +52,8 @@ class Admin extends Component {
     const notpayed = [];
     const pending = [];
 
+    let paid = 0;
+
     const trans = await Api.get('finance');
     const { response, body } = trans;
     switch (response.status) {
@@ -62,9 +65,9 @@ class Admin extends Component {
           pieLabels.push(body.nfs[i].name_s);
           pieColors.push(colorList[i]);
 
-          let lineData = [0, 0, 0];
+          let lineData = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
           for (let j = 0; j < body.subtotal[i].length; j++) {
-            lineData.push(body.subtotal[i][j].amount);
+            lineData[parseInt(body.subtotal[i][j].month) - 1] = body.subtotal[i][j].amount;
           }
 
           lineSeries.push(lineData);
@@ -99,23 +102,25 @@ class Admin extends Component {
                 },
               },
               xaxis: {
-                categories: ['Jan', 'Feb', 'Mar'],
+                categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
               }
             }
           }
 
           lineCharts.push(chart);
 
-          let confirm = Math.floor((Math.random() * 100) + 200);
+          let confirm = body.players[i][1].player;
           confirmed.push(confirm);
 
-          let notpay = Math.floor((Math.random() * 100) + 50);
+          let notpay = body.players[i][0].player;
           notpayed.push(notpay);
 
-          let pend = Math.floor((Math.random() * 50) + 50);
+          let pend = body.players[i][2].player;
           pending.push(pend);
 
           sum.push(confirm + notpay + pend);
+
+          paid += confirm;
         }
 
         this.setState({
@@ -123,7 +128,8 @@ class Admin extends Component {
           confirmed,
           notpayed,
           pending,
-          sum
+          sum,
+          paid
         });
         break;
       default:
@@ -192,14 +198,13 @@ class Admin extends Component {
   }
 
   handleSelectItem(id) {
-    localStorage.setItem('nf_id', id)
-    this.props.history.push('/admin/search');
+    this.props.history.push('/admin/nfprofile', id);
   }
 
   render() {
     const { 
       pieChart, lineChart, nfs, chartOrder,
-      confirmed, notpayed, pending, sum
+      confirmed, notpayed, pending, sum, paid
     } = this.state;
 
     let d = new Date();
@@ -241,7 +246,7 @@ class Admin extends Component {
                     <Card.Content className="text-center">
                       <Card.Header><h5>All Paid Members</h5></Card.Header>
                       <Card.Description>
-                        25140 Users
+                        {paid} Judokas
                       </Card.Description>
                     </Card.Content>
                   </Card>
@@ -343,27 +348,36 @@ class Admin extends Component {
                               </a>
                             </Table.Cell>
                             <Table.Cell width="1" className="text-center">
-                              {confirmed[index]} ( {Math.floor(confirmed[index] / sum[index] * 100)}% )
+                              {confirmed[index]} ( {Math.floor(confirmed[index] / sum[index] * 10000) / 100}% )
                             </Table.Cell>
                             <Table.Cell width="3" className="bar">
                               <div className="success-div">
-                                <Progress bar color="success" value={Math.floor(confirmed[index] / sum[index] * 100)} />
+                                <Progress bar 
+                                  color="success" 
+                                  value={Math.floor(confirmed[index] / sum[index] * 10000) / 100}
+                                />
                               </div>
                             </Table.Cell>
                             <Table.Cell width="1" className="text-center">
-                              {notpayed[index]} ( {Math.floor(notpayed[index] / sum[index] * 100)}% )
+                              {notpayed[index]} ( {Math.floor(notpayed[index] / sum[index] * 10000) / 100}% )
                             </Table.Cell>
                             <Table.Cell width="3" className="bar">
                               <div className="danger-div">
-                                <Progress bar color="danger" value={Math.floor(notpayed[index] / sum[index] * 100)} />
+                                <Progress bar 
+                                  color="danger" 
+                                  value={Math.floor(notpayed[index] / sum[index] * 10000) / 100}
+                                />
                               </div>
                             </Table.Cell>
                             <Table.Cell width="1" className="text-center">
-                              {pending[index]} ( {Math.floor(pending[index] / sum[index] * 100)}% )
+                              {pending[index]} ( {Math.floor(pending[index] / sum[index] * 10000) / 100}% )
                             </Table.Cell>
                             <Table.Cell width="3" className="bar">
                               <div className="warning-div">
-                                <Progress bar color="warning" value={Math.floor(pending[index] / sum[index] * 100)} />
+                                <Progress bar 
+                                  color="warning" 
+                                  value={Math.floor(pending[index] / sum[index] * 10000) / 100} 
+                                />
                               </div>
                             </Table.Cell>
                           </Table.Row>

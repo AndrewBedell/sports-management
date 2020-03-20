@@ -408,6 +408,17 @@ class OrganizationController extends Controller
         return $orgs;
     }
 
+    public function country_clubs($id) {
+        $nf = Organization::find($id);
+
+        $clubs = Organization::where('country', $nf->country)->where('is_club', 1)->get();
+
+        return response()->json([
+            'status' => 'success',
+            'clubs' => $clubs
+        ], 200);
+    }
+
     /**
      * Display a listing of the clubs.
      *
