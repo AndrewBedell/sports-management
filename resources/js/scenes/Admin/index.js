@@ -70,7 +70,7 @@ class Admin extends Component {
           let lineData = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
           for (let j = 0; j < body.subtotal[i].length; j++) {
             lineData[parseInt(body.subtotal[i][j].month) - 1] = body.subtotal[i][j].amount;
-            amount += body.subtotal[i][j].amount;
+            amount += parseFloat(body.subtotal[i][j].amount);
           }
 
           lineSeries.push(lineData);
