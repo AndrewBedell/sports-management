@@ -112,13 +112,13 @@ class Admin extends Component {
 
           lineCharts.push(chart);
 
-          let confirm = body.players[i][1].player;
+          let confirm = parseInt(body.players[i][1].player);
           confirmed.push(confirm);
 
-          let notpay = body.players[i][0].player;
+          let notpay = parseInt(body.players[i][0].player);
           notpayed.push(notpay);
 
-          let pend = body.players[i][2].player;
+          let pend = parseInt(body.players[i][2].player);
           pending.push(pend);
 
           sum.push(confirm + notpay + pend);
