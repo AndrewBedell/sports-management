@@ -416,7 +416,7 @@ class OrganizationController extends Controller
     public function country_clubs($id) {
         $nf = Organization::find($id);
 
-        $clubs = Organization::where('country', $nf->country)->where('is_club', 1)->get();
+        $clubs = Organization::where('country', $nf->country)->where('is_club', 1)->orderBy('name_o')->get();
 
         return response()->json([
             'status' => 'success',
@@ -517,7 +517,7 @@ class OrganizationController extends Controller
     {
         $orgs = array();
 
-        $childs = Organization::where('parent_id', $id)->get();
+        $childs = Organization::where('parent_id', $id)->orderBy('name_o')->get();
 
         foreach ($childs as $child) {
             $hasChild = Organization::where('parent_id', $child->id)->count();

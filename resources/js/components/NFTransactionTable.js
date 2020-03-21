@@ -47,7 +47,7 @@ class NFTransactionTable extends Component {
 
   componentWillReceiveProps(props) {
     const { items } = props;
-    if (items.length > 0 && this.props.items !== items) {
+    if (this.props.items !== items) {
       if (props.items.length > 0) {
         this.setState({
           activePage: 1
@@ -184,8 +184,8 @@ class NFTransactionTable extends Component {
                 >
                   <Table.Cell className="text-center">{item.id}</Table.Cell>
                   <Table.Cell className="text-center">{item.created_at}</Table.Cell>
-                  <Table.Cell className="text-center">{item.Reg}</Table.Cell>
-                  <Table.Cell className="text-center">{item.Club}</Table.Cell>
+                  <Table.Cell className="text-center">{item.reg}</Table.Cell>
+                  <Table.Cell className="text-center">{item.club}</Table.Cell>
                   <Table.Cell className="text-center">{item.len}</Table.Cell>
                   <Table.Cell className="text-center">{item.amount}</Table.Cell>
                   <Table.Cell className="text-center">{item.expire}</Table.Cell>

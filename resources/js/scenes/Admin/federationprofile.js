@@ -5,9 +5,10 @@ import React, {
   Component, Fragment
 } from 'react';
 import { 
-  Row, Col, Button, Table
+  Row, Col, Button, FormGroup
 } from 'reactstrap';
-import { Segment, Image } from 'semantic-ui-react';
+import { Segment, Image, Input } from 'semantic-ui-react';
+import Select from 'react-select';
 import Bitmaps from '../../theme/Bitmaps';
 import Api from '../../apis/app';
 import {
@@ -23,7 +24,11 @@ class NFProfile extends Component {
 
     this.state = {
       nf: [],
-      detail: []
+      detail: [],
+      filter: [],
+      orgs: [],
+      original_clubs: [],
+      clubs: []
     };
   }
 
@@ -35,6 +40,30 @@ class NFProfile extends Component {
       case 200:
         this.setState({
           nf: org.body
+        });
+        break;
+      default:
+        break;
+    }
+
+    const org_response = await Api.get(`organization-child/${nf_id}`);
+    const { response, body } = org_response;
+    switch (response.status) {
+      case 200:
+        this.setState({
+          orgs: body.filter(item => item.is_club == 0)
+        });
+        break;
+      default:
+        break;
+    }
+
+    const club_list = await Api.get(`countryclubs/${nf_id}`);
+    switch (club_list.response.status) {
+      case 200:
+        this.setState({
+          original_clubs: club_list.body.clubs,
+          clubs: club_list.body.clubs
         });
         break;
       default:
@@ -62,7 +91,8 @@ class NFProfile extends Component {
         }
         
         this.setState({
-          detail: trans.body.detail
+          detail: trans.body.detail,
+          filter: trans.body.detail
         });
         break;
       default:
@@ -70,8 +100,35 @@ class NFProfile extends Component {
     }
   }
 
+  handleSearchFilter(type, value) {
+    if (type == 'search_org') {
+      if (!value) {
+        this.setState({
+          filter: this.state.detail
+        });
+      } else {
+        this.setState({
+          clubs: this.state.original_clubs.filter(item => item.parent_id == value.id),
+          filter: this.state.detail.filter(item => item.reg_id == value.id)
+        });
+      }
+    }
+
+    if (type == 'search_name') {
+      if (!value) {
+        this.setState({
+          filter: this.state.filter
+        });
+      } else {
+        this.setState({
+          filter: this.state.filter.filter(item => item.club_id == value.id)
+        });
+      }
+    }
+  }
+
   render() {
-    const { nf, detail } = this.state;
+    const { nf, filter, orgs, clubs } = this.state;
     
     return (
       <Fragment>
@@ -85,7 +142,7 @@ class NFProfile extends Component {
               <Button 
                 outline
                 color="info"
-                onClick={() => this.props.history.push('/admin/federations')}
+                onClick={() => this.props.history.push('/admin/home')}
               >
                 <i className="fa fa-arrow-left fa-lg"></i>
               </Button>
@@ -180,10 +237,44 @@ class NFProfile extends Component {
                   </Segment>
                 </Col>
               </Row>
+              <Row className="mt-5">
+                <Col xl="3" lg="4" md="6" sm="6" xs="12">
+                  <FormGroup>
+                    <Select
+                      name="search_org"
+                      classNamePrefix="react-select-lg"
+                      placeholder="Regional Federation"
+                      isClearable
+                      options={orgs}
+                      getOptionValue={option => option.id}
+                      getOptionLabel={option => option.name_o}
+                      onChange={(org) => {
+                        this.handleSearchFilter('search_org', org);
+                      }}
+                    />
+                  </FormGroup>
+                </Col>
+                <Col xl="3" lg="3" md="6" sm="6" xs="12">
+                  <FormGroup>
+                    <Select
+                      name="search_name"
+                      classNamePrefix="react-select-lg"
+                      placeholder="Club Name"
+                      isClearable
+                      options={clubs}
+                      getOptionValue={option => option.id}
+                      getOptionLabel={option => option.name_o}
+                      onChange={(club) => {
+                        this.handleSearchFilter('search_name', club);
+                      }}
+                    />
+                  </FormGroup>
+                </Col>
+              </Row>
               <Row className="mt-3">
                 <Col sm="12">
                   <NFTransactionTable
-                    items={detail}
+                    items={filter}
                   />
                 </Col>
               </Row>

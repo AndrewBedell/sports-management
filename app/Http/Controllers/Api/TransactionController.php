@@ -102,7 +102,9 @@ class TransactionController extends Controller
                      ->leftJoin('organizations AS org1', 'org1.id', '=', 'transactions.club_id')
                      ->leftJoin('organizations AS org2', 'org2.id', '=', 'org1.parent_id')
                      ->where('transactions.created_at', 'like', date('Y') . '%')
-                     ->select('transactions.*', 'org2.name_o AS Reg', 'org1.name_o AS Club')
+                     ->select('transactions.*', 
+                              'org2.id AS reg_id', 'org2.name_o AS reg', 
+                              'org1.id AS club_id', 'org1.name_o AS club')
                      ->orderBy('transactions.created_at', 'desc')
                      ->get();
 

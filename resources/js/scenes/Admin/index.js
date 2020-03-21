@@ -126,7 +126,7 @@ class Admin extends Component {
           notpayed.push(notpay);
           pending.push(pend);
 
-          sum.push(confirm + notpay + pend);
+          sum.push((confirm + notpay + pend) == 0 ? 1 : confirm + notpay + pend);
 
           paid += confirm;
         }
