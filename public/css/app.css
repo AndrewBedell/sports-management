@@ -59095,11 +59095,12 @@ body .main-content {
 }
 
 body.admin {
-  background-color: #FFFFFF;
+  background-color: #242424;
+  color: #97A3B4;
 }
 
 body .admin-topbar {
-  background-color: #FFFFFF;
+  background-color: #181818;
   border-bottom: 2px solid #BDBCC6;
   height: 50px;
 }
@@ -59166,7 +59167,7 @@ body .admin-sidebar .nav .navbar .nav-item .nav-link.active {
 }
 
 body .admin-dashboard {
-  background-color: #E1E5EB;
+  background-color: #242424;
   height: calc(100vh - 52px);
   overflow-x: hidden;
   overflow-y: auto;
@@ -59185,9 +59186,12 @@ body .admin-dashboard table td a.detail-link:hover {
 }
 
 body .admin-dashboard .home-content {
-  background-color: #FFFFFF;
   height: calc(100vh - 105px);
   padding: 15px;
+}
+
+body .admin-dashboard .home-content .chart {
+  background-color: #FFFFFF;
 }
 
 body .admin-dashboard .home-content .apexcharts-canvas .apexcharts-legend-series {

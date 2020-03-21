@@ -275,7 +275,7 @@ class Admin extends Component {
                   <h4>{date}</h4>
                 </Col>
               </Row>
-              <Row className="row-0">
+              <Row className="row-0 chart">
                 <Col sm="12" md="6" lg="3">
                   {
                     pieChart && pieChart.series && (
