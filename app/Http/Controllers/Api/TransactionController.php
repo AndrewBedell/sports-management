@@ -114,12 +114,38 @@ class TransactionController extends Controller
       ], 200);
     }
 
-    public function players($id)
+    public function players($nf_id)
     {
-      $trans = Transaction::find($id);
-      $players = $trans->players;
+      $clubs = array();
+      $players = array();
 
-      $players = explode(',', $players);
+      $nf = Organization::find($nf_id);
+
+      $orgs = Organization::where('parent_id', $nf->id)->get();
+
+      foreach ($orgs as $org) {
+        if ($org->is_club == 1) {
+          array_push($clubs, $org->id);
+        } else {
+          $club = Organization::where('parent_id', $org->id)->get();
+
+          foreach ($club as $c) {
+            array_push($clubs, $c->id);
+          }
+        }
+      }
+
+      $trans = Transaction::whereIn('club_id', $clubs)->get();
+
+      foreach ($trans as $item) {
+        $player_list = explode(',', $item->players);
+
+        foreach($player_list as $player) {
+          array_push($players, $player);
+        }
+      }
+
+      $players = array_unique($players);
 
       $members = Member::leftJoin('players', 'players.member_id', '=', 'members.id')
                   ->leftJoin('weights', 'weights.id', '=', 'players.weight_id')

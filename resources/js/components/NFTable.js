@@ -144,7 +144,11 @@ class NFTable extends Component {
           data && data.length > 0 && (
             data.map((item, index) => (
               <Table.Row key={index}>
-                <Table.Cell>{item.name} {item.name_o}</Table.Cell>
+                <Table.Cell>
+                  <a className="detail-link" onClick={() => onSelect(item.id)}>
+                    {item.name} {item.name_o}
+                  </a>
+                </Table.Cell>
                 <Table.Cell className="text-center">
                   <a href={"http://" + item.country + ".livemedia.uz"}>{item.country + ".livemedia.uz"}</a>
                 </Table.Cell>

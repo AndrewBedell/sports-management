@@ -10,9 +10,8 @@ import {
 } from 'semantic-ui-react';
 import Select from 'react-select';
 import _ from 'lodash';
-import { Genders } from '../configs/data';
 
-class PlayerPayTable extends Component {
+class PayDetailTable extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -36,31 +35,31 @@ class PlayerPayTable extends Component {
   }
 
   componentWillReceiveProps() {
-    if (this.props.players.length > 0) {
+    if (this.props.detail.length > 0) {
       this.setState({
         activePage: 1
       });
     }
     
-    const { players } = this.props;
+    const { detail } = this.props;
     const { per_page } = this.state;
     this.setState({
-      data: players.slice(0, per_page)
+      data: detail.slice(0, per_page)
     });
   }
 
   handlePaginationChange(e, { activePage }) {
-    const { players } = this.props;
+    const { detail } = this.props;
     const { per_page } = this.state;
     if (activePage !== 1) {
       this.setState({
         activePage,
-        data: players.slice(((activePage - 1) * per_page), activePage * per_page)
+        data: detail.slice(((activePage - 1) * per_page), activePage * per_page)
       });
     } else {
       this.setState({
         activePage,
-        data: players.slice(0, per_page)
+        data: detail.slice(0, per_page)
       });
     }
   }
@@ -85,18 +84,18 @@ class PlayerPayTable extends Component {
   }
 
   handleChangePerPage(page_num) {
-    const { players } = this.props;
+    const { detail } = this.props;
     this.setState({
       activePage: 1,
       current_perPage: page_num,
       per_page: page_num.value,
-      data: players.slice(0, page_num.value)
+      data: detail.slice(0, page_num.value)
     });
   }
 
   render() {
     const {
-      players
+      detail
     } = this.props;
 
     const {
@@ -115,51 +114,60 @@ class PlayerPayTable extends Component {
           <Table.Row>
             <Table.HeaderCell
               className="text-center"
-              sorted={column === 'name' ? direction : null}
-              onClick={this.handleSort.bind(this, 'name')}
+              width="2"
+              sorted={column === 'date' ? direction : null}
+              onClick={this.handleSort.bind(this, 'date')}
             >
-              Name
+              Date
             </Table.HeaderCell>
             <Table.HeaderCell
               className="text-center"
-              sorted={column === 'gender' ? direction : null}
-              onClick={this.handleSort.bind(this, 'gender')}
+              sorted={column === 'region' ? direction : null}
+              onClick={this.handleSort.bind(this, 'region')}
             >
-              Gender
+              Region
             </Table.HeaderCell>
             <Table.HeaderCell
               className="text-center"
-              sorted={column === 'weight' ? direction : null}
-              onClick={this.handleSort.bind(this, 'weight')}
+              sorted={column === 'club' ? direction : null}
+              onClick={this.handleSort.bind(this, 'club')}
             >
-              Weight
+              Club
             </Table.HeaderCell>
             <Table.HeaderCell
               className="text-center"
-              sorted={column === 'dan' ? direction : null}
-              onClick={this.handleSort.bind(this, 'dan')}
+              sorted={column === 'amount' ? direction : null}
+              onClick={this.handleSort.bind(this, 'amount')}
             >
-              Dan
+              Amount
+            </Table.HeaderCell>
+            <Table.HeaderCell
+              className="text-center"
+              sorted={column === 'expire' ? direction : null}
+              onClick={this.handleSort.bind(this, 'expire')}
+            >
+              Percent (%)
             </Table.HeaderCell>
           </Table.Row>
         </Table.Header>
         <Table.Body>
           {
-            data && data.length > 0 && (
-              data.map((player, k) => (
-                <Table.Row key={k}>
-                  <Table.Cell>
-                    { player.name }
-                    {' '}
-                    {player.surname}
-                  </Table.Cell>
-                  <Table.Cell className="text-center">
-                    {player.gender && player.gender == 1 ? Genders[0].name : Genders[1].name}
-                  </Table.Cell>
-                  <Table.Cell className="text-center">{player.weight}</Table.Cell>
-                  <Table.Cell className="text-center">{player.dan}</Table.Cell>
+            data && data.length > 0 ? (
+              data.map((item, index) => (
+                <Table.Row
+                  key={index}
+                >
+                  <Table.Cell className="text-center">{item.created_at}</Table.Cell>
+                  <Table.Cell className="text-center">{item.reg}</Table.Cell>
+                  <Table.Cell className="text-center">{item.club}</Table.Cell>
+                  <Table.Cell className="text-center">${item.amount}</Table.Cell>
+                  <Table.Cell className="text-center">{item.percent}%</Table.Cell>
                 </Table.Row>
               ))
+            ) : (
+              <Table.Row>
+                <Table.Cell colSpan="7" className="text-center">No Transactions</Table.Cell>
+              </Table.Row>
             )
           }
         </Table.Body>
@@ -181,12 +189,12 @@ class PlayerPayTable extends Component {
                 }}
               />
             </Table.HeaderCell>
-            <Table.HeaderCell colSpan="3">
+            <Table.HeaderCell colSpan="4">
               <Menu floated="right" pagination>
                 <Pagination
                   activePage={activePage}
                   onPageChange={this.handlePaginationChange.bind(this)}
-                  totalPages={Math.ceil(players.length / per_page)}
+                  totalPages={Math.ceil(detail.length / per_page)}
                 />
               </Menu>
             </Table.HeaderCell>
@@ -197,4 +205,4 @@ class PlayerPayTable extends Component {
   }
 }
 
-export default PlayerPayTable;
+export default PayDetailTable;

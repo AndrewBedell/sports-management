@@ -15,7 +15,7 @@ import Chart from 'react-apexcharts';
 import AdminTopBar from '../../components/TopBar/AdminTopBar';
 import AdminBar from '../../components/AdminBar';
 import NFTable from '../../components/NFTable';
-import PlayerPayTable from '../../components/PlayerPayTable';
+import PayDetailTable from '../../components/PayDetailTable';
 
 class Detail extends Component {
   constructor(props) {
@@ -24,57 +24,48 @@ class Detail extends Component {
     this.state = {
       detail: [],
       nfs: [],
-      players: [],
 
       series: [{
-        name: 'Likes',
-        data: [4, 20]
+        data: [{
+            x: new Date(1538778600000),
+            y: [6629.81, 6650.5, 6623.04, 6633.33]
+          },
+          {
+            x: new Date(1538780400000),
+            y: [6632.01, 6643.59, 6620, 6630.11]
+          },
+          {
+            x: new Date(1538782200000),
+            y: [6630.71, 6648.95, 6623.34, 6635.65]
+          },
+          {
+            x: new Date(1538784000000),
+            y: [6635.65, 6651, 6629.67, 6638.24]
+          },
+          {
+            x: new Date(1538785800000),
+            y: [6638.24, 6640, 6620, 6624.47]
+          }
+        ]
       }],
       options: {
         chart: {
-          zoom: {
-            enabled: false
-          }
-        },
-        dataLabels: {
-          enabled: false
-        },
-        fill: {
-          type: 'gradient',
-          gradient: {
-            shade: 'dark',
-            gradientToColors: [ '#FDD835'],
-            shadeIntensity: 1,
-            type: 'horizontal',
-            opacityFrom: 1,
-            opacityTo: 1,
-            stops: [0, 100, 100, 100]
-          },
-        },
-        stroke: {
-          width: 3,
-          curve: 'smooth'
+          type: 'candlestick',
+          height: 350
         },
         title: {
-          text: 'Total',
-          align: 'left',
-          style: {
-            fontSize: "16px",
-            color: '#666'
-          }
+          text: 'Totoal Amount Chart',
+          align: 'center'
         },
         xaxis: {
-          type: 'datetime',
-          categories: ['2020-03-19', '2020-03-20'],
+          type: 'datetime'
         },
         yaxis: {
-          min: 0,
-          max: 40,
-          title: {
-            text: 'Engagement',
-          },
+          tooltip: {
+            enabled: true
+          }
         }
-      },
+      }
     };
   }
 
@@ -93,12 +84,15 @@ class Detail extends Component {
   }
 
   async handleSelectItem(id) {
-    const trans = await Api.get(`playerdetail/${id}`);
+    const trans = await Api.get(`transdetail/${id}`);
     const { response, body } = trans;
     switch (response.status) {
       case 200:
+        for (let i = 0; i < body.detail.length; i++) {
+          body.detail[i].created_at = body.detail[i].created_at.substring(0, 10);
+        }
         this.setState({
-          players: body.members
+          detail: body.detail
         });
         break;
       default:
@@ -107,7 +101,7 @@ class Detail extends Component {
   }
 
   render() {
-    const { nfs, players } = this.state;
+    const { nfs, detail } = this.state;
 
     return (
       <Fragment>
@@ -117,7 +111,7 @@ class Detail extends Component {
           <AdminBar />
 
           <div className="admin-dashboard">
-            <h4><b>Detail</b></h4>
+            <h4><b>All Amount from National Federations</b></h4>
 
             <div className="content">
               <Row className="row-0">
@@ -126,7 +120,7 @@ class Detail extends Component {
                     options={this.state.options}
                     series={this.state.series}
                     height="300"
-                    type="line"
+                    type="candlestick"
                   />
                 </Col>
               </Row>
@@ -146,9 +140,9 @@ class Detail extends Component {
                 <Col sm="6">
                   <div className="table-responsive mt-5">
                   {
-                    players.length > 0 && (
-                      <PlayerPayTable
-                        players={players}
+                    detail.length > 0 && (
+                      <PayDetailTable
+                        detail={detail}
                       />  
                     )
                   }

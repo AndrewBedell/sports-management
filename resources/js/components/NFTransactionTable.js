@@ -187,7 +187,7 @@ class NFTransactionTable extends Component {
                   <Table.Cell className="text-center">{item.reg}</Table.Cell>
                   <Table.Cell className="text-center">{item.club}</Table.Cell>
                   <Table.Cell className="text-center">{item.len}</Table.Cell>
-                  <Table.Cell className="text-center">{item.amount}</Table.Cell>
+                  <Table.Cell className="text-center">${item.amount}</Table.Cell>
                   <Table.Cell className="text-center">{item.expire}</Table.Cell>
                 </Table.Row>
               ))
