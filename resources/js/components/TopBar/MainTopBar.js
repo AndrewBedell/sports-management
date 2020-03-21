@@ -14,7 +14,6 @@ class MainTopBar extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      level: false,
       is_nf: false,
       user_is_club: false,
       isOpen: false
@@ -26,12 +25,10 @@ class MainTopBar extends Component {
 
   componentDidMount() {
     const user = JSON.parse(localStorage.getItem('auth'));
-    const level = user.user.level == 1 && true;
     const is_nf = user.user.is_nf == 1 && true;
     const user_is_club = user.user.is_club_member == 1 && true;
 
     this.setState({
-      level,
       is_nf,
       user_is_club
     });
@@ -55,7 +52,7 @@ class MainTopBar extends Component {
   }
 
   render() {
-    const { level, is_nf, user_is_club, isOpen } = this.state;
+    const { is_nf, user_is_club, isOpen } = this.state;
     return (
       <Nav className="top-header dashboard-top-bar">
         <NavbarBrand className="nav-logo" tag={Link} to="/" onClick={this.toggleClose}>
@@ -72,19 +69,15 @@ class MainTopBar extends Component {
                   <div />
                 </NavLink>
               </NavItem>
+              <NavItem onClick={this.toggleClose}>
+                <NavLink tag={Link} to="/invite-users" exact>
+                  <i className="fa fa-user" />
+                  Invite User
+                  <div />
+                </NavLink>
+              </NavItem>
               {
-                ((level && level == 1 && is_nf && is_nf == 1) || (user_is_club && user_is_club == 1)) && (
-                  <NavItem onClick={this.toggleClose}>
-                    <NavLink tag={Link} to="/invite-users" exact>
-                      <i className="fa fa-user" />
-                      Invite User
-                      <div />
-                    </NavLink>
-                  </NavItem>
-                )
-              }
-              {
-                ((level && level == 1) || (user_is_club && user_is_club == 1)) && (
+                (user_is_club && user_is_club == 1) && (
                   <NavItem onClick={this.toogleClose}>
                     <NavLink tag={Link} to="/payment-player" exact>
                       <i className="fa fa-credit-card" />

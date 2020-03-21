@@ -283,9 +283,34 @@ class UserController extends Controller
         $user = JWTAuth::parseToken()->authenticate();
         $me = Member::find($user->member_id);
 
+        $myOrg = Organization::find($me->organization_id);
+
+        $allOrgs = array();
+
+        if ($myOrg->is_club == 1) {
+            array_push($allOrgs, $myOrg->id);
+        } else {
+            array_push($allOrgs, $myOrg->id);
+
+            $orgs = Organization::where('parent_id', $myOrg->id)->get();
+
+            foreach ($orgs as $org) {
+                if ($org->is_club == 1) {
+                    array_push($allOrgs, $org->id);
+                } else {
+                    array_push($allOrgs, $org->id);
+
+                    $clubs = Organization::where('parent_id', $org->id)->get();
+
+                    foreach ($clubs as $club) {
+                        array_push($allOrgs, $club->id);
+                    }
+                }
+            }
+        }
+
         $members = Member::where('role_id', 1)
-                        ->where('members.id', '!=', $me->id)
-                        ->where('members.country', $me->country)
+                        ->whereIn('members.organization_id', $allOrgs)
                         ->where('members.active', 0)
                         ->leftJoin('organizations', 'organizations.id', 'members.organization_id')
                         ->leftJoin('users', 'users.member_id', '=', 'members.id')
@@ -303,7 +328,7 @@ class UserController extends Controller
 
         $users = Member::where('role_id', 1)
                         ->where('members.id', '!=', $me->id)
-                        ->where('members.country', $me->country)
+                        ->whereIn('members.organization_id', $allOrgs)
                         ->where('members.active', 1)
                         ->leftJoin('users', 'users.member_id', '=', 'members.id')
                         ->select('members.*', 'users.id AS user_id')
