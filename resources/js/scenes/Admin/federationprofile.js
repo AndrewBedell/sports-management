@@ -9,6 +9,8 @@ import {
 } from 'reactstrap';
 import { Segment, Image, Input } from 'semantic-ui-react';
 import Select from 'react-select';
+import SemanticDatepicker from 'react-semantic-ui-datepickers';
+import 'react-semantic-ui-datepickers/dist/react-semantic-ui-datepickers.css';
 import Bitmaps from '../../theme/Bitmaps';
 import Api from '../../apis/app';
 import {
@@ -26,9 +28,12 @@ class NFProfile extends Component {
       nf: [],
       detail: [],
       filter: [],
+      data: [],
       orgs: [],
       original_clubs: [],
-      clubs: []
+      clubs: [],
+      from: '',
+      to: ''
     };
   }
 
@@ -92,7 +97,8 @@ class NFProfile extends Component {
         
         this.setState({
           detail: trans.body.detail,
-          filter: trans.body.detail
+          filter: trans.body.detail,
+          data: trans.body.detail
         });
         break;
       default:
@@ -101,29 +107,113 @@ class NFProfile extends Component {
   }
 
   handleSearchFilter(type, value) {
+    let from = this.state.from;
+    let to = this.state.to;
+
     if (type == 'search_org') {
       if (!value) {
-        this.setState({
-          filter: this.state.detail
-        });
+        if (from !== '' && to !== '') {
+          this.setState({
+            filter: this.state.detail.filter(item => Date.parse(item.created_at) >= from && 
+                                              Date.parse(item.created_at) <= to),
+            data: this.state.detail
+          });
+        } else {
+          this.setState({
+            filter: this.state.detail,
+            data: this.state.detail
+          });
+        }
       } else {
-        this.setState({
-          clubs: this.state.original_clubs.filter(item => item.parent_id == value.id),
-          filter: this.state.detail.filter(item => item.reg_id == value.id)
-        });
+        if (from !== '' && to !== '') {
+          this.setState({
+            clubs: this.state.original_clubs.filter(item => item.parent_id == value.id),
+            filter: this.state.detail.filter(item => item.reg_id == value.id &&
+                        Date.parse(item.created_at) >= from && Date.parse(item.created_at) <= to),
+            data: this.state.detail.filter(item => item.reg_id == value.id)
+          });
+        } else {
+          this.setState({
+            clubs: this.state.original_clubs.filter(item => item.parent_id == value.id),
+            filter: this.state.detail.filter(item => item.reg_id == value.id),
+            data: this.state.detail.filter(item => item.reg_id == value.id)
+          });
+        }
       }
     }
 
-    if (type == 'search_name') {
+    if (type == 'search_club') {
       if (!value) {
-        this.setState({
-          filter: this.state.filter
-        });
+        if (from !== '' && to !== '') {
+          this.setState({
+            filter: this.state.detail.filter(item => Date.parse(item.created_at) >= from && 
+                                              Date.parse(item.created_at) <= to),
+            data: this.state.detail
+          });
+        } else {
+          this.setState({
+            filter: this.state.detail,
+            data: this.state.detail
+          });
+        }
       } else {
+        if (from !== '' && to !== '') {
+          this.setState({
+            filter: this.state.detail.filter(item => item.club_id == value.id &&
+                        Date.parse(item.created_at) >= from && Date.parse(item.created_at) <= to),
+            data: this.state.detail.filter(item => item.club_id == value.id)
+          });
+        } else {
+          this.setState({
+            filter: this.state.filter.filter(item => item.club_id == value.id),
+            data: this.state.filter.filter(item => item.club_id == value.id)
+          });
+        }
+      }
+    }
+  }
+
+  onChangeFrom(event, data) {
+    if (data.value) {
+      let from = Date.parse(data.value);
+
+      this.setState({
+        from
+      });
+
+      if (this.state.to !== '') {
         this.setState({
-          filter: this.state.filter.filter(item => item.club_id == value.id)
+          filter: this.state.data.filter(
+            item => Date.parse(item.created_at) >= from && 
+                    Date.parse(item.created_at) <= this.state.to)
         });
       }
+    } else {
+      this.setState({
+        filter: this.state.data
+      });
+    }
+  }
+
+  onChangeTo(event, data) {
+    if (data.value) {
+      let to = Date.parse(data.value) + 86400000;
+
+      this.setState({
+        to
+      });
+      
+      if (this.state.from !== '') {
+        this.setState({
+          filter: this.state.data.filter(
+            item => Date.parse(item.created_at) >= this.state.from && 
+                    Date.parse(item.created_at) <= to)
+        });
+      }
+    } else {
+      this.setState({
+        filter: this.state.data
+      });
     }
   }
 
@@ -241,7 +331,6 @@ class NFProfile extends Component {
                 <Col xl="3" lg="4" md="6" sm="6" xs="12">
                   <FormGroup>
                     <Select
-                      name="search_org"
                       classNamePrefix="react-select-lg"
                       placeholder="Regional Federation"
                       isClearable
@@ -257,7 +346,6 @@ class NFProfile extends Component {
                 <Col xl="3" lg="3" md="6" sm="6" xs="12">
                   <FormGroup>
                     <Select
-                      name="search_name"
                       classNamePrefix="react-select-lg"
                       placeholder="Club Name"
                       isClearable
@@ -265,8 +353,26 @@ class NFProfile extends Component {
                       getOptionValue={option => option.id}
                       getOptionLabel={option => option.name_o}
                       onChange={(club) => {
-                        this.handleSearchFilter('search_name', club);
+                        this.handleSearchFilter('search_club', club);
                       }}
+                    />
+                  </FormGroup>
+                </Col>
+                <Col xl="3" lg="3" md="6" sm="6" xs="12">
+                  <FormGroup>
+                    <SemanticDatepicker
+                      name="from"
+                      placeholder="From"
+                      onChange={this.onChangeFrom.bind(this)}
+                    />
+                  </FormGroup>
+                </Col>
+                <Col xl="3" lg="3" md="6" sm="6" xs="12">
+                  <FormGroup>
+                    <SemanticDatepicker
+                      name="to"
+                      placeholder="To"
+                      onChange={this.onChangeTo.bind(this)}
                     />
                   </FormGroup>
                 </Col>

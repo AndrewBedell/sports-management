@@ -59257,7 +59257,8 @@ body .admin-dashboard > .content .fixed-content {
   height: calc(100vh - 500px);
 }
 
-body .admin-dashboard > .content .row .form-group .club-list input {
+body .admin-dashboard > .content .row .form-group .club-list input,
+body .admin-dashboard > .content .row .form-group .field > .field input {
   height: 48px;
 }
 
