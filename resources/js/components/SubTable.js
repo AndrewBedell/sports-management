@@ -10,7 +10,7 @@ import {
 import Select from 'react-select';
 
 import _ from 'lodash';
-import { Genders } from '../configs/data';
+import { Genders, referee_type_options } from '../configs/data';
 
 class SubTable extends Component {
   constructor(props) {
@@ -245,7 +245,12 @@ class SubTable extends Component {
                             </a>
                           </span>
                         </Table.Cell>
-                        <Table.Cell className="text-center">{item.role_name}</Table.Cell>
+                        <Table.Cell className="text-center">
+                          {
+                            item.role_id == 1 ? item.role_name 
+                              : referee_type_options.filter(ref => ref.value == item.position)[0].label
+                          }
+                        </Table.Cell>
                         <Table.Cell className="text-center">{item.gender == 1 ? Genders[0].name : Genders[1].name}</Table.Cell>
                         <Table.Cell className="text-center">{item.birthday}</Table.Cell>
                         {

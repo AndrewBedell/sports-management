@@ -12,7 +12,7 @@ import AdminTopBar from '../../components/TopBar/AdminTopBar';
 import MainTopBar from '../../components/TopBar/MainTopBar';
 import AdminBar from '../../components/AdminBar';
 
-import { member_type_options, search_genders, Dans } from '../../configs/data';
+import { member_type_options, referee_type_options, search_genders, Dans } from '../../configs/data';
 
 class OrganizationDetail extends Component {
   constructor(props) {
@@ -38,6 +38,10 @@ class OrganizationDetail extends Component {
 
     if (member_type_options.length === 4) {
       member_type_options.splice(0, 0, { label: 'All', value: '' });
+    }
+
+    if (referee_type_options.length == 3) {
+      referee_type_options.splice(0, 0, { label: 'All Referee', value: 'all' });
     }
   }
 
@@ -157,6 +161,20 @@ class OrganizationDetail extends Component {
     });
   }
 
+  handleSelectRefereeType(data) {
+    let filtered = [];
+
+    if (data.value == 'all') {
+      filtered = this.state.init_members.filter(obj => obj.role_id == 4);
+    } else {
+      filtered = this.state.init_members.filter(obj => obj.position == data.value);
+    }
+
+    this.setState({
+      members: filtered
+    });
+  }
+
   handleFilterMember(evt, data) {
     this.setState({
       filterMember: data.value
@@ -216,7 +234,7 @@ class OrganizationDetail extends Component {
 
   render() {
     const {
-      org, filter, filterMember, type, data, members, memtype, 
+      org, filter, filterMember, type, data, members, memtype, membertype,
       search_gender, search_weight, search_dan,
       is_super
     } = this.state;
@@ -330,7 +348,7 @@ class OrganizationDetail extends Component {
                     org.is_club == 1 && (
                       <Col sm="3">
                         <Select
-                          options={member_type_options}
+                          options={member_type_options.filter(item => item.value != 'referee')}
                           onChange={this.handleSelectType.bind(this)}
                           />
                       </Col>
@@ -428,8 +446,18 @@ class OrganizationDetail extends Component {
                         <Select
                           options={member_type_options.filter(item => item.value != 'judoka')}
                           onChange={this.handleSelectMemberType.bind(this)}
-                          />
+                        />
                       </Col>
+                      {
+                        membertype === 'referee' && (
+                          <Col sm="3">
+                            <Select
+                              options={referee_type_options}
+                              onChange={this.handleSelectRefereeType.bind(this)}
+                            />
+                          </Col>
+                        )
+                      }
                       <Col sm="3">
                         <Input
                           value={filterMember}
