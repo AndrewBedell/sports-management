@@ -242,8 +242,8 @@ class NFProfile extends Component {
 
             <div className="content">
               <Row>
-                <Col sm="8">
-                  <Segment>
+                <Col md="12" lg="8">
+                  <Segment className="mt-2">
                     <Row>
                       <Col md="6" lg="3">
                         <div className="detail-image">
@@ -267,14 +267,14 @@ class NFProfile extends Component {
                           {nf.register_no}
                         </h5>
                         <Row>
-                          <Col sm="12" md="8">
+                          <Col md="12" lg="8">
                             <h5 className="py-2">
                               <b>Email</b>
                               :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                               <a href={`mailto:${nf.email}`}>{nf.email}</a>
                             </h5>
                           </Col>
-                          <Col sm="12" md="4">
+                          <Col md="12" lg="4">
                             <h5 className="py-2">
                               <b>Phone</b>
                               :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -295,8 +295,8 @@ class NFProfile extends Component {
                     </Row>
                   </Segment>
                 </Col>
-                <Col sm="4">
-                  <Segment>
+                <Col md="12" lg="4">
+                  <Segment className="mt-2">
                     <h4 className="text-center"><b>Summary</b></h4>
                       <Row>
                         <Col sm="12">
@@ -328,7 +328,7 @@ class NFProfile extends Component {
                 </Col>
               </Row>
               <Row className="mt-5">
-                <Col xl="3" lg="4" md="6" sm="6" xs="12">
+                <Col xl="3" lg="3" md="6" sm="6" xs="12">
                   <FormGroup>
                     <Select
                       classNamePrefix="react-select-lg"
@@ -359,7 +359,7 @@ class NFProfile extends Component {
                   </FormGroup>
                 </Col>
                 <Col xl="3" lg="3" md="6" sm="6" xs="12">
-                  <FormGroup>
+                  <FormGroup className="calendar">
                     <SemanticDatepicker
                       name="from"
                       placeholder="From"
@@ -368,7 +368,7 @@ class NFProfile extends Component {
                   </FormGroup>
                 </Col>
                 <Col xl="3" lg="3" md="6" sm="6" xs="12">
-                  <FormGroup>
+                  <FormGroup className="calendar">
                     <SemanticDatepicker
                       name="to"
                       placeholder="To"

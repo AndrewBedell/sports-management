@@ -190,7 +190,17 @@ body {
 
       .row {
         .form-group {
-          .club-list, .field>.field {
+          &.calendar {
+            .field {
+              width: 100%;
+
+              input {
+                height: 48px;
+              }
+            }
+          }
+
+          .club-list {
             input {
               height: 48px;
             }
