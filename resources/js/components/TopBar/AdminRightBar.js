@@ -36,6 +36,7 @@ class AdminRightBar extends Component {
   }
 
   async handleLogout() {
+    document.getElementsByTagName('body')[0].classList.remove('admin');
     await this.props.logout();
     this.props.history.push('/logout');
   }
