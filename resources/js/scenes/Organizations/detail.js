@@ -251,15 +251,15 @@ class OrganizationDetail extends Component {
           <div className={is_super == 1 ? "admin-dashboard pt-5" : "main-content detail"}>
             <Container>
               <Row>
-                <Col md={org.is_club == 1 ? 12 : 8}>
+                <Col md={org.is_club == 1 ? 12 : 8} className="mt-2">
                   <Segment>
                     <Row>
-                      <Col md="6" lg="3">
+                      <Col sm="12" md="4" lg="3">
                         <div className="detail-image">
                           <Image className="m-auto" src={org.logo ? org.logo : Bitmaps.logo} />
                         </div>
                       </Col>
-                      <Col md="6" lg="9">
+                      <Col sm="12" md="8" lg="9">
                         <h5 className="py-2">
                           <b>{ org.is_club ? 'Club Name' : 'Regional Federation Name' }</b>
                           :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -306,7 +306,7 @@ class OrganizationDetail extends Component {
                 </Col>
                 {
                   org.is_club != 1 && (
-                    <Col md="4">
+                    <Col md="4" className="mt-2">
                       <Segment>
                         <h4 className="text-center"><b>Summary</b></h4>
                         <Row>
@@ -341,8 +341,59 @@ class OrganizationDetail extends Component {
                 }
               </Row>
             </Container>
+            {
+              type == 'org' && (
+                <Container>
+                  <div className="mt-5">
+                    <Row className="mb-2">
+                      <Col sm="12">
+                        <h4>Search Federation Managers</h4>
+                      </Col>
+                    </Row>
+                    <Row>
+                      <Col sm="3">
+                        <Select
+                          options={member_type_options.filter(item => item.value != 'judoka')}
+                          onChange={this.handleSelectMemberType.bind(this)}
+                        />
+                      </Col>
+                      {
+                        membertype === 'referee' && (
+                          <Col sm="3">
+                            <Select
+                              options={referee_type_options}
+                              onChange={this.handleSelectRefereeType.bind(this)}
+                            />
+                          </Col>
+                        )
+                      }
+                      <Col sm="3">
+                        <Input
+                          value={filterMember}
+                          icon="search"
+                          placeholder="Search Members"
+                          onChange={this.handleFilterMember.bind(this)}
+                        />
+                      </Col>
+                    </Row>
+                    <div className="table-responsive">
+                      <SubTable
+                        type="member"
+                        items={members}
+                        onSelect={this.handleSelectMember.bind(this)}
+                      />
+                    </div>
+                  </div>
+                </Container>
+              )
+            }
             <Container>
               <div className="mt-5">
+                <Row className="mb-2">
+                  <Col sm="12">
+                    <h4>{org.is_club == 1 ? 'Search Members in this Club' : 'Search Clubs'}</h4>
+                  </Col>
+                </Row>
                 <Row>
                   {
                     org.is_club == 1 && (
@@ -437,47 +488,6 @@ class OrganizationDetail extends Component {
                 />
               </div>
             </Container>
-            {
-              type == 'org' && (
-                <Container>
-                  <div className="mt-5">
-                    <Row>
-                      <Col sm="3">
-                        <Select
-                          options={member_type_options.filter(item => item.value != 'judoka')}
-                          onChange={this.handleSelectMemberType.bind(this)}
-                        />
-                      </Col>
-                      {
-                        membertype === 'referee' && (
-                          <Col sm="3">
-                            <Select
-                              options={referee_type_options}
-                              onChange={this.handleSelectRefereeType.bind(this)}
-                            />
-                          </Col>
-                        )
-                      }
-                      <Col sm="3">
-                        <Input
-                          value={filterMember}
-                          icon="search"
-                          placeholder="Search Members"
-                          onChange={this.handleFilterMember.bind(this)}
-                        />
-                      </Col>
-                    </Row>
-                    <div className="table-responsive">
-                      <SubTable
-                        type="member"
-                        items={members}
-                        onSelect={this.handleSelectMember.bind(this)}
-                      />
-                    </div>
-                  </div>
-                </Container>
-              )
-            }
           </div>
         </div>
 

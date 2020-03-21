@@ -57854,6 +57854,10 @@ body {
   border-radius: 20px;
 }
 
+.detail .ui.segment {
+  height: 100%;
+}
+
 .btn-success {
   color: #1E1B52;
 }

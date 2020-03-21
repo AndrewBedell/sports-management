@@ -118,7 +118,7 @@ class SubTable extends Component {
     } = this.state;
     
     return (
-      <Table sortable celled selectable unstackable className="mt-5">
+      <Table sortable celled selectable unstackable className="mt-2">
         {
           type === 'org' && (
             <Fragment>
