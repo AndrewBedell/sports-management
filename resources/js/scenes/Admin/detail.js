@@ -55,14 +55,27 @@ class Detail extends Component {
         },
         title: {
           text: 'Totoal Amount Chart',
-          align: 'center'
+          align: 'center',
+          style: {
+            color: '#ffc107'
+          }
         },
         xaxis: {
-          type: 'datetime'
+          type: 'datetime',
+          labels: {
+            style: {
+              colors: '#ffc107'
+            }
+          }
         },
         yaxis: {
           tooltip: {
             enabled: true
+          },
+          labels: {
+            style: {
+              colors: '#ffc107'
+            }
           }
         }
       }
