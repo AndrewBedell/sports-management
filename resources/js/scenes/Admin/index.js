@@ -106,16 +106,14 @@ class Admin extends Component {
                 categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
                 labels: {
                   style: {
-                    colors: ['#97A3B4', '#97A3B4', '#97A3B4', '#97A3B4', '#97A3B4', '#97A3B4',
-                              '#97A3B4', '#97A3B4', '#97A3B4', '#97A3B4', '#97A3B4', '#97A3B4']
+                    colors: '#97A3B4'
                   }
                 }
               },
               yaxis: {
                 labels: {
                   style: {
-                    colors: ['#97A3B4', '#97A3B4', '#97A3B4', '#97A3B4', '#97A3B4',
-                              '#97A3B4', '#97A3B4', '#97A3B4', '#97A3B4', '#97A3B4']
+                    colors: '#97A3B4'
                   }
                 }
               }
