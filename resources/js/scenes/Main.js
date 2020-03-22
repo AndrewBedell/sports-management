@@ -34,10 +34,6 @@ class Main extends Component {
   }
 
   componentDidMount() {
-    this.componentWillReceiveProps(this.props);
-  }
-
-  componentWillReceiveProps() {
     const user = JSON.parse(localStorage.getItem('auth'));
     
     if (user.user.is_super == 1) {
