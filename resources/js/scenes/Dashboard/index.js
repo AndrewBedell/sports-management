@@ -53,7 +53,7 @@ class Dashboard extends Component {
       member_type: '',
       referee_type: referee_type_options[0],
       search_org: '',
-      search_name: '',
+      search_club: '',
       search_gender: search_genders[0],
       search_weight: '',
       search_dan: '',
@@ -101,20 +101,11 @@ class Dashboard extends Component {
     const { response, body } = org_response;
     switch (response.status) {
       case 200:
-        const orgArr = [];
-
         if (body.length > 0 && body[0].parent_id == 0)
           body[0].name_o = "National Federation";
 
-        for (let i = 0; i < body.length; i++) {
-          if (body[i].parent_id != 0)
-            orgArr.push(body[i].name_o);
-        }
-        
-        const orgList = orgArr.map((org, Index) => <option key={Index} value={org} />);
-
         this.setState({
-          orgs: orgList,
+          orgs: body,
           org_list: body
         });
         break;
@@ -148,17 +139,21 @@ class Dashboard extends Component {
     }
 
     const club_list = await Api.get('clubs');
-    const clubArr = [];
     switch (club_list.response.status) {
       case 200:
-        for (let i = 0; i < club_list.body.length; i++) {
-          clubArr.push({ id: club_list.body[i].parent_id, value: club_list.body[i].name_o });
-        }
+        const search = QueryString.parse(this.props.location.search, { ignoreQueryPrefix: true });
 
-        this.setState({
-          original_clubs: clubArr,
-          clubs: clubArr.map((club, Index) => <option key={Index} id={club.id} value={club.value} />)
-        });
+        if (search.org == '') {
+          this.setState({
+            original_clubs: club_list.body,
+            clubs: club_list.body
+          });
+        } else {
+          this.setState({
+            original_clubs: club_list.body,
+            clubs: club_list.body.filter(club => club.parent_id == search.org)
+          });
+        }
         break;
       default:
         break;
@@ -169,7 +164,7 @@ class Dashboard extends Component {
     this.setState({
       search_type: search.stype ? (search_type_options.find(type => type.value == search.stype) || '') : '',
       search_org: search.org ? (org_response.body.find(org => org.id == search.org) || '') : '',
-      search_name: search.name || '',
+      search_club: search.club ? (club_list.body.find(club => club.id == search.club) || '') : '',
       member_type: search.mtype ? (member_type_options.find(option => option.value == search.mtype) || '') : '',
       referee_type: search.rtype 
         ? (referee_type_options.find(option => option.value == search.rtype) || referee_type_options[0]) 
@@ -194,6 +189,7 @@ class Dashboard extends Component {
           search_type: value,
           search_required: true,
           search_org: '',
+          search_club: '',
           search_data: null
         });
         break;
@@ -201,9 +197,9 @@ class Dashboard extends Component {
         let filtered = [];
 
         if (value == null) {
-          filtered = this.state.original_clubs.map((club, Index) => <option key={Index} id={club.id} value={club.value} />);
+          filtered = this.state.original_clubs
         } else {
-          filtered = this.state.original_clubs.filter(club => club.id == value.id).map((club, Index) => <option key={Index} id={club.id} value={club.value} />);
+          filtered = this.state.original_clubs.filter(club => club.parent_id == value.id)
         }
 
         const clubsFiltered = filtered;
@@ -211,13 +207,13 @@ class Dashboard extends Component {
         this.setState({
           search_org: value,
           clubs: clubsFiltered,
-          search_name: '',
+          search_club: '',
           search_data: null
         });
         break;
-      case 'search_name':
+      case 'search_club':
         this.setState({
-          search_name: value,
+          search_club: value,
           search_data: null
         });
         break;
@@ -262,13 +258,13 @@ class Dashboard extends Component {
 
   async handleSearch() {
     const {
-      search_type, search_org, search_name, member_type, referee_type, search_gender, search_weight, search_dan
+      search_type, search_org, search_club, member_type, referee_type, search_gender, search_weight, search_dan
     } = this.state;
 
     const search_params = {
       stype: search_type ? search_type.value : '',
       org: search_org ? search_org.id : '',
-      name: search_name,
+      club: search_club ? search_club.id : '',
       mtype: member_type ? member_type.value : '',
       rtype: referee_type ? referee_type.value : '',
       gender: search_gender ? search_gender.value : search_genders[0],
@@ -532,7 +528,7 @@ class Dashboard extends Component {
       weights,
       clubs,
       search_org,
-      search_name,
+      search_club,
       search_gender,
       search_weight,
       search_dan,
@@ -623,20 +619,34 @@ class Dashboard extends Component {
               </Col>
               {
                 level == 1 && search_type.value == 'org' && (
-                  <Col xl="3" lg="3" md="4" sm="6" xs="12">
+                  <Col xl="2" lg="3" md="4" sm="6" xs="12">
                     <FormGroup>
-                      <Input
+                      <Select
+                        name="search_org"
+                        classNamePrefix="react-select-lg"
+                        placeholder="Organization Name"
+                        isClearable
+                        // isMulti
+                        value={search_org}
+                        options={orgs}
+                        getOptionValue={option => option.id}
+                        getOptionLabel={option => option.name_o}
+                        onChange={(org) => {
+                          this.handleSearchFilter('search_org', org);
+                        }}
+                      />
+                      {/* <Input
                         className="club-list"
                         list="orgs"
-                        name="search_name"
+                        name="search_club"
                         type="text"
-                        value={search_name}
+                        value={search_club}
                         placeholder="Organization Name"
-                        onChange={event => this.handleSearchFilter('search_name', event.target.value)}
+                        onChange={event => this.handleSearchFilter('search_club', event.target.value)}
                       />
                       <datalist id="orgs">
                         {orgs}
-                      </datalist>
+                      </datalist> */}
                     </FormGroup>
                   </Col>
                 )
@@ -667,18 +677,20 @@ class Dashboard extends Component {
                 (search_type.value == 'club' || search_type.value == 'member') && (
                   <Col xl="2" lg="3" md="4" sm="6" xs="12">
                     <FormGroup>
-                      <Input
-                        className="club-list"
-                        list="clubs"
-                        name="search_name"
-                        type="text"
-                        value={search_name}
+                      <Select
+                        name="search_club"
+                        classNamePrefix="react-select-lg"
                         placeholder="Club Name"
-                        onChange={event => this.handleSearchFilter('search_name', event.target.value)}
+                        isClearable
+                        // isMulti
+                        value={search_club}
+                        options={clubs}
+                        getOptionValue={option => option.id}
+                        getOptionLabel={option => option.name_o}
+                        onChange={(club) => {
+                          this.handleSearchFilter('search_club', club);
+                        }}
                       />
-                      <datalist id="clubs">
-                        {clubs}
-                      </datalist>
                     </FormGroup>
                   </Col>
                 )
