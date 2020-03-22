@@ -42,8 +42,8 @@ class Search extends Component {
       search_required: true,
       member_required: true,
       search_type: '',
-      search_name: '',
       search_org: '',
+      search_club: '',
       search_gender: search_genders[0],
       search_weight: '',
       search_dan: '',
@@ -79,39 +79,39 @@ class Search extends Component {
   }
 
   async componentWillReceiveProps() {
+    let club_list = [];
+
     const org_response = await Api.get(`organization-child/${this.state.nf_id}`);
     const { response, body } = org_response;
     switch (response.status) {
       case 200:
-        const orgArr = [];
-        const data = [];
+        this.setState({
+          orgs: body,
+          org_list: body
+        });
 
-        data.push(this.state.nf);
+        club_list = await Api.get(`countryclubs/${this.state.nf_id}`);
 
-        for (let i = 0; i < body.filter(item => item.is_club == 0).length; i++) {
-          orgArr.push(body[i].name_o);
-          data.push(body[i]);
-        }
-        
-        const orgList = orgArr.map((org, Index) => <option key={Index} value={org} />);
-
-        const clubArr = [];
-        const club_list = await Api.get(`countryclubs/${this.state.nf_id}`);
         switch (club_list.response.status) {
           case 200:
-            for (let i = 0; i < club_list.body.clubs.length; i++) {
-              clubArr.push({ id: club_list.body.clubs[i].parent_id, value: club_list.body.clubs[i].name_o })
+            const search = QueryString.parse(this.props.location.search, { ignoreQueryPrefix: true });
+
+            if (search.org === undefined || search.org == '') {
+              this.setState({
+                original_clubs: club_list.body.clubs,
+                clubs: club_list.body.clubs
+              });
+            } else {
+              this.setState({
+                original_clubs: club_list.body.clubs,
+                clubs: club_list.body.clubs.filter(club => club.parent_id == search.org)
+              });
             }
             break;
           default:
             break;
         }
-        this.setState({
-          orgs: orgList,
-          org_list: data,
-          original_clubs: clubArr,
-          clubs: clubArr.map((club, Index) => <option key={Index} id={club.id} value={club.value} />)
-        });
+        
         break;
       default:
         break;
@@ -133,7 +133,7 @@ class Search extends Component {
     this.setState({
       search_type: search.stype ? (search_type_options.find(type => type.value == search.stype) || '') : '',
       search_org: search.org ? (org_response.body.find(org => org.id == search.org) || '') : '',
-      search_name: search.name || '',
+      search_club: search.club ? (club_list.body.clubs.find(club => club.id == search.club) || '') : '',
       member_type: search.mtype ? (member_type_options.find(option => option.value == search.mtype) || '') : '',
       referee_type: search.rtype 
         ? (referee_type_options.find(option => option.value == search.rtype) || referee_type_options[0]) 
@@ -158,6 +158,7 @@ class Search extends Component {
           search_type: value,
           search_required: true,
           search_org: '',
+          search_club: '',
           search_data: null
         });
         break;
@@ -165,9 +166,9 @@ class Search extends Component {
         let filtered = [];
 
         if (value == null) {
-          filtered = this.state.original_clubs.map((club, Index) => <option key={Index} id={club.id} value={club.value} />);
+          filtered = this.state.original_clubs
         } else {
-          filtered = this.state.original_clubs.filter(club => club.id == value.id).map((club, Index) => <option key={Index} id={club.id} value={club.value} />);
+          filtered = this.state.original_clubs.filter(club => club.parent_id == value.id)
         }
 
         const clubsFiltered = filtered;
@@ -175,13 +176,13 @@ class Search extends Component {
         this.setState({
           search_org: value,
           clubs: clubsFiltered,
-          search_name: '',
+          search_club: '',
           search_data: null
         });
         break;
-      case 'search_name':
+      case 'search_club':
         this.setState({
-          search_name: value,
+          search_club: value,
           search_data: null
         });
         break;
@@ -226,14 +227,14 @@ class Search extends Component {
 
   async handleSearch() {
     const {
-      search_type, search_org, search_name, member_type, referee_type, search_gender, search_weight, search_dan
+      search_type, search_org, search_club, member_type, referee_type, search_gender, search_weight, search_dan
     } = this.state;
 
     const search_params = {
       item: this.state.nf_id,
       stype: search_type ? search_type.value : '',
       org: search_org ? search_org.id : '',
-      name: search_name,
+      club: search_club ? search_club.id : '',
       mtype: member_type ? member_type.value : '',
       rtype: referee_type ? referee_type.value : '',
       gender: search_gender ? search_gender.value : search_genders[0],
@@ -300,8 +301,8 @@ class Search extends Component {
       search_required,
       member_required,
       search_type,
-      search_name,
       search_org,
+      search_club,
       search_gender,
       search_weight,
       search_dan,
@@ -355,18 +356,21 @@ class Search extends Component {
                     search_type.value == 'org' && (
                       <Col xl="3" lg="3" md="4" sm="6" xs="12">
                         <FormGroup>
-                          <Input
-                            className="club-list select-box"
-                            list="orgs"
-                            name="search_name"
-                            type="text"
-                            value={search_name}
+                          <Select
+                            name="search_org"
+                            className="select-box"
+                            classNamePrefix="react-select-lg"
                             placeholder="Organization Name"
-                            onChange={event => this.handleSearchFilter('search_name', event.target.value)}
+                            isClearable
+                            // isMulti
+                            value={search_org}
+                            options={orgs}
+                            getOptionValue={option => option.id}
+                            getOptionLabel={option => option.name_o}
+                            onChange={(org) => {
+                              this.handleSearchFilter('search_org', org);
+                            }}
                           />
-                          <datalist id="orgs">
-                            {orgs}
-                          </datalist>
                         </FormGroup>
                       </Col>
                     )
@@ -398,18 +402,21 @@ class Search extends Component {
                     (search_type.value == 'club' || search_type.value == 'member') && (
                       <Col xl="2" lg="3" md="4" sm="6" xs="12">
                         <FormGroup>
-                          <Input
-                            className="club-list select-box"
-                            list="clubs"
-                            name="search_name"
-                            type="text"
-                            value={search_name}
+                          <Select
+                            name="search_club"
+                            className="select-box"
+                            classNamePrefix="react-select-lg"
                             placeholder="Club Name"
-                            onChange={event => this.handleSearchFilter('search_name', event.target.value)}
+                            isClearable
+                            // isMulti
+                            value={search_club}
+                            options={clubs}
+                            getOptionValue={option => option.id}
+                            getOptionLabel={option => option.name_o}
+                            onChange={(club) => {
+                              this.handleSearchFilter('search_club', club);
+                            }}
                           />
-                          <datalist id="clubs">
-                            {clubs}
-                          </datalist>
                         </FormGroup>
                       </Col>
                     )
