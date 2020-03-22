@@ -231,7 +231,7 @@ class NFProfile extends Component {
             <div className="text-right my-3">
               <Button 
                 outline
-                color="info"
+                color="warning"
                 onClick={() => this.props.history.push('/admin/home')}
               >
                 <i className="fa fa-arrow-left fa-lg"></i>
@@ -331,6 +331,7 @@ class NFProfile extends Component {
                 <Col xl="3" lg="3" md="6" sm="6" xs="12">
                   <FormGroup>
                     <Select
+                      className="select-box"
                       classNamePrefix="react-select-lg"
                       placeholder="Regional Federation"
                       isClearable
@@ -346,6 +347,7 @@ class NFProfile extends Component {
                 <Col xl="3" lg="3" md="6" sm="6" xs="12">
                   <FormGroup>
                     <Select
+                      className="select-box"
                       classNamePrefix="react-select-lg"
                       placeholder="Club Name"
                       isClearable

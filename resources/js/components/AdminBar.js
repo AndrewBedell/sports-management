@@ -24,13 +24,13 @@ class AdminBar extends Component {
         <Nav>
           <Navbar>
             <NavItem>
-              <NavLink tag={Link} to="/admin/federations">
-                <i className="mr-2 fa fa-search"></i> Search Federations
+              <NavLink tag={Link} to="/admin/home">
+                <i className="mr-2 fa fa-home"></i> Home
               </NavLink>
             </NavItem>
             <NavItem>
-              <NavLink tag={Link} to="/admin/home">
-                <i className="mr-2 fa fa-home"></i> Home
+              <NavLink tag={Link} to="/admin/federations">
+                <i className="mr-2 fa fa-search"></i> Search Federations
               </NavLink>
             </NavItem>
             <NavItem>

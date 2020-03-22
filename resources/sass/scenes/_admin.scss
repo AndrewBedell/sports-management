@@ -1,6 +1,6 @@
 body {
   &.admin {
-    background-color: #242424;
+    background-color: $admin-background;
     color: $gray-600;
   }
 
@@ -73,8 +73,10 @@ body {
           width: 100%;
 
           .nav-link {
+            color: $admin-table-border;
+
             &.active {
-              color: inherit;
+              color: #4ed8da;
               font-weight: bold;
             }
           }
@@ -84,33 +86,19 @@ body {
   }
 
   .admin-dashboard {
-    background-color: #242424;
+    background-color: $admin-background;
     height: calc(100vh - 52px);
     overflow-x: hidden;
     overflow-y: auto;
     padding: 5px 15px 15px;
     width: 100%;
 
-    table {
-      td {
-        a.detail-link {
-          cursor: pointer;
-          &.text-underline,
-          
-          &:hover {
-            color: #1a0dab;
-            text-decoration: underline;
-          }
-        }
-      }
-    }
-
     .home-content {
       height: calc(100vh - 105px);
       padding: 15px;
 
       .chart {
-        background-color: $white;
+        background-color: $admin-background;
       }
 
       .apexcharts-canvas {
@@ -121,7 +109,12 @@ body {
 
       .card {
         .content {
+          background-color: $admin-background;
           padding: 5px;
+
+          .header, .description {
+            color: #4ed8da;
+          }
         }
       }
 
@@ -150,30 +143,56 @@ body {
         }
 
         table {
-          td {
-            .success-div {
-              background-color: #c6efce;
-              border: 1px solid $success;
-              margin-top: 4px;
+          background-color: $admin-background;
+  
+          thead {
+            th {
+              background-color: $admin-background;
+              border: 1px solid $admin-table-border !important;
+              color: $admin-color;
             }
+          }
 
-            .danger-div {
-              background-color: #ffc7ce;
-              border: 1px solid $danger;
-              margin-top: 4px;
-            }
+          tbody {
+            td {
+              border: 1px solid $admin-table-border !important;
+              color: $admin-color;
 
-            .warning-div {
-              background-color: #ffffcc;
-              border: 1px solid $warning;
-              margin-top: 4px;
-            }
+              a.detail-link {
+                color: $admin-color;
+                cursor: pointer;
+                &.text-underline,
+                
+                &:hover {
+                  color: $white;
+                  text-decoration: underline;
+                }
+              }
 
-            &.bar {
-              padding-left: 0px;
+              .success-div {
+                background-color: #c6efce;
+                border: 1px solid $success;
+                margin-top: 4px;
+              }
 
-              .progress-bar {
-                height: 12px;
+              .danger-div {
+                background-color: #ffc7ce;
+                border: 1px solid $danger;
+                margin-top: 4px;
+              }
+
+              .warning-div {
+                background-color: #ffffcc;
+                border: 1px solid $warning;
+                margin-top: 4px;
+              }
+
+              &.bar {
+                padding-left: 0px;
+
+                .progress-bar {
+                  height: 12px;
+                }
               }
             }
           }
@@ -184,6 +203,81 @@ body {
     >.content {
       height: calc(100vh - 105px);
 
+      .select-box {
+        div {
+          background-color: $admin-background;
+          border-color: $admin-table-border !important;
+          color: $admin-color !important;
+
+          .react-select-lg__option--is-focused, .react-select-lg__option--is-selected {
+            color: $black !important;
+          }
+        }
+
+        input {
+          background-color: $admin-background;
+          border-color: $admin-table-border !important;
+          color: $admin-color !important;
+        }
+      }
+
+      table {
+        background-color: $admin-background;
+  
+        thead {
+          th {
+            background-color: $admin-background;
+            border: 1px solid $admin-table-border !important;
+            color: $admin-color !important;
+          }
+        }
+
+        tbody {
+          td {
+            border: 1px solid $admin-table-border !important;
+            color: $admin-color;
+  
+            a.detail-link {
+              color: $admin-color;
+              cursor: pointer;
+              &.text-underline,
+              
+              &:hover {
+                color: $white;
+                text-decoration: underline;
+              }
+            }
+          }
+        }
+
+        tfoot {
+          th {
+            background-color: $admin-background;
+            border: 1px solid $admin-table-border !important;
+            color: $admin-color;
+
+            div {
+              background-color: $admin-background;
+              color: $admin-color;
+
+              .ui.pagination.menu {
+                a {
+                  background-color: $admin-background;
+                  border: 1px solid $admin-table-border;
+                  color: $admin-color;
+
+                  &.active {
+                    font-weight: bold;
+                    color: $white;
+                  }
+                }
+              }
+            }
+          } 
+        }
+  
+      }
+
       .fixed-content {
         display: flex;
         justify-content: center;
@@ -193,13 +287,61 @@ body {
       }
 
       .row {
+        div.segment {
+          background-color: $admin-background;
+          border-color: $admin-table-border;
+          height: 100%;
+
+          .detail-image {
+            img {
+              background-color: $white;
+            }
+          }
+        }
+
         .form-group {
+          input {
+            background-color: $admin-background;
+            border-color: $admin-table-border;
+            color: $admin-color;
+          }
+
           &.calendar {
             .field {
               width: 100%;
 
               input {
                 height: 48px;
+              }
+
+              div.segment {
+                height: initial;
+                
+                .clndr-days {
+                  border-bottom: 1px solid $admin-table-border;
+                  border-right: 1px solid $admin-table-border;
+                }
+
+                span {
+                  background-color: $admin-background;
+                  border-left: 1px solid $admin-table-border;
+                  border-top: 1px solid $admin-table-border;
+
+                  &.clndr-cell-disabled {
+                    color: $white;
+                    opacity: 1;
+                  }
+                }
+
+                .clndr-control {
+                  span {
+                    border: 1px solid $admin-table-border;
+                  }
+                }
+              }
+
+              i {
+                color: $admin-color;
               }
             }
           }

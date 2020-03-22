@@ -332,6 +332,7 @@ class Search extends Component {
                     <FormGroup>
                       <Select
                         name="search_type"
+                        className="select-box"
                         classNamePrefix={!search_required ? 'invalid react-select-lg' : 'react-select-lg'}
                         placeholder="Search Type"
                         indicatorSeparator={null}
@@ -355,7 +356,7 @@ class Search extends Component {
                       <Col xl="3" lg="3" md="4" sm="6" xs="12">
                         <FormGroup>
                           <Input
-                            className="club-list"
+                            className="club-list select-box"
                             list="orgs"
                             name="search_name"
                             type="text"
@@ -376,6 +377,7 @@ class Search extends Component {
                         <FormGroup>
                           <Select
                             name="search_org"
+                            className="select-box"
                             classNamePrefix="react-select-lg"
                             placeholder="Org Search"
                             isClearable
@@ -397,7 +399,7 @@ class Search extends Component {
                       <Col xl="2" lg="3" md="4" sm="6" xs="12">
                         <FormGroup>
                           <Input
-                            className="club-list"
+                            className="club-list select-box"
                             list="clubs"
                             name="search_name"
                             type="text"
@@ -418,6 +420,7 @@ class Search extends Component {
                         <FormGroup>
                           <Select
                             name="member_type"
+                            className="select-box"
                             classNamePrefix={!member_required ? 'invalid react-select-lg' : 'react-select-lg'}
                             placeholder="Member Type"
                             value={member_type}
@@ -443,6 +446,7 @@ class Search extends Component {
                         <FormGroup>
                           <Select
                             name="referee_type"
+                            className="select-box"
                             classNamePrefix="react-select-lg"
                             placeholder="Referee Type"
                             value={referee_type}
@@ -464,6 +468,7 @@ class Search extends Component {
                           <FormGroup>
                             <Select
                               name="search_gender"
+                              className="select-box"
                               classNamePrefix="react-select-lg"
                               placeholder="Gender"
                               value={search_gender}
@@ -480,6 +485,7 @@ class Search extends Component {
                           <FormGroup>
                             <Select
                               name="search_weight"
+                              className="select-box"
                               classNamePrefix="react-select-lg"
                               placeholder="Weight"
                               // isMulti
@@ -497,6 +503,7 @@ class Search extends Component {
                           <FormGroup>
                             <Select
                               name="search_dan"
+                              className="select-box"
                               classNamePrefix="react-select-lg"
                               placeholder="Dan"
                               // isMulti
@@ -518,7 +525,7 @@ class Search extends Component {
                       <FormGroup>
                         <Button
                           type="button"
-                          color="success"
+                          color="warning"
                           className="btn-lg"
                           onClick={this.handleSearch.bind(this)}
                         >

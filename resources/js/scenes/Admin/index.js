@@ -96,16 +96,28 @@ class Admin extends Component {
               },
               title: {
                 text: lineLabels[i],
-                align: 'center'
-              },
-              grid: {
-                row: {
-                  colors: ['#f3f3f3', 'transparent'],
-                  opacity: 0.5
-                },
+                align: 'center',
+                style: {
+                  color: '#97A3B4',
+                  fontSize: '16px'
+                }
               },
               xaxis: {
                 categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                labels: {
+                  style: {
+                    colors: ['#97A3B4', '#97A3B4', '#97A3B4', '#97A3B4', '#97A3B4', '#97A3B4',
+                              '#97A3B4', '#97A3B4', '#97A3B4', '#97A3B4', '#97A3B4', '#97A3B4']
+                  }
+                }
+              },
+              yaxis: {
+                labels: {
+                  style: {
+                    colors: ['#97A3B4', '#97A3B4', '#97A3B4', '#97A3B4', '#97A3B4',
+                              '#97A3B4', '#97A3B4', '#97A3B4', '#97A3B4', '#97A3B4']
+                  }
+                }
               }
             }
           }
@@ -195,6 +207,9 @@ class Admin extends Component {
           },
           legend: {
             position: 'right',
+            labels: {
+              colors: ['#FFFFFF']
+            },
             markers: {
               fillColors: pieColors
             },

@@ -73,7 +73,7 @@ class Federation extends Component {
 
             <div className="content">
               <Select
-                className="col-sm-3 mb-2 pl-0"
+                className="col-sm-3 mb-2 pl-0 select-box"
                 classNamePrefix="react-select-lg"
                 placeholder="Country"
                 options={filter_country}

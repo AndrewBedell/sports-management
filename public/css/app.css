@@ -59165,8 +59165,12 @@ body .admin-sidebar .nav .navbar .nav-item {
   width: 100%;
 }
 
+body .admin-sidebar .nav .navbar .nav-item .nav-link {
+  color: #97A3B4;
+}
+
 body .admin-sidebar .nav .navbar .nav-item .nav-link.active {
-  color: inherit;
+  color: #4ed8da;
   font-weight: bold;
 }
 
@@ -59179,23 +59183,13 @@ body .admin-dashboard {
   width: 100%;
 }
 
-body .admin-dashboard table td a.detail-link {
-  cursor: pointer;
-}
-
-body .admin-dashboard table td a.detail-link.text-underline,
-body .admin-dashboard table td a.detail-link:hover {
-  color: #1a0dab;
-  text-decoration: underline;
-}
-
 body .admin-dashboard .home-content {
   height: calc(100vh - 105px);
   padding: 15px;
 }
 
 body .admin-dashboard .home-content .chart {
-  background-color: #FFFFFF;
+  background-color: #242424;
 }
 
 body .admin-dashboard .home-content .apexcharts-canvas .apexcharts-legend-series {
@@ -59203,7 +59197,13 @@ body .admin-dashboard .home-content .apexcharts-canvas .apexcharts-legend-series
 }
 
 body .admin-dashboard .home-content .card .content {
+  background-color: #242424;
   padding: 5px;
+}
+
+body .admin-dashboard .home-content .card .content .header,
+body .admin-dashboard .home-content .card .content .description {
+  color: #4ed8da;
 }
 
 body .admin-dashboard .home-content .row-0 {
@@ -59227,34 +59227,125 @@ body .admin-dashboard .home-content .row-0 > div .row > div:first-child {
   border-right: 1px solid #BDBCC6;
 }
 
-body .admin-dashboard .home-content .row-0 table td .success-div {
+body .admin-dashboard .home-content .row-0 table {
+  background-color: #242424;
+}
+
+body .admin-dashboard .home-content .row-0 table thead th {
+  background-color: #242424;
+  border: 1px solid #97A3B4 !important;
+  color: #CCCCCC;
+}
+
+body .admin-dashboard .home-content .row-0 table tbody td {
+  border: 1px solid #97A3B4 !important;
+  color: #CCCCCC;
+}
+
+body .admin-dashboard .home-content .row-0 table tbody td a.detail-link {
+  color: #CCCCCC;
+  cursor: pointer;
+}
+
+body .admin-dashboard .home-content .row-0 table tbody td a.detail-link.text-underline,
+body .admin-dashboard .home-content .row-0 table tbody td a.detail-link:hover {
+  color: #FFFFFF;
+  text-decoration: underline;
+}
+
+body .admin-dashboard .home-content .row-0 table tbody td .success-div {
   background-color: #c6efce;
   border: 1px solid #00D994;
   margin-top: 4px;
 }
 
-body .admin-dashboard .home-content .row-0 table td .danger-div {
+body .admin-dashboard .home-content .row-0 table tbody td .danger-div {
   background-color: #ffc7ce;
   border: 1px solid #dc3545;
   margin-top: 4px;
 }
 
-body .admin-dashboard .home-content .row-0 table td .warning-div {
+body .admin-dashboard .home-content .row-0 table tbody td .warning-div {
   background-color: #ffffcc;
   border: 1px solid #ffc107;
   margin-top: 4px;
 }
 
-body .admin-dashboard .home-content .row-0 table td.bar {
+body .admin-dashboard .home-content .row-0 table tbody td.bar {
   padding-left: 0px;
 }
 
-body .admin-dashboard .home-content .row-0 table td.bar .progress-bar {
+body .admin-dashboard .home-content .row-0 table tbody td.bar .progress-bar {
   height: 12px;
 }
 
 body .admin-dashboard > .content {
   height: calc(100vh - 105px);
+}
+
+body .admin-dashboard > .content .select-box div {
+  background-color: #242424;
+  border-color: #97A3B4 !important;
+  color: #CCCCCC !important;
+}
+
+body .admin-dashboard > .content .select-box div .react-select-lg__option--is-focused,
+body .admin-dashboard > .content .select-box div .react-select-lg__option--is-selected {
+  color: #000 !important;
+}
+
+body .admin-dashboard > .content .select-box input {
+  background-color: #242424;
+  border-color: #97A3B4 !important;
+  color: #CCCCCC !important;
+}
+
+body .admin-dashboard > .content table {
+  background-color: #242424;
+}
+
+body .admin-dashboard > .content table thead th {
+  background-color: #242424;
+  border: 1px solid #97A3B4 !important;
+  color: #CCCCCC !important;
+}
+
+body .admin-dashboard > .content table tbody td {
+  border: 1px solid #97A3B4 !important;
+  color: #CCCCCC;
+}
+
+body .admin-dashboard > .content table tbody td a.detail-link {
+  color: #CCCCCC;
+  cursor: pointer;
+}
+
+body .admin-dashboard > .content table tbody td a.detail-link.text-underline,
+body .admin-dashboard > .content table tbody td a.detail-link:hover {
+  color: #FFFFFF;
+  text-decoration: underline;
+}
+
+body .admin-dashboard > .content table tfoot th {
+  background-color: #242424;
+  border: 1px solid #97A3B4 !important;
+  color: #CCCCCC;
+}
+
+body .admin-dashboard > .content table tfoot th div {
+  background-color: #242424;
+  color: #CCCCCC;
+}
+
+body .admin-dashboard > .content table tfoot th div .ui.pagination.menu a {
+  background-color: #242424;
+  border: 1px solid #97A3B4;
+  color: #CCCCCC;
+}
+
+body .admin-dashboard > .content table tfoot th div .ui.pagination.menu a.active {
+  font-weight: bold;
+  color: #FFFFFF;
 }
 
 body .admin-dashboard > .content .fixed-content {
@@ -59265,12 +59356,56 @@ body .admin-dashboard > .content .fixed-content {
   height: calc(100vh - 500px);
 }
 
+body .admin-dashboard > .content .row div.segment {
+  background-color: #242424;
+  border-color: #97A3B4;
+  height: 100%;
+}
+
+body .admin-dashboard > .content .row div.segment .detail-image img {
+  background-color: #FFFFFF;
+}
+
+body .admin-dashboard > .content .row .form-group input {
+  background-color: #242424;
+  border-color: #97A3B4;
+  color: #CCCCCC;
+}
+
 body .admin-dashboard > .content .row .form-group.calendar .field {
   width: 100%;
 }
 
 body .admin-dashboard > .content .row .form-group.calendar .field input {
   height: 48px;
+}
+
+body .admin-dashboard > .content .row .form-group.calendar .field div.segment {
+  height: initial;
+}
+
+body .admin-dashboard > .content .row .form-group.calendar .field div.segment .clndr-days {
+  border-bottom: 1px solid #97A3B4;
+  border-right: 1px solid #97A3B4;
+}
+
+body .admin-dashboard > .content .row .form-group.calendar .field div.segment span {
+  background-color: #242424;
+  border-left: 1px solid #97A3B4;
+  border-top: 1px solid #97A3B4;
+}
+
+body .admin-dashboard > .content .row .form-group.calendar .field div.segment span.clndr-cell-disabled {
+  color: #FFFFFF;
+  opacity: 1;
+}
+
+body .admin-dashboard > .content .row .form-group.calendar .field div.segment .clndr-control span {
+  border: 1px solid #97A3B4;
+}
+
+body .admin-dashboard > .content .row .form-group.calendar .field i {
+  color: #CCCCCC;
 }
 
 body .admin-dashboard > .content .row .form-group .club-list input {

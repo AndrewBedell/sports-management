@@ -186,7 +186,7 @@ class FederationTable extends Component {
                     <a className="detail-link" onClick={() => onSelect(item.id)}>{item.name_o}</a>
                   </Table.Cell>
                   <Table.Cell className="text-center">
-                    <a href={"http://" + item.country + ".livemedia.uz"}>{item.country + ".livemedia.uz"}</a>
+                    <a className="detail-link" href={"http://" + item.country + ".livemedia.uz"}>{item.country + ".livemedia.uz"}</a>
                   </Table.Cell>
                   <Table.Cell className="text-center">
                     {countries.filter(country => country.countryCode == item.country)[0].name}

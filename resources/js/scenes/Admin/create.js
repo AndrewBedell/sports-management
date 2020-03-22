@@ -220,8 +220,9 @@ class CreateNational extends Component {
                       <Col sm="6" md="4">
                         <FormGroup>
                           <Label for="country">Country</Label>
-                          <Select
+                          <Select 
                             name="country"
+                            className="select-box"
                             classNamePrefix={!!errors.country && touched.country ? 'invalid react-select-lg' : 'react-select-lg'}
                             indicatorSeparator={null}
                             options={countries}
@@ -382,7 +383,7 @@ class CreateNational extends Component {
                           className="mr-5"
                           disabled={isSubmitting}
                           type="submit"
-                          color="primary"
+                          color="warning"
                         >
                           Create
                         </Button>
