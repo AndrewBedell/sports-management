@@ -678,6 +678,8 @@ class OrganizationController extends Controller
                     } else {
                         $clubArr = array();
 
+                        array_push($clubArr, $org);
+
                         $clubs = Organization::where('parent_id', $org)->get();
 
                         foreach($clubs as $club) {
