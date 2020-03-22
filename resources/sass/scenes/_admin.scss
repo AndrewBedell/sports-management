@@ -233,18 +233,20 @@ body {
         }
 
         tbody {
-          td {
-            border: 1px solid $admin-table-border !important;
-            color: $admin-color;
-  
-            a.detail-link {
+          tr, tr.disabled {
+            td {
+              border: 1px solid $admin-table-border !important;
               color: $admin-color;
-              cursor: pointer;
-              &.text-underline,
-              
-              &:hover {
-                color: $white;
-                text-decoration: underline;
+    
+              a.detail-link {
+                color: $admin-color;
+                cursor: pointer;
+                &.text-underline,
+                
+                &:hover {
+                  color: $white;
+                  text-decoration: underline;
+                }
               }
             }
           }
