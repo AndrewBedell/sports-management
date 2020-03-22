@@ -635,18 +635,6 @@ class Dashboard extends Component {
                           this.handleSearchFilter('search_org', org);
                         }}
                       />
-                      {/* <Input
-                        className="club-list"
-                        list="orgs"
-                        name="search_club"
-                        type="text"
-                        value={search_club}
-                        placeholder="Organization Name"
-                        onChange={event => this.handleSearchFilter('search_club', event.target.value)}
-                      />
-                      <datalist id="orgs">
-                        {orgs}
-                      </datalist> */}
                     </FormGroup>
                   </Col>
                 )
