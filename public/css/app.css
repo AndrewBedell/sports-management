@@ -59310,18 +59310,22 @@ body .admin-dashboard > .content table thead th {
   color: #CCCCCC !important;
 }
 
-body .admin-dashboard > .content table tbody td {
+body .admin-dashboard > .content table tbody tr td,
+body .admin-dashboard > .content table tbody tr.disabled td {
   border: 1px solid #97A3B4 !important;
   color: #CCCCCC;
 }
 
-body .admin-dashboard > .content table tbody td a.detail-link {
+body .admin-dashboard > .content table tbody tr td a.detail-link,
+body .admin-dashboard > .content table tbody tr.disabled td a.detail-link {
   color: #CCCCCC;
   cursor: pointer;
 }
 
-body .admin-dashboard > .content table tbody td a.detail-link.text-underline,
-body .admin-dashboard > .content table tbody td a.detail-link:hover {
+body .admin-dashboard > .content table tbody tr td a.detail-link.text-underline,
+body .admin-dashboard > .content table tbody tr td a.detail-link:hover,
+body .admin-dashboard > .content table tbody tr.disabled td a.detail-link.text-underline,
+body .admin-dashboard > .content table tbody tr.disabled td a.detail-link:hover {
   color: #FFFFFF;
   text-decoration: underline;
 }
