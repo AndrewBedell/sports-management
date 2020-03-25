@@ -294,3 +294,8 @@ export const OrganizationType = [
   { label: 'Regional Federation', value: 'ref' },
   { label: 'Club', value: 'club' }
 ];
+
+export const CompetitionType = [
+  { label: 'International Competition', value: 'inter' },
+  { label: 'National Tournament', value: 'nf' }
+];

@@ -16,6 +16,8 @@ import OrganizationAdd from './Organizations/add';
 import MemberAdd from './Members/add';
 import GetInviteUsers from './Users';
 import Payment from './Payment';
+import Competitions from './Competitions';
+import CreateComp from './Competitions/create';
 
 import Admin from './Admin';
 import AdminSearch from './Admin/search';
@@ -59,6 +61,8 @@ class Main extends Component {
           <Route exact path="/admin/member/detail" name="AdminMemberDetail" component={MemberDetail} />
 
           <Route exact path="/payment-player" name="Payment" component={Payment} />
+          <Route exact path="/competition/create" name="CreateComp" component={CreateComp} />
+          <Route exact path="/competitions" name="Competitions" component={Competitions} />
           <Route exact path="/member/register" name="MemberAdd" component={MemberAdd} />
           <Route exact path="/member/detail" name="MemberDetail" component={MemberDetail} />
           <Route exact path="/members" name="Members" component={Members} />

@@ -59064,6 +59064,18 @@ body .main-content {
   text-decoration: underline;
 }
 
+.main-content .form-group.calendar.invalid .field input {
+  border-color: #dc3545;
+}
+
+.main-content .form-group.calendar .field {
+  width: 100%;
+}
+
+.main-content .form-group.calendar .field input {
+  height: 48px;
+}
+
 .main-content.has-hand-card {
   position: relative;
 }

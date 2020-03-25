@@ -41,6 +41,10 @@ Route::namespace('Api')->group(function () {
         Route::put('member/{id}', 'MemberController@update');
         Route::delete('member/{id}', 'MemberController@destroy');
 
+        Route::post('reg-competition', 'CompetitionController@store');
+
+        Route::get('unread', 'NotificationController@unread');
+
         Route::get('profile', 'UserController@profile');
         Route::get('setting', 'UserController@setting');
         Route::put('setting/{id}', 'UserController@update');

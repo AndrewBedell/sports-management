@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import {
   bindActionCreators
 } from 'redux';
@@ -15,6 +15,8 @@ import {
   DropdownMenu,
   DropdownItem,
 } from 'reactstrap';
+
+import Api from '../../apis/app';
 
 import { logout } from '../../actions/common';
 
@@ -33,8 +35,27 @@ class RightNavBar extends Component {
     this.state = {
       is_super: is_super,
       is_club_member: is_club_member,
-      role_id: role_id
+      role_id: role_id,
+      notification: []
     }
+  }
+
+  async componentDidMount() {
+    const notification = await Api.get('unread');
+    const { response, body } = notification;
+    switch (response.status) {
+      case 200:
+        this.setState({
+          notification: body.data
+        });
+        break;
+      default:
+        break;
+    }
+  }
+
+  handleViewAll() {
+    
   }
 
   async handleLogout() {
@@ -43,10 +64,54 @@ class RightNavBar extends Component {
   }
 
   render() {
-    const {is_super, is_club_member, role_id} = this.state;
+    const {
+      is_super, is_club_member, role_id,
+      notification
+    } = this.state;
 
     return (
       <Navbar className="right-nav-bar">
+        <UncontrolledDropdown nav inNavbar>
+          <DropdownToggle nav>
+            <i className="fa fa-bell fa-lg text-danger"></i>
+          </DropdownToggle>
+          <DropdownMenu right>
+            {
+              notification.length > 0 ? (
+                notification.map((item, index) => (
+                  <DropdownItem key={index}>
+                    <NavItem>
+                      <NavLink tag={Link} to="/profile">
+                        {item.type}
+                      </NavLink>
+                    </NavItem>
+                  </DropdownItem>
+                ))
+              ) : (
+                <DropdownItem>
+                  <NavItem>
+                      No unread notifications.
+                  </NavItem>
+                </DropdownItem>
+              )
+            }
+            {
+              notification.length > 0 && (
+                <Fragment>
+                  <DropdownItem divider />
+                  <DropdownItem>
+                    <NavItem onClick={this.handleViewAll.bind(this)}>
+                      <NavLink className="text-center" style={{padding: 0}}>
+                        View All
+                      </NavLink>
+                    </NavItem>
+                  </DropdownItem>
+                </Fragment>
+              )
+            }
+          </DropdownMenu>
+        </UncontrolledDropdown>
+
         <UncontrolledDropdown nav inNavbar>
           <DropdownToggle nav>
             <img src={Bitmaps.maleAvatar} className="table-avatar mr-2" />
