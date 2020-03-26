@@ -14,6 +14,7 @@ import {
   DropdownToggle,
   DropdownMenu,
   DropdownItem,
+  Badge
 } from 'reactstrap';
 
 import Api from '../../apis/app';
@@ -41,8 +42,8 @@ class RightNavBar extends Component {
   }
 
   async componentDidMount() {
-    const notification = await Api.get('unread');
-    const { response, body } = notification;
+    const unread = await Api.get('notification/unread');
+    const { response, body } = unread;
     switch (response.status) {
       case 200:
         this.setState({
@@ -54,8 +55,8 @@ class RightNavBar extends Component {
     }
   }
 
-  handleViewAll() {
-    
+  handleReadNotification(id) {
+    this.props.history.push('/notification/detail', id);
   }
 
   async handleLogout() {
@@ -73,16 +74,21 @@ class RightNavBar extends Component {
       <Navbar className="right-nav-bar">
         <UncontrolledDropdown nav inNavbar>
           <DropdownToggle nav>
-            <i className="fa fa-bell fa-lg text-danger"></i>
+            <i className="fa fa-bell fa-lg text-secondary"></i>
+            {
+              notification.length > 0 && (
+                <Badge color="warning">{notification.length}</Badge>
+              )
+            }
           </DropdownToggle>
-          <DropdownMenu right>
+          <DropdownMenu className="notification" right>
             {
               notification.length > 0 ? (
                 notification.map((item, index) => (
                   <DropdownItem key={index}>
-                    <NavItem>
-                      <NavLink tag={Link} to="/profile">
-                        {item.type}
+                    <NavItem onClick={this.handleReadNotification.bind(this, item.nid)}>
+                      <NavLink>
+                        <span>The competition "{item.name}" is open from {item.from} to {item.to}.</span>
                       </NavLink>
                     </NavItem>
                   </DropdownItem>
@@ -95,20 +101,16 @@ class RightNavBar extends Component {
                 </DropdownItem>
               )
             }
-            {
-              notification.length > 0 && (
-                <Fragment>
-                  <DropdownItem divider />
-                  <DropdownItem>
-                    <NavItem onClick={this.handleViewAll.bind(this)}>
-                      <NavLink className="text-center" style={{padding: 0}}>
-                        View All
-                      </NavLink>
-                    </NavItem>
-                  </DropdownItem>
-                </Fragment>
-              )
-            }
+            <Fragment>
+              <DropdownItem divider />
+              <DropdownItem>
+                <NavItem>
+                  <NavLink className="text-center" style={{padding: 0}} tag={Link} to="/notifications">
+                    View All Notification
+                  </NavLink>
+                </NavItem>
+              </DropdownItem>
+            </Fragment>
           </DropdownMenu>
         </UncontrolledDropdown>
 

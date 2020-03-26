@@ -15,6 +15,7 @@ class CreateNotificationsTable extends Migration
     {
         Schema::create('notifications', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->integer('subject_id');
             $table->string('type');
             $table->integer('from');
             $table->integer('to');

@@ -18,10 +18,10 @@ class Competition extends Model
         'creator_id',
         'type',
         'name',
+        'place',
         'from',
         'to',
         'reg_ids',
-        'club_ids',
-        'member_ids'
+        'club_ids'
     ];
 }

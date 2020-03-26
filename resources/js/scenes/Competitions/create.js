@@ -140,6 +140,7 @@ class CreateComp extends Component {
       creator_id: this.state.creator_id,
       type: values.type.value,
       name: values.name,
+      place: values.place,
       from: this.state.from,
       to: this.state.to,
       reg_ids: reg_ids.substring(0, reg_ids.length - 1)
@@ -201,6 +202,7 @@ class CreateComp extends Component {
                 creator_id: null,
                 type: null,
                 name: '',
+                place: '',
                 from: null,
                 to: null,
                 reg_ids: null
@@ -210,6 +212,7 @@ class CreateComp extends Component {
                 Yup.object().shape({
                   type: Yup.mixed().required('This field is required!'),
                   name: Yup.mixed().required('This field is required!'),
+                  place: Yup.mixed().required('This field is required!'),
                   reg_ids: Yup.mixed().required('This field is required!')
                 })
               }
@@ -218,6 +221,7 @@ class CreateComp extends Component {
 
               render={({
                 values,
+                errors,
                 status,
                 touched,
                 setFieldValue,
@@ -258,6 +262,9 @@ class CreateComp extends Component {
                           }}
                           onBlur={this.handleBlur}
                         />
+                        {!values.type && touched.type && (
+                          <FormFeedback className="d-block">This field is required!</FormFeedback>
+                        )}
                       </FormGroup>
                     </Col>
                     <Col xs="12" sm="6">
@@ -269,7 +276,9 @@ class CreateComp extends Component {
                           value={values.name || ''}
                           onChange={handleChange}
                           onBlur={handleBlur}
+                          invalid={!!errors.name && touched.name}
                         />
+                        <FormFeedback>{errors.name}</FormFeedback>
                       </FormGroup>
                     </Col>
                     <Col xs="12" sm="6">
@@ -296,6 +305,20 @@ class CreateComp extends Component {
                         {!to && touched.to && (
                           <FormFeedback className="d-block">This field is required!</FormFeedback>
                         )}
+                      </FormGroup>
+                    </Col>
+                    <Col xs="12">
+                      <FormGroup>
+                        <Label for="place">Competition Place</Label>
+                        <Input
+                          name="place"
+                          type="text"
+                          value={values.place || ''}
+                          onChange={handleChange}
+                          onBlur={handleBlur}
+                          invalid={!!errors.place && touched.place}
+                        />
+                        <FormFeedback>{errors.place}</FormFeedback>
                       </FormGroup>
                     </Col>
                     <Col xs="12">

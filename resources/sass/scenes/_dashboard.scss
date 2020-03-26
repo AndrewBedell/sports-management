@@ -47,6 +47,12 @@
         }
       }
     }
+
+    .ui.input {
+      input {
+        height: 48px;
+      }
+    }
   }
 
   &.has-hand-card {

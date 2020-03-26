@@ -35,15 +35,22 @@ Route::namespace('Api')->group(function () {
         Route::delete('organization/{id}', 'OrganizationController@destroy');
 
         Route::get('members', 'MemberController@index');
+        Route::get('competitioin-members/{id}', 'MemberController@competition');
         Route::get('member/{id}', 'MemberController@show');
         Route::get('roles', 'MemberController@roles');
         Route::post('reg-member', 'MemberController@store');
         Route::put('member/{id}', 'MemberController@update');
         Route::delete('member/{id}', 'MemberController@destroy');
 
+        Route::get('competitions', 'CompetitionController@index');
+        Route::get('competition/{id}', 'CompetitionController@show');
+        Route::get('find-competitions', 'CompetitionController@find');
         Route::post('reg-competition', 'CompetitionController@store');
+        Route::post('attend-members', 'CompetitionController@attend');
 
-        Route::get('unread', 'NotificationController@unread');
+        Route::get('notifications', 'NotificationController@index');
+        Route::get('notification/unread', 'NotificationController@unread');
+        Route::get('notification/{id}', 'NotificationController@show');
 
         Route::get('profile', 'UserController@profile');
         Route::get('setting', 'UserController@setting');

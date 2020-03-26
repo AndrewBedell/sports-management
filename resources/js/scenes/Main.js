@@ -18,6 +18,10 @@ import GetInviteUsers from './Users';
 import Payment from './Payment';
 import Competitions from './Competitions';
 import CreateComp from './Competitions/create';
+import DetailComp from './Competitions/detail';
+import ReadNot from './Notifications/read';
+import NotificationDetail from './Notifications/detail';
+import Notifications from './Notifications';
 
 import Admin from './Admin';
 import AdminSearch from './Admin/search';
@@ -62,7 +66,11 @@ class Main extends Component {
 
           <Route exact path="/payment-player" name="Payment" component={Payment} />
           <Route exact path="/competition/create" name="CreateComp" component={CreateComp} />
+          <Route exact path="/competition/detail" name="DetailComp" component={DetailComp} />
           <Route exact path="/competitions" name="Competitions" component={Competitions} />
+          <Route exact path="/notification/read" name="ReadNotification" component={ReadNot} />
+          <Route exact path="/notification/detail" name="NotificationDetail" component={NotificationDetail} />
+          <Route exact path="/notifications" name="Notifications" component={Notifications} />
           <Route exact path="/member/register" name="MemberAdd" component={MemberAdd} />
           <Route exact path="/member/detail" name="MemberDetail" component={MemberDetail} />
           <Route exact path="/members" name="Members" component={Members} />

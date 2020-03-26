@@ -545,6 +545,29 @@ class MemberController extends Controller
     }
 
     /**
+     * Display all of Members.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function competition($id)
+    {
+        $members = Member::leftJoin('players', 'players.member_id', '=', 'members.id')
+                        ->leftJoin('roles', 'roles.id', '=', 'members.role_id')
+                        ->leftJoin('weights', 'weights.id', '=', 'players.weight_id')
+                        ->where('organization_id', $id)
+                        ->where('members.active', 1)
+                        ->select('members.*', 'roles.name as role_name', 'weights.weight', 'players.dan')
+                        ->orderBy('members.name')
+                        ->get();
+
+        return response()->json([
+            'status' => 200,
+            'data' => $members
+        ]);
+    }
+
+    /**
      * Display a list of Member's Role.
      *
      * @param  int  $id

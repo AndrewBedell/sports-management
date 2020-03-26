@@ -18,11 +18,11 @@ class CreateCompetitionsTable extends Migration
             $table->integer('creator_id');
             $table->string('type');
             $table->string('name');
+            $table->string('place');
             $table->date('from');
             $table->date('to');
             $table->string('reg_ids', 2000);
             $table->string('club_ids', 2000);
-            $table->string('member_ids', 2000);
             $table->timestamps();
             $table->softDeletes();
         });

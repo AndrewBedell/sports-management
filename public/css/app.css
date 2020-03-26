@@ -58979,12 +58979,25 @@ body {
   color: #00D994 !important;
 }
 
-.top-header .navbar-collapse .nav .right-nav-bar .nav-item {
+.top-header .navbar-collapse .nav .right-nav-bar > .nav-item {
   margin-right: 34px;
 }
 
 .top-header .navbar-collapse .nav .right-nav-bar .nav-item .nav-link {
   padding: 8px 0;
+}
+
+.top-header .navbar-collapse .nav .right-nav-bar .nav-item .nav-link .badge {
+  position: absolute;
+  top: 0;
+}
+
+.top-header .navbar-collapse .nav .right-nav-bar .nav-item .notification {
+  width: 300px;
+}
+
+.top-header .navbar-collapse .nav .right-nav-bar .nav-item .notification .nav-link span {
+  white-space: pre-wrap;
 }
 
 @media (min-width: 992px) {
@@ -59073,6 +59086,10 @@ body .main-content {
 }
 
 .main-content .form-group.calendar .field input {
+  height: 48px;
+}
+
+.main-content .form-group .ui.input input {
   height: 48px;
 }
 

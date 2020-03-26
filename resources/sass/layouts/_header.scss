@@ -134,11 +134,28 @@
       }
 
       .right-nav-bar {
-        .nav-item {
+        >.nav-item {
           margin-right: 34px;
-
+        }
+        
+        .nav-item {
           .nav-link {
             padding: 8px 0;
+
+            .badge {
+              position: absolute;
+              top: 0;
+            }
+          }
+
+          .notification {
+            width: 300px;
+
+            .nav-link {
+              span {
+                white-space: pre-wrap;
+              }
+            }
           }
         }
       }
