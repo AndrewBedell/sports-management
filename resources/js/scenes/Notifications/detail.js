@@ -150,7 +150,8 @@ class NotificationDetail extends Component {
   }
 
   handleSelectMember(member, checked) {
-    const { members } = this.state;
+    const { selectMembers, members } = this.state;
+
     for (let i = 0; i < members.length; i++) {
       const item = members[i];
       if (item.id === member) {
@@ -158,10 +159,16 @@ class NotificationDetail extends Component {
       }
     }
 
-    this.setState({
-      members,
-      selectMembers: this.state.selectMembers.concat(members.filter(item => item.checked === true))
-    });
+    if (checked) {
+      this.setState({
+        members,
+        selectMembers: selectMembers.concat(members.filter(item => item.checked === true))
+      });
+    } else {
+      this.setState({
+        selectMembers: selectMembers.filter(item => item.id !== member)
+      });
+    }
   }
 
   handleSelectAll(data, event) {
@@ -349,8 +356,6 @@ class NotificationDetail extends Component {
                         <CompetitionMemberTable
                           items={selectMembers}
                           attend
-                          onSelect={this.handleSelectMember.bind(this)}
-                          onSelectAll={this.handleSelectAll.bind(this)}
                         />
                       )
                     }
