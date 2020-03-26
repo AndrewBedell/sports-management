@@ -35,7 +35,8 @@ Route::namespace('Api')->group(function () {
         Route::delete('organization/{id}', 'OrganizationController@destroy');
 
         Route::get('members', 'MemberController@index');
-        Route::get('competitioin-members/{id}', 'MemberController@competition');
+        Route::post('competitioin-members', 'MemberController@competition');
+        Route::post('select-members', 'MemberController@selection');
         Route::get('member/{id}', 'MemberController@show');
         Route::get('roles', 'MemberController@roles');
         Route::post('reg-member', 'MemberController@store');

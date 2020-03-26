@@ -7,6 +7,8 @@ use App\Member;
 use App\Player;
 use App\Organization;
 use App\Setting;
+use App\Notification;
+use App\CompetitionMembers;
 
 use JWTAuth;
 use Illuminate\Http\Request;
@@ -550,13 +552,54 @@ class MemberController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function competition($id)
+    public function competition(Request $request)
     {
+        $data = $request->all();
+
+        $notification = Notification::where('id', $data['notification'])
+                            ->where('to', $data['club_id'])
+                            ->get();
+
+        $competition = CompetitionMembers::where('competition_id', $notification[0]->subject_id)
+                            ->where('club_id', $data['club_id'])
+                            ->get();
+
+        $ids = explode(',', $competition[0]->member_ids);
+        
         $members = Member::leftJoin('players', 'players.member_id', '=', 'members.id')
                         ->leftJoin('roles', 'roles.id', '=', 'members.role_id')
                         ->leftJoin('weights', 'weights.id', '=', 'players.weight_id')
-                        ->where('organization_id', $id)
+                        ->whereNotIn('members.id', $ids)
+                        ->where('organization_id', $data['club_id'])
                         ->where('members.active', 1)
+                        ->select('members.*', 'roles.name as role_name', 'weights.weight', 'players.dan')
+                        ->orderBy('members.name')
+                        ->get();
+
+        return response()->json([
+            'status' => 200,
+            'data' => $members
+        ]);
+    }
+
+    public function selection(Request $request)
+    {
+        $data = $request->all();
+
+        $notification = Notification::where('id', $data['notification'])
+                            ->where('to', $data['club_id'])
+                            ->get();
+
+        $competition = CompetitionMembers::where('competition_id', $notification[0]->subject_id)
+                            ->where('club_id', $data['club_id'])
+                            ->get();
+
+        $ids = explode(',', $competition[0]->member_ids);
+        
+        $members = Member::leftJoin('players', 'players.member_id', '=', 'members.id')
+                        ->leftJoin('roles', 'roles.id', '=', 'members.role_id')
+                        ->leftJoin('weights', 'weights.id', '=', 'players.weight_id')
+                        ->whereIn('members.id', $ids)
                         ->select('members.*', 'roles.name as role_name', 'weights.weight', 'players.dan')
                         ->orderBy('members.name')
                         ->get();

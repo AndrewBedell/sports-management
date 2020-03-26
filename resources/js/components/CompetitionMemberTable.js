@@ -113,7 +113,8 @@ class CompetitionMemberTable extends Component {
       onSelect,
       onSelectAll,
       onDetail,
-      items
+      items,
+      attend
     } = this.props;
 
     const {
@@ -160,14 +161,6 @@ class CompetitionMemberTable extends Component {
             </Table.HeaderCell>
             <Table.HeaderCell
               className="text-center"
-              width="2"
-              sorted={column === 'email' ? direction : null}
-              onClick={this.handleSort.bind(this, 'email')}
-            >
-              Email
-            </Table.HeaderCell>
-            <Table.HeaderCell
-              className="text-center"
               sorted={column === 'weight' ? direction : null}
               onClick={this.handleSort.bind(this, 'weight')}
             >
@@ -180,14 +173,16 @@ class CompetitionMemberTable extends Component {
             >
               Dan
             </Table.HeaderCell>
-            <Table.HeaderCell className="text-center" width="2">
-              <CustomInput
-                id="selectAll"
-                type="checkbox"
-                checked={data.filter(item => item.checked === true).length === data.length}
-                onChange={(event) => { onSelectAll(data, event); this.setState({ checkedAll: event.target.checked }); }}
-              />
-            </Table.HeaderCell>
+            {!attend && (
+              <Table.HeaderCell className="text-center" width="2">
+                <CustomInput
+                  id="selectAll"
+                  type="checkbox"
+                  checked={data.filter(item => item.checked === true).length === data.length}
+                  onChange={(event) => { onSelectAll(data, event); this.setState({ checkedAll: event.target.checked }); }}
+                />
+              </Table.HeaderCell>
+            )}
           </Table.Row>
         </Table.Header>
         <Table.Body>
@@ -214,7 +209,6 @@ class CompetitionMemberTable extends Component {
                     {item.gender && item.gender == 1 ? Genders[0].name : Genders[1].name}
                   </Table.Cell>
                   <Table.Cell className="text-center">{item.birthday}</Table.Cell>
-                  <Table.Cell>{item.email}</Table.Cell>
                   <Table.Cell className="text-center">
                     {item.weight}
                     {' '}
@@ -223,14 +217,16 @@ class CompetitionMemberTable extends Component {
                   <Table.Cell className="text-center">
                     {item.dan}
                   </Table.Cell>
-                  <Table.Cell className="text-center">
-                    <CustomInput
-                      id={item.id}
-                      type="checkbox"
-                      checked={!!item.checked}
-                      onChange={(event) => { onSelect(item.id, event.target.checked); }}
-                    />
-                  </Table.Cell>
+                  {!attend && (
+                    <Table.Cell className="text-center">
+                      <CustomInput
+                        id={item.id}
+                        type="checkbox"
+                        checked={!!item.checked}
+                        onChange={(event) => { onSelect(item.id, event.target.checked); }}
+                      />
+                    </Table.Cell>
+                  )}
                 </Table.Row>
               ))
             )
@@ -254,7 +250,7 @@ class CompetitionMemberTable extends Component {
                 }}
               />
             </Table.HeaderCell>
-            <Table.HeaderCell colSpan="7">
+            <Table.HeaderCell colSpan="6">
               <Menu floated="right" pagination>
                 <Pagination
                   activePage={activePage}
@@ -273,7 +269,8 @@ class CompetitionMemberTable extends Component {
 CompetitionMemberTable.defaultProps = {
   onSelectAll: () => {},
   onSelect: () => {},
-  onDetail: () => {}
+  onDetail: () => {},
+  attend: false
 };
 
 export default CompetitionMemberTable;

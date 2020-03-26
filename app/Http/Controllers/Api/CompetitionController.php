@@ -201,8 +201,6 @@ class CompetitionController extends Controller
                         ->get();
 
         if (sizeof($compMembers) > 0) {
-            $members .= $compMembers[0]->member_ids;
-
             CompetitionMembers::where('competition_id', $competition)
                         ->where('club_id', $data['club_id'])
                         ->update(['member_ids' => $members]);

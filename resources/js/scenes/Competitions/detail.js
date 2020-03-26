@@ -2,13 +2,9 @@ import React, { Component, Fragment } from 'react';
 import {
   Container, Row, Col
 } from 'reactstrap';
-import { Segment, Image } from 'semantic-ui-react';
+import { Segment } from 'semantic-ui-react';
 import Api from '../../apis/app';
-import Bitmaps from '../../theme/Bitmaps';
-import AdminTopBar from '../../components/TopBar/AdminTopBar';
 import MainTopBar from '../../components/TopBar/MainTopBar';
-import AdminBar from '../../components/AdminBar';
-import { referee_type_options } from '../../configs/data';
 
 class CompetitionDetail extends Component {
   constructor(props) {

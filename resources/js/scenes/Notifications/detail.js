@@ -27,7 +27,6 @@ class NotificationDetail extends Component {
 
     this.state={
       org_id: user.user.member_info.organization_id,
-      type: '',
       name: '',
       from: '',
       to: '',
@@ -55,7 +54,6 @@ class NotificationDetail extends Component {
     switch (notification.response.status) {
       case 200:
         this.setState({
-          type: notification.body.data.notification,
           name: notification.body.data.name,
           from: notification.body.data.from,
           to: notification.body.data.to
@@ -65,12 +63,28 @@ class NotificationDetail extends Component {
         break;
     }
 
-    const members = await Api.get(`competitioin-members/${this.state.org_id}`);
+    const params = {};
+
+    params.notification = this.props.location.state;
+    params.club_id = this.state.org_id;
+
+    const members = await Api.post('competitioin-members', params);
     switch (members.response.status) {
       case 200:
         this.setState({
           filter_data: members.body.data,
           members: members.body.data
+        });
+        break;
+      default:
+        break;
+    }
+
+    const selectes = await Api.post('select-members', params);
+    switch (selectes.response.status) {
+      case 200:
+        this.setState({
+          selectMembers: selectes.body.data
         });
         break;
       default:
@@ -146,7 +160,7 @@ class NotificationDetail extends Component {
 
     this.setState({
       members,
-      selectMembers: members.filter(item => item.checked === true)
+      selectMembers: this.state.selectMembers.concat(members.filter(item => item.checked === true))
     });
   }
 
@@ -169,7 +183,7 @@ class NotificationDetail extends Component {
   }
 
   async handleAttend() {
-    const { selectMembers } = this.state;
+    const { members, selectMembers } = this.state;
     
     if (selectMembers && selectMembers.length > 0) {
       const params = {};
@@ -181,7 +195,9 @@ class NotificationDetail extends Component {
       const data = await Api.post('attend-members', params);
       switch (data.response.status) {
         case 200:
-          
+          this.setState({
+            members: members.filter(item => !item.checked)
+          });
           break;
         default:
           break;
@@ -193,8 +209,8 @@ class NotificationDetail extends Component {
 
   render() {
     const { 
-      type, name, from, to,
-      members,
+      name, from, to,
+      members, selectMembers,
       filter
     } = this.state;
     
@@ -207,118 +223,139 @@ class NotificationDetail extends Component {
               <Col sm="12">
                 <Segment>
                   <Row>
-                    <Col sm="4"><h5 className="py-2 text-right"><b>Notification Type: </b></h5></Col>
-                    <Col sm="8"><h5 className="py-2">{type}</h5></Col>
-                  </Row>
-                  <Row>
-                    <Col sm="4"><h5 className="py-2 text-right"><b>Competition Name: </b></h5></Col>
-                    <Col sm="8"><h5 className="py-2">{name}</h5></Col>
-                  </Row>
-                  <Row>
-                    <Col sm="4"><h5 className="py-2 text-right"><b>From: </b></h5></Col>
-                    <Col sm="8"><h5 className="py-2">{from}</h5></Col>
-                  </Row>
-                  <Row>
-                    <Col sm="4"><h5 className="py-2 text-right"><b>To: </b></h5></Col>
-                    <Col sm="8"><h5 className="py-2">{to}</h5></Col>
+                    <Col sm="12">
+                      <h3 className="py-5 text-center text-danger">Welcome to competion "{name}"</h3>
+                    </Col>
+                    <Col sm="12">
+                      <h3 className="py-2 text-center text-success">
+                        Competition Time: {from} ~ {to}
+                      </h3>
+                    </Col>
                   </Row>
                 </Segment>
               </Col>
             </Row>
-          </Container>
-          <Container fluid>
-            <Row className="mt-5">
-              <Col lg="2" md="3" sm="4">
-                <FormGroup>
-                  <Select
-                    name="search_type"
-                    classNamePrefix={'react-select-lg'}
-                    placeholder="Member Type"
-                    value={filter.search_type}
-                    options={member_type_options}
-                    getOptionValue={option => option.value}
-                    getOptionLabel={option => option.label}
-                    onChange={(type) => {
-                      this.handleSearchFilter('search_type', type);
-                    }}
-                  />
-                </FormGroup>
-              </Col>
-              <Col lg="2" md="3" sm="4">
-                <FormGroup>
-                  <Input
-                    name="search_name"
-                    placeholder="Name"
-                    value={filter.search_name}
-                    onChange={(event) => {
-                      this.handleSearchFilter('search_name', event.target.value);
-                    }}
-                  />
-                </FormGroup>
-              </Col>
-              <Col lg="2" md="3" sm="4">
-                <FormGroup>
-                  <Select
-                    name="search_gender"
-                    classNamePrefix="react-select-lg"
-                    placeholder="All Gender"
-                    value={filter.search_gender}
-                    options={search_genders}
-                    getOptionValue={option => option.value}
-                    getOptionLabel={option => option.label}
-                    onChange={(gender) => {
-                      this.handleSearchFilter('search_gender', gender);
-                    }}
-                  />
-                </FormGroup>
-              </Col>
-              {
-                filter.search_type && filter.search_type.value === 'judoka' && (
-                  <Col lg="2" md="3" sm="4">
-                    <FormGroup>
-                      <Select
-                        name="search_weight"
-                        classNamePrefix="react-select-lg"
-                        placeholder="Weight"
-                        value={filter.search_weight}
-                        options={this.getWeights(filter.search_gender ? filter.search_gender.value : '')}
-                        getOptionValue={option => option.id}
-                        getOptionLabel={option => `${option.weight} Kg`}
-                        onChange={(weight) => {
-                          this.handleSearchFilter('search_weight', weight);
-                        }}
-                      />
-                    </FormGroup>
-                  </Col>
-                )
-              }
+            <Row className="mt-5 mb-2">
               {
                 members && members.length > 0 && (
-                  <Col lg="2" md="3" sm="4">
+                  <Col sm="12" className="text-center">
                     <FormGroup>
                       <Button
                         type="button"
                         color="success"
                         onClick={this.handleAttend.bind(this)}
                       >
-                        Attend Members
+                        Submit Members
                       </Button>
                     </FormGroup>
                   </Col>
                 )
               }
             </Row>
-            <Row className="mt-2">
-              <Col sm="12">
-                {
-                  members && members.length > 0 && (
-                    <CompetitionMemberTable
-                      items={members}
-                      onSelect={this.handleSelectMember.bind(this)}
-                      onSelectAll={this.handleSelectAll.bind(this)}
-                    />
-                  )
-                }
+          </Container>
+          <Container fluid>
+            <Row>
+              <Col md="6" sm="12">
+                <Row>
+                  <Col sm="3">
+                    <FormGroup>
+                      <Select
+                        name="search_type"
+                        classNamePrefix={'react-select-lg'}
+                        placeholder="Member Type"
+                        value={filter.search_type}
+                        options={member_type_options}
+                        getOptionValue={option => option.value}
+                        getOptionLabel={option => option.label}
+                        onChange={(type) => {
+                          this.handleSearchFilter('search_type', type);
+                        }}
+                      />
+                    </FormGroup>
+                  </Col>
+                  <Col sm="3">
+                    <FormGroup>
+                      <Input
+                        name="search_name"
+                        placeholder="Name"
+                        value={filter.search_name}
+                        onChange={(event) => {
+                          this.handleSearchFilter('search_name', event.target.value);
+                        }}
+                      />
+                    </FormGroup>
+                  </Col>
+                  <Col sm="3">
+                    <FormGroup>
+                      <Select
+                        name="search_gender"
+                        classNamePrefix="react-select-lg"
+                        placeholder="All Gender"
+                        value={filter.search_gender}
+                        options={search_genders}
+                        getOptionValue={option => option.value}
+                        getOptionLabel={option => option.label}
+                        onChange={(gender) => {
+                          this.handleSearchFilter('search_gender', gender);
+                        }}
+                      />
+                    </FormGroup>
+                  </Col>
+                  {
+                    filter.search_type && filter.search_type.value === 'judoka' && (
+                      <Col sm="3">
+                        <FormGroup>
+                          <Select
+                            name="search_weight"
+                            classNamePrefix="react-select-lg"
+                            placeholder="Weight"
+                            value={filter.search_weight}
+                            options={this.getWeights(filter.search_gender ? filter.search_gender.value : '')}
+                            getOptionValue={option => option.id}
+                            getOptionLabel={option => `${option.weight} Kg`}
+                            onChange={(weight) => {
+                              this.handleSearchFilter('search_weight', weight);
+                            }}
+                          />
+                        </FormGroup>
+                      </Col>
+                    )
+                  }
+                </Row>
+              </Col>
+              <Col md="6" sm="12"></Col>
+            </Row>
+            <Row>
+              <Col md="6" sm="12">
+                <Row className="mt-2">
+                  <Col sm="12" className="table-responsive">
+                    {
+                      members && members.length > 0 && (
+                        <CompetitionMemberTable
+                          items={members}
+                          onSelect={this.handleSelectMember.bind(this)}
+                          onSelectAll={this.handleSelectAll.bind(this)}
+                        />
+                      )
+                    }
+                  </Col>
+                </Row>
+              </Col>
+              <Col md="6" sm="12">
+                <Row className="mt-2">
+                  <Col sm="12" className="table-responsive">
+                    {
+                      selectMembers && selectMembers.length > 0 && (
+                        <CompetitionMemberTable
+                          items={selectMembers}
+                          attend
+                          onSelect={this.handleSelectMember.bind(this)}
+                          onSelectAll={this.handleSelectAll.bind(this)}
+                        />
+                      )
+                    }
+                  </Col>
+                </Row>
               </Col>
             </Row>
           </Container>
