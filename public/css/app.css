@@ -59073,12 +59073,12 @@ body .main-content {
   color: #1E1B52;
 }
 
-.main-content table tr td a.detail-link {
+.main-content a.detail-link {
   cursor: pointer;
 }
 
-.main-content table tr td a.detail-link.text-underline,
-.main-content table tr td a.detail-link:hover {
+.main-content a.detail-link.text-underline,
+.main-content a.detail-link:hover {
   color: #1a0dab;
   text-decoration: underline;
 }

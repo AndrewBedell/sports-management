@@ -325,4 +325,69 @@ class CompetitionController extends Controller
             'status' => 'success'
         ], 200);
     }
+
+    public function destroyClub (Request $request)
+    {
+        $data = $request->all();
+
+        $competition = Competition::find($data['competition_id']);
+
+        $club_ids = explode(',', $competition->club_ids);
+        $club_ids = array_diff($club_ids, [$data['club_id']]);
+
+        $reg_ids = explode(',', $competition->reg_ids);
+        
+        $org = Organization::find($data['club_id']);
+        $clubs = Organization::where('parent_id', $org->parent_id)
+                            ->where('id', '!=', $data['club_id'])
+                            ->get();
+
+        if (sizeof($clubs) > 0) {
+            $flag = true;
+
+            foreach ($clubs as $club) {
+                if (in_array($club->id, $club_ids)) {
+                    $flag = false;
+                }
+            }
+
+            if ($flag) {
+                $reg_ids = array_diff($reg_ids, [$org->parent_id]);
+            }
+        } else {
+            $reg_ids = array_diff($reg_ids, [$org->parent_id]);
+        }
+
+        $udpateClub = '';
+        foreach ($club_ids as $id) {
+            $udpateClub .= $id . ',';
+        }
+
+        $udpateReg = '';
+        foreach ($reg_ids as $id) {
+            $udpateReg .= $id . ',';
+        }
+
+        $reg_ids = substr($udpateReg, 0, strlen($udpateReg) - 1);
+        $club_ids = substr($udpateClub, 0, strlen($udpateClub) - 1);
+
+        Competition::where('id', $data['competition_id'])
+                    ->update([
+                        'reg_ids' => $reg_ids,
+                        'club_ids' => $club_ids
+                    ]);
+
+        CompetitionMembers::where('competition_id', $data['competition_id'])
+                        ->where('club_id', $data['club_id'])
+                        ->delete();
+
+        Notification::where('subject_id', $data['competition_id'])
+                        ->where('to', $data['club_id'])
+                        ->delete();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Deleted Successfully'
+        ], 200);
+    }
 }

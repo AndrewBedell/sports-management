@@ -8,6 +8,7 @@ import {
   Pagination,
   Menu
 } from 'semantic-ui-react';
+import { Button } from 'reactstrap';
 import Select from 'react-select';
 
 import _ from 'lodash';
@@ -108,6 +109,7 @@ class CompetitionClubTable extends Component {
   render() {
     const {
       onSelect,
+      onDelete,
       items
     } = this.props;
 
@@ -162,6 +164,7 @@ class CompetitionClubTable extends Component {
             </Table.HeaderCell>
             <Table.HeaderCell className="text-center">Status</Table.HeaderCell>
             <Table.HeaderCell className="text-center">Action</Table.HeaderCell>
+            <Table.HeaderCell className="text-center">Edit / Delete</Table.HeaderCell>
           </Table.Row>
         </Table.Header>
         <Table.Body>
@@ -228,12 +231,31 @@ class CompetitionClubTable extends Component {
                     }
                     {
                       item.status == 2 && (
-                        <div>
-                          <a className="detail-link" onClick={() => onSelect(item.id, 'detail')}>
-                            <i className="fa fa-file"></i> Detail
-                          </a>
-                        </div>
+                        <span>-</span>
                       ) 
+                    }
+                  </Table.Cell>
+                  <Table.Cell>
+                    {
+                      item.status != 1 && (
+                        <div className="actions d-flex w-100 justify-content-center align-items-center">
+                          <Button
+                            color="success"
+                            type="button"
+                            onClick={() => onSelect(item.id, 'edit')}
+                            style={{ marginRight: '20px' }}
+                          >
+                            <i className="fa fa-pencil-alt fa-lg" />
+                          </Button>
+                          <Button
+                            color="danger"
+                            type="button"
+                            onClick={() => onDelete(item.id)}
+                          >
+                            <i className="fa fa-trash-alt fa-lg" />
+                          </Button>
+                        </div>
+                      )
                     }
                   </Table.Cell>
                 </Table.Row>
@@ -259,7 +281,7 @@ class CompetitionClubTable extends Component {
                 }}
               />
             </Table.HeaderCell>
-            <Table.HeaderCell colSpan="6">
+            <Table.HeaderCell colSpan="7">
               <Menu floated="right" pagination>
                 <Pagination
                   activePage={activePage}
@@ -276,7 +298,8 @@ class CompetitionClubTable extends Component {
 }
 
 CompetitionClubTable.defaultProps = {
-  onSelect: () => {}
+  onSelect: () => {},
+  onDelete: () => {},
 };
 
 export default CompetitionClubTable;
