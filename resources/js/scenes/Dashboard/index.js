@@ -17,7 +17,6 @@ import {
   FormFeedback,
   Alert
 } from 'reactstrap';
-import { Input } from 'semantic-ui-react';
 
 import QueryString from 'qs';
 import MainTopBar from '../../components/TopBar/MainTopBar';

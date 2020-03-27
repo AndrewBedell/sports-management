@@ -326,7 +326,7 @@ class Payment extends Component {
       });
     } else if (pay_method === 'payme') {
       params.price_data = payme_data;
-      console.log(params);
+      
     }
   }
 

@@ -6,7 +6,7 @@ import {
 } from 'react-router-dom';
 import AdminRightBar from './AdminRightBar';
 import {
-  Nav, NavbarBrand, Navbar
+  Nav, NavbarBrand
 } from 'reactstrap';
 import Bitmaps from '../../theme/Bitmaps';
 

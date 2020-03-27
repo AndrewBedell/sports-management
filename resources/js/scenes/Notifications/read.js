@@ -1,7 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import {
   Container, Row, Col,
-  Toast, ToastBody, ToastHeader,
   Button
 } from 'reactstrap';
 import { Segment } from 'semantic-ui-react';

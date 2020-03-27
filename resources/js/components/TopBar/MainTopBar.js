@@ -1,5 +1,5 @@
 import React, {
-  Component, Fragment
+  Component
 } from 'react';
 import {
   NavLink as Link

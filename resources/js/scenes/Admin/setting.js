@@ -1,9 +1,6 @@
 /* eslint-disable react/no-unused-state */
 /* eslint-disable jsx-a11y/alt-text */
 import React, { Component, Fragment } from 'react';
-import {
-  Container
-} from 'reactstrap';
 import Api from '../../apis/app';
 
 import AdminTopBar from '../../components/TopBar/AdminTopBar';

@@ -11,7 +11,6 @@ import {
   Container, Row, Col,
   FormGroup, FormFeedback, Button
 } from 'reactstrap';
-import { Input } from 'semantic-ui-react';
 import Select from 'react-select';
 import QueryString from 'qs';
 import Api from '../../apis/app';
