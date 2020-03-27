@@ -13,8 +13,7 @@ class ReadNotification extends Component {
     super(props);
 
     this.state = {
-      notification: [],
-      nid: ''
+      notification: []
     };
   }
 
@@ -25,8 +24,7 @@ class ReadNotification extends Component {
     switch (response.status) {
       case 200:
         this.setState({
-          notification: body.data,
-          nid: id
+          notification: body.data
         });
         break;
       default:
@@ -35,7 +33,7 @@ class ReadNotification extends Component {
   }
 
   render() {
-    const { notification, nid } = this.state;
+    const { notification } = this.state;
 
     return (
       <Fragment>
@@ -48,38 +46,20 @@ class ReadNotification extends Component {
                 <Col sm="12" className="mt-5">
                   <h3 className="text-center text-primary">Notification</h3>
                 </Col>
-                <Col sm="12" className="mt-3">
-                  <h3>Notification Type: {notification.notification}</h3>
+                <Col sm="12" className="mt-3 mx-5">
+                  <h4><b>Content :</b></h4>
+                  <h4>{notification.content}</h4>
                 </Col>
                 <Col sm="12" className="mt-3">
-                  <div className="p-3 bg-info my-2 rounded">
-                    <Toast>
-                      <ToastHeader>
-                        <h4>Competition Name: {notification.name}</h4>
-                      </ToastHeader>
-                      <ToastBody className="mx-5 mt-2">
-                        <Row>
-                          <Col sm="8">
-                            <h4>Competition Place: {notification.place}</h4>
-                            <h4>Competition Time: {notification.from} ~ {notification.to}</h4>
-                          </Col>
-                          <Col sm="4">
-                            <div className="w-100 d-flex justify-content-end">
-                              <div>
-                              <Button
-                                className="mr-2"
-                                type="button"
-                                color="warning"
-                                onClick={() => this.props.history.push('/notification/detail', nid)}
-                              >
-                                Detail
-                              </Button>
-                              </div>
-                            </div>
-                          </Col>
-                        </Row>
-                      </ToastBody>
-                    </Toast>
+                  <div className="w-100 d-flex justify-content-end">
+                    <Button
+                      className="mr-2"
+                      type="button"
+                      color="warning"
+                      onClick={() => this.props.history.push('/competition/attend', notification.subject_id)}
+                    >
+                      Detail
+                    </Button>
                   </div>
                 </Col>
               </Row>

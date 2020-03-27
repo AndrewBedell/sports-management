@@ -57,36 +57,132 @@ class CompetitionController extends Controller
     {
         $competition = Competition::find($id);
 
-        $regArr = array();
-        $clubArr = array();
-
         $reg_ids = explode(',', $competition->reg_ids);
         $club_ids = explode(',', $competition->club_ids);
 
-        $regs = Organization::whereIn('id', $reg_ids)->get();
-
-        foreach ($regs as $reg) {
-            array_push($regArr, $reg->name_o);
-
-            $clubs = Organization::whereIn('id', $club_ids)
-                        ->where('parent_id', $reg->id)
-                        ->get();
-
-            $reg_clubs = '';
-
-            foreach ($clubs as $club) {
-                $reg_clubs .= $club->name_o . ', ';
-            }
-
-            array_push($clubArr, substr($reg_clubs, 0, strlen($reg_clubs) - 2));
-        }
-
-        $competition->reg_ids = $regArr;
-        $competition->club_ids = $clubArr;
+        $competition->reg_ids = sizeof(array_filter($reg_ids));
+        $competition->club_ids = sizeof(array_filter($club_ids));
 
         return response()->json([
             'status' => 200,
             'competition' => $competition
+        ]);
+    }
+
+    public function accept(Request $request) {
+        $data = $request->all();
+
+        CompetitionMembers::where('competition_id', $data['competition_id'])
+                    ->where('club_id', $data['club_id'])
+                    ->update(['status' => 1]);
+        
+        $result = array();
+
+        $competition = Competition::find($data['competition_id']);
+
+        $club_ids = explode(',', $competition->club_ids);
+
+        $clubs = Organization::leftJoin('organizations AS org', 'org.id', '=', 'organizations.parent_id')
+                            ->whereIn('organizations.id', $club_ids)
+                            ->select('organizations.id', 'organizations.name_o AS club_name', 'org.name_o AS reg_name')
+                            ->get();
+
+        foreach ($clubs as $club) {
+            $comp = CompetitionMembers::where('competition_id', $data['competition_id'])
+                            ->where('club_id', $club->id)
+                            ->get();
+
+            $male = 0;
+            $female = 0;
+            $officer = 0;
+            $status = 2;
+
+            if (sizeof($comp) > 0) {
+                $member_ids = explode(',', $comp[0]->member_ids);
+
+                $members = Member::whereIn('id', $member_ids)->get();
+
+                foreach ($members as $member) {
+                    if ($member->role_id == 3) {
+                        if ($member->gender == 1)
+                            $male++;
+                        else
+                            $female++;
+                    } else {
+                        $officer++;
+                    }
+                }
+
+                $status = $comp[0]->status;
+            }
+
+            $club['male'] = $male;
+            $club['female'] = $female;
+            $club['officer'] = $officer;
+            $club['status'] = $status;
+
+            array_push($result, $club);
+        }
+
+        return response()->json([
+            'status' => 200,
+            'result' => $result
+        ]);
+    }
+
+    public function clubs($id)
+    {
+        $result = array();
+
+        $competition = Competition::find($id);
+
+        $club_ids = explode(',', $competition->club_ids);
+
+        $clubs = Organization::leftJoin('organizations AS org', 'org.id', '=', 'organizations.parent_id')
+                            ->whereIn('organizations.id', $club_ids)
+                            ->select('organizations.id', 'organizations.name_o AS club_name', 'org.name_o AS reg_name')
+                            ->get();
+
+        foreach ($clubs as $club) {
+            $comp = CompetitionMembers::where('competition_id', $id)
+                            ->where('club_id', $club->id)
+                            ->get();
+
+            $male = 0;
+            $female = 0;
+            $officer = 0;
+            $status = 2;
+
+            if (sizeof($comp) > 0) {
+                $member_ids = explode(',', $comp[0]->member_ids);
+
+                $members = Member::whereIn('id', $member_ids)->get();
+
+                foreach ($members as $member) {
+                    if ($member->role_id == 3) {
+                        if ($member->gender == 1)
+                            $male++;
+                        else
+                            $female++;
+                    } else {
+                        $officer++;
+                    }
+                }
+
+                $status = $comp[0]->status;
+            }
+
+            $club['male'] = $male;
+            $club['female'] = $female;
+            $club['officer'] = $officer;
+            $club['status'] = $status;
+
+            array_push($result, $club);
+        }
+
+        return response()->json([
+            'status' => 200,
+            'result' => $result
         ]);
     }
 
@@ -158,7 +254,8 @@ class CompetitionController extends Controller
                 foreach ($reg_ids as $reg_id) {
                     Notification::create(array(
                         'subject_id' => $competition->id,
-                        'type' => 'Invite Competition',
+                        'content' => 
+                            'The competition "' . $data['name'] . '" is open from ' . $data['from'] . ' to ' . $data['to'] . '.',
                         'from' => $data['creator_id'],
                         'to' => $reg_id,
                         'status' => 0
@@ -168,7 +265,8 @@ class CompetitionController extends Controller
                 foreach ($clubArr as $club_id) {
                     Notification::create(array(
                         'subject_id' => $competition->id,
-                        'type' => 'Invite Competition',
+                        'content' => 
+                            'The competition "' . $data['name'] . '" is open from ' . $data['from'] . ' to ' . $data['to'] . '.',
                         'from' => $data['creator_id'],
                         'to' => $club_id,
                         'status' => 0
@@ -208,9 +306,20 @@ class CompetitionController extends Controller
             CompetitionMembers::create(array(
                 'competition_id' => $competition,
                 'club_id' => $data['club_id'],
-                'member_ids' => substr($members, 0, strlen($members) - 1)
+                'member_ids' => substr($members, 0, strlen($members) - 1),
+                'status' => 0
             ));
         }
+
+        $club = Organization::find($data['club_id']);
+
+        Notification::create(array(
+            'subject_id' => $competition,
+            'content' => 'The club "' . $club->name_o . '" sent the request for attending in competition.',
+            'from' => $data['club_id'],
+            'to' => $notification->from,
+            'status' => 0
+        ));
 
         return response()->json([
             'status' => 'success'

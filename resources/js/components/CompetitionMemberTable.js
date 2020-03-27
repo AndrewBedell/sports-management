@@ -23,13 +23,12 @@ class CompetitionMemberTable extends Component {
       data: [],
       direction: null,
       activePage: 1,
-      per_page: 10,
-      current_perPage: { label: 10, value: 10 },
+      per_page: 5,
+      current_perPage: { label: 5, value: 5 },
       pageOptions: [
+        { label: 5, value: 5 },
         { label: 10, value: 10 },
-        { label: 20, value: 20 },
-        { label: 50, value: 50 },
-        { label: 100, value: 100 }
+        { label: 20, value: 20 }
       ]
     };
     this.handleChangePerPage = this.handleChangePerPage.bind(this);
@@ -112,7 +111,6 @@ class CompetitionMemberTable extends Component {
     const {
       onSelect,
       onSelectAll,
-      onDetail,
       items,
       attend
     } = this.props;
@@ -147,6 +145,13 @@ class CompetitionMemberTable extends Component {
             </Table.HeaderCell>
             <Table.HeaderCell
               className="text-center"
+              sorted={column === 'position' ? direction : null}
+              onClick={this.handleSort.bind(this, 'position')}
+            >
+              Position
+            </Table.HeaderCell>
+            <Table.HeaderCell
+              className="text-center"
               sorted={column === 'gender' ? direction : null}
               onClick={this.handleSort.bind(this, 'gender')}
             >
@@ -159,24 +164,10 @@ class CompetitionMemberTable extends Component {
             >
               Birthday
             </Table.HeaderCell>
-            <Table.HeaderCell
-              className="text-center"
-              sorted={column === 'weight' ? direction : null}
-              onClick={this.handleSort.bind(this, 'weight')}
-            >
-              Weight
-            </Table.HeaderCell>
-            <Table.HeaderCell
-              className="text-center"
-              sorted={column === 'dan' ? direction : null}
-              onClick={this.handleSort.bind(this, 'dan')}
-            >
-              Dan
-            </Table.HeaderCell>
             {!attend && (
               <Table.HeaderCell className="text-center" width="2">
                 <CustomInput
-                  id="selectAll"
+                  id="selectAllMember"
                   type="checkbox"
                   checked={data.filter(item => item.checked === true).length === data.length}
                   onChange={(event) => { onSelectAll(data, event); this.setState({ checkedAll: event.target.checked }); }}
@@ -195,28 +186,19 @@ class CompetitionMemberTable extends Component {
                   <Table.Cell>
                     <img src={item.profile_image ? item.profile_image : 
                       (item.gender == 1 ? Bitmaps.maleAvatar : Bitmaps.femaleAvatar)} className="table-avatar mr-2" />
-                    {' '}
-                    <a className="detail-link" onClick={() => onDetail(item.id)}>
+                      {' '}
                       {item.surname && item.surname.toUpperCase()}
                       {' '}
                       {item.patronymic !== '-' && item.patronymic}
                       {' '}
                       {item.name}
-                    </a>
                   </Table.Cell>
                   <Table.Cell className="text-center">{item.role_name}</Table.Cell>
+                  <Table.Cell className="text-center">{item.position}</Table.Cell>
                   <Table.Cell className="text-center">
                     {item.gender && item.gender == 1 ? Genders[0].name : Genders[1].name}
                   </Table.Cell>
                   <Table.Cell className="text-center">{item.birthday}</Table.Cell>
-                  <Table.Cell className="text-center">
-                    {item.weight}
-                    {' '}
-                    Kg
-                  </Table.Cell>
-                  <Table.Cell className="text-center">
-                    {item.dan}
-                  </Table.Cell>
                   {!attend && (
                     <Table.Cell className="text-center">
                       <CustomInput
@@ -250,7 +232,7 @@ class CompetitionMemberTable extends Component {
                 }}
               />
             </Table.HeaderCell>
-            <Table.HeaderCell colSpan="6">
+            <Table.HeaderCell colSpan="5">
               <Menu floated="right" pagination>
                 <Pagination
                   activePage={activePage}
@@ -268,9 +250,7 @@ class CompetitionMemberTable extends Component {
 
 CompetitionMemberTable.defaultProps = {
   onSelectAll: () => {},
-  onSelect: () => {},
-  onDetail: () => {},
-  attend: false
+  onSelect: () => {}
 };
 
 export default CompetitionMemberTable;

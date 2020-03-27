@@ -127,27 +127,6 @@ class NotificationTable extends Component {
           <Table.Row>
             <Table.HeaderCell
               className="text-center"
-              sorted={column === 'type' ? direction : null}
-              onClick={this.handleSort.bind(this, 'type')}
-            >
-              Type
-            </Table.HeaderCell>
-            <Table.HeaderCell
-              className="text-center"
-              sorted={column === 'name' ? direction : null}
-              onClick={this.handleSort.bind(this, 'name')}
-            >
-              Name
-            </Table.HeaderCell>
-            <Table.HeaderCell
-              className="text-center"
-              sorted={column === 'place' ? direction : null}
-              onClick={this.handleSort.bind(this, 'place')}
-            >
-              Place
-            </Table.HeaderCell>
-            <Table.HeaderCell
-              className="text-center"
               sorted={column === 'from' ? direction : null}
               onClick={this.handleSort.bind(this, 'from')}
             >
@@ -155,10 +134,17 @@ class NotificationTable extends Component {
             </Table.HeaderCell>
             <Table.HeaderCell
               className="text-center"
-              sorted={column === 'to' ? direction : null}
-              onClick={this.handleSort.bind(this, 'to')}
+              sorted={column === 'content' ? direction : null}
+              onClick={this.handleSort.bind(this, 'content')}
             >
-              To
+              Content
+            </Table.HeaderCell>
+            <Table.HeaderCell
+              className="text-center"
+              sorted={column === 'place' ? direction : null}
+              onClick={this.handleSort.bind(this, 'place')}
+            >
+              Status
             </Table.HeaderCell>
           </Table.Row>
         </Table.Header>
@@ -169,15 +155,21 @@ class NotificationTable extends Component {
                 <Table.Row
                   key={index}
                 >
-                  <Table.Cell className="text-center">{item.type}</Table.Cell>
+                  <Table.Cell className="text-center">{item.name_o}</Table.Cell>
                   <Table.Cell className="text-center">
-                    <a className="detail-link" onClick={() => onSelect(item.nid)}>
-                      {item.name}
+                    <a className="detail-link" onClick={() => onSelect(item.id)}>
+                      {item.content}
                     </a>
                   </Table.Cell>
-                  <Table.Cell className="text-center">{item.place}</Table.Cell>
-                  <Table.Cell className="text-center">{item.from}</Table.Cell>
-                  <Table.Cell className="text-center">{item.to}</Table.Cell>
+                  <Table.Cell className="text-center">
+                    {
+                      item.status == 1 ? (
+                        <i className="fa fa-envelope-open"></i>
+                      ) : (
+                        <i className="fa fa-envelope"></i>
+                      )
+                    }
+                  </Table.Cell>
                 </Table.Row>
               ))
             )

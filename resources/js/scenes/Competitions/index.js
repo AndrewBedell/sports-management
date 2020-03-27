@@ -66,7 +66,10 @@ class Competitions extends Component {
   }
 
   handleSelectItem(id) {
-    this.props.history.push('/competition/detail', id);
+    if (this.state.is_nf == 1)
+      this.props.history.push('/competition/detail', id);
+    else
+      this.props.history.push('/competition/attend', id);
   }
 
   render() {

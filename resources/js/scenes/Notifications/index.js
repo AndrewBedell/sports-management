@@ -50,6 +50,15 @@ class Notifications extends Component {
         <div className="main-content dashboard">
           <Container>
             {
+              notifications && notifications.length == 0 && (
+                <div className="fixed-content">
+                  <h3 className="text-muted">
+                    No notifications!
+                  </h3>
+                </div>
+              )
+            }
+            {
               notifications && notifications.length > 0 && (
                 <NotificationTable
                   items={notifications}

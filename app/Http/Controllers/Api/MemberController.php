@@ -546,33 +546,25 @@ class MemberController extends Controller
         return $orgIDs;
     }
 
-    /**
-     * Display all of Members.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function competition(Request $request)
     {
         $data = $request->all();
 
-        $notification = Notification::where('id', $data['notification'])
-                            ->where('to', $data['club_id'])
-                            ->get();
+        $ids = array();
 
-        $competition = CompetitionMembers::where('competition_id', $notification[0]->subject_id)
-                            ->where('club_id', $data['club_id'])
-                            ->get();
+        $competition = CompetitionMembers::where('competition_id', $data['competition_id'])
+                        ->where('club_id', $data['club_id'])
+                        ->get();
 
-        $ids = explode(',', $competition[0]->member_ids);
-        
+        if (sizeof($competition) > 0)
+            $ids = explode(',', $competition[0]->member_ids);
+
         $members = Member::leftJoin('players', 'players.member_id', '=', 'members.id')
                         ->leftJoin('roles', 'roles.id', '=', 'members.role_id')
                         ->leftJoin('weights', 'weights.id', '=', 'players.weight_id')
-                        ->whereNotIn('members.id', $ids)
-                        ->where('organization_id', $data['club_id'])
-                        ->where('members.active', 1)
+                        ->whereIn('members.id', $ids)
                         ->select('members.*', 'roles.name as role_name', 'weights.weight', 'players.dan')
+                        ->orderBy('players.weight_id')
                         ->orderBy('members.name')
                         ->get();
 
@@ -582,31 +574,51 @@ class MemberController extends Controller
         ]);
     }
 
-    public function selection(Request $request)
+    public function allow(Request $request)
     {
         $data = $request->all();
 
-        $notification = Notification::where('id', $data['notification'])
-                            ->where('to', $data['club_id'])
-                            ->get();
-
-        $competition = CompetitionMembers::where('competition_id', $notification[0]->subject_id)
+        $competition = CompetitionMembers::where('competition_id', $data['competition_id'])
                             ->where('club_id', $data['club_id'])
                             ->get();
 
-        $ids = explode(',', $competition[0]->member_ids);
+        $ids = array();
+        if (sizeof($competition) > 0)
+            $ids = explode(',', $competition[0]->member_ids);
         
         $members = Member::leftJoin('players', 'players.member_id', '=', 'members.id')
                         ->leftJoin('roles', 'roles.id', '=', 'members.role_id')
                         ->leftJoin('weights', 'weights.id', '=', 'players.weight_id')
-                        ->whereIn('members.id', $ids)
+                        ->whereNotIn('members.id', $ids)
+                        ->where('organization_id', $data['club_id'])
+                        ->where('members.active', 1)
                         ->select('members.*', 'roles.name as role_name', 'weights.weight', 'players.dan')
+                        ->orderBy('players.weight_id')
                         ->orderBy('members.name')
                         ->get();
 
         return response()->json([
             'status' => 200,
             'data' => $members
+        ]);
+    }
+
+    public function check(Request $request)
+    {
+        $data = $request->all();
+
+        $competition = CompetitionMembers::where('competition_id', $data['competition_id'])
+                            ->where('club_id', $data['club_id'])
+                            ->get();
+
+        $status = 2;
+
+        if (sizeof($competition) > 0)
+            $status = $competition[0]->status;
+
+        return response()->json([
+            'status' => 200,
+            'data' => $status
         ]);
     }
 

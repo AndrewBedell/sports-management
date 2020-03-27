@@ -127,17 +127,17 @@ class CompetitionTable extends Component {
           <Table.Row>
             <Table.HeaderCell
               className="text-center"
-              sorted={column === 'name' ? direction : null}
-              onClick={this.handleSort.bind(this, 'name')}
-            >
-              Name
-            </Table.HeaderCell>
-            <Table.HeaderCell
-              className="text-center"
               sorted={column === 'type' ? direction : null}
               onClick={this.handleSort.bind(this, 'type')}
             >
               Type
+            </Table.HeaderCell>
+            <Table.HeaderCell
+              className="text-center"
+              sorted={column === 'name' ? direction : null}
+              onClick={this.handleSort.bind(this, 'name')}
+            >
+              Name
             </Table.HeaderCell>
             <Table.HeaderCell
               className="text-center"
@@ -169,13 +169,13 @@ class CompetitionTable extends Component {
               data.map((item, index) => (
                 <Table.Row key={index}>
                   <Table.Cell className="text-center">
+                    {item.type == 'inter' && 'International Competition'}
+                    {item.type == 'nf' && 'National Tournament'}
+                  </Table.Cell>
+                  <Table.Cell className="text-center">
                     <a className="detail-link" onClick={() => onSelect(item.id)}>
                       {item.name}
                     </a>
-                  </Table.Cell>
-                  <Table.Cell className="text-center">
-                    {item.type == 'inter' && 'International Competition'}
-                    {item.type == 'nf' && 'National Tournament'}
                   </Table.Cell>
                   <Table.Cell className="text-center">{item.place}</Table.Cell>
                   <Table.Cell className="text-center">{item.from}</Table.Cell>

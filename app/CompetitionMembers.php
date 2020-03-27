@@ -17,6 +17,7 @@ class CompetitionMembers extends Model
     protected $fillable = [
         'competition_id',
         'club_id',
-        'member_ids'
+        'member_ids',
+        'status'
     ];
 }

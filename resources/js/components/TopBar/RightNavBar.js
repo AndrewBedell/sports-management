@@ -56,7 +56,7 @@ class RightNavBar extends Component {
   }
 
   handleReadNotification(id) {
-    this.props.history.push('/notification/detail', id);
+    this.props.history.push('/notification/read', id);
   }
 
   async handleLogout() {
@@ -86,9 +86,9 @@ class RightNavBar extends Component {
               notification.length > 0 ? (
                 notification.map((item, index) => (
                   <DropdownItem key={index}>
-                    <NavItem onClick={this.handleReadNotification.bind(this, item.nid)}>
+                    <NavItem onClick={this.handleReadNotification.bind(this, item.id)}>
                       <NavLink>
-                        <span>The competition "{item.name}" is open from {item.from} to {item.to}.</span>
+                        <span>{item.content}</span>
                       </NavLink>
                     </NavItem>
                   </DropdownItem>

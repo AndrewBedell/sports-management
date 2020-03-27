@@ -18,6 +18,7 @@ class CreateCompetitionMembersTable extends Migration
             $table->integer('competition_id');
             $table->integer('club_id');
             $table->string('member_ids', 3000);
+            $table->boolean('status');
             $table->timestamps();
             $table->softDeletes();
         });
