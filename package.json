@@ -24,6 +24,7 @@
         "sass-loader": "^7.1.0"
     },
     "dependencies": {
+        "@react-pdf/renderer": "^1.6.8",
         "apexcharts": "^3.16.1",
         "axios": "^0.18",
         "bootstrap": "^4.0.0",

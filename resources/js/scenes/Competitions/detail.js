@@ -1,4 +1,7 @@
 import React, { Component, Fragment } from 'react';
+import { 
+  PDFViewer , Page, Text, Canvas, View, Document, StyleSheet, 
+} from '@react-pdf/renderer';
 import {
   Container, Row, Col
 } from 'reactstrap';
@@ -7,17 +10,45 @@ import Api from '../../apis/app';
 import MainTopBar from '../../components/TopBar/MainTopBar';
 import CompetitionClubTable from '../../components/CompetitionClubTable';
 import CompetitionSelectTable from '../../components/CompetitionSelectTable';
+import { object } from 'yup';
 
 class CompetitionDetail extends Component {
   constructor(props) {
     super(props);
+
+    const styles = StyleSheet.create({
+      page: {
+        flexDirection: 'row',
+        backgroundColor: '#FFFFFF'
+      },
+      title: {
+        color: 'blue',
+        flexGrow: 1,
+        fontSize: 20,
+        margin: 30,
+        padding: 10,
+        textAlign: 'center'
+      },
+      element: {
+        border: '1px solid black',
+        color: 'black',
+        flexGrow: 1,
+        fontSize: 16,
+        fontWeight: 'bold',
+        marginTop: 10,
+        marginHorizontal: 10,
+        padding: 10,
+      }
+    });
 
     this.state = {
       competition_id: '',
       competition: [],
       clubs: [],
       selectMembers: [],
-      detail: false
+      detail: false,
+      exportPDF: false,
+      styles
     };
   }
 
@@ -62,7 +93,8 @@ class CompetitionDetail extends Component {
         case 200:
           this.setState({
             selectMembers: selects.body.data,
-            detail: true
+            detail: true,
+            exportPDF: false
           });
           break;
         default:
@@ -82,10 +114,29 @@ class CompetitionDetail extends Component {
           break;
       }
     }
+
+    if (action == 'export') {
+      const selects = await Api.post('competition-members', params);
+      switch (selects.response.status) {
+        case 200:console.log(selects.body.data)
+          this.setState({
+            exportMembers: selects.body.data,
+            detail: false,
+            exportPDF: true
+          });
+          break;
+        default:
+          break;
+      }
+    }
   }
 
   render() {
-    const { competition, clubs, selectMembers, detail } = this.state;
+    const { 
+      competition, clubs, 
+      selectMembers, detail, 
+      exportMembers, styles, exportPDF 
+    } = this.state;
 
     return (
       <Fragment>
@@ -120,7 +171,7 @@ class CompetitionDetail extends Component {
               )
             }
             {
-              selectMembers && selectMembers.length > 0 && (
+              detail && selectMembers && selectMembers.length > 0 && (
                 <Row className="mt-3">
                   <CompetitionSelectTable
                     items={selectMembers}
@@ -135,6 +186,29 @@ class CompetitionDetail extends Component {
                     No results!
                   </h3>
                 </div>
+              )
+            }
+            {
+              exportPDF && (
+                <PDFViewer>
+                  <Document>
+                    <Page size="A4" style={styles.page}>
+                      <View style={styles.title}>
+                        <Text>Competition Members</Text>
+                      </View>
+                      <View style={styles.element}>
+                        {
+                          exportMembers.map((item, index) => (
+                            <View key={index}  style={styles.row}>
+                              <Text>{item.name} {item.surname}</Text>
+                              <Text>{item.birthday}</Text>
+                            </View>
+                          ))
+                        }
+                      </View>
+                    </Page>
+                  </Document>
+                </PDFViewer>
               )
             }
           </Container>

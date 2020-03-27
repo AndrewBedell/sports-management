@@ -1,4 +1,12 @@
 .main-content {
+  .container {
+    iframe {
+      height: 800px;
+      margin-top: 50px;
+      width: 100%;
+    }
+  }
+
   .fixed-content {
     display: flex;
     justify-content: center;
