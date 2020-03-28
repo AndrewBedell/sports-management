@@ -52,7 +52,8 @@ Route::namespace('Api')->group(function () {
         Route::get('find-competitions', 'CompetitionController@find');
         Route::post('accept-competition', 'CompetitionController@accept');
         Route::post('reg-competition', 'CompetitionController@store');
-        Route::post('add-competition', 'CompetitionController@add');
+        Route::post('add-club-competition', 'CompetitionController@addClub');
+        Route::post('add-member-competition', 'CompetitionController@addMember');
         Route::post('attend-members', 'CompetitionController@attend');
         Route::delete('competition-club', 'CompetitionController@destroyClub');
         Route::delete('competition-member', 'CompetitionController@removeMember');

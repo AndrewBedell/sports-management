@@ -59099,6 +59099,10 @@ body .main-content {
   height: 48px;
 }
 
+.main-content .form-control[readonly] {
+  background-color: #FFFFFF;
+}
+
 .main-content.has-hand-card {
   position: relative;
 }

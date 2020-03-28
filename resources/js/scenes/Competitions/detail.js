@@ -5,7 +5,7 @@ import {
 import {
   Container, Row, Col, 
   FormGroup,
-  Alert, Button
+  Alert, Button, Input
 } from 'reactstrap';
 import { Segment } from 'semantic-ui-react';
 import Select from 'react-select';
@@ -70,7 +70,12 @@ class CompetitionDetail extends Component {
       confirmationMessage: '',
       successMessage: '',
       org_val: null,
-      club_val: null
+      club_val: null,
+      member_val: null,
+      role_name: '',
+      weight: '',
+      dan: '',
+      position: ''
     };
   }
 
@@ -167,7 +172,7 @@ class CompetitionDetail extends Component {
       params.reg_id = org_val.id;
       params.club_id = club_val.id;
 
-      const data = await Api.post('add-competition', params);
+      const data = await Api.post('add-club-competition', params);
       switch (data.response.status) {
         case 200:
           if (data.body.regs.length > 0 && data.body.regs[0].parent_id == 0)
@@ -190,6 +195,10 @@ class CompetitionDetail extends Component {
         default:
           break;
       }
+
+      setTimeout(() => {
+        this.setState({ alertVisible: false });
+      }, 2000);
     }
   }
 
@@ -224,7 +233,9 @@ class CompetitionDetail extends Component {
       const addMembers = await Api.post('competition-add-members', params);
       switch (addMembers.response.status) {
         case 200:
-          // console.log(addMembers.body.members);
+          this.setState({
+            addMembers: addMembers.body.members
+          });
           break;
         default:
           break;
@@ -321,8 +332,7 @@ class CompetitionDetail extends Component {
             messageStatus: true,
             isOpenDeleteModal: false,
             successMessage: delMember.body.message,
-            editMembers: editMembers.filter(member => member.id != id),
-            clubs: delMember.body.result
+            editMembers: editMembers.filter(member => member.id != id)
           });
           break;
         default:
@@ -342,22 +352,110 @@ class CompetitionDetail extends Component {
     });
   }
 
-  handleBack() {
-    this.setState({
-      edit: false,
-      detail: false,
-      exportPDF: false
-    });
+  handleChangeMember(member) {
+    if (member == null) {
+      this.setState({
+        role_name: '',
+        weight: '',
+        dan: '',
+        position: ''
+      });
+    } else {
+      const role_id = member.role_id;
+      let role_name = '';
+
+      switch (role_id) {
+        case 1:
+          role_name = 'Officer';
+          break;
+        case 2:
+          role_name = 'Coach';
+          break;
+        case 3:
+          role_name ='Judoka';
+          break;
+        case 4:
+          role_name = 'Referee'
+          break;
+        default:
+          break;
+      }
+
+      this.setState({
+        member_val: member,
+        role_name,
+        weight: member.weight,
+        dan: member.dan,
+        position: member.position
+      });
+    }
+  }
+
+  async handleAddMember() {
+    const { member_val, editClub, addMembers } = this.state;
+   
+    if (member_val != null) {
+      let params = [];
+
+      params.competition_id = this.state.competition_id;
+      params.club_id = editClub.id;
+      params.member_id = member_val.id;
+
+      const data = await Api.post('add-member-competition', params);
+      switch (data.response.status) {
+        case 200:
+          this.setState({
+            alertVisible: true,
+            messageStatus: true,
+            isOpenDeleteModal: false,
+            successMessage: data.body.message,
+            editMembers: data.body.members,
+            addMembers: addMembers.filter(member => member.id != member_val),
+            member_val: null,
+            role_name: '',
+            weight: '',
+            dan: '',
+            position: ''
+          });
+          break;
+        default:
+          break;
+      }
+
+      setTimeout(() => {
+        this.setState({ alertVisible: false });
+      }, 2000);
+    }
+  }
+
+  async handleBack() {
+    const competition_id = this.props.location.state;
+
+    const clubs = await Api.get(`competition-clubs/${competition_id}`);
+    switch (clubs.response.status) {
+      case 200:
+        this.setState({
+          clubs: clubs.body.result,
+          edit: false,
+          detail: false,
+          exportPDF: false
+        });
+        break;
+      default:
+        break;
+    }
   }
 
   render() {
     const { 
       competition, clubs, editClub,
       org_list, club_list, org_val, club_val,
+      addMembers,
       editMembers, edit,
       selectMembers, detail,
       exportMembers, exportPDF, styles,
-      isOpenDeleteModal, confirmationMessage, deleteId, deleteOption, successMessage
+      isOpenDeleteModal, confirmationMessage, deleteId, deleteOption, successMessage,
+      member_val, role_name, weight, dan, position
     } = this.state;
 
     return (
@@ -392,51 +490,54 @@ class CompetitionDetail extends Component {
                 </Col>
               </Row>
             </Segment>
-            <Row className="mt-5">
-              <Col xl="2" lg="3" md="4" sm="6" xs="12">
-                <FormGroup>
-                  <Select
-                    classNamePrefix="react-select-lg"
-                    placeholder="Select Region"
-                    isClearable
-                    value={org_val && org_val}
-                    options={org_list}
-                    getOptionValue={option => option.id}
-                    getOptionLabel={option => option.name_o}
-                    onChange={(org) => {
-                      this.handleChange('org', org);
-                    }}
-                  />
-                </FormGroup>
-              </Col>
-              <Col xl="2" lg="3" md="4" sm="6" xs="12">
-                <FormGroup>
-                  <Select
-                    name="search_club"
-                    classNamePrefix="react-select-lg"
-                    placeholder="Select Club"
-                    isClearable
-                    value={club_val && club_val}
-                    options={club_list}
-                    getOptionValue={option => option.id}
-                    getOptionLabel={option => option.name_o}
-                    onChange={(club) => {
-                      this.handleChange('club', club);
-                    }}
-                  />
-                </FormGroup>
-              </Col>
-              <Col xl="2" lg="3" md="4" sm="6" xs="12">
-                <Button
-                  type="button"
-                  color="secondary"
-                  onClick={this.handleAddClub.bind(this)}
-                >
-                  Add Club
-                </Button>
-              </Col>
-            </Row>
             <Alert color="success" isOpen={this.state.alertVisible}>{successMessage }</Alert>
+            {
+              !edit && clubs && clubs.length > 0 && (
+                <Row className="mt-5">
+                  <Col xl="2" lg="3" md="4" sm="6" xs="12">
+                    <FormGroup>
+                      <Select
+                        classNamePrefix="react-select-lg"
+                        placeholder="Select Region"
+                        isClearable
+                        value={org_val && org_val}
+                        options={org_list}
+                        getOptionValue={option => option.id}
+                        getOptionLabel={option => option.name_o}
+                        onChange={(org) => {
+                          this.handleChange('org', org);
+                        }}
+                      />
+                    </FormGroup>
+                  </Col>
+                  <Col xl="2" lg="3" md="4" sm="6" xs="12">
+                    <FormGroup>
+                      <Select
+                        classNamePrefix="react-select-lg"
+                        placeholder="Select Club"
+                        isClearable
+                        value={club_val && club_val}
+                        options={club_list}
+                        getOptionValue={option => option.id}
+                        getOptionLabel={option => option.name_o}
+                        onChange={(club) => {
+                          this.handleChange('club', club);
+                        }}
+                      />
+                    </FormGroup>
+                  </Col>
+                  <Col xl="2" lg="3" md="4" sm="6" xs="12">
+                    <Button
+                      type="button"
+                      color="secondary"
+                      onClick={this.handleAddClub.bind(this)}
+                    >
+                      Add Club
+                    </Button>
+                  </Col>
+                </Row>
+              )
+            }
             {
               !edit && clubs && clubs.length > 0 && (
                 <Row className="mt-3">
@@ -498,20 +599,72 @@ class CompetitionDetail extends Component {
                 </Segment>
                 {
                   editMembers.length > 0 && (
-                    // <Row className="mt-2">
-                    //   <Col sm="3">
-                        
-                    //   </Col>
-                    // </Row>
-                    <Row className="mt-2">
-                      <Col sm="12" className="table-responsive">
-                        <CompetitionSelectTable
-                          items={editMembers}
-                          delCol
-                          onDelete={this.handleDelete.bind(this)}
-                        />
-                      </Col>
-                    </Row>
+                    <Fragment>
+                      <Row className="mt-3">
+                        <Col md="4" sm="6" xs="12">
+                          <FormGroup>
+                            <Select
+                              classNamePrefix="react-select-lg"
+                              placeholder="Select Member"
+                              isClearable
+                              value={member_val}
+                              options={addMembers}
+                              getOptionValue={option => option.id}
+                              getOptionLabel={option => option.name + ' ' + option.surname}
+                              onChange={(member) => {
+                                this.handleChangeMember(member);
+                              }}
+                            />
+                          </FormGroup>
+                        </Col>
+                        {
+                          role_name && role_name != '' && (
+                            <Col md="2" sm="3" xs="6">
+                              <Input type="text" value={role_name} readOnly />
+                            </Col>
+                          )
+                        }
+                        {
+                          weight && weight != '' && (
+                            <Col md="2" sm="3" xs="6">
+                              <Input type="text" value={weight + ' Kg'} readOnly />
+                            </Col>
+                          )
+                        }                        
+                        {
+                          dan && dan != '' && (
+                            <Col md="2" sm="3" xs="6">
+                              <Input type="text" value={dan} readOnly />
+                            </Col>
+                          )
+                        }
+                        {
+                          position && role_name && role_name != 'Judoka' && (
+                            <Col md="2" sm="3" xs="6">
+                              <Input type="text" value={position} readOnly />
+                            </Col>
+                          )
+                        }
+                        <Col md="2" sm="3" xs="6">
+                          <Button
+                            type="button"
+                            color="success"
+                            onClick={this.handleAddMember.bind(this)}
+                          >
+                            Add Member
+                          </Button>
+                        </Col>
+                      </Row>
+                      <Row className="mt-2">
+                        <Col sm="12" className="table-responsive">
+                          <CompetitionSelectTable
+                            items={editMembers}
+                            delCol
+                            onDelete={this.handleDelete.bind(this)}
+                          />
+                        </Col>
+                      </Row>
+                    </Fragment>
                   )
                 }
               </Container>

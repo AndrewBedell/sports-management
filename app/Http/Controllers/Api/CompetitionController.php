@@ -325,7 +325,7 @@ class CompetitionController extends Controller
         ], 200);
     }
 
-    public function add(Request $request)
+    public function addClub(Request $request)
     {
         $data = $request->all();
 
@@ -480,7 +480,7 @@ class CompetitionController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'message' => 'Deleted Successfully'
+            'message' => 'The club "' . $org->name_o . '" deleted Successfully.'
         ], 200);
     }
 
@@ -525,6 +525,40 @@ class CompetitionController extends Controller
         ]);
     }
 
+    public function addMember(Request $request)
+    {
+        $data = $request->all();
+
+        $compMembers = CompetitionMembers::where('competition_id', $data['competition_id'])
+                            ->where('club_id', $data['club_id'])
+                            ->get();
+
+        $member_ids = $compMembers[0]->member_ids;
+        $member_ids .= ',' . $data['member_id'];
+
+        CompetitionMembers::where('competition_id', $data['competition_id'])
+                            ->where('club_id', $data['club_id'])
+                            ->update(['member_ids' => $member_ids]);
+
+        $ids = explode(',', $member_ids);
+
+        $members = Member::leftJoin('players', 'players.member_id', '=', 'members.id')
+                        ->leftJoin('roles', 'roles.id', '=', 'members.role_id')
+                        ->leftJoin('weights', 'weights.id', '=', 'players.weight_id')
+                        ->whereIn('members.id', $ids)
+                        ->where('members.active', 1)
+                        ->select('members.*', 'roles.name as role_name', 'weights.weight', 'players.dan')
+                        ->orderBy('players.weight_id')
+                        ->orderBy('members.name')
+                        ->get();
+
+        return response()->json([
+            'status' => 200,
+            'message' => 'One member added successfully.',
+            'members' => $members
+        ]);
+    }
+
     public function removeMember(Request $request)
     {
         $data = $request->all();
@@ -544,23 +578,11 @@ class CompetitionController extends Controller
 
         CompetitionMembers::where('competition_id', $data['competition_id'])
                         ->where('club_id', $data['club_id'])
-                        ->update(['member_ids' => $member_ids]);
-
-        $competition = Competition::find($data['competition_id']);
-
-        $club_ids = explode(',', $competition->club_ids);
-
-        $clubs = Organization::leftJoin('organizations AS org', 'org.id', '=', 'organizations.parent_id')
-                        ->whereIn('organizations.id', $club_ids)
-                        ->select('organizations.id', 'organizations.name_o AS club_name', 'org.name_o AS reg_name')
-                        ->get();
-
-        $result = $this->getClubs($data['competition_id'], $clubs);
+                        ->update(['member_ids' => substr($member_ids, 0, strlen($member_ids) - 1)]);
 
         return response()->json([
             'status' => 200,
-            'message' => 'Deleted successfully',
-            'result' => $result
+            'message' => 'One member deleted successfully.'
         ]);
     }
 
