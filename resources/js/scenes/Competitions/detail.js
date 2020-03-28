@@ -347,6 +347,7 @@ class CompetitionDetail extends Component {
   handleChangeMember(member) {
     if (member == null) {
       this.setState({
+        member_val: null,
         role_name: '',
         weight: '',
         dan: '',
@@ -626,73 +627,75 @@ class CompetitionDetail extends Component {
                   </Row>
                 </Segment>
                 {
-                  editMembers.length > 0 && (
-                    <Fragment>
-                      <Row className="mt-3">
-                        <Col md="4" sm="6" xs="12">
-                          <FormGroup>
-                            <Select
-                              classNamePrefix="react-select-lg"
-                              placeholder="Select Member"
-                              isClearable
-                              value={member_val}
-                              options={addMembers}
-                              getOptionValue={option => option.id}
-                              getOptionLabel={option => option.name + ' ' + option.surname}
-                              onChange={(member) => {
-                                this.handleChangeMember(member);
-                              }}
-                            />
-                          </FormGroup>
-                        </Col>
-                        {
-                          role_name && role_name != '' && (
-                            <Col md="2" sm="3" xs="6">
-                              <Input type="text" value={role_name} readOnly />
-                            </Col>
-                          )
-                        }
-                        {
-                          weight && weight != '' && (
-                            <Col md="2" sm="3" xs="6">
-                              <Input type="text" value={weight + ' Kg'} readOnly />
-                            </Col>
-                          )
-                        }                        
-                        {
-                          dan && dan != '' && (
-                            <Col md="2" sm="3" xs="6">
-                              <Input type="text" value={dan} readOnly />
-                            </Col>
-                          )
-                        }
-                        {
-                          position && role_name && role_name != 'Judoka' && (
-                            <Col md="2" sm="3" xs="6">
-                              <Input type="text" value={position} readOnly />
-                            </Col>
-                          )
-                        }
-                        <Col md="2" sm="3" xs="6">
-                          <Button
-                            type="button"
-                            color="success"
-                            onClick={this.handleAddMember.bind(this)}
-                          >
-                            Add Member
-                          </Button>
-                        </Col>
-                      </Row>
-                      <Row className="mt-2">
-                        <Col sm="12" className="table-responsive">
-                          <CompetitionSelectTable
-                            items={editMembers}
-                            delCol
-                            onDelete={this.handleDelete.bind(this)}
+                  edit && (
+                    <Row className="mt-3">
+                      <Col md="4" sm="6" xs="12">
+                        <FormGroup>
+                          <Select
+                            classNamePrefix="react-select-lg"
+                            placeholder="Select Member"
+                            isClearable
+                            value={member_val}
+                            options={addMembers}
+                            getOptionValue={option => option.id}
+                            getOptionLabel={option => option.name + ' ' + option.surname}
+                            onChange={(member) => {
+                              this.handleChangeMember(member);
+                            }}
                           />
-                        </Col>
-                      </Row>
-                    </Fragment>
+                        </FormGroup>
+                      </Col>
+                      {
+                        role_name && role_name != '' && (
+                          <Col md="2" sm="3" xs="6">
+                            <Input type="text" value={role_name} readOnly />
+                          </Col>
+                        )
+                      }
+                      {
+                        weight && weight != '' && (
+                          <Col md="2" sm="3" xs="6">
+                            <Input type="text" value={weight + ' Kg'} readOnly />
+                          </Col>
+                        )
+                      }                        
+                      {
+                        dan && dan != '' && (
+                          <Col md="2" sm="3" xs="6">
+                            <Input type="text" value={dan} readOnly />
+                          </Col>
+                        )
+                      }
+                      {
+                        position && role_name && role_name != 'Judoka' && (
+                          <Col md="2" sm="3" xs="6">
+                            <Input type="text" value={position} readOnly />
+                          </Col>
+                        )
+                      }
+                      <Col md="2" sm="3" xs="6">
+                        <Button
+                          type="button"
+                          color="success"
+                          onClick={this.handleAddMember.bind(this)}
+                        >
+                          Add Member
+                        </Button>
+                      </Col>
+                    </Row>
+                  )
+                }
+                {
+                  editMembers.length > 0 && (
+                    <Row className="mt-2">
+                      <Col sm="12" className="table-responsive">
+                        <CompetitionSelectTable
+                          items={editMembers}
+                          delCol
+                          onDelete={this.handleDelete.bind(this)}
+                        />
+                      </Col>
+                    </Row>
                   )
                 }
               </Container>

@@ -533,24 +533,37 @@ class CompetitionController extends Controller
                             ->where('club_id', $data['club_id'])
                             ->get();
 
-        $member_ids = $compMembers[0]->member_ids;
-        $member_ids .= ',' . $data['member_id'];
+        $ids = array();
 
-        CompetitionMembers::where('competition_id', $data['competition_id'])
-                            ->where('club_id', $data['club_id'])
-                            ->update(['member_ids' => $member_ids]);
+        if (sizeof($compMembers) > 0) {
+            $member_ids = $compMembers[0]->member_ids;
+            $member_ids .= ',' . $data['member_id'];
 
-        $ids = explode(',', $member_ids);
+            CompetitionMembers::where('competition_id', $data['competition_id'])
+                                ->where('club_id', $data['club_id'])
+                                ->update(['member_ids' => $member_ids]);
+
+            $ids = explode(',', $member_ids);
+        } else {
+            CompetitionMembers::create(array(
+                'competition_id' => $data['competition_id'],
+                'club_id' => $data['club_id'],
+                'member_ids' => $data['member_id'],
+                'status' => 0
+            ));
+
+            $ids[0] = $data['member_id'];
+        }
 
         $members = Member::leftJoin('players', 'players.member_id', '=', 'members.id')
-                        ->leftJoin('roles', 'roles.id', '=', 'members.role_id')
-                        ->leftJoin('weights', 'weights.id', '=', 'players.weight_id')
-                        ->whereIn('members.id', $ids)
-                        ->where('members.active', 1)
-                        ->select('members.*', 'roles.name as role_name', 'weights.weight', 'players.dan')
-                        ->orderBy('players.weight_id')
-                        ->orderBy('members.name')
-                        ->get();
+                            ->leftJoin('roles', 'roles.id', '=', 'members.role_id')
+                            ->leftJoin('weights', 'weights.id', '=', 'players.weight_id')
+                            ->whereIn('members.id', $ids)
+                            ->where('members.active', 1)
+                            ->select('members.*', 'roles.name as role_name', 'weights.weight', 'players.dan')
+                            ->orderBy('players.weight_id')
+                            ->orderBy('members.name')
+                            ->get();
 
         return response()->json([
             'status' => 200,
