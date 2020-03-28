@@ -563,6 +563,7 @@ class MemberController extends Controller
                         ->leftJoin('roles', 'roles.id', '=', 'members.role_id')
                         ->leftJoin('weights', 'weights.id', '=', 'players.weight_id')
                         ->whereIn('members.id', $ids)
+                        ->where('members.active', 1)
                         ->select('members.*', 'roles.name as role_name', 'weights.weight', 'players.dan')
                         ->orderBy('players.weight_id')
                         ->orderBy('members.name')

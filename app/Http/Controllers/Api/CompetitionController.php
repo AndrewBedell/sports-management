@@ -484,6 +484,47 @@ class CompetitionController extends Controller
         ], 200);
     }
 
+    public function addMembers(Request $request)
+    {
+        $data = $request->all();
+
+        $compMembers = CompetitionMembers::where('competition_id', $data['competition_id'])
+                            ->where('club_id', $data['club_id'])
+                            ->get();
+
+        $members = array();
+
+        if (sizeof($compMembers) > 0) {
+            $mem_ids = explode(',', $compMembers[0]->member_ids);
+
+            $members = Member::leftJoin('players', 'players.member_id', '=', 'members.id')
+                        ->leftJoin('roles', 'roles.id', '=', 'members.role_id')
+                        ->leftJoin('weights', 'weights.id', '=', 'players.weight_id')
+                        ->where('members.organization_id', $data['club_id'])
+                        ->whereNotIn('members.id', $mem_ids)
+                        ->where('members.active', 1)
+                        ->select('members.*', 'roles.name as role_name', 'weights.weight', 'players.dan')
+                        ->orderBy('players.weight_id')
+                        ->orderBy('members.name')
+                        ->get();
+        } else {
+            $members = Member::leftJoin('players', 'players.member_id', '=', 'members.id')
+                        ->leftJoin('roles', 'roles.id', '=', 'members.role_id')
+                        ->leftJoin('weights', 'weights.id', '=', 'players.weight_id')
+                        ->where('members.organization_id', $data['club_id'])
+                        ->where('members.active', 1)
+                        ->select('members.*', 'roles.name as role_name', 'weights.weight', 'players.dan')
+                        ->orderBy('players.weight_id')
+                        ->orderBy('members.name')
+                        ->get();
+        }
+        
+        return response()->json([
+            'status' => 200,
+            'members' => $members
+        ]);
+    }
+
     public function getClubs($competition_id, $clubs)
     {
         $result = array();

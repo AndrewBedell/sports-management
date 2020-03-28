@@ -220,6 +220,15 @@ class CompetitionDetail extends Component {
           break;
       }
 
+      // const members = await Api.post('competition-add-members', params);
+      // switch (members.response.status) {
+      //   case 200:
+      //     console.log(members.body.members);
+      //     break;
+      //   default:
+      //     break;
+      // }
+
       this.setState({
         editMembers: members,
         edit: true,
