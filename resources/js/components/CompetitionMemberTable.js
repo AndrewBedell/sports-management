@@ -111,8 +111,7 @@ class CompetitionMemberTable extends Component {
     const {
       onSelect,
       onSelectAll,
-      items,
-      attend
+      items
     } = this.props;
 
     const {
@@ -164,16 +163,14 @@ class CompetitionMemberTable extends Component {
             >
               Birthday
             </Table.HeaderCell>
-            {!attend && (
-              <Table.HeaderCell className="text-center" width="2">
-                <CustomInput
-                  id="selectAllMember"
-                  type="checkbox"
-                  checked={data.filter(item => item.checked === true).length === data.length}
-                  onChange={(event) => { onSelectAll(data, event); this.setState({ checkedAll: event.target.checked }); }}
-                />
-              </Table.HeaderCell>
-            )}
+            <Table.HeaderCell className="text-center" width="2">
+              <CustomInput
+                id="selectAllMember"
+                type="checkbox"
+                checked={data.filter(item => item.checked === true).length === data.length}
+                onChange={(event) => { onSelectAll(data, event); this.setState({ checkedAll: event.target.checked }); }}
+              />
+            </Table.HeaderCell>
           </Table.Row>
         </Table.Header>
         <Table.Body>
@@ -199,16 +196,14 @@ class CompetitionMemberTable extends Component {
                     {item.gender && item.gender == 1 ? Genders[0].name : Genders[1].name}
                   </Table.Cell>
                   <Table.Cell className="text-center">{item.birthday}</Table.Cell>
-                  {!attend && (
-                    <Table.Cell className="text-center">
-                      <CustomInput
-                        id={item.id}
-                        type="checkbox"
-                        checked={!!item.checked}
-                        onChange={(event) => { onSelect(item.id, event.target.checked); }}
-                      />
-                    </Table.Cell>
-                  )}
+                  <Table.Cell className="text-center">
+                    <CustomInput
+                      id={item.id}
+                      type="checkbox"
+                      checked={!!item.checked}
+                      onChange={(event) => { onSelect(item.id, event.target.checked); }}
+                    />
+                  </Table.Cell>
                 </Table.Row>
               ))
             )

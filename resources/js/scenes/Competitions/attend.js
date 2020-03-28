@@ -446,7 +446,6 @@ class CompetitionAttend extends Component {
                           selectMembers && selectMembers.length > 0 && (
                             <CompetitionSelectTable
                               items={selectMembers}
-                              attend
                             />
                           )
                         }
