@@ -55,6 +55,7 @@ Route::namespace('Api')->group(function () {
         Route::post('add-competition', 'CompetitionController@add');
         Route::post('attend-members', 'CompetitionController@attend');
         Route::delete('competition-club', 'CompetitionController@destroyClub');
+        Route::delete('competition-member', 'CompetitionController@removeMember');
 
         Route::get('notifications', 'NotificationController@index');
         Route::get('notification/unread', 'NotificationController@unread');

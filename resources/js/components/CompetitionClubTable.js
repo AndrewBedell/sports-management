@@ -250,7 +250,7 @@ class CompetitionClubTable extends Component {
                           <Button
                             color="danger"
                             type="button"
-                            onClick={() => onDelete(item.id)}
+                            onClick={() => onDelete(item.id, 'club')}
                           >
                             <i className="fa fa-trash-alt fa-lg" />
                           </Button>

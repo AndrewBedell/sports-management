@@ -470,7 +470,7 @@ class CompetitionController extends Controller
 
         if ($flag) {
             Notification::where('subject_id', $data['competition_id'])
-                        ->where('to', $data['reg_id'])
+                        ->where('to', $org->parent_id)
                         ->delete();
         }
 
@@ -522,6 +522,45 @@ class CompetitionController extends Controller
         return response()->json([
             'status' => 200,
             'members' => $members
+        ]);
+    }
+
+    public function removeMember(Request $request)
+    {
+        $data = $request->all();
+
+        $compMembers = CompetitionMembers::where('competition_id', $data['competition_id'])
+                            ->where('club_id', $data['club_id'])
+                            ->get();
+
+        $members = explode(',', $compMembers[0]->member_ids);
+        $members = array_diff($members, [$data['member_id']]);
+
+        $member_ids = '';
+
+        foreach ($members as $member) {
+            $member_ids .= $member . ',';
+        }
+
+        CompetitionMembers::where('competition_id', $data['competition_id'])
+                        ->where('club_id', $data['club_id'])
+                        ->update(['member_ids' => $member_ids]);
+
+        $competition = Competition::find($data['competition_id']);
+
+        $club_ids = explode(',', $competition->club_ids);
+
+        $clubs = Organization::leftJoin('organizations AS org', 'org.id', '=', 'organizations.parent_id')
+                        ->whereIn('organizations.id', $club_ids)
+                        ->select('organizations.id', 'organizations.name_o AS club_name', 'org.name_o AS reg_name')
+                        ->get();
+
+        $result = $this->getClubs($data['competition_id'], $clubs);
+
+        return response()->json([
+            'status' => 200,
+            'message' => 'Deleted successfully',
+            'result' => $result
         ]);
     }
 

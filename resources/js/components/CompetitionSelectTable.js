@@ -9,7 +9,7 @@ import {
   Menu
 } from 'semantic-ui-react';
 import Select from 'react-select';
-
+import { Button } from 'reactstrap';
 import _ from 'lodash';
 import { Genders } from '../configs/data';
 import Bitmaps from '../theme/Bitmaps';
@@ -108,7 +108,7 @@ class CompetitionSelectTable extends Component {
 
   render() {
     const {
-      items
+      items, delCol, onDelete
     } = this.props;
 
     const {
@@ -167,6 +167,11 @@ class CompetitionSelectTable extends Component {
             >
               Dan
             </Table.HeaderCell>
+            {
+              delCol && (
+                <Table.HeaderCell className="text-center"></Table.HeaderCell>
+              )
+            }
           </Table.Row>
         </Table.Header>
         <Table.Body>
@@ -197,6 +202,21 @@ class CompetitionSelectTable extends Component {
                     Kg
                   </Table.Cell>
                   <Table.Cell className="text-center">{item.dan}</Table.Cell>
+                  {
+                    delCol && (
+                      <Table.Cell className="text-center">
+                        <div className="actions d-flex w-100 justify-content-center align-items-center">
+                          <Button
+                            color="danger"
+                            type="button"
+                            onClick={() => onDelete(item.id, 'member')}
+                          >
+                            <i className="fa fa-trash-alt fa-lg" />
+                          </Button>
+                        </div>
+                      </Table.Cell>
+                    )
+                  }
                 </Table.Row>
               ))
             )
@@ -220,7 +240,7 @@ class CompetitionSelectTable extends Component {
                 }}
               />
             </Table.HeaderCell>
-            <Table.HeaderCell colSpan="5">
+            <Table.HeaderCell colSpan={delCol ? 6 : 5}>
               <Menu floated="right" pagination>
                 <Pagination
                   activePage={activePage}
@@ -235,5 +255,9 @@ class CompetitionSelectTable extends Component {
     );
   }
 }
+
+CompetitionSelectTable.defaultProps = {
+  onDelete: () => {},
+};
 
 export default CompetitionSelectTable;

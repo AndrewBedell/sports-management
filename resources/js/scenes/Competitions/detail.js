@@ -64,6 +64,7 @@ class CompetitionDetail extends Component {
       exportPDF: false,
       styles,
       deleteId: '',
+      deleteOption: '',
       isOpenDeleteModal: false,
       alertVisible: false,
       confirmationMessage: '',
@@ -220,14 +221,14 @@ class CompetitionDetail extends Component {
           break;
       }
 
-      // const members = await Api.post('competition-add-members', params);
-      // switch (members.response.status) {
-      //   case 200:
-      //     console.log(members.body.members);
-      //     break;
-      //   default:
-      //     break;
-      // }
+      const addMembers = await Api.post('competition-add-members', params);
+      switch (addMembers.response.status) {
+        case 200:
+          // console.log(addMembers.body.members);
+          break;
+        default:
+          break;
+      }
 
       this.setState({
         editMembers: members,
@@ -269,36 +270,69 @@ class CompetitionDetail extends Component {
     }
   }
 
-  handleDelete(id) {
+  handleDelete(id, option) {
     this.setState({
       isOpenDeleteModal: true,
       deleteId: id,
-      confirmationMessage: `Are you sure you want to delete this club from competition?`
+      deleteOption: option,
+      confirmationMessage: 'Are you sure you want to delete this ' + option + ' from competition?'
     });
   }
 
-  async handleDeleteClub(club_id) {
-    const { clubs } = this.state;
-    
-    const params = {};
+  async handleDeleteClub(option, id) {
+    if (option == 'club') {
+      const { clubs } = this.state;
+      
+      const params = {};
 
-    params.competition_id = this.state.competition_id;
-    params.club_id = club_id;
+      params.competition_id = this.state.competition_id;
+      params.club_id = id;
 
-    const delClub = await Api.delete('competition-club', params);
-    switch (delClub.response.status) {
-      case 200:
-        this.setState({
-          alertVisible: true,
-          messageStatus: true,
-          isOpenDeleteModal: false,
-          successMessage: delClub.body.message,
-          clubs: clubs.filter(item => item.id !== club_id)
-        });
-        break;
-      default:
-        break;
+      const delClub = await Api.delete('competition-club', params);
+      switch (delClub.response.status) {
+        case 200:
+          this.setState({
+            alertVisible: true,
+            messageStatus: true,
+            isOpenDeleteModal: false,
+            successMessage: delClub.body.message,
+            clubs: clubs.filter(item => item.id !== id)
+          });
+          break;
+        default:
+          break;
+      }
     }
+
+    if (option == 'member') {
+      const { editMembers, editClub } = this.state;
+
+      const params = {};
+
+      params.competition_id = this.state.competition_id;
+      params.club_id = editClub.id;
+      params.member_id = id;
+
+      const delMember = await Api.delete('competition-member', params);
+      switch (delMember.response.status) {
+        case 200:
+          this.setState({
+            alertVisible: true,
+            messageStatus: true,
+            isOpenDeleteModal: false,
+            successMessage: delMember.body.message,
+            editMembers: editMembers.filter(member => member.id != id),
+            clubs: delMember.body.result
+          });
+          break;
+        default:
+          break;
+      }
+    }
+
+    setTimeout(() => {
+      this.setState({ alertVisible: false });
+    }, 2000);
   }
 
   handleConfirmClose() {
@@ -323,7 +357,7 @@ class CompetitionDetail extends Component {
       editMembers, edit,
       selectMembers, detail,
       exportMembers, exportPDF, styles,
-      isOpenDeleteModal, confirmationMessage, deleteId, successMessage
+      isOpenDeleteModal, confirmationMessage, deleteId, deleteOption, successMessage
     } = this.state;
 
     return (
@@ -334,8 +368,8 @@ class CompetitionDetail extends Component {
           isOpenDeleteModal && 
           <Prompt 
             title={confirmationMessage} 
-            id={deleteId} 
-            handleAccept={this.handleDeleteClub.bind(this)} 
+            id={deleteId}
+            handleAccept={this.handleDeleteClub.bind(this, deleteOption)} 
             handleCancel={this.handleConfirmClose.bind(this)} 
           /> 
         }
@@ -473,6 +507,8 @@ class CompetitionDetail extends Component {
                       <Col sm="12" className="table-responsive">
                         <CompetitionSelectTable
                           items={editMembers}
+                          delCol
+                          onDelete={this.handleDelete.bind(this)}
                         />
                       </Col>
                     </Row>
