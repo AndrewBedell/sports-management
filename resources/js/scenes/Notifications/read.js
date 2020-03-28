@@ -12,11 +12,19 @@ class ReadNotification extends Component {
     super(props);
 
     this.state = {
+      is_nf: 0,
       notification: []
     };
   }
 
   async componentDidMount() {
+    const user = JSON.parse(localStorage.getItem('auth'));
+    const is_nf = user.user.is_nf;
+
+    this.setState({
+      is_nf
+    });
+
     const id = this.props.location.state;
     const data = await Api.get(`notification/${id}`);
     const { response, body } = data;
@@ -32,7 +40,7 @@ class ReadNotification extends Component {
   }
 
   render() {
-    const { notification } = this.state;
+    const { is_nf, notification } = this.state;
 
     return (
       <Fragment>
@@ -55,7 +63,11 @@ class ReadNotification extends Component {
                       className="mr-2"
                       type="button"
                       color="warning"
-                      onClick={() => this.props.history.push('/competition/attend', notification.subject_id)}
+                      onClick={
+                        () =>
+                          is_nf == 1 ? this.props.history.push('/competition/detail', notification.subject_id)
+                                     : this.props.history.push('/competition/attend', notification.subject_id)
+                      }
                     >
                       Detail
                     </Button>
