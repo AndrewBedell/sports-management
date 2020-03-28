@@ -1,7 +1,4 @@
 import React, { Component, Fragment } from 'react';
-import { 
-  PDFViewer , Page, Text, View, Document, StyleSheet, 
-} from '@react-pdf/renderer';
 import {
   Container, Row, Col, 
   FormGroup,
@@ -9,6 +6,9 @@ import {
 } from 'reactstrap';
 import { Segment } from 'semantic-ui-react';
 import Select from 'react-select';
+
+import { Grid, GridColumn, GridToolbar } from '@progress/kendo-react-grid';
+import { GridPDFExport } from '@progress/kendo-react-pdf';
 
 import Api from '../../apis/app';
 
@@ -20,31 +20,6 @@ import CompetitionSelectTable from '../../components/CompetitionSelectTable';
 class CompetitionDetail extends Component {
   constructor(props) {
     super(props);
-
-    const styles = StyleSheet.create({
-      page: {
-        flexDirection: 'row',
-        backgroundColor: '#FFFFFF'
-      },
-      title: {
-        color: 'blue',
-        flexGrow: 1,
-        fontSize: 20,
-        margin: 30,
-        padding: 10,
-        textAlign: 'center'
-      },
-      element: {
-        border: '1px solid black',
-        color: 'black',
-        flexGrow: 1,
-        fontSize: 16,
-        fontWeight: 'bold',
-        marginTop: 10,
-        marginHorizontal: 10,
-        padding: 10,
-      }
-    });
 
     this.state = {
       competition_id: '',
@@ -62,7 +37,6 @@ class CompetitionDetail extends Component {
       edit: false,
       detail: false,
       exportPDF: false,
-      styles,
       deleteId: '',
       deleteOption: '',
       isOpenDeleteModal: false,
@@ -75,7 +49,10 @@ class CompetitionDetail extends Component {
       role_name: '',
       weight: '',
       dan: '',
-      position: ''
+      position: '',
+      pageSize: 5,
+      data: [],
+      skip: 0
     };
   }
 
@@ -259,11 +236,26 @@ class CompetitionDetail extends Component {
     }
 
     if (action == 'export') {
+      let exportMembers = [];
+      for (var i = 0; i < members.length; i++) {
+        let arr = {
+          "Name": members[i].surname + members[i].name,
+          "Role": members[i].role_name,
+          "Gender": members[i].gender == 1 ? 'Male' : 'Female',
+          "Birthday": members[i].birthday,
+          "Weight": members[i].weight + ' Kg',
+          "Dan": members[i].dan
+        }
+
+        exportMembers.push(arr);
+      }
+      
       this.setState({
-        exportMembers: members,
+        exportMembers,
         edit: false,
         detail: false,
-        exportPDF: true
+        exportPDF: true,
+        data: exportMembers.slice(0, this.state.pageSize)
       });
     }
 
@@ -446,6 +438,20 @@ class CompetitionDetail extends Component {
     }
   }
 
+  pageChange(event) {
+    let skip = event.page.skip;
+    let take = event.page.take;
+
+    this.setState({
+      data: this.state.exportMembers.slice(skip, skip + take),
+      skip
+    });
+  }
+
+  exportPDF() {
+    this.gridPDFExport.save(this.state.exportMembers);
+  }
+
   render() {
     const { 
       competition, clubs, editClub,
@@ -453,10 +459,40 @@ class CompetitionDetail extends Component {
       addMembers,
       editMembers, edit,
       selectMembers, detail,
-      exportMembers, exportPDF, styles,
+      exportMembers, exportPDF,
       isOpenDeleteModal, confirmationMessage, deleteId, deleteOption, successMessage,
-      member_val, role_name, weight, dan, position
+      member_val, role_name, weight, dan, position,
+      pageSize, data, skip
     } = this.state;
+
+    const grid = (
+      <Grid
+          total={exportMembers.length}
+          pageSize={pageSize}
+          onPageChange={this.pageChange.bind(this)}
+          data={data}
+          skip={skip}
+          pageable={true}
+          style={{ maxHeight: '490px' }}
+      >
+          <GridToolbar>
+            <button
+                title="Export PDF"
+                className="k-button k-primary"
+                onClick={this.exportPDF.bind(this)}
+            >
+                Export PDF
+            </button>
+          </GridToolbar>
+
+          <GridColumn headerClassName="text-center" field="Name" title="Name" width="300px" />
+          <GridColumn headerClassName="text-center" className="text-center" field="Role" title="Role" />
+          <GridColumn headerClassName="text-center" className="text-center" field="Gender" title="Gender" />
+          <GridColumn headerClassName="text-center" className="text-center" field="Birthday" title="Birthday" width="150px" />
+          <GridColumn headerClassName="text-center" className="text-center" field="Weight" title="Weight" />
+          <GridColumn headerClassName="text-center" className="text-center" field="Dan" title="Dan" />
+      </Grid>
+    );
 
     return (
       <Fragment>
@@ -560,25 +596,17 @@ class CompetitionDetail extends Component {
             }
             {
               exportPDF && (
-                <PDFViewer>
-                  <Document>
-                    <Page size="A4" style={styles.page}>
-                      <View style={styles.title}>
-                        <Text>Competition Members</Text>
-                      </View>
-                      <View style={styles.element}>
-                        {
-                          exportMembers.map((item, index) => (
-                            <View key={index}  style={styles.row}>
-                              <Text>{item.name} {item.surname}</Text>
-                              <Text>{item.birthday}</Text>
-                            </View>
-                          ))
-                        }
-                      </View>
-                    </Page>
-                  </Document>
-                </PDFViewer>
+                <Row className="mt-3">
+                  {grid}
+                  <GridPDFExport
+                    paperSize="A4"
+                    margin={{ top: 60, left: 30, right: 30, bottom: 30 }}
+                    landscape={true}
+                    ref={pdfExport => this.gridPDFExport = pdfExport}
+                  >
+                    {grid}
+                  </GridPDFExport>
+                </Row>
               )
             }
           </Container>
