@@ -3,9 +3,13 @@ import {
   PDFViewer , Page, Text, View, Document, StyleSheet, 
 } from '@react-pdf/renderer';
 import {
-  Container, Row, Col, Alert
+  Container, Row, Col, 
+  FormGroup,
+  Alert, Button
 } from 'reactstrap';
 import { Segment } from 'semantic-ui-react';
+import Select from 'react-select';
+
 import Api from '../../apis/app';
 
 import Prompt from '../../components/Prompt';
@@ -45,11 +49,16 @@ class CompetitionDetail extends Component {
     this.state = {
       competition_id: '',
       competition: [],
+      org_list: [],
+      club_list: [],
+      org_original: [],
+      club_original: [],
       clubs: [],
       editClub: [],
       editMembers: [],
       selectMembers: [],
       exportMembers: [],
+      addMembers: [],
       edit: false,
       detail: false,
       exportPDF: false,
@@ -58,7 +67,9 @@ class CompetitionDetail extends Component {
       isOpenDeleteModal: false,
       alertVisible: false,
       confirmationMessage: '',
-      successMessage: ''
+      successMessage: '',
+      org_val: null,
+      club_val: null
     };
   }
 
@@ -88,6 +99,96 @@ class CompetitionDetail extends Component {
         break;
       default:
         break;
+    }
+
+    const orgs = await Api.get(`competition-orgs/${competition_id}`);
+    switch (orgs.response.status) {
+      case 200:
+        if (orgs.body.regs.length > 0 && orgs.body.regs[0].parent_id == 0)
+          orgs.body.regs[0].name_o = "National Federation";
+
+        this.setState({
+          org_list: orgs.body.regs,
+          org_original: orgs.body.regs,
+          club_list: orgs.body.clubs,
+          club_original: orgs.body.clubs
+        });
+        break;
+      default:
+        break;
+    }
+  }
+
+  handleChange(type, value) {
+    const { org_original, club_original } = this.state;
+
+    if (type == 'org') {
+      let filtered = [];
+
+      if (value == null) {
+        filtered = club_original
+      } else {
+        filtered = club_original.filter(club => club.parent_id == value.id)
+      }
+      
+      this.setState({
+        club_list: filtered,
+        org_val: value,
+        club_val: null
+      });
+    }
+
+    if (type == 'club') {
+      if (value == null) {
+        this.setState({
+          club_list: club_original,
+          org_val: null,
+          club_val: value
+        });
+      } else {
+        let filtered = org_original.filter(org => org.id == value.parent_id);
+
+        this.setState({
+          org_val: filtered[0],
+          club_val: value
+        });
+      }
+    }
+  }
+
+  async handleAddClub() {
+    const { org_val, club_val } = this.state;
+
+    if (org_val && club_val) {
+      let params = [];
+
+      params.competition_id = this.state.competition_id;
+      params.reg_id = org_val.id;
+      params.club_id = club_val.id;
+
+      const data = await Api.post('add-competition', params);
+      switch (data.response.status) {
+        case 200:
+          if (data.body.regs.length > 0 && data.body.regs[0].parent_id == 0)
+            data.body.regs[0].name_o = "National Federation";
+
+          this.setState({
+            alertVisible: true,
+            messageStatus: true,
+            isOpenDeleteModal: false,
+            successMessage: data.body.message,
+            clubs: data.body.result,
+            org_list: data.body.regs,
+            org_original: data.body.regs,
+            club_list: data.body.clubs,
+            club_original: data.body.clubs,
+            org_val: null,
+            club_val: null
+          });
+          break;
+        default:
+          break;
+      }
     }
   }
 
@@ -209,6 +310,7 @@ class CompetitionDetail extends Component {
   render() {
     const { 
       competition, clubs, editClub,
+      org_list, club_list, org_val, club_val,
       editMembers, edit,
       selectMembers, detail,
       exportMembers, exportPDF, styles,
@@ -247,10 +349,54 @@ class CompetitionDetail extends Component {
                 </Col>
               </Row>
             </Segment>
+            <Row className="mt-5">
+              <Col xl="2" lg="3" md="4" sm="6" xs="12">
+                <FormGroup>
+                  <Select
+                    classNamePrefix="react-select-lg"
+                    placeholder="Select Region"
+                    isClearable
+                    value={org_val && org_val}
+                    options={org_list}
+                    getOptionValue={option => option.id}
+                    getOptionLabel={option => option.name_o}
+                    onChange={(org) => {
+                      this.handleChange('org', org);
+                    }}
+                  />
+                </FormGroup>
+              </Col>
+              <Col xl="2" lg="3" md="4" sm="6" xs="12">
+                <FormGroup>
+                  <Select
+                    name="search_club"
+                    classNamePrefix="react-select-lg"
+                    placeholder="Select Club"
+                    isClearable
+                    value={club_val && club_val}
+                    options={club_list}
+                    getOptionValue={option => option.id}
+                    getOptionLabel={option => option.name_o}
+                    onChange={(club) => {
+                      this.handleChange('club', club);
+                    }}
+                  />
+                </FormGroup>
+              </Col>
+              <Col xl="2" lg="3" md="4" sm="6" xs="12">
+                <Button
+                  type="button"
+                  color="secondary"
+                  onClick={this.handleAddClub.bind(this)}
+                >
+                  Add Club
+                </Button>
+              </Col>
+            </Row>
             <Alert color="success" isOpen={this.state.alertVisible}>{successMessage }</Alert>
             {
               !edit && clubs && clubs.length > 0 && (
-                <Row className="mt-5">
+                <Row className="mt-3">
                   <CompetitionClubTable
                     items={clubs}
                     onSelect={this.handleSelectClub.bind(this)}
@@ -309,11 +455,13 @@ class CompetitionDetail extends Component {
                 </Segment>
                 {
                   editMembers.length > 0 && (
+                    // <Row className="mt-2">
+                    //   <Col sm="3">
+                        
+                    //   </Col>
+                    // </Row>
                     <Row className="mt-2">
-                      <Col md="6" sm="12">
-
-                      </Col>
-                      <Col md="6" sm="12" className="table-responsive">
+                      <Col sm="12" className="table-responsive">
                         <CompetitionSelectTable
                           items={editMembers}
                         />

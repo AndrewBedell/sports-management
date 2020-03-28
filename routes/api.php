@@ -46,10 +46,12 @@ Route::namespace('Api')->group(function () {
 
         Route::get('competitions', 'CompetitionController@index');
         Route::get('competition/{id}', 'CompetitionController@show');
+        Route::get('competition-orgs/{id}', 'CompetitionController@orgs');
         Route::get('competition-clubs/{id}', 'CompetitionController@clubs');
         Route::get('find-competitions', 'CompetitionController@find');
         Route::post('accept-competition', 'CompetitionController@accept');
         Route::post('reg-competition', 'CompetitionController@store');
+        Route::post('add-competition', 'CompetitionController@add');
         Route::post('attend-members', 'CompetitionController@attend');
         Route::delete('competition-club', 'CompetitionController@destroyClub');
 
