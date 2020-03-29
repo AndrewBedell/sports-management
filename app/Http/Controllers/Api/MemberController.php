@@ -546,7 +546,7 @@ class MemberController extends Controller
         return $orgIDs;
     }
 
-    public function competition(Request $request)
+    public function competitionClubMember(Request $request)
     {
         $data = $request->all();
 
@@ -565,6 +565,48 @@ class MemberController extends Controller
                         ->whereIn('members.id', $ids)
                         ->where('members.active', 1)
                         ->select('members.*', 'roles.name as role_name', 'weights.weight', 'players.dan')
+                        ->orderBy('players.weight_id')
+                        ->orderBy('members.name')
+                        ->get();
+
+        return response()->json([
+            'status' => 200,
+            'data' => $members
+        ]);
+    }
+
+    public function competitionOrgMember(Request $request)
+    {
+        $data = $request->all();
+
+        $clubs = Organization::where('parent_id', $data['org_id'])->get();
+
+        $club_ids = array();
+
+        foreach ($clubs as $club) {
+            array_push($club_ids, $club->id);
+        }
+
+        $competition = CompetitionMembers::where('competition_id', $data['competition_id'])
+                        ->whereIn('club_id', $club_ids)
+                        ->get();
+
+        $ids = array();
+
+        foreach ($competition as $comp) {
+            $arr = explode(',', $comp->member_ids);
+            for ($i = 0; $i < sizeof($arr); $i++) {
+                array_push($ids, $arr[$i]);
+            }
+        }
+
+        $members = Member::leftJoin('players', 'players.member_id', '=', 'members.id')
+                        ->leftJoin('roles', 'roles.id', '=', 'members.role_id')
+                        ->leftJoin('weights', 'weights.id', '=', 'players.weight_id')
+                        ->leftJoin('organizations', 'organizations.id', '=', 'members.organization_id')
+                        ->whereIn('members.id', $ids)
+                        ->where('members.active', 1)
+                        ->select('members.*', 'organizations.name_o', 'roles.name as role_name', 'weights.weight', 'players.dan')
                         ->orderBy('players.weight_id')
                         ->orderBy('members.name')
                         ->get();

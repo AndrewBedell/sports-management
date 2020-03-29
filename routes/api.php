@@ -35,7 +35,8 @@ Route::namespace('Api')->group(function () {
         Route::delete('organization/{id}', 'OrganizationController@destroy');
 
         Route::get('members', 'MemberController@index');
-        Route::post('competition-members', 'MemberController@competition');
+        Route::post('competition-members', 'MemberController@competitionClubMember');
+        Route::post('competition-org-members', 'MemberController@competitionOrgMember');
         Route::post('allow-members', 'MemberController@allow');
         Route::post('check-competition', 'MemberController@check');
         Route::get('member/{id}', 'MemberController@show');

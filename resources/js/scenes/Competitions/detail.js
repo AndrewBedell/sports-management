@@ -24,6 +24,8 @@ class CompetitionDetail extends Component {
     super(props);
 
     this.state = {
+      is_nf: 0,
+      org_flag: 0,
       competition_id: '',
       competition: [],
       org_list: [],
@@ -63,10 +65,38 @@ class CompetitionDetail extends Component {
   }
 
   async componentDidMount() {
+    const user = JSON.parse(localStorage.getItem('auth'));
+    const is_nf = user.user.is_nf;
+    const user_org = user.user.member_info.organization_id;
+
     const competition_id = this.props.location.state;
+
     this.setState({
+      is_nf,
       competition_id
     });
+
+    if (is_nf != 1) {
+      const params = {};
+
+      params.competition_id = this.props.location.state;
+      params.org_id = user_org;
+      
+      const selects = await Api.post('competition-org-members', params);
+      switch (selects.response.status) {
+        case 200:
+          this.setState({
+            selectMembers: selects.body.data,
+            edit: false,
+            detail: true,
+            exportPDF: false,
+            org_flag: 1
+          });
+          break;
+        default:
+          break;
+      }
+    }
 
     const weight_list = await Api.get('weights');
     switch (weight_list.response.status) {
@@ -207,9 +237,9 @@ class CompetitionDetail extends Component {
     const params = {};
     let members = [];
 
-    params.competition_id = this.state.competition_id;
+    params.competition_id = this.props.location.state;
     params.club_id = club_id;
-
+    
     const selects = await Api.post('competition-members', params);
     switch (selects.response.status) {
       case 200:
@@ -556,6 +586,7 @@ class CompetitionDetail extends Component {
 
   render() {
     const { 
+      is_nf, org_flag,
       competition, clubs, editClub,
       org_list, club_list, org_val, club_val,
       addMembers,
@@ -631,7 +662,7 @@ class CompetitionDetail extends Component {
             </Segment>
             <Alert color="success" isOpen={this.state.alertVisible}>{successMessage }</Alert>
             {
-              !edit && (
+              is_nf == 1 && !edit && (
                 <Row className="my-3">
                   <Col sm="12" className="text-center">
                     {
@@ -658,7 +689,7 @@ class CompetitionDetail extends Component {
               )
             }
             {
-              (!edit && flagClub) && (
+              is_nf == 1 && !edit && flagClub && (
                 <Row>
                   <Col lg="3" md="4" sm="6" xs="12">
                     <FormGroup>
@@ -696,7 +727,7 @@ class CompetitionDetail extends Component {
               )
             }
             {
-              !edit && clubs && clubs.length > 0 && (
+              is_nf == 1 && !edit && clubs && clubs.length > 0 && (
                 <Row>
                   <CompetitionClubTable
                     items={clubs}
@@ -711,6 +742,7 @@ class CompetitionDetail extends Component {
                 <Row className="mt-3">
                   <CompetitionSelectTable
                     items={selectMembers}
+                    org_flag
                   />
                 </Row>
               )

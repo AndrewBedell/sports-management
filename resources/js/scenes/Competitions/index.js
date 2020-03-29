@@ -22,6 +22,7 @@ class Competitions extends Component {
 
     this.state={
       is_nf: 0,
+      club_member: 0,
       competitions: []
     };
   }
@@ -29,9 +30,11 @@ class Competitions extends Component {
   async componentDidMount() {
     const user = JSON.parse(localStorage.getItem('auth'));
     const is_nf = user.user.is_nf;
+    const club_member = user.user.is_club_member;
 
     this.setState({
-      is_nf
+      is_nf,
+      club_member
     });
 
     if (is_nf == 1) {
@@ -66,10 +69,10 @@ class Competitions extends Component {
   }
 
   handleSelectItem(id) {
-    if (this.state.is_nf == 1)
-      this.props.history.push('/competition/detail', id);
-    else
+    if (this.state.club_member == 1)
       this.props.history.push('/competition/attend', id);
+    else
+      this.props.history.push('/competition/detail', id);
   }
 
   render() {
