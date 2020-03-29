@@ -203,6 +203,23 @@ body {
     >.content {
       height: calc(100vh - 105px);
 
+      a.detail-link {
+        color: $admin-color;
+        cursor: pointer;
+        &.text-underline,
+        
+        &:hover {
+          color: $white;
+          text-decoration: underline;
+        }
+      }
+
+      .segment {
+        background-color: $admin-background;
+        border-color: $admin-table-border;
+        color: $admin-color;
+      }
+
       .select-box {
         div {
           background-color: $admin-background;
@@ -237,17 +254,6 @@ body {
             td {
               border: 1px solid $admin-table-border !important;
               color: $admin-color;
-    
-              a.detail-link {
-                color: $admin-color;
-                cursor: pointer;
-                &.text-underline,
-                
-                &:hover {
-                  color: $white;
-                  text-decoration: underline;
-                }
-              }
             }
           }
         }

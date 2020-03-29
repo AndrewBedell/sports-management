@@ -31,6 +31,16 @@ class CompetitionController extends Controller
         ]);
     }
 
+    public function all()
+    {
+        $competitions = Competition::get();
+
+        return response()->json([
+            'status' => 200,
+            'competitions' => $competitions
+        ]);
+    }
+
     public function find()
     {
         $user = JWTAuth::parseToken()->authenticate();

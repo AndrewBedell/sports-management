@@ -2,7 +2,7 @@
 /* eslint-disable jsx-a11y/alt-text */
 /* eslint-disable jsx-a11y/anchor-is-valid */
 
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import {
   Table,
   Pagination,
@@ -108,6 +108,7 @@ class CompetitionClubTable extends Component {
 
   render() {
     const {
+      is_super,
       onSelect,
       onDelete,
       items
@@ -164,7 +165,11 @@ class CompetitionClubTable extends Component {
             </Table.HeaderCell>
             <Table.HeaderCell className="text-center">Status</Table.HeaderCell>
             <Table.HeaderCell className="text-center">Action</Table.HeaderCell>
-            <Table.HeaderCell className="text-center">Edit / Delete</Table.HeaderCell>
+            {
+              is_super != 1 && (
+                <Table.HeaderCell className="text-center">Edit / Delete</Table.HeaderCell>
+              )
+            }
           </Table.Row>
         </Table.Header>
         <Table.Body>
@@ -209,10 +214,16 @@ class CompetitionClubTable extends Component {
                           <a className="detail-link" onClick={() => onSelect(item.id, 'detail')}>
                             <i className="fa fa-file"></i> Detail
                           </a>
-                          &nbsp;|&nbsp;
-                          <a className="detail-link" onClick={() => onSelect(item.id, 'accept')}>
-                            <i className="fa fa-check"></i> Accept
-                          </a>
+                          {
+                            is_super != 1 && (
+                              <Fragment>
+                                &nbsp;|&nbsp;
+                                <a className="detail-link" onClick={() => onSelect(item.id, 'accept')}>
+                                  <i className="fa fa-check"></i> Accept
+                                </a>
+                              </Fragment>
+                            )
+                          }
                         </div>
                       ) 
                     }
@@ -235,25 +246,29 @@ class CompetitionClubTable extends Component {
                       ) 
                     }
                   </Table.Cell>
-                  <Table.Cell>
-                    <div className="actions d-flex w-100 justify-content-center align-items-center">
-                      <Button
-                        color="success"
-                        type="button"
-                        onClick={() => onSelect(item.id, 'edit')}
-                        style={{ marginRight: '20px' }}
-                      >
-                        <i className="fa fa-pencil-alt fa-lg" />
-                      </Button>
-                      <Button
-                        color="danger"
-                        type="button"
-                        onClick={() => onDelete(item.id, 'club')}
-                      >
-                        <i className="fa fa-trash-alt fa-lg" />
-                      </Button>
-                    </div>
-                  </Table.Cell>
+                  {
+                    is_super != 1 && (
+                      <Table.Cell>
+                        <div className="actions d-flex w-100 justify-content-center align-items-center">
+                          <Button
+                            color="success"
+                            type="button"
+                            onClick={() => onSelect(item.id, 'edit')}
+                            style={{ marginRight: '20px' }}
+                          >
+                            <i className="fa fa-pencil-alt fa-lg" />
+                          </Button>
+                          <Button
+                            color="danger"
+                            type="button"
+                            onClick={() => onDelete(item.id, 'club')}
+                          >
+                            <i className="fa fa-trash-alt fa-lg" />
+                          </Button>
+                        </div>
+                      </Table.Cell>
+                    )
+                  }
                 </Table.Row>
               ))
             )
@@ -277,7 +292,7 @@ class CompetitionClubTable extends Component {
                 }}
               />
             </Table.HeaderCell>
-            <Table.HeaderCell colSpan="7">
+            <Table.HeaderCell colSpan={is_super == 1 ? 6 : 7}>
               <Menu floated="right" pagination>
                 <Pagination
                   activePage={activePage}

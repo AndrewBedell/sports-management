@@ -742,7 +742,7 @@ class CompetitionDetail extends Component {
                 <Row className="mt-3">
                   <CompetitionSelectTable
                     items={selectMembers}
-                    org_flag
+                    org_flag={org_flag}
                   />
                 </Row>
               )

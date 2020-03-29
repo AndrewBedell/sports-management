@@ -27,6 +27,8 @@ import Admin from './Admin';
 import AdminSearch from './Admin/search';
 import AdminNFProfile from './Admin/federationprofile';
 import AdminFederation from './Admin/federations';
+import AdminCompetition from './Admin/competitions';
+import AdminCompetitionDetail from './Admin/compdetail';
 import AdminDetail from './Admin/detail';
 import AdminCreate from './Admin/create';
 import AdminSetting from './Admin/setting';
@@ -57,6 +59,8 @@ class Main extends Component {
           <Route exact path="/admin/search" name="Admin" component={AdminSearch} />
           <Route exact path="/admin/nfprofile" name="AdminNFProfile" component={AdminNFProfile} />
           <Route exact path="/admin/federations" name="AdminFederation" component={AdminFederation} />
+          <Route exact path="/admin/competition/detail" name="AdminCompetitionDetail" component={AdminCompetitionDetail} />
+          <Route exact path="/admin/competitions" name="AdminCompetition" component={AdminCompetition} />
           <Route exact path="/admin/detail" name="AdminDetail" component={AdminDetail} />
           <Route exact path="/admin/create" name="AdminCreate" component={AdminCreate} />
           <Route exact path="/admin/setting" name="AdminSetting" component={AdminSetting} />
