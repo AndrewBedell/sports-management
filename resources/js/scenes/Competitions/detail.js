@@ -2,7 +2,7 @@ import React, { Component, Fragment } from 'react';
 import {
   Container, Row, Col, 
   FormGroup,
-  Alert, Button, Input
+  Alert, Button
 } from 'reactstrap';
 import { Segment } from 'semantic-ui-react';
 import Select from 'react-select';
@@ -16,6 +16,8 @@ import Prompt from '../../components/Prompt';
 import MainTopBar from '../../components/TopBar/MainTopBar';
 import CompetitionClubTable from '../../components/CompetitionClubTable';
 import CompetitionSelectTable from '../../components/CompetitionSelectTable';
+
+import { Dans, search_genders, member_type_options } from '../../configs/data';
 
 class CompetitionDetail extends Component {
   constructor(props) {
@@ -47,12 +49,16 @@ class CompetitionDetail extends Component {
       club_val: null,
       member_val: null,
       role_name: '',
+      gender: '',
       weight: '',
       dan: '',
-      position: '',
       pageSize: 5,
       data: [],
-      skip: 0
+      skip: 0,
+      flagClub: false,
+      flagMember: false,
+      weights: [],
+      weightsCopy: []
     };
   }
 
@@ -61,6 +67,18 @@ class CompetitionDetail extends Component {
     this.setState({
       competition_id
     });
+
+    const weight_list = await Api.get('weights');
+    switch (weight_list.response.status) {
+      case 200:
+        this.setState({
+          weights: weight_list.body,
+          weightsCopy: weight_list.body
+        });
+        break;
+      default:
+        break;
+    }
 
     const data = await Api.get(`competition/${competition_id}`);
     switch (data.response.status) {
@@ -139,6 +157,12 @@ class CompetitionDetail extends Component {
     }
   }
 
+  flagAddClub() {
+    this.setState({
+      flagClub: true
+    });
+  }
+
   async handleAddClub() {
     const { org_val, club_val } = this.state;
 
@@ -211,7 +235,8 @@ class CompetitionDetail extends Component {
       switch (addMembers.response.status) {
         case 200:
           this.setState({
-            addMembers: addMembers.body.members
+            addMembers: addMembers.body.members,
+            addMembersCopy: addMembers.body.members
           });
           break;
         default:
@@ -344,44 +369,118 @@ class CompetitionDetail extends Component {
     });
   }
 
-  handleChangeMember(member) {
-    if (member == null) {
-      this.setState({
-        member_val: null,
-        role_name: '',
-        weight: '',
-        dan: '',
-        position: ''
-      });
-    } else {
-      const role_id = member.role_id;
-      let role_name = '';
+  handleChangeMember(option, type) {
+    const { addMembersCopy, weightsCopy } = this.state;
 
-      switch (role_id) {
-        case 1:
-          role_name = 'Officer';
+    let addMembers = addMembersCopy;
+    let weights = weightsCopy;
+    
+    let { role_name, member_val, gender, weight, dan } = this.state;
+
+    if (option == null) {
+      switch (type) {        
+        case 'type':
+          role_name = '';
+          member_val = '';
           break;
-        case 2:
-          role_name = 'Coach';
+        case 'member':
+          member_val = '';
+          gender = '';
+          weight = '';
+          dan = '';
           break;
-        case 3:
-          role_name ='Judoka';
+        case 'gender':
+          gender = '';
           break;
-        case 4:
-          role_name = 'Referee'
+        case 'weight':
+          weight = '';
           break;
+        case 'dan':
+          dan = '';
         default:
           break;
       }
-
-      this.setState({
-        member_val: member,
-        role_name,
-        weight: member.weight,
-        dan: member.dan,
-        position: member.position
-      });
+    } else {
+      switch (type) {        
+        case 'type':
+          role_name = option;
+          member_val = '';
+          gender = '';
+          weight = '';
+          dan = '';
+          break;
+        case 'member':
+          member_val = option;
+          gender = '';
+          weight = '';
+          dan = '';
+          break;
+        case 'gender':
+          gender = option;
+          break;
+        case 'weight':
+          weight = option;
+          break;
+        case 'dan':
+          dan = option;
+        default:
+          break;
+      }
     }
+
+    const roleArr = {
+      'staff': 1,
+      'coach': 2,
+      'judoka': 3,
+      'referee': 4
+    }
+
+    if (role_name != '') {
+      addMembers = addMembers.filter(member => member.role_id == roleArr[role_name.value]);
+    }
+
+    if (member_val == '') {
+      if (gender != '' && gender.value != 0) {
+        addMembers = addMembers.filter(member => member.gender == gender.value);
+        weights = weightsCopy.filter(weight => weight.gender == gender.value);
+      }
+  
+      if (weight != '') {
+        addMembers = addMembers.filter(member => member.weight == weight.weight);
+      }
+  
+      if (dan != '') {
+        addMembers = addMembers.filter(member => member.dan == dan.value);
+      }
+
+      if (type == 'member') {
+        gender = '';
+        weight = '';
+        dan = '';
+        addMembers = addMembersCopy;
+      }
+    } else {
+      role_name = member_type_options.filter(type => roleArr[type.value] == member_val.role_id)[0];
+      gender = search_genders.filter(gender => gender.value == member_val.gender)[0];
+      weight = weightsCopy.filter(weight => weight.weight == member_val.weight)[0];
+      dan = Dans.filter(dan => dan.value == member_val.dan)[0];
+    }
+
+    this.setState({
+      role_name,
+      member_val,
+      gender,
+      weight,
+      dan,
+      weights,
+      addMembers
+    });
+  }
+
+  flagAddMember() {
+    this.setState({
+      flagMember: true
+    });
   }
 
   async handleAddMember() {
@@ -428,6 +527,8 @@ class CompetitionDetail extends Component {
     switch (clubs.response.status) {
       case 200:
         this.setState({
+          flagClub: false,
+          flagMember: false,
           clubs: clubs.body.result,
           edit: false,
           detail: false,
@@ -462,8 +563,9 @@ class CompetitionDetail extends Component {
       selectMembers, detail,
       exportMembers, exportPDF,
       isOpenDeleteModal, confirmationMessage, deleteId, deleteOption, successMessage,
-      member_val, role_name, weight, dan, position,
-      pageSize, data, skip
+      weights, member_val, role_name, gender, weight, dan,
+      pageSize, data, skip,
+      flagClub, flagMember
     } = this.state;
 
     const grid = (
@@ -529,9 +631,36 @@ class CompetitionDetail extends Component {
             </Segment>
             <Alert color="success" isOpen={this.state.alertVisible}>{successMessage }</Alert>
             {
-              !edit && clubs && clubs.length > 0 && (
-                <Row className="mt-5">
-                  <Col xl="2" lg="3" md="4" sm="6" xs="12">
+              !edit && (
+                <Row className="my-3">
+                  <Col sm="12" className="text-center">
+                    {
+                      flagClub ? (
+                        <Button
+                          type="button"
+                          color="secondary"
+                          onClick={this.handleAddClub.bind(this)}
+                        >
+                          Add Club
+                        </Button>
+                      ) : (
+                        <Button
+                          type="button"
+                          color="secondary"
+                          onClick={this.flagAddClub.bind(this)}
+                        >
+                          <i className="fa fa-plus"></i>
+                        </Button>
+                      )
+                    }
+                  </Col>
+                </Row>
+              )
+            }
+            {
+              (!edit && flagClub) && (
+                <Row>
+                  <Col lg="3" md="4" sm="6" xs="12">
                     <FormGroup>
                       <Select
                         classNamePrefix="react-select-lg"
@@ -547,7 +676,7 @@ class CompetitionDetail extends Component {
                       />
                     </FormGroup>
                   </Col>
-                  <Col xl="2" lg="3" md="4" sm="6" xs="12">
+                  <Col lg="3" md="4" sm="6" xs="12">
                     <FormGroup>
                       <Select
                         classNamePrefix="react-select-lg"
@@ -563,21 +692,12 @@ class CompetitionDetail extends Component {
                       />
                     </FormGroup>
                   </Col>
-                  <Col xl="2" lg="3" md="4" sm="6" xs="12">
-                    <Button
-                      type="button"
-                      color="secondary"
-                      onClick={this.handleAddClub.bind(this)}
-                    >
-                      Add Club
-                    </Button>
-                  </Col>
                 </Row>
               )
             }
             {
               !edit && clubs && clubs.length > 0 && (
-                <Row className="mt-3">
+                <Row>
                   <CompetitionClubTable
                     items={clubs}
                     onSelect={this.handleSelectClub.bind(this)}
@@ -628,8 +748,52 @@ class CompetitionDetail extends Component {
                 </Segment>
                 {
                   edit && (
-                    <Row className="mt-3">
-                      <Col md="4" sm="6" xs="12">
+                    <Row className="my-3">
+                      <Col sm="12" className="text-center">
+                        {
+                          flagMember ? (
+                            <Button
+                              type="button"
+                              color="success"
+                              onClick={this.handleAddMember.bind(this)}
+                            >
+                              Add Member
+                            </Button>
+                          ) : (
+                            <Button
+                              type="button"
+                              color="success"
+                              onClick={this.flagAddMember.bind(this)}
+                            >
+                              <i className="fa fa-plus"></i>
+                            </Button>
+                          )
+                        }
+                      </Col>
+                    </Row>
+                  )
+                }
+                {
+                  edit && flagMember && (
+                    <Row>
+                      <Col md="3" sm="6" xs="12">
+                        <FormGroup>
+                          <Select
+                            classNamePrefix="react-select-lg"
+                            placeholder="Member Type"
+                            isClearable
+                            value={role_name}
+                            options={member_type_options}
+                            getOptionValue={option => option.value}
+                            getOptionLabel={option => option.label}
+                            onChange={(option) => {
+                              this.handleChangeMember(option, 'type');
+                            }}
+                          />
+                        </FormGroup>
+                      
+                      </Col>
+                      <Col md="3" sm="6" xs="12">
                         <FormGroup>
                           <Select
                             classNamePrefix="react-select-lg"
@@ -639,13 +803,69 @@ class CompetitionDetail extends Component {
                             options={addMembers}
                             getOptionValue={option => option.id}
                             getOptionLabel={option => option.name + ' ' + option.surname}
-                            onChange={(member) => {
-                              this.handleChangeMember(member);
+                            onChange={(option) => {
+                              this.handleChangeMember(option, 'member');
                             }}
                           />
                         </FormGroup>
                       </Col>
                       {
+                        role_name.value == 'judoka' && (
+                          <Fragment>
+                            <Col xl="2" lg="2" md="4" sm="6" xs="12">
+                              <FormGroup>
+                                <Select
+                                  name="search_gender"
+                                  classNamePrefix="react-select-lg"
+                                  placeholder="Gender"
+                                  value={gender}
+                                  options={search_genders}
+                                  getOptionValue={option => option.value}
+                                  getOptionLabel={option => option.label}
+                                  onChange={(option) => {
+                                    this.handleChangeMember(option, 'gender');
+                                  }}
+                                />
+                              </FormGroup>
+                            </Col>
+                            <Col xl="2" lg="2" md="4" sm="6" xs="12">
+                              <FormGroup>
+                                <Select
+                                  classNamePrefix="react-select-lg"
+                                  placeholder="Weight"
+                                  isClearable
+                                  value={weight}
+                                  options={weights}
+                                  getOptionValue={option => option.id}
+                                  getOptionLabel={
+                                    option => option.weight != 'All' ? option.weight + ' Kg' : 'All Weights'
+                                  }
+                                  onChange={(option) => {
+                                    this.handleChangeMember(option, 'weight');
+                                  }}
+                                />
+                              </FormGroup>
+                            </Col>
+                            <Col xl="2" lg="2" md="4" sm="6" xs="12">
+                              <FormGroup>
+                                <Select
+                                  classNamePrefix="react-select-lg"
+                                  placeholder="Dans"
+                                  isClearable
+                                  value={dan}
+                                  options={Dans}
+                                  getOptionValue={option => option.value}
+                                  getOptionLabel={option => option.label}
+                                  onChange={(option) => {
+                                    this.handleChangeMember(option, 'dan');
+                                  }}
+                                />
+                              </FormGroup>
+                            </Col>
+                          </Fragment>
+                        )
+                      }
+                      {/* {
                         role_name && role_name != '' && (
                           <Col md="2" sm="3" xs="6">
                             <Input type="text" value={role_name} readOnly />
@@ -672,22 +892,13 @@ class CompetitionDetail extends Component {
                             <Input type="text" value={position} readOnly />
                           </Col>
                         )
-                      }
-                      <Col md="2" sm="3" xs="6">
-                        <Button
-                          type="button"
-                          color="success"
-                          onClick={this.handleAddMember.bind(this)}
-                        >
-                          Add Member
-                        </Button>
-                      </Col>
+                      } */}
                     </Row>
                   )
                 }
                 {
                   editMembers.length > 0 && (
-                    <Row className="mt-2">
+                    <Row>
                       <Col sm="12" className="table-responsive">
                         <CompetitionSelectTable
                           items={editMembers}
