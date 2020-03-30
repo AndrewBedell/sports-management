@@ -896,34 +896,6 @@ class CompetitionDetail extends Component {
                           </Fragment>
                         )
                       }
-                      {/* {
-                        role_name && role_name != '' && (
-                          <Col md="2" sm="3" xs="6">
-                            <Input type="text" value={role_name} readOnly />
-                          </Col>
-                        )
-                      }
-                      {
-                        weight && weight != '' && (
-                          <Col md="2" sm="3" xs="6">
-                            <Input type="text" value={weight + ' Kg'} readOnly />
-                          </Col>
-                        )
-                      }                        
-                      {
-                        dan && dan != '' && (
-                          <Col md="2" sm="3" xs="6">
-                            <Input type="text" value={dan} readOnly />
-                          </Col>
-                        )
-                      }
-                      {
-                        position && role_name && role_name != 'Judoka' && (
-                          <Col md="2" sm="3" xs="6">
-                            <Input type="text" value={position} readOnly />
-                          </Col>
-                        )
-                      } */}
                     </Row>
                   )
                 }
