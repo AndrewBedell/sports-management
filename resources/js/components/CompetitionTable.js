@@ -2,13 +2,17 @@
 /* eslint-disable jsx-a11y/alt-text */
 /* eslint-disable jsx-a11y/anchor-is-valid */
 
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import {
   Table,
   Pagination,
   Menu
 } from 'semantic-ui-react';
 import Select from 'react-select';
+
+import {
+  CompetitionType
+} from '../configs/data';
 
 import _ from 'lodash';
 
@@ -161,6 +165,7 @@ class CompetitionTable extends Component {
               To
             </Table.HeaderCell>
             <Table.HeaderCell className="text-center">Clubs</Table.HeaderCell>
+            <Table.HeaderCell className="text-center">Action</Table.HeaderCell>
           </Table.Row>
         </Table.Header>
         <Table.Body>
@@ -169,19 +174,39 @@ class CompetitionTable extends Component {
               data.map((item, index) => (
                 <Table.Row key={index}>
                   <Table.Cell className="text-center">
-                    {item.type == 'inter' && 'International Competition'}
-                    {item.type == 'nf' && 'National Tournament'}
+                    {CompetitionType.filter(type => type.value == item.type)[0].label}
                   </Table.Cell>
                   <Table.Cell className="text-center">
-                    <a className="detail-link" onClick={() => onSelect(item.id)}>
-                      {item.name}
-                    </a>
+                    {
+                      item.type == 'club' ? (
+                        item.name
+                      ) : (
+                        <a className="detail-link" onClick={() => onSelect(item.id, 'detail')}>
+                          {item.name}
+                        </a>
+                      )
+                    }
                   </Table.Cell>
                   <Table.Cell className="text-center">{item.place}</Table.Cell>
                   <Table.Cell className="text-center">{item.from}</Table.Cell>
                   <Table.Cell className="text-center">{item.to}</Table.Cell>
                   <Table.Cell className="text-center">
                     {item.reg_ids.split(',').length} Regions, {item.club_ids.split(',').length} Clubs
+                  </Table.Cell>
+                  <Table.Cell className="text-center">
+                    <a className="detail-link" onClick={() => onSelect(item.id, 'detail')}>
+                      Detail
+                    </a>
+                    {
+                      item.type == 'club' && (
+                        <Fragment>
+                          &nbsp;|&nbsp;
+                          <a className="detail-link" onClick={() => onSelect(item.id, 'attend')}>
+                            Attend
+                          </a>
+                        </Fragment>
+                      )
+                    }
                   </Table.Cell>
                 </Table.Row>
               ))
@@ -206,7 +231,7 @@ class CompetitionTable extends Component {
                 }}
               />
             </Table.HeaderCell>
-            <Table.HeaderCell colSpan="5">
+            <Table.HeaderCell colSpan="6">
               <Menu floated="right" pagination>
                 <Pagination
                   activePage={activePage}

@@ -34,12 +34,17 @@ class CreateComp extends Component {
       unit_list: [],
       nf_list: [],
       org_list: [],
+      club_list: [],
+      all_org_list: [],
+      all_club_list: [],
       from: null,
       to: null,
       alertVisible: false,
       messageStatus: false,
       successMessage: '',
       failMessage: '',
+      competitionType: [],
+      club_member: ''
     }
 
     this.formikRef = React.createRef();
@@ -47,34 +52,69 @@ class CreateComp extends Component {
 
   async componentDidMount() {
     const user = JSON.parse(localStorage.getItem('auth'));
-    
+    const level = user.user.level;
+
     this.setState({
-      creator_id: user.user.member_info.organization_id
+      creator_id: user.user.member_info.organization_id,
+      club_member: user.user.is_club_member
     });
 
-    this.componentWillReceiveProps();
-  }
-
-  async componentWillReceiveProps() {
-    const nf_response = await Api.get('all-nf');
-    switch (nf_response.response.status) {
-      case 200:
+    switch (level) {
+      case 1:
+        const nf_response = await Api.get('all-nf');
+        switch (nf_response.response.status) {
+          case 200:
+            this.setState({
+              nf_list: nf_response.body.nfs.filter(nfs => nfs.id != user.user.member_info.organization_id)
+            });
+            break;
+          default:
+            break;
+        }
+        const org_response = await Api.get('organizations-list');
+        switch (org_response.response.status) {
+          case 200:
+            this.setState({
+              org_list: org_response.body.filter(org => org.parent_id != 0)
+            });
+            break;
+          default:
+            break;
+        }
         this.setState({
-          nf_list: nf_response.body.nfs.filter(nfs => nfs.id != this.state.creator_id)
+          competitionType: CompetitionType.filter(type => type.value == 'inter' || type.value == 'nf')
         });
-
         break;
-      default:
-        break;
-    }
-    
-    const org_response = await Api.get('organizations-list');
-    switch (org_response.response.status) {
-      case 200:
+      case 2:
+        const club_response = await Api.get('clubs');
+        switch (club_response.response.status) {
+          case 200:
+            this.setState({
+              club_list: club_response.body
+            });
+            break;
+          default:
+            break;
+        }
         this.setState({
-          org_list: org_response.body.filter(org => org.parent_id != 0)
+          competitionType: CompetitionType.filter(type => type.value == 'reg')
         });
-
+        break;
+      case 3:
+        const all_response = await Api.get('clubs-list');
+        switch (all_response.response.status) {
+          case 200:
+            this.setState({
+              all_org_list: all_response.body.orgs,
+              all_club_list: all_response.body.clubs
+            });
+            break;
+          default:
+            break;
+        }
+        this.setState({
+          competitionType: CompetitionType.filter(type => type.value == 'club')
+        });
         break;
       default:
         break;
@@ -131,9 +171,9 @@ class CreateComp extends Component {
 
     let newData = {};
 
-    let reg_ids = '';
-    for (let i = 0; i < values.reg_ids.length; i++) {
-      reg_ids += values.reg_ids[i].id + ',';
+    let unit_ids = '';
+    for (let i = 0; i < values.unit_ids.length; i++) {
+      unit_ids += values.unit_ids[i].id + ',';
     }
 
     newData = {
@@ -143,7 +183,7 @@ class CreateComp extends Component {
       place: values.place,
       from: this.state.from,
       to: this.state.to,
-      reg_ids: reg_ids.substring(0, reg_ids.length - 1)
+      unit_ids: unit_ids.substring(0, unit_ids.length - 1)
     }
 
     const data = await Api.post('reg-competition', newData);
@@ -180,7 +220,9 @@ class CreateComp extends Component {
 
   render() {
     const {
-      unit_list, nf_list, org_list, from, to
+      unit_list, nf_list, org_list, club_list,
+      all_org_list, all_club_list,
+      from, to, competitionType, club_member
     } = this.state;
 
     return(
@@ -205,7 +247,8 @@ class CreateComp extends Component {
                 place: '',
                 from: null,
                 to: null,
-                reg_ids: null
+                reg_ids: null,
+                unit_ids: null
               }}
 
               validationSchema={
@@ -213,7 +256,7 @@ class CreateComp extends Component {
                   type: Yup.mixed().required('This field is required!'),
                   name: Yup.mixed().required('This field is required!'),
                   place: Yup.mixed().required('This field is required!'),
-                  reg_ids: Yup.mixed().required('This field is required!')
+                  unit_ids: Yup.mixed().required('This field is required!')
                 })
               }
 
@@ -240,7 +283,7 @@ class CreateComp extends Component {
                           name="type"
                           classNamePrefix={!values.type && touched.type ? 'invalid react-select-lg' : 'react-select-lg'}
                           indicatorSeparator={null}
-                          options={CompetitionType}
+                          options={competitionType}
                           getOptionValue={option => option.value}
                           getOptionLabel={option => option.label}
                           value={values.type}
@@ -258,7 +301,18 @@ class CreateComp extends Component {
                                 unit_list: org_list
                               });
                             }
+                            
+                            if (value.value === 'reg') {
+                              this.setState({
+                                unit_list: club_list
+                              });
+                            }
 
+                            if (value.value === 'club') {
+                              this.setState({
+                                org_list: all_org_list
+                              });
+                            }
                           }}
                           onBlur={this.handleBlur}
                         />
@@ -321,25 +375,77 @@ class CreateComp extends Component {
                         <FormFeedback>{errors.place}</FormFeedback>
                       </FormGroup>
                     </Col>
-                    <Col xs="12">
-                      <FormGroup>
-                        <Label for="reg_ids">Organization List</Label>
-                        <Select
-                          name="reg_ids"
-                          classNamePrefix={!values.reg_ids && touched.reg_ids ? 'invalid react-select-lg' : 'react-select-lg'}
-                          indicatorSeparator={null}
-                          options={unit_list}
-                          isMulti
-                          getOptionValue={option => option.id}
-                          getOptionLabel={option => option.name_o}
-                          value={values.reg_ids}
-                          onChange={(value) => {
-                            setFieldValue('reg_ids', value);
-                          }}
-                          onBlur={this.handleBlur}
-                        />
-                      </FormGroup>
-                    </Col>
+                    {
+                      club_member == 1 ? (
+                        <Fragment>
+                          <Col xs="6">
+                            <FormGroup>
+                              <Label>Organization List</Label>
+                              <Select
+                                name="reg_ids"
+                                classNamePrefix={
+                                  !values.reg_ids && touched.reg_ids ? 'invalid react-select-lg' : 'react-select-lg'
+                                }
+                                indicatorSeparator={null}
+                                options={org_list}
+                                getOptionValue={option => option.id}
+                                getOptionLabel={option => option.name_o}
+                                value={values.reg_ids}
+                                onChange={(value) => {
+                                  setFieldValue('reg_ids', value);
+
+                                  this.setState({
+                                    club_list: all_club_list.filter(club => club.parent_id == value.id)
+                                  });
+                                }}
+                                onBlur={this.handleBlur}
+                              />
+                            </FormGroup>
+                          </Col>
+                          <Col xs="6">
+                            <FormGroup>
+                              <Label for="unit_ids">Club List</Label>
+                              <Select
+                                name="unit_ids"
+                                classNamePrefix={
+                                  !values.unit_ids && touched.unit_ids ? 'invalid react-select-lg' : 'react-select-lg'
+                                }
+                                indicatorSeparator={null}
+                                options={club_list}
+                                isMulti
+                                getOptionValue={option => option.id}
+                                getOptionLabel={option => option.name_o}
+                                value={values.unit_ids}
+                                onChange={(value) => {
+                                  setFieldValue('unit_ids', value);
+                                }}
+                                onBlur={this.handleBlur}
+                              />
+                            </FormGroup>
+                          </Col>
+                        </Fragment>
+                      ) : (
+                        <Col xs="12">
+                          <FormGroup>
+                            <Label for="unit_ids">Organization List</Label>
+                            <Select
+                              name="unit_ids"
+                              classNamePrefix={!values.unit_ids && touched.unit_ids ? 'invalid react-select-lg' : 'react-select-lg'}
+                              indicatorSeparator={null}
+                              options={unit_list}
+                              isMulti
+                              getOptionValue={option => option.id}
+                              getOptionLabel={option => option.name_o}
+                              value={values.unit_ids}
+                              onChange={(value) => {
+                                setFieldValue('unit_ids', value);
+                              }}
+                              onBlur={this.handleBlur}
+                            />
+                          </FormGroup>
+                        </Col>
+                      )
+                    }
                   </Row>
                   <div className="w-100 d-flex justify-content-end">
                     <div>

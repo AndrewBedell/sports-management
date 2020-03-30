@@ -22,7 +22,6 @@ class Competitions extends Component {
 
     this.state={
       is_nf: 0,
-      club_member: 0,
       competitions: []
     };
   }
@@ -30,11 +29,9 @@ class Competitions extends Component {
   async componentDidMount() {
     const user = JSON.parse(localStorage.getItem('auth'));
     const is_nf = user.user.is_nf;
-    const club_member = user.user.is_club_member;
 
     this.setState({
-      is_nf,
-      club_member
+      is_nf
     });
 
     if (is_nf == 1) {
@@ -68,15 +65,12 @@ class Competitions extends Component {
     this.props.history.push('/competition/create');
   }
 
-  handleSelectItem(id) {
-    if (this.state.club_member == 1)
-      this.props.history.push('/competition/attend', id);
-    else
-      this.props.history.push('/competition/detail', id);
+  handleSelectItem(id, target) {
+    this.props.history.push('/competition/' + target, id);
   }
 
   render() {
-    const { is_nf, competitions } = this.state;
+    const { competitions } = this.state;
 
     return (
       <Fragment>
@@ -84,15 +78,13 @@ class Competitions extends Component {
         <div className="main-content dashboard">
           <Container>
             <div className="text-center my-5">
-              {is_nf == 1 && (
-                <Button
-                  type="button"
-                  color="success"
-                  onClick={this.handleCreateCompetition.bind(this)}
-                >
-                  Create Competition
-                </Button>
-              )}
+              <Button
+                type="button"
+                color="success"
+                onClick={this.handleCreateCompetition.bind(this)}
+              >
+                Create Competition
+              </Button>
             </div>
             <Row>
               <Col sm="12">

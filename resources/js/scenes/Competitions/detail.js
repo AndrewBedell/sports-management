@@ -25,6 +25,7 @@ class CompetitionDetail extends Component {
 
     this.state = {
       is_nf: 0,
+      club_member: 0,
       org_flag: 0,
       competition_id: '',
       competition: [],
@@ -67,16 +68,35 @@ class CompetitionDetail extends Component {
   async componentDidMount() {
     const user = JSON.parse(localStorage.getItem('auth'));
     const is_nf = user.user.is_nf;
+    const club_member = user.user.is_club_member;
     const user_org = user.user.member_info.organization_id;
 
     const competition_id = this.props.location.state;
 
     this.setState({
       is_nf,
+      club_member,
       competition_id
     });
 
-    if (is_nf != 1) {
+    const orgs = await Api.get(`competition-orgs/${competition_id}`);
+    switch (orgs.response.status) {
+      case 200:
+        if (orgs.body.regs.length > 0 && orgs.body.regs[0].parent_id == 0)
+          orgs.body.regs[0].name_o = "National Federation";
+
+        this.setState({
+          org_list: orgs.body.regs,
+          org_original: orgs.body.regs,
+          club_list: orgs.body.clubs,
+          club_original: orgs.body.clubs
+        });
+        break;
+      default:
+        break;
+    }
+
+    if (is_nf != 1 && club_member == 1) {
       const params = {};
 
       params.competition_id = this.props.location.state;
@@ -126,23 +146,6 @@ class CompetitionDetail extends Component {
       case 200:
         this.setState({
           clubs: clubs.body.result
-        });
-        break;
-      default:
-        break;
-    }
-
-    const orgs = await Api.get(`competition-orgs/${competition_id}`);
-    switch (orgs.response.status) {
-      case 200:
-        if (orgs.body.regs.length > 0 && orgs.body.regs[0].parent_id == 0)
-          orgs.body.regs[0].name_o = "National Federation";
-
-        this.setState({
-          org_list: orgs.body.regs,
-          org_original: orgs.body.regs,
-          club_list: orgs.body.clubs,
-          club_original: orgs.body.clubs
         });
         break;
       default:
@@ -586,7 +589,7 @@ class CompetitionDetail extends Component {
 
   render() {
     const { 
-      is_nf, org_flag,
+      is_nf, club_member, org_flag,
       competition, clubs, editClub,
       org_list, club_list, org_val, club_val,
       addMembers,
@@ -662,7 +665,7 @@ class CompetitionDetail extends Component {
             </Segment>
             <Alert color="success" isOpen={this.state.alertVisible}>{successMessage }</Alert>
             {
-              is_nf == 1 && !edit && (
+              !edit && (
                 <Row className="my-3">
                   <Col sm="12" className="text-center">
                     {
@@ -689,7 +692,7 @@ class CompetitionDetail extends Component {
               )
             }
             {
-              is_nf == 1 && !edit && flagClub && (
+              !edit && flagClub && (
                 <Row>
                   <Col lg="3" md="4" sm="6" xs="12">
                     <FormGroup>
@@ -697,7 +700,7 @@ class CompetitionDetail extends Component {
                         classNamePrefix="react-select-lg"
                         placeholder="Select Region"
                         isClearable
-                        value={org_val && org_val}
+                        value={org_list.length == 1 ? org_list[0] : (org_val && org_val)}
                         options={org_list}
                         getOptionValue={option => option.id}
                         getOptionLabel={option => option.name_o}
@@ -727,7 +730,7 @@ class CompetitionDetail extends Component {
               )
             }
             {
-              is_nf == 1 && !edit && clubs && clubs.length > 0 && (
+              !edit && clubs && clubs.length > 0 && (
                 <Row>
                   <CompetitionClubTable
                     items={clubs}

@@ -153,11 +153,30 @@ class CompetitionController extends Controller
                 $reg_ids = array_diff($reg_ids, [$obj->parent_id]);
             }
         }
-        
-        $regs = Organization::whereNotIn('id', $reg_ids)
+
+        $regs = array();
+        $clubs = array();
+
+        $creator = Organization::find($competition->creator_id);
+
+        if ($creator->parent_id == 0) {
+            $regs = Organization::whereNotIn('id', $reg_ids)
                             ->where('parent_id', $competition->creator_id)
                             ->orderBy('name_o')
                             ->get();
+        } else {
+            if ($creator->is_club == 1) {
+                $org = Organization::find($creator->parent_id);
+                $nf = Organization::find($org->parent_id);
+
+                $regs = Organization::whereNotIn('id', $reg_ids)
+                            ->where('parent_id', $nf->id)
+                            ->orderBy('name_o')
+                            ->get();
+            } else {
+                $regs = Organization::where('id', $creator->id)->get();
+            }
+        }
 
         $parents = array();
         foreach ($regs as $reg) {
@@ -212,7 +231,7 @@ class CompetitionController extends Controller
             'place' => 'required|string|max:255',
             'from' => 'required|string|max:255',
             'to' => 'required|string|max:255',
-            'reg_ids' => 'required|string|max:255'
+            'unit_ids' => 'required|string|max:255'
         ]);
 
         if ($validator->fails()) {
@@ -233,21 +252,50 @@ class CompetitionController extends Controller
                     406
                 );
             } else {
+                $reg_ids = '';
                 $club_ids = '';
+                $regArr = array();
                 $clubArr = array();
 
-                $reg_ids = explode(',', $data['reg_ids']);
+                if ($data['type'] == 'inter' || $data['type'] == 'nf') {
+                    $regArr = explode(',', $data['unit_ids']);
 
-                foreach ($reg_ids as $id) {
-                    $clubs = Organization::where('parent_id', $id)->get();
+                    foreach ($regArr as $id) {
+                        $clubs = Organization::where('parent_id', $id)->get();
 
-                    foreach ($clubs as $club) {
-                        $club_ids .= $club->id . ',';
-                        array_push($clubArr, $club->id);
+                        foreach ($clubs as $club) {
+                            $club_ids .= $club->id . ',';
+                            array_push($clubArr, $club->id);
+                        }
                     }
+
+                    $reg_ids = $data['unit_ids'];
+                    $club_ids = substr($club_ids, 0, strlen($club_ids) - 1);
+                }
+                
+                if ($data['type'] == 'reg') {
+                    array_push($regArr, $data['creator_id']);
+                    $clubArr = explode(',', $data['unit_ids']);
+
+                    $reg_ids = $data['creator_id'];
+                    $club_ids = $data['unit_ids'];
                 }
 
-                $club_ids = substr($club_ids, 0, strlen($club_ids) - 1);
+                if ($data['type'] == 'club') {
+                    $clubArr = explode(',', $data['unit_ids']);
+                    array_push($clubArr, $data['creator_id']);
+
+                    foreach ($clubArr as $id) {
+                        $club = Organization::find($id);
+
+                        array_push($regArr, $club->parent_id);
+
+                        $reg_ids .= $club->parent_id . ',';
+                    }
+
+                    $reg_ids = substr($reg_ids, 0, strlen($reg_ids) - 1);
+                    $club_ids = $data['unit_ids'];
+                }
 
                 $competition = Competition::create(array(
                     'creator_id' => $data['creator_id'],
@@ -256,15 +304,16 @@ class CompetitionController extends Controller
                     'place' => $data['place'],
                     'from' => $data['from'],
                     'to' => $data['to'],
-                    'reg_ids' => $data['reg_ids'],
+                    'reg_ids' => $reg_ids,
                     'club_ids' => $club_ids
                 ));
 
-                foreach ($reg_ids as $reg_id) {
+                foreach ($regArr as $reg_id) {
                     Notification::create(array(
                         'subject_id' => $competition->id,
                         'content' => 
-                            'The competition "' . $data['name'] . '" is open from ' . $data['from'] . ' to ' . $data['to'] . '.',
+                            'The competition "' . $data['name'] . '" is open from ' . 
+                            $data['from'] . ' to ' . $data['to'] . '.',
                         'from' => $data['creator_id'],
                         'to' => $reg_id,
                         'status' => 0
@@ -275,7 +324,8 @@ class CompetitionController extends Controller
                     Notification::create(array(
                         'subject_id' => $competition->id,
                         'content' => 
-                            'The competition "' . $data['name'] . '" is open from ' . $data['from'] . ' to ' . $data['to'] . '.',
+                            'The competition "' . $data['name'] . '" is open from ' . 
+                            $data['from'] . ' to ' . $data['to'] . '.',
                         'from' => $data['creator_id'],
                         'to' => $club_id,
                         'status' => 0
@@ -399,10 +449,29 @@ class CompetitionController extends Controller
             }
         }
 
-        $regs = Organization::whereNotIn('id', $reg_ids)
+        $regs = array();
+        $clubs = array();
+
+        $creator = Organization::find($competition->creator_id);
+
+        if ($creator->parent_id == 0) {
+            $regs = Organization::whereNotIn('id', $reg_ids)
                             ->where('parent_id', $competition->creator_id)
                             ->orderBy('name_o')
                             ->get();
+        } else {
+            if ($creator->is_club == 1) {
+                $org = Organization::find($creator->parent_id);
+                $nf = Organization::find($org->parent_id);
+
+                $regs = Organization::whereNotIn('id', $reg_ids)
+                            ->where('parent_id', $nf->id)
+                            ->orderBy('name_o')
+                            ->get();
+            } else {
+                $regs = Organization::where('id', $creator->id)->get();
+            }
+        }
 
         $parents = array();
         foreach ($regs as $reg) {

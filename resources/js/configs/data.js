@@ -297,5 +297,7 @@ export const OrganizationType = [
 
 export const CompetitionType = [
   { label: 'International Competition', value: 'inter' },
-  { label: 'National Tournament', value: 'nf' }
+  { label: 'National Tournament', value: 'nf' },
+  { label: 'Regional Tournament', value: 'reg' },
+  { label: 'Clubs Tournament', value: 'club' }
 ];
