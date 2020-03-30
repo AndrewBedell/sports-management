@@ -24,8 +24,6 @@ class CompetitionDetail extends Component {
     super(props);
 
     this.state = {
-      is_nf: 0,
-      club_member: 0,
       org_flag: 0,
       competition_id: '',
       competition: [],
@@ -74,8 +72,6 @@ class CompetitionDetail extends Component {
     const competition_id = this.props.location.state;
 
     this.setState({
-      is_nf,
-      club_member,
       competition_id
     });
 
@@ -589,7 +585,7 @@ class CompetitionDetail extends Component {
 
   render() {
     const { 
-      is_nf, club_member, org_flag,
+      org_flag,
       competition, clubs, editClub,
       org_list, club_list, org_val, club_val,
       addMembers,
