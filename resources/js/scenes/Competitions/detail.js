@@ -788,8 +788,8 @@ class CompetitionDetail extends Component {
                   >
                     <div className="pdf-export mt-2 px-2 py-2">
                       <Row>
-                        <Col sm="4" className="d-flex align-items-center">
-                          <img src={Bitmaps.logo} alt="Sports logo" width='100%' />
+                        <Col sm="4" className="d-flex align-items-center justify-content-center">
+                          <img src={Bitmaps.logo} alt="Sports logo" width='80%' />
                         </Col>
                         <Col sm="8">
                           <h1 className="text-center text-danger"><b>{competition.name}</b></h1>
