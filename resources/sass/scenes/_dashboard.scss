@@ -5,6 +5,58 @@
       margin-top: 50px;
       width: 100%;
     }
+
+    .pdf-export {
+      background-color: $white;
+
+      h1 {
+        color: $black;
+      }
+
+      hr {
+        border-color: $black;
+      }
+
+      .k-grid {
+        border: none;
+
+        tr.k-master-row {
+          background-color: $white;
+        }
+
+        table {
+          th, td {
+            border-left: none;
+            border-right: none;
+            border-bottom: 1px solid $black;
+            color: black;
+          }
+        }
+
+        .k-grid-header {
+          font-weight: bold;
+          padding: 0 !important;
+
+          .k-grid-header-wrap {
+            border-bottom: 1px solid $black;
+            border-left: none;
+            border-right: none;
+            border-top: 1px solid $black;
+          }
+        }
+
+        .k-grid-container {
+          .k-grid-content {
+            overflow-y: hidden;
+
+            &>div:first-child {
+              height: 300px;
+              overflow: auto;
+            }
+          }
+        }
+      }
+    }
   }
 
   .fixed-content {

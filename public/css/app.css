@@ -71774,6 +71774,55 @@ body .main-content {
   width: 100%;
 }
 
+.main-content .container .pdf-export {
+  background-color: #FFFFFF;
+}
+
+.main-content .container .pdf-export h1 {
+  color: #000;
+}
+
+.main-content .container .pdf-export hr {
+  border-color: #000;
+}
+
+.main-content .container .pdf-export .k-grid {
+  border: none;
+}
+
+.main-content .container .pdf-export .k-grid tr.k-master-row {
+  background-color: #FFFFFF;
+}
+
+.main-content .container .pdf-export .k-grid table th,
+.main-content .container .pdf-export .k-grid table td {
+  border-left: none;
+  border-right: none;
+  border-bottom: 1px solid #000;
+  color: black;
+}
+
+.main-content .container .pdf-export .k-grid .k-grid-header {
+  font-weight: bold;
+  padding: 0 !important;
+}
+
+.main-content .container .pdf-export .k-grid .k-grid-header .k-grid-header-wrap {
+  border-bottom: 1px solid #000;
+  border-left: none;
+  border-right: none;
+  border-top: 1px solid #000;
+}
+
+.main-content .container .pdf-export .k-grid .k-grid-container .k-grid-content {
+  overflow-y: hidden;
+}
+
+.main-content .container .pdf-export .k-grid .k-grid-container .k-grid-content > div:first-child {
+  height: 300px;
+  overflow: auto;
+}
+
 .main-content .fixed-content {
   display: flex;
   justify-content: center;

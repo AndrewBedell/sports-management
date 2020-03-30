@@ -566,7 +566,7 @@ class MemberController extends Controller
                         ->where('members.active', 1)
                         ->select('members.*', 'roles.name as role_name', 'weights.weight', 'players.dan')
                         ->orderBy('players.weight_id')
-                        ->orderBy('members.name')
+                        ->orderBy('members.surname')
                         ->get();
 
         return response()->json([

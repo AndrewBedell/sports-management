@@ -7,8 +7,8 @@ import {
 import { Segment } from 'semantic-ui-react';
 import Select from 'react-select';
 
-import { Grid, GridColumn, GridToolbar } from '@progress/kendo-react-grid';
-import { GridPDFExport } from '@progress/kendo-react-pdf';
+import { PDFExport } from '@progress/kendo-react-pdf';
+import { Grid, GridColumn as Column } from '@progress/kendo-react-grid';
 
 import Api from '../../apis/app';
 
@@ -16,7 +16,7 @@ import Prompt from '../../components/Prompt';
 import MainTopBar from '../../components/TopBar/MainTopBar';
 import CompetitionClubTable from '../../components/CompetitionClubTable';
 import CompetitionSelectTable from '../../components/CompetitionSelectTable';
-
+import Bitmaps from '../../theme/Bitmaps';
 import { Dans, search_genders, member_type_options } from '../../configs/data';
 
 class CompetitionDetail extends Component {
@@ -291,14 +291,67 @@ class CompetitionDetail extends Component {
 
     if (action == 'export') {
       let exportMembers = [];
+      let months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      let role = '';
+      let gender = '';
+      var j = 0;
+
       for (var i = 0; i < members.length; i++) {
-        let arr = {
-          "Name": members[i].surname + members[i].name,
-          "Role": members[i].role_name,
-          "Gender": members[i].gender == 1 ? 'Male' : 'Female',
-          "Birthday": members[i].birthday,
-          "Weight": members[i].weight + ' Kg',
-          "Dan": members[i].dan
+        let arr = [];
+
+        if (role == '') {
+          j = 1;
+
+          arr = {
+            "ID": '',
+            "Name": '',
+            "M / F": '',
+            "Date of Birth": '',
+            "Category": 'DELEGATION',
+            "Dan": '',
+            "#": ''
+          }
+  
+          exportMembers.push(arr);
+        }
+
+        if (role != '-') {
+          role = members[i].role_name;
+        }
+
+        if (role == 'Judoka' || role == '-') {
+          role = '-';
+          
+          if (gender != members[i].gender) {
+            j = 1;
+            let gender_txt = members[i].gender == 1 ? 'Male' : 'Female';
+
+            arr = {
+              "ID": '',
+              "Name": '',
+              "M / F": '',
+              "Date of Birth": '',
+              "Category": 'Seniors ' + gender_txt,
+              "Dan": '',
+              "#": ''
+            }
+    
+            exportMembers.push(arr);
+          }
+
+          gender = members[i].gender;
+        }
+
+        let datePart = members[i].birthday.match(/\d+/g);
+
+        arr = {
+          "ID": i + 1,
+          "Name": members[i].surname + ' ' + members[i].name,
+          "M / F": members[i].gender == 1 ? 'M' : 'F',
+          "Date of Birth": datePart[2] + '-' + months[parseInt(datePart[1]) - 1] + '-' + datePart[0],
+          "Category": members[i].weight == null ? members[i].role_name : members[i].weight + ' Kg',
+          "Dan": members[i].dan,
+          "#": j++
         }
 
         exportMembers.push(arr);
@@ -579,8 +632,8 @@ class CompetitionDetail extends Component {
     });
   }
 
-  exportPDF() {
-    this.gridPDFExport.save(this.state.exportMembers);
+  handleexportPDF() {
+    this.gridPDFExport.save();
   }
 
   render() {
@@ -594,38 +647,8 @@ class CompetitionDetail extends Component {
       exportMembers, exportPDF,
       isOpenDeleteModal, confirmationMessage, deleteId, deleteOption, successMessage,
       weights, member_val, role_name, gender, weight, dan,
-      pageSize, data, skip,
       flagClub, flagMember
     } = this.state;
-
-    const grid = (
-      <Grid
-          total={exportMembers.length}
-          pageSize={pageSize}
-          onPageChange={this.pageChange.bind(this)}
-          data={data}
-          skip={skip}
-          pageable={true}
-          style={{ maxHeight: '490px' }}
-      >
-          <GridToolbar>
-            <button
-                title="Export PDF"
-                className="k-button k-primary"
-                onClick={this.exportPDF.bind(this)}
-            >
-                Export PDF
-            </button>
-          </GridToolbar>
-
-          <GridColumn headerClassName="text-center" field="Name" title="Name" width="300px" />
-          <GridColumn headerClassName="text-center" className="text-center" field="Role" title="Role" />
-          <GridColumn headerClassName="text-center" className="text-center" field="Gender" title="Gender" />
-          <GridColumn headerClassName="text-center" className="text-center" field="Birthday" title="Birthday" width="150px" />
-          <GridColumn headerClassName="text-center" className="text-center" field="Weight" title="Weight" />
-          <GridColumn headerClassName="text-center" className="text-center" field="Dan" title="Dan" />
-      </Grid>
-    );
 
     return (
       <Fragment>
@@ -749,15 +772,53 @@ class CompetitionDetail extends Component {
             {
               exportPDF && (
                 <Row className="mt-3">
-                  {grid}
-                  <GridPDFExport
+                  {/* {displayGrid} */}
+                  <button
+                    title="Export PDF"
+                    className="k-button k-primary"
+                    onClick={this.handleexportPDF.bind(this)}
+                  >
+                    Export PDF
+                  </button>
+                  <PDFExport
                     paperSize="A4"
                     margin={{ top: 60, left: 30, right: 30, bottom: 30 }}
                     landscape={true}
                     ref={pdfExport => this.gridPDFExport = pdfExport}
                   >
-                    {grid}
-                  </GridPDFExport>
+                    <div className="pdf-export mt-2 px-2 py-2">
+                      <Row>
+                        <Col sm="4" className="d-flex align-items-center">
+                          <img src={Bitmaps.logo} alt="Sports logo" width='100%' />
+                        </Col>
+                        <Col sm="8">
+                          <h1 className="text-center text-danger"><b>{competition.name}</b></h1>
+                          <h3 className="text-center text-danger">{competition.from} ~ {competition.to}</h3>
+                        </Col>
+                      </Row>
+
+                      <hr />
+
+                      <Row className="mb-3">
+                        <Col sm="12"><h1 className="text-center">MEMBER INFORMATION</h1></Col>
+                      </Row>
+                      
+                      <Grid
+                        total={exportMembers.length}
+                        pageSize={exportMembers.length}
+                        data={exportMembers}
+                        skip={0}
+                      >
+                        <Column headerClassName="text-center" className="text-center" field="#" />
+                        <Column headerClassName="text-center" className="text-center" field="Category" width="150px" />
+                        <Column headerClassName="text-center" className="text-center" field="M / F" />
+                        <Column field="Name" width="300px" />
+                        <Column headerClassName="text-center" className="text-center" field="Date of Birth" width="120px" />
+                        <Column headerClassName="text-center" className="text-center" field="Dan" />
+                        <Column headerClassName="text-center" className="text-center" field="ID" />
+                      </Grid>
+                    </div>
+                  </PDFExport>
                 </Row>
               )
             }
