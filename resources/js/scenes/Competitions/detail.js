@@ -294,12 +294,15 @@ class CompetitionDetail extends Component {
       let months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
       let role = '';
       let gender = '';
+      let flag = true;
       var j = 0;
 
       for (var i = 0; i < members.length; i++) {
         let arr = [];
 
-        if (role == '') {
+        role = members[i].role_name;
+
+        if (role != 'Judoka' && role != '-' && flag) {
           j = 1;
 
           arr = {
@@ -313,10 +316,8 @@ class CompetitionDetail extends Component {
           }
   
           exportMembers.push(arr);
-        }
 
-        if (role != '-') {
-          role = members[i].role_name;
+          flag = false;
         }
 
         if (role == 'Judoka' || role == '-') {
