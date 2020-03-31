@@ -52,14 +52,14 @@ class CreateComp extends Component {
 
   async componentDidMount() {
     const user = JSON.parse(localStorage.getItem('auth'));
-    const level = user.user.level;
+    const user_level = user.user.level;
 
     this.setState({
       creator_id: user.user.member_info.organization_id,
-      user_level: level
+      user_level
     });
 
-    switch (level) {
+    switch (user_level) {
       case 1:
         const nf_response = await Api.get('all-nf');
         switch (nf_response.response.status) {
