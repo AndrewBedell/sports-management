@@ -22,7 +22,7 @@ import MainTopBar from '../../components/TopBar/MainTopBar';
 import Api from '../../apis/app';
 
 import {
-  CompetitionType
+  CompetitionType, CompetitionLevel
 } from '../../configs/data';
 
 class CreateComp extends Component {
@@ -180,6 +180,7 @@ class CreateComp extends Component {
     newData = {
       creator_id: this.state.creator_id,
       type: values.type.value,
+      level: values.level.value,
       name: values.name,
       place: values.place,
       from: this.state.from,
@@ -244,6 +245,7 @@ class CreateComp extends Component {
               initialValues={{
                 creator_id: null,
                 type: null,
+                level: null,
                 name: '',
                 place: '',
                 from: null,
@@ -255,6 +257,7 @@ class CreateComp extends Component {
               validationSchema={
                 Yup.object().shape({
                   type: Yup.mixed().required('This field is required!'),
+                  level: Yup.mixed().required('This field is required!'),
                   name: Yup.mixed().required('This field is required!'),
                   place: Yup.mixed().required('This field is required!'),
                   unit_ids: Yup.mixed().required('This field is required!')
@@ -317,6 +320,27 @@ class CreateComp extends Component {
                       </FormGroup>
                     </Col>
                     <Col xs="12" sm="6">
+                      <FormGroup>
+                        <Label for="level">Competition Level</Label>
+                        <Select
+                          name="level"
+                          classNamePrefix={!values.level && touched.level ? 'invalid react-select-lg' : 'react-select-lg'}
+                          indicatorSeparator={null}
+                          options={CompetitionLevel}
+                          getOptionValue={option => option.value}
+                          getOptionLabel={option => option.label}
+                          value={values.level}
+                          onChange={(value) => {
+                            setFieldValue('level', value);
+                          }}
+                          onBlur={this.handleBlur}
+                        />
+                        {!values.level && touched.level && (
+                          <FormFeedback className="d-block">This field is required!</FormFeedback>
+                        )}
+                      </FormGroup>
+                    </Col>
+                    <Col sm="12">
                       <FormGroup>
                         <Label for="name">Competition Name</Label>
                         <Input

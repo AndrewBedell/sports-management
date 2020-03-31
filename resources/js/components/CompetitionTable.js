@@ -11,7 +11,7 @@ import {
 import Select from 'react-select';
 
 import {
-  CompetitionType
+  CompetitionType, CompetitionLevel
 } from '../configs/data';
 
 import _ from 'lodash';
@@ -138,6 +138,13 @@ class CompetitionTable extends Component {
             </Table.HeaderCell>
             <Table.HeaderCell
               className="text-center"
+              sorted={column === 'level' ? direction : null}
+              onClick={this.handleSort.bind(this, 'level')}
+            >
+              Level
+            </Table.HeaderCell>
+            <Table.HeaderCell
+              className="text-center"
               sorted={column === 'name' ? direction : null}
               onClick={this.handleSort.bind(this, 'name')}
             >
@@ -175,6 +182,9 @@ class CompetitionTable extends Component {
                 <Table.Row key={index}>
                   <Table.Cell className="text-center">
                     {CompetitionType.filter(type => type.value == item.type)[0].label}
+                  </Table.Cell>
+                  <Table.Cell className="text-center">
+                    {CompetitionLevel.filter(level => level.value == item.level)[0].label}
                   </Table.Cell>
                   <Table.Cell className="text-center">
                     {
@@ -231,7 +241,7 @@ class CompetitionTable extends Component {
                 }}
               />
             </Table.HeaderCell>
-            <Table.HeaderCell colSpan="6">
+            <Table.HeaderCell colSpan="7">
               <Menu floated="right" pagination>
                 <Pagination
                   activePage={activePage}

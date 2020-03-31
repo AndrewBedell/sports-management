@@ -8,6 +8,7 @@ use App\Player;
 use App\Organization;
 use App\Setting;
 use App\Notification;
+use App\Competition;
 use App\CompetitionMembers;
 
 use JWTAuth;
@@ -621,13 +622,15 @@ class MemberController extends Controller
     {
         $data = $request->all();
 
-        $competition = CompetitionMembers::where('competition_id', $data['competition_id'])
+        $competition = Competition::find($data['competition_id']);
+
+        $compMember = CompetitionMembers::where('competition_id', $data['competition_id'])
                             ->where('club_id', $data['club_id'])
                             ->get();
 
         $ids = array();
-        if (sizeof($competition) > 0)
-            $ids = explode(',', $competition[0]->member_ids);
+        if (sizeof($compMember) > 0)
+            $ids = explode(',', $compMember[0]->member_ids);
         
         $members = Member::leftJoin('players', 'players.member_id', '=', 'members.id')
                         ->leftJoin('roles', 'roles.id', '=', 'members.role_id')
@@ -640,9 +643,32 @@ class MemberController extends Controller
                         ->orderBy('members.name')
                         ->get();
 
+        $result = array();
+
+        foreach ($members as $member) {
+            if ($member->role_id == 3) {
+                $birthday = date_create($member->birthday);
+                $today = date_create(Date('Y-m-d'));
+
+                $diff = date_diff($birthday, $today);
+
+                if ($competition->level == 'cadet') {
+                    if ($diff->y < 18 || ($diff->y == 18 && $diff->m == 0 && $diff->d == 0)) {
+                        array_push($result, $member);
+                    }
+                } else {
+                    if ($diff->y > 18 || ($diff->y == 18 && ($diff->m > 0 || $diff->d > 0))) {
+                        array_push($result, $member);
+                    }
+                }
+            } else {
+                array_push($result, $member);
+            }    
+        }
+
         return response()->json([
             'status' => 200,
-            'data' => $members
+            'data' => $result
         ]);
     }
 

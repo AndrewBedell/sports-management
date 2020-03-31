@@ -17,6 +17,7 @@ class Competition extends Model
     protected $fillable = [
         'creator_id',
         'type',
+        'level',
         'name',
         'place',
         'from',

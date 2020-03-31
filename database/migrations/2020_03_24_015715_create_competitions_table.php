@@ -17,6 +17,7 @@ class CreateCompetitionsTable extends Migration
             $table->bigIncrements('id');
             $table->integer('creator_id');
             $table->string('type');
+            $table->string('level');
             $table->string('name');
             $table->string('place');
             $table->date('from');

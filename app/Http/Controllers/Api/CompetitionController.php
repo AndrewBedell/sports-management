@@ -227,6 +227,7 @@ class CompetitionController extends Controller
         $validator = Validator::make($data, [
             'creator_id' => 'required|integer',
             'type' => 'required|string|max:255',
+            'level' => 'required|string|max:255',
             'name' => 'required|string|max:255',
             'place' => 'required|string|max:255',
             'from' => 'required|string|max:255',
@@ -300,6 +301,7 @@ class CompetitionController extends Controller
                 $competition = Competition::create(array(
                     'creator_id' => $data['creator_id'],
                     'type' => $data['type'],
+                    'level' => $data['level'],
                     'name' => $data['name'],
                     'place' => $data['place'],
                     'from' => $data['from'],
@@ -567,6 +569,8 @@ class CompetitionController extends Controller
     {
         $data = $request->all();
 
+        $competition = Competition::find($data['competition_id']);
+
         $compMembers = CompetitionMembers::where('competition_id', $data['competition_id'])
                             ->where('club_id', $data['club_id'])
                             ->get();
@@ -597,10 +601,33 @@ class CompetitionController extends Controller
                         ->orderBy('members.name')
                         ->get();
         }
+
+        $result = array();
+
+        foreach ($members as $member) {
+            if ($member->role_id == 3) {
+                $birthday = date_create($member->birthday);
+                $today = date_create(Date('Y-m-d'));
+
+                $diff = date_diff($birthday, $today);
+
+                if ($competition->level == 'cadet') {
+                    if ($diff->y < 18 || ($diff->y == 18 && $diff->m == 0 && $diff->d == 0)) {
+                        array_push($result, $member);
+                    }
+                } else {
+                    if ($diff->y > 18 || ($diff->y == 18 && ($diff->m > 0 || $diff->d > 0))) {
+                        array_push($result, $member);
+                    }
+                }
+            } else {
+                array_push($result, $member);
+            }    
+        }
         
         return response()->json([
             'status' => 200,
-            'members' => $members
+            'members' => $result
         ]);
     }
 

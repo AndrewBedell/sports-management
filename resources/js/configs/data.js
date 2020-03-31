@@ -301,3 +301,8 @@ export const CompetitionType = [
   { label: 'Regional Tournament', value: 'reg' },
   { label: 'Clubs Tournament', value: 'club' }
 ];
+
+export const CompetitionLevel = [
+  { label: 'Senior and Junior', value: 'sj' },
+  { label: 'Cadet under 18', value: 'cadet' }
+];
