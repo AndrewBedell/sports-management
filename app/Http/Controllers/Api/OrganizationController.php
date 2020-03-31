@@ -478,6 +478,52 @@ class OrganizationController extends Controller
     }
 
     /**
+     * Display a listing of region's clubs.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function regClubList()
+    {
+        $orgs = array();
+        $clubs = array();
+
+        $user = JWTAuth::parseToken()->authenticate();
+
+        $me = Member::find($user->member_id);
+
+        $reg = Organization::find($me->organization_id);
+
+        $nf = Organization::find($reg->parent_id);
+
+        if ($nf->parent_id == 0) {
+            $regs = Organization::where('parent_id', $nf->id)
+                                ->where('id', '!=', $reg->id)
+                                ->orderBy('name_o')
+                                ->get();
+
+            foreach ($regs as $reg) {
+                if ($reg->is_club == 1) {
+                    array_push($clubs, $reg);
+                } else {
+                    array_push($orgs, $reg);
+
+                    $children = Organization::where('parent_id', $reg->id)->orderBy('name_o')->get();
+
+                    foreach ($children as $child) {
+                        array_push($clubs, $child);
+                    }
+                }
+            }
+        }
+
+        return response()->json([
+            'status' => 200,
+            'orgs' => $orgs,
+            'clubs' => $clubs
+        ]);
+    }
+
+    /**
      * Display a listing of all clubs.
      *
      * @return \Illuminate\Http\Response

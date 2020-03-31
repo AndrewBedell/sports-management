@@ -44,7 +44,7 @@ class CreateComp extends Component {
       successMessage: '',
       failMessage: '',
       competitionType: [],
-      club_member: ''
+      user_level: ''
     }
 
     this.formikRef = React.createRef();
@@ -56,7 +56,7 @@ class CreateComp extends Component {
 
     this.setState({
       creator_id: user.user.member_info.organization_id,
-      club_member: user.user.is_club_member
+      user_level: level
     });
 
     switch (level) {
@@ -86,11 +86,12 @@ class CreateComp extends Component {
         });
         break;
       case 2:
-        const club_response = await Api.get('clubs');
-        switch (club_response.response.status) {
+        const reg_response = await Api.get('reg-clubs-list');
+        switch (reg_response.response.status) {
           case 200:
             this.setState({
-              club_list: club_response.body
+              all_org_list: reg_response.body.orgs,
+              all_club_list: reg_response.body.clubs
             });
             break;
           default:
@@ -222,7 +223,7 @@ class CreateComp extends Component {
     const {
       unit_list, nf_list, org_list, club_list,
       all_org_list, all_club_list,
-      from, to, competitionType, club_member
+      from, to, competitionType, user_level
     } = this.state;
 
     return(
@@ -301,14 +302,8 @@ class CreateComp extends Component {
                                 unit_list: org_list
                               });
                             }
-                            
-                            if (value.value === 'reg') {
-                              this.setState({
-                                unit_list: club_list
-                              });
-                            }
 
-                            if (value.value === 'club') {
+                            if (value.value === 'reg' || value.value === 'club') {
                               this.setState({
                                 org_list: all_org_list
                               });
@@ -376,7 +371,27 @@ class CreateComp extends Component {
                       </FormGroup>
                     </Col>
                     {
-                      club_member == 1 ? (
+                      user_level == 1 ? (
+                        <Col xs="12">
+                          <FormGroup>
+                            <Label for="unit_ids">Organization List</Label>
+                            <Select
+                              name="unit_ids"
+                              classNamePrefix={!values.unit_ids && touched.unit_ids ? 'invalid react-select-lg' : 'react-select-lg'}
+                              indicatorSeparator={null}
+                              options={unit_list}
+                              isMulti
+                              getOptionValue={option => option.id}
+                              getOptionLabel={option => option.name_o}
+                              value={values.unit_ids}
+                              onChange={(value) => {
+                                setFieldValue('unit_ids', value);
+                              }}
+                              onBlur={this.handleBlur}
+                            />
+                          </FormGroup>
+                        </Col>
+                      ) : (
                         <Fragment>
                           <Col xs="6">
                             <FormGroup>
@@ -424,26 +439,6 @@ class CreateComp extends Component {
                             </FormGroup>
                           </Col>
                         </Fragment>
-                      ) : (
-                        <Col xs="12">
-                          <FormGroup>
-                            <Label for="unit_ids">Organization List</Label>
-                            <Select
-                              name="unit_ids"
-                              classNamePrefix={!values.unit_ids && touched.unit_ids ? 'invalid react-select-lg' : 'react-select-lg'}
-                              indicatorSeparator={null}
-                              options={unit_list}
-                              isMulti
-                              getOptionValue={option => option.id}
-                              getOptionLabel={option => option.name_o}
-                              value={values.unit_ids}
-                              onChange={(value) => {
-                                setFieldValue('unit_ids', value);
-                              }}
-                              onBlur={this.handleBlur}
-                            />
-                          </FormGroup>
-                        </Col>
                       )
                     }
                   </Row>
