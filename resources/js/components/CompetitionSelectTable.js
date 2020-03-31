@@ -213,9 +213,7 @@ class CompetitionSelectTable extends Component {
                   </Table.Cell>
                   <Table.Cell className="text-center">{item.birthday}</Table.Cell>
                   <Table.Cell className="text-center">
-                    {item.weight}
-                    {' '}
-                    Kg
+                    {item.role_name == 'Judoka' ? item.weight + ' Kg' : ''}
                   </Table.Cell>
                   <Table.Cell className="text-center">{item.dan}</Table.Cell>
                   {

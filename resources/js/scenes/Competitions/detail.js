@@ -852,35 +852,31 @@ class CompetitionDetail extends Component {
                     </Col>
                   </Row>
                 </Segment>
+                <Row className="my-3">
+                  <Col sm="12" className="text-center">
+                    {
+                      flagMember ? (
+                        <Button
+                          type="button"
+                          color="success"
+                          onClick={this.handleAddMember.bind(this)}
+                        >
+                          Add Member
+                        </Button>
+                      ) : (
+                        <Button
+                          type="button"
+                          color="success"
+                          onClick={this.flagAddMember.bind(this)}
+                        >
+                          <i className="fa fa-plus"></i>
+                        </Button>
+                      )
+                    }
+                  </Col>
+                </Row>
                 {
-                  edit && (
-                    <Row className="my-3">
-                      <Col sm="12" className="text-center">
-                        {
-                          flagMember ? (
-                            <Button
-                              type="button"
-                              color="success"
-                              onClick={this.handleAddMember.bind(this)}
-                            >
-                              Add Member
-                            </Button>
-                          ) : (
-                            <Button
-                              type="button"
-                              color="success"
-                              onClick={this.flagAddMember.bind(this)}
-                            >
-                              <i className="fa fa-plus"></i>
-                            </Button>
-                          )
-                        }
-                      </Col>
-                    </Row>
-                  )
-                }
-                {
-                  edit && flagMember && (
+                  flagMember && (
                     <Row>
                       <Col md="3" sm="6" xs="12">
                         <FormGroup>
