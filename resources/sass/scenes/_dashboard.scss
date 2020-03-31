@@ -1,13 +1,8 @@
 .main-content {
   .container {
-    iframe {
-      height: 800px;
-      margin-top: 50px;
-      width: 100%;
-    }
-
     .pdf-export {
-      background-color: $white;
+      margin: 0 auto;
+      width: 550px;
 
       h1 {
         color: $black;
@@ -15,6 +10,14 @@
 
       hr {
         border-color: $black;
+      }
+
+      >div {
+        background-color: $white;
+        height: 720px;
+        margin-top: 8px;
+        overflow-x: hidden;
+        overflow-y: auto;
       }
 
       .k-grid {
@@ -30,6 +33,7 @@
             border-right: none;
             border-bottom: 1px solid $black;
             color: black;
+            font-size: 12px;
           }
         }
 
@@ -47,12 +51,7 @@
 
         .k-grid-container {
           .k-grid-content {
-            overflow-y: hidden;
-
-            &>div:first-child {
-              height: 300px;
-              overflow: auto;
-            }
+            overflow: hidden;
           }
         }
       }

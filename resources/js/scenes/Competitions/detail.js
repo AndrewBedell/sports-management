@@ -771,8 +771,7 @@ class CompetitionDetail extends Component {
             }
             {
               exportPDF && (
-                <Row className="mt-3">
-                  {/* {displayGrid} */}
+                <Row className="mt-3 pdf-export">
                   <button
                     title="Export PDF"
                     className="k-button k-primary"
@@ -782,25 +781,26 @@ class CompetitionDetail extends Component {
                   </button>
                   <PDFExport
                     paperSize="A4"
+                    landscape={false}
+                    fileName={"Members for " + competition.name}
                     margin={{ top: 60, left: 30, right: 30, bottom: 30 }}
-                    landscape={true}
                     ref={pdfExport => this.gridPDFExport = pdfExport}
                   >
-                    <div className="pdf-export mt-2 px-2 py-2">
+                    <div className="mt-2 px-2 py-2">
                       <Row>
                         <Col sm="4" className="d-flex align-items-center justify-content-center">
                           <img src={Bitmaps.logo} alt="Sports logo" width='80%' />
                         </Col>
                         <Col sm="8">
-                          <h1 className="text-center text-danger"><b>{competition.name}</b></h1>
-                          <h3 className="text-center text-danger">{competition.from} ~ {competition.to}</h3>
+                          <h3 className="text-center text-danger"><b>{competition.name}</b></h3>
+                          <h5 className="text-center text-danger">{competition.from} ~ {competition.to}</h5>
                         </Col>
                       </Row>
 
                       <hr />
 
                       <Row className="mb-3">
-                        <Col sm="12"><h1 className="text-center">MEMBER INFORMATION</h1></Col>
+                        <Col sm="12"><h3 className="text-center">MEMBER INFORMATION</h3></Col>
                       </Row>
                       
                       <Grid
@@ -809,13 +809,25 @@ class CompetitionDetail extends Component {
                         data={exportMembers}
                         skip={0}
                       >
-                        <Column headerClassName="text-center" className="text-center" field="#" />
-                        <Column headerClassName="text-center" className="text-center" field="Category" width="150px" />
-                        <Column headerClassName="text-center" className="text-center" field="M / F" />
-                        <Column field="Name" width="300px" />
-                        <Column headerClassName="text-center" className="text-center" field="Date of Birth" width="120px" />
-                        <Column headerClassName="text-center" className="text-center" field="Dan" />
-                        <Column headerClassName="text-center" className="text-center" field="ID" />
+                        <Column
+                          headerClassName="text-center"
+                          className="text-center"
+                          field="#"
+                          width="20px"
+                          cell={cellWithBackGround}
+                        />
+                        <Column 
+                          headerClassName="text-center" 
+                          className="text-center"
+                          field="Category"
+                          width="120px"
+                          cell={cellWithBackGround}
+                        />
+                        <Column headerClassName="text-center" className="text-center" field="M / F" width="50px" />
+                        <Column field="Name" width="160px" />
+                        <Column headerClassName="text-center" className="text-center" field="Date of Birth" width="100px" />
+                        <Column headerClassName="text-center" className="text-center" field="Dan" width="40px" />
+                        <Column headerClassName="text-center" className="text-center" field="ID" width="40px" />
                       </Grid>
                     </div>
                   </PDFExport>
@@ -978,6 +990,47 @@ class CompetitionDetail extends Component {
           }
         </div>
       </Fragment>
+    );
+  }
+}
+
+class cellWithBackGround extends React.Component {
+  render() {
+    let backgroundColor = "";
+    let color = "rgb(0, 0, 0)";
+    let textAlign = "center"
+
+    switch (this.props.dataItem.Category) {
+      case 'DELEGATION':
+        backgroundColor = "rgb(141, 248, 80)";
+        color = "rgb(255, 255, 255)";
+        textAlign = "right";
+        break;
+      case 'Seniors Male':
+        backgroundColor = "rgb(196, 218, 255)";
+        color = "rgb(255, 255, 255)";
+        textAlign = "right";
+        break;
+      case 'Seniors Female':
+        backgroundColor = "rgb(238, 198, 190)";
+        color = "rgb(255, 255, 255)";
+        textAlign = "right";
+        break;
+      default:
+        break;
+    }
+
+    const style = { 
+      backgroundColor,
+      color,
+      textAlign,
+      border: '1px solild red'
+    };
+
+    return (
+        <td style={style}>
+            {this.props.dataItem[this.props.field]}
+        </td>
     );
   }
 }
