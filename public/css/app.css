@@ -71787,22 +71787,6 @@ body {
   }
 }
 
-@media (min-width: 992px) {
-  .dashboard-top-bar.top-header.dashboard-top-bar .navbar-collapse .nav .left-nav-bar .nav-item {
-    position: relative;
-  }
-
-  .dashboard-top-bar.top-header.dashboard-top-bar .navbar-collapse .nav .left-nav-bar .nav-item .active div {
-    position: absolute;
-    left: 56%;
-    bottom: -15px;
-    display: block !important;
-    width: 2px;
-    height: 15px;
-    background-color: #00D994 !important;
-  }
-}
-
 body .main-content {
   padding: 30px 0 60px 0;
 }

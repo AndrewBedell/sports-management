@@ -220,30 +220,4 @@
       }
     }
   }
-
-  &.dashboard-top-bar {
-    .navbar-collapse {
-      .nav {
-        .left-nav-bar {
-          @include media-breakpoint-up('lg') {
-            .nav-item {
-              position: relative;
-
-              .active {
-                div {
-                  position: absolute;
-                  left: 56%;
-                  bottom: -15px;
-                  display: block !important;
-                  width: 2px;
-                  height: 15px;
-                  background-color: $success !important;
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  }
 }

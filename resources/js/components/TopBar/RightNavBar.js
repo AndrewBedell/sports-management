@@ -120,58 +120,6 @@ class RightNavBar extends Component {
           </DropdownToggle>
           <DropdownMenu right>
             <DropdownItem>
-            {
-              is_super != 1 && (
-                <NavItem>
-                  <NavLink tag={Link} to="/profile">
-                    <i className="fa fa-user" /> Profile
-                  </NavLink>
-                </NavItem>
-              )
-            }
-            </DropdownItem>
-            <DropdownItem>
-            {
-              is_super == 1 ? (
-                <NavItem>
-                  <NavLink tag={Link} to="/admin/reset">
-                    <i className="fa fa-key" /> Change Password
-                  </NavLink>
-                </NavItem>
-              ) : (
-                <NavItem>
-                  <NavLink tag={Link} to="/reset">
-                    <i className="fa fa-key" /> Change Password
-                  </NavLink>
-                </NavItem>
-              )
-            }
-            </DropdownItem>
-            {
-              is_club_member == 0 && (
-                is_super == 1 ? (
-                  <DropdownItem>
-                    <NavItem>
-                      <NavLink tag={Link} to="/admin/setting" >
-                        <i className="fa fa-sliders-v" /> Financial Setting
-                      </NavLink>
-                    </NavItem>
-                  </DropdownItem>
-                ) : (
-                  role_id == 1 && (
-                    <DropdownItem>
-                      <NavItem>
-                        <NavLink tag={Link} to="/setting" >
-                          <i className="fa fa-sliders-v" /> Financial Setting
-                        </NavLink>
-                      </NavItem>
-                    </DropdownItem>
-                  )
-                )
-              )
-            }
-            <DropdownItem divider />
-            <DropdownItem>
               <NavItem>
                 <NavLink onClick={this.handleLogout}>
                   <i className="fa fa-unlock-alt" /> Log Out
