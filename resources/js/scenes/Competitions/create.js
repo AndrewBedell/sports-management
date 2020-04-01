@@ -479,7 +479,7 @@ class CreateComp extends Component {
                       <Button
                         type="button"
                         color="secondary"
-                        onClick={() => this.props.history.push('/competitions')}
+                        onClick={() => this.props.history.push('/')}
                       >
                         Cancel
                       </Button>

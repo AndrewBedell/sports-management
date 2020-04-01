@@ -8,7 +8,7 @@ import {
   withRouter
 } from 'react-router-dom';
 import {
-  Container, Row, Col, Button
+  Container, Row, Col
 } from 'reactstrap';
 
 import Api from '../../apis/app';
@@ -61,10 +61,6 @@ class Competitions extends Component {
     }
   }
 
-  handleCreateCompetition() {
-    this.props.history.push('/competition/create');
-  }
-
   handleSelectItem(id, target) {
     this.props.history.push('/competition/' + target, id);
   }
@@ -77,15 +73,6 @@ class Competitions extends Component {
         <MainTopBar />
         <div className="main-content dashboard">
           <Container>
-            <div className="text-center my-5">
-              <Button
-                type="button"
-                color="success"
-                onClick={this.handleCreateCompetition.bind(this)}
-              >
-                Create Competition
-              </Button>
-            </div>
             <Row>
               <Col sm="12">
                 {

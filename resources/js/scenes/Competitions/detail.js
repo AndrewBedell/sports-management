@@ -801,8 +801,8 @@ class CompetitionDetail extends Component {
 
                       <hr />
 
-                      <Row className="mb-3">
-                        <Col sm="12"><h3 className="text-center">MEMBER INFORMATION</h3></Col>
+                      <Row className="mb-2">
+                        <Col sm="12"><h5 className="text-center">MEMBER INFORMATION</h5></Col>
                       </Row>
                       
                       <Grid

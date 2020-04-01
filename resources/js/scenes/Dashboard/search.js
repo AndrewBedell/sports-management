@@ -488,14 +488,6 @@ class Search extends Component {
     });
   }
 
-  handleCreateAccount() {
-    this.props.history.push('/organization/create');
-  }
-
-  handleRegisterMember() {
-    this.props.history.push('/member/register');
-  }
-
   handleSelectItem(id) {
     const { search_type } = this.state;
     if (search_type.value == 'member') {
@@ -557,32 +549,6 @@ class Search extends Component {
               }
               &nbsp;Management System!
             </h3>
-            <div className="text-center mb-4">
-              {
-                  !user_is_club && (
-                    <Button
-                      className="mr-5"
-                      type="button"
-                      color="secondary"
-                      onClick={this.handleCreateAccount.bind(this)}
-                    >
-                      {level == 1 ? (
-                        'Register Federation / Club'
-                      ) : (
-                        'Register Club'
-                      )}
-                    </Button>
-                  )
-                }
-              <Button
-                className="ml-5"
-                type="button"
-                color="secondary"
-                onClick={this.handleRegisterMember.bind(this)}
-                >
-                  Register Member
-              </Button>
-            </div>
             <Row>
               <Col xl="2" lg="3" md="4" sm="6" xs="12">
                 <FormGroup>

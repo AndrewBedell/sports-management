@@ -237,7 +237,30 @@
 }
 
 .main-content {
+  .ui.table {
+    border-color: $black;
+    border-top: none;
+    border-bottom: none;
+
+    th, td {
+      border: 1px solid $black;
+
+      &:last-child {
+        border-right: none;
+      }
+    }
+
+    td {
+      border-bottom: none;
+    }
+  }
+
   .container {
+    hr {
+      border-color: $black;
+      margin: 8px 0;
+    }
+
     .pdf-export {
       margin: 0 auto;
       width: 550px;
@@ -246,12 +269,11 @@
         color: $black;
       }
 
-      hr {
-        border-color: $black;
-      }
-
       >div {
         background-color: $white;
+        border: 1px solid $black;
+        border-radius: 5px;
+        box-shadow: 0px 0px 5px 1px;
         height: 720px;
         margin-top: 8px;
         overflow-x: hidden;
@@ -320,14 +342,19 @@
 
   a.detail-link {
     cursor: pointer;
-    &.text-underline,
-    &:hover {
-      color: #1a0dab;
-      text-decoration: underline;
-    }
+    color: #1a0dab;
+    text-decoration: underline;
   }
 
   .form-group {
+    input:not([type="file"]) {
+      border: 1px solid $black;
+    }
+    
+    >div>.react-select-lg__control {
+      border: 1px solid $black !important;
+    }
+    
     &.calendar {
       &.invalid {
         .field {

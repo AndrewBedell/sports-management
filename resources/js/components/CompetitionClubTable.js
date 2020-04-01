@@ -158,10 +158,10 @@ class CompetitionClubTable extends Component {
             </Table.HeaderCell>
             <Table.HeaderCell
               className="text-center"
-              sorted={column === 'officer' ? direction : null}
-              onClick={this.handleSort.bind(this, 'officer')}
+              sorted={column === 'staff' ? direction : null}
+              onClick={this.handleSort.bind(this, 'staff')}
             >
-              Officer
+              Staff
             </Table.HeaderCell>
             <Table.HeaderCell className="text-center">Status</Table.HeaderCell>
             <Table.HeaderCell className="text-center">Action</Table.HeaderCell>

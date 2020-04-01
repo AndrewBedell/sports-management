@@ -244,6 +244,7 @@ class GetInviteUsers extends Component {
                 <FormGroup>
                   <Select
                     name="inviteOrgtype"
+                    classNamePrefix={'react-select-lg'}
                     value={inviteOrgtype}
                     options={OrganizationType}
                     onChange={this.handleSelectInvite.bind(this)}
@@ -290,6 +291,7 @@ class GetInviteUsers extends Component {
                 <FormGroup>
                   <Select
                     name="changeOrgtype"
+                    classNamePrefix={'react-select-lg'}
                     value={changeOrgtype}
                     options={OrganizationType}
                     onChange={this.handleSelectChange.bind(this)}
