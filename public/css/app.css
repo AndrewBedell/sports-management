@@ -71953,6 +71953,7 @@ body .main-content {
   border-bottom: 1px solid #000;
   color: black;
   font-size: 12px;
+  padding: 0;
 }
 
 .main-content .container .pdf-export .k-grid .k-grid-header {

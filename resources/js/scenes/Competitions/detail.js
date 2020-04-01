@@ -306,12 +306,12 @@ class CompetitionDetail extends Component {
           j = 1;
 
           arr = {
-            "ID": '',
+            "": '',
             "Name": '',
             "M / F": '',
             "Date of Birth": '',
             "Category": 'DELEGATION',
-            "Dan": '',
+            "ID": '',
             "#": ''
           }
   
@@ -328,12 +328,12 @@ class CompetitionDetail extends Component {
             let gender_txt = members[i].gender == 1 ? 'Male' : 'Female';
 
             arr = {
-              "ID": '',
+              "": '',
               "Name": '',
               "M / F": '',
               "Date of Birth": '',
               "Category": 'Seniors ' + gender_txt,
-              "Dan": '',
+              "ID": '',
               "#": ''
             }
     
@@ -346,12 +346,12 @@ class CompetitionDetail extends Component {
         let datePart = members[i].birthday.match(/\d+/g);
 
         arr = {
-          "ID": i + 1,
+          "": i + 1,
           "Name": members[i].surname + ' ' + members[i].name,
           "M / F": members[i].gender == 1 ? 'M' : 'F',
           "Date of Birth": datePart[2] + '-' + months[parseInt(datePart[1]) - 1] + '-' + datePart[0],
           "Category": members[i].weight == null ? members[i].role_name : members[i].weight + ' Kg',
-          "Dan": members[i].dan,
+          "ID": members[i].identity.substring(0, 12),
           "#": j++
         }
 
@@ -822,14 +822,14 @@ class CompetitionDetail extends Component {
                           headerClassName="text-center" 
                           className="text-center"
                           field="Category"
-                          width="120px"
+                          width="90px"
                           cell={cellWithBackGround}
                         />
-                        <Column headerClassName="text-center" className="text-center" field="M / F" width="50px" />
-                        <Column field="Name" width="160px" />
-                        <Column headerClassName="text-center" className="text-center" field="Date of Birth" width="100px" />
-                        <Column headerClassName="text-center" className="text-center" field="Dan" width="40px" />
-                        <Column headerClassName="text-center" className="text-center" field="ID" width="40px" />
+                        <Column headerClassName="text-center" className="text-center" field="M / F" width="40px" />
+                        <Column headerClassName="text-center" field="Name" width="150px" />
+                        <Column headerClassName="text-center" className="text-center" field="Date of Birth" width="90px" />
+                        <Column headerClassName="text-center" field="ID" width="100px" />
+                        <Column headerClassName="text-center" className="text-center" field="" width="40px" />
                       </Grid>
                     </div>
                   </PDFExport>
@@ -1002,17 +1002,14 @@ class cellWithBackGround extends React.Component {
       case 'DELEGATION':
         backgroundColor = "rgb(141, 248, 80)";
         color = "rgb(255, 255, 255)";
-        textAlign = "right";
         break;
       case 'Seniors Male':
         backgroundColor = "rgb(196, 218, 255)";
         color = "rgb(255, 255, 255)";
-        textAlign = "right";
         break;
       case 'Seniors Female':
         backgroundColor = "rgb(238, 198, 190)";
         color = "rgb(255, 255, 255)";
-        textAlign = "right";
         break;
       default:
         break;
