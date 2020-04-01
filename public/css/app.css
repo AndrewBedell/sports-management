@@ -72064,10 +72064,15 @@ body .admin-topbar {
   background-color: #181818;
   border-bottom: 2px solid #BDBCC6;
   height: 50px;
+  justify-content: space-between;
 }
 
 body .admin-topbar.top-header .nav-logo {
   width: 300px;
+}
+
+body .admin-topbar.top-header .nav-logo img {
+  width: 100%;
 }
 
 body .admin-topbar .right-nav-bar div i {

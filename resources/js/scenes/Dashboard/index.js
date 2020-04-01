@@ -85,7 +85,12 @@ class Dashboard extends Component {
         <div className="tile-content dashboard">
           <Container>
             <marquee>
-              <img src={logo} className="table-avatar mr-2" />
+              {
+                logo != '' && (
+                  <img src={logo} className="table-avatar mr-2" />
+                )
+              }
+              
               {org_name}
             </marquee>
             <Row className="top-bar">
