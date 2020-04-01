@@ -2,10 +2,14 @@
   background-image: url('../../img/background.jpg');
   background-position: center;
   background-size: cover;
-  height: calc(100vh - 75px);
+  height: auto;
 
-  @include media-breakpoint-down('md') {
-    height: auto;
+  @media screen and (min-width: 1280px) and (min-height: 800px) {
+    height: calc(100vh - 75px);
+
+    @media screen and (max-height: 900px) {
+      height: calc(100vh - 56px);
+    }
   }
 
   marquee{
@@ -13,14 +17,42 @@
     font-weight: 800;
     color: $white;
     font-family: sans-serif;
+
+    @media screen and (max-width: 1366px) {
+      font-size: 24px;
+    }
+
+    @media screen and (max-width: 1280px) {
+      font-size: 20px;
+    }
+
+    @media screen and (max-width: 1024px) {
+      font-size: 18px;
+    }
+
+    @include media-breakpoint-down('md') {
+      font-size: 16px;
+    }
   }
 
   &.dashboard {
     .container {
       max-width: 1660px;
 
-      @include media-breakpoint-down('lg') {
-        max-width: 1040px;
+      @media screen and (max-width: 1680px) {
+        max-width: 1500px;
+      }
+
+      @media screen and (max-width: 1366px) {
+        max-width: 1200px;
+      }
+
+      @media screen and (max-width: 1280px) {
+        max-width: 1020px;
+      }
+
+      @media screen and (max-width: 1024px) {
+        max-width: 920px;
       }
 
       @include media-breakpoint-down('md') {
@@ -75,9 +107,9 @@
         }
   
         .card {
-          border-radius: 20px;
+          border-radius: 10px;
           cursor: pointer;
-          margin: 20px 8px;
+          margin: 40px 5px;
           min-height: 150px;
           padding: 20px 10px;
           text-align: center;
@@ -85,15 +117,46 @@
           .card-title {
             i {
               font-size: 60px;
+
+              &.fa-calendar {
+                font-size: 95px;
+              }
             }
+
+            .month {
+              color: red;
+              font-size: 25px;
+              font-weight: bold;
+              margin-left: 5px;
+              margin-top: 50px;
+              position: absolute;
+            }
+
+            .week {
+              color: green;
+              font-size: 15px;
+              margin-left: 50px;
+              margin-top: 70px;
+              position: absolute;
+            }
+
+            .day {
+              color: blue;
+              font-size: 30px;
+              font-weight: bold;
+              margin-left: 55px;
+              margin-top: 30px;
+              position: absolute;
+            }
+
             .count {
-              background: $warning;
-              border-radius: 5px;
-              color: $danger;
-              float: right;
+              background: #F00;
+              border-radius: 50%;
+              color: #FF0;
               font-size: $font-size-base;
               font-weight: bold;
               height: 25px;
+              margin-left: 32px;
               position: absolute;
               width: 25px;
             }
@@ -110,15 +173,26 @@
         }
 
         .two-column {
-          display: flex;
           align-items: center;
+          display: flex;
+          margin: 40px 0;
 
           .card {
-            margin-top: 10px;
+            margin-bottom: 0;
+            margin-top: 0;
+            height: 150px;
             width: 50%;
+
+            &:first-child {
+              margin-right: 10px;
+            }
+
+            &:last-child {
+              margin-left: 10px;
+            }
           }
 
-          @media screen and (max-width: 1150px) {
+          @media screen and (max-width: 1360px) {
             .card {
               .card-text {
                 font-size: $font-size-sm;
@@ -126,11 +200,20 @@
             }
           }
 
-          @media screen and (max-width: 992px) {
+          @media screen and (max-width: 1024px) {
             flex-wrap: wrap;
 
             .card {
               width: 100%;
+
+              &:first-child {
+                margin-right: 5px;
+              }
+  
+              &:last-child {
+                margin-right: 5px;
+                margin-top: 40px;
+              }
 
               .card-text {
                 font-size: $font-size-base;
@@ -140,6 +223,16 @@
         }
       }
     }
+  }
+}
+
+.tooltip {
+  .tooltip-inner {
+    font-size: 16px;
+  }
+
+  .arrow {
+    top: 12px;
   }
 }
 

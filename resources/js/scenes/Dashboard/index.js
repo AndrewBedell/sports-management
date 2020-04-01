@@ -16,7 +16,7 @@ import {
 import {
   Container, Row, Col,
   Card, CardTitle, CardText,
-  Input
+  Input, UncontrolledTooltip
 } from 'reactstrap';
 import Switch from "react-switch";
 
@@ -42,10 +42,22 @@ class Dashboard extends Component {
 
   async componentDidMount() {
     const user = JSON.parse(localStorage.getItem('auth'));
+
+    let months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    let weeks = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+
+    let d = new Date();
+
+    const month = months[d.getMonth()];
+    const week = weeks[d.getDay()];
+    const day = d.getUTCDate();
     
     this.setState({
       logo: user.user.logo,
-      org_name: user.user.org_name
+      org_name: user.user.org_name,
+      month,
+      week,
+      day
     });
 
     const unread = await Api.get('notification/unread');
@@ -76,7 +88,8 @@ class Dashboard extends Component {
 
   render() {
     const { 
-      notification, logo, org_name
+      notification, logo, org_name,
+      month, week, day
     } = this.state;
 
     return (
@@ -160,7 +173,7 @@ class Dashboard extends Component {
                   <CardTitle>
                     <i className="fa fa-search"></i>
                   </CardTitle>
-                  <CardText>Search</CardText>
+                  <CardText>Browse</CardText>
                 </Card>
                 <Card body inverse
                   onClick={this.handleURL.bind(this, '/invite-users')}
@@ -200,14 +213,19 @@ class Dashboard extends Component {
                     <CardTitle>
                       <i className="fa fa-user"></i>
                     </CardTitle>
-                    <CardText>Enscribe Competition</CardText>
+                    <CardText>Inscribe Competition</CardText>
                   </Card>
                 </div>
-                <Card body inverse style={{ backgroundColor: '#ec576b', borderColor: '#ec576b' }}>
+                <Card body inverse id="calendar" style={{ backgroundColor: '#ec576b', borderColor: '#ec576b' }}>
                   <CardTitle>
+                    <span className="month">{month}</span>
+                    <span className="day">{day}</span>
+                    <span className="week">{week}</span>
                     <i className="fa fa-calendar"></i>
                   </CardTitle>
-                  <CardText>Calendar</CardText>
+                  <UncontrolledTooltip placement="right" target="calendar">
+                    Click to view all competition's calendar
+                  </UncontrolledTooltip>
                 </Card>
               </Col>
               <Col md="3" sm="6" xs="12">
@@ -253,15 +271,15 @@ class Dashboard extends Component {
                 <div className="two-column">
                   <Card body inverse
                     onClick={this.handleURL.bind(this, '/notifications')}
-                    style={{ backgroundColor: '#ab987a', borderColor: '#ab987a' }}
+                    style={{ backgroundColor: '#696969', borderColor: '#696969' }}
                   >
                     <CardTitle>
-                      <i className="fa fa-bell"></i>
                       {
                         notification.length > 0 && (
                           <span className="count">{notification.length}</span>
                         )
                       }
+                      <i className="fa fa-bell"></i>
                     </CardTitle>
                     <CardText>Notification</CardText>
                   </Card>
