@@ -10,6 +10,7 @@ import payme from '../../img/payment/payme.png';
 import paymeLogo from '../../img/payment/payme-logo.jpg';
 import maleAvatar from '../../img/male-avatar.jpg';
 import femaleAvatar from '../../img/female-avatar.png';
+import logout from '../../img/logout.png';
 
 export default {
   intro,
@@ -22,5 +23,6 @@ export default {
   payme,
   paymeLogo,
   maleAvatar,
-  femaleAvatar
+  femaleAvatar,
+  logout
 };

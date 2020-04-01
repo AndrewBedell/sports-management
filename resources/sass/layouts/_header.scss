@@ -1,4 +1,14 @@
-.top-header {
+.tile-top-bar.top-header {
+  background: #1472bc;
+  border-bottom: 2px solid $white;
+  padding: 16px 0;
+  text-align: center;
+
+  img {
+    width: 300px;
+  }
+}
+.dashboard-top-bar.top-header {
   background: #00afca;
   position: relative;
   align-items: center;

@@ -63,12 +63,7 @@ class UserController extends Controller
         $member = Member::where('id', $user->member_id)->get();
 
         if (sizeof($member) > 0 && $member[0]->active) {
-            $is_club = false;
-
             $org = Organization::find($member[0]->organization_id);
-
-            $level = $org->level;
-            $is_club = $org->is_club;
 
             return response()->json([
                 'status' => 'success',
@@ -76,10 +71,12 @@ class UserController extends Controller
                     'token' => $token,
                     'user' => [
                         'member_info' => $member[0],
-                        'level' => $level,
+                        'org_name' => $org->name_o,
+                        'logo' => $org->logo,
+                        'level' => $org->level,
                         'is_nf' => $user->is_nf,
                         'is_super' => 0,
-                        'is_club_member' => $is_club
+                        'is_club_member' => $org->is_club
                     ]
                 ]
             ], 200);

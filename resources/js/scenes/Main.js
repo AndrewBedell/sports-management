@@ -5,6 +5,7 @@ import {
 
 import history from '../history';
 import Dashboard from './Dashboard';
+import Search from './Dashboard/search';
 import Profile from './Users/profile';
 import Setting from './Users/setting';
 import Reset from './Users/reset';
@@ -85,6 +86,7 @@ class Main extends Component {
           <Route exact path="/profile" name="Profile" component={Profile} />
           <Route exact path="/setting" name="Setting" component={Setting} />
           <Route exact path="/reset" name="Reset" component={Reset} />
+          <Route exact path="/search" name="Search" component={Search} />
           <Route exact path="/" name="Dashboard" component={Dashboard} />
         </Switch>
       </Router>
