@@ -104,7 +104,7 @@ class Search extends Component {
           body[0].name_o = "National Federation";
 
         this.setState({
-          orgs: body,
+          orgs: body.filter(org => org.parent_id != 0),
           org_list: body
         });
         break;
@@ -178,6 +178,19 @@ class Search extends Component {
 
     if (search.stype) {
       this.search(search);
+    } else {
+      let params = {
+        stype: 'org',
+        org: '',
+        club: '',
+        mtype: '',
+        rtype: 'all',
+        gender: 0,
+        weight: '',
+        dan: ''
+      }
+
+      this.search(params);
     }
   }
 
@@ -285,7 +298,7 @@ class Search extends Component {
       return;
     }
 
-    this.props.history.push(`/search/${QueryString.stringify(search_params, { addQueryPrefix: true })}`);
+    this.props.history.push(`/search${QueryString.stringify(search_params, { addQueryPrefix: true })}`);
   }
 
   async search(search_params) {

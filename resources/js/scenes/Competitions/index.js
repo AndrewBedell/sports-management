@@ -79,6 +79,7 @@ class Competitions extends Component {
                   competitions && competitions.length > 0 && (
                     <CompetitionTable
                       items={competitions}
+                      detail
                       onSelect={this.handleSelectItem.bind(this)}
                     />
                   )

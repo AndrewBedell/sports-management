@@ -71924,7 +71924,7 @@ body .main-content {
 .tile-content.dashboard .container .tiles .card {
   border-radius: 10px;
   cursor: pointer;
-  margin: 40px 5px;
+  margin: 30px 0;
   min-height: 150px;
   padding: 20px 10px;
   text-align: center;
@@ -71943,7 +71943,7 @@ body .main-content {
   font-size: 25px;
   font-weight: bold;
   margin-left: 5px;
-  margin-top: 50px;
+  margin-top: 35px;
   position: absolute;
 }
 
@@ -71988,7 +71988,7 @@ body .main-content {
 .tile-content.dashboard .container .tiles .two-column {
   align-items: center;
   display: flex;
-  margin: 40px 0;
+  margin: 30px 0;
 }
 
 .tile-content.dashboard .container .tiles .two-column .card {
@@ -71999,11 +71999,11 @@ body .main-content {
 }
 
 .tile-content.dashboard .container .tiles .two-column .card:first-child {
-  margin-right: 10px;
+  margin-right: 5px;
 }
 
 .tile-content.dashboard .container .tiles .two-column .card:last-child {
-  margin-left: 10px;
+  margin-left: 5px;
 }
 
 @media screen and (max-width: 1360px) {
@@ -72027,7 +72027,7 @@ body .main-content {
 
   .tile-content.dashboard .container .tiles .two-column .card:last-child {
     margin-right: 5px;
-    margin-top: 40px;
+    margin-top: 30px;
   }
 
   .tile-content.dashboard .container .tiles .two-column .card .card-text {
@@ -72047,6 +72047,10 @@ body .main-content {
   border-color: #000;
   border-top: none;
   border-bottom: none;
+}
+
+.main-content .ui.table tr.disabled {
+  background-color: #dddddd;
 }
 
 .main-content .ui.table th,
@@ -72148,12 +72152,22 @@ body .main-content {
   text-decoration: underline;
 }
 
-.main-content .form-group input:not([type=file]) {
+.main-content .form-group input:not([type=file]),
+.main-content .form-group .input-group-text {
   border: 1px solid #000;
+}
+
+.main-content .form-group .price-box {
+  margin: 0 20px;
+  width: 30%;
 }
 
 .main-content .form-group > div > .react-select-lg__control {
   border: 1px solid #000 !important;
+}
+
+.main-content .form-group > div > .react-select-lg__control.invalid {
+  border: 1px solid #dc3545 !important;
 }
 
 .main-content .form-group.calendar.invalid .field input {

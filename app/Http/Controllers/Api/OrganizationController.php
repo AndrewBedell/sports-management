@@ -741,7 +741,7 @@ class OrganizationController extends Controller
                 if ($org != '')
                     $result = $result->where('id', $org);
 
-                $result = $result->get();
+                $result = $result->orderBy('name_o')->get();
                 break;
             case 'club':
                 $result = Organization::where('is_club', 1);
@@ -752,7 +752,7 @@ class OrganizationController extends Controller
                 if ($club != '')
                     $result = $result->where('id', $club);
                                 
-                $result = $result->get();
+                $result = $result->orderBy('name_o')->get();
                 break;
             case 'member':
                 $result = Member::leftJoin('organizations', 'organizations.id', '=', 'members.organization_id')
@@ -797,13 +797,15 @@ class OrganizationController extends Controller
 
                     $result = $result->select('members.*', 'organizations.name_o', 'organizations.level', 'weights.weight', 
                                             'players.dan', 'players.skill', 'players.expired_date')
-                                ->get();
+                                    ->orderBy('players.weight_id')
+                                    ->orderBy('players.dan')
+                                    ->get();
                 } else {
                     if ($mtype == 'referee' && $rtype != '' && $rtype != 'all')
                         $result = $result->where('members.position', $rtype);
                         
                     $result = $result->select('members.*', 'organizations.name_o', 'organizations.level', 'roles.name AS role_name')
-                                    ->get();
+                                    ->orderBy('members.name')->get();
                 }
                 
                 break;

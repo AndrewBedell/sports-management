@@ -111,8 +111,9 @@ class CompetitionTable extends Component {
 
   render() {
     const {
-      onSelect,
-      items
+      items,
+      detail, inscribe,
+      onSelect
     } = this.props;
 
     const {
@@ -191,9 +192,22 @@ class CompetitionTable extends Component {
                       item.type == 'club' ? (
                         item.name
                       ) : (
-                        <a className="detail-link" onClick={() => onSelect(item.id, 'detail')}>
-                          {item.name}
-                        </a>
+                        <Fragment>
+                          {
+                            detail && (
+                              <a className="detail-link" onClick={() => onSelect(item.id, 'detail')}>
+                                {item.name}
+                              </a>
+                            )
+                          }
+                          {
+                            inscribe && (
+                              <a className="detail-link" onClick={() => onSelect(item.id, 'inscribe')}>
+                                {item.name}
+                              </a>
+                            )
+                          }
+                        </Fragment>
                       )
                     }
                   </Table.Cell>
@@ -204,9 +218,20 @@ class CompetitionTable extends Component {
                     {item.reg_ids.split(',').length} Regions, {item.club_ids.split(',').length} Clubs
                   </Table.Cell>
                   <Table.Cell className="text-center">
-                    <a className="detail-link" onClick={() => onSelect(item.id, 'detail')}>
-                      Detail
-                    </a>
+                    {
+                      detail && (
+                        <a className="detail-link" onClick={() => onSelect(item.id, 'detail')}>
+                          Detail
+                        </a>
+                      )
+                    }
+                    {
+                      inscribe && (
+                        <a className="detail-link" onClick={() => onSelect(item.id, 'inscribe')}>
+                          Inscribe
+                        </a>
+                      )
+                    }
                     {
                       item.type == 'club' && (
                         <Fragment>

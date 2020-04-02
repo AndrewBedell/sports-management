@@ -110,6 +110,7 @@ class Setting extends Component {
                   this.state.messageStatus ? this.state.successMessage : this.state.failMessage
                 }
               </Alert>
+              <h3 className="text-center text-primary">The membership price is setted in here.</h3>
             </div>
             <Formik
               ref={this.formikRef}
@@ -139,11 +140,11 @@ class Setting extends Component {
               }) => (
                 <Form onSubmit={handleSubmit}>
                   {status && <UncontrolledAlert {...status} />}
-                  <Row className="align-items-center">
-                    <Col sm="6">
-                      <FormGroup>
+                  <Row>
+                    <Col sm="12">
+                      <FormGroup className="d-flex justify-content-center align-items-center">
                         <Label for="price">Membership Price per Judoka</Label>
-                        <InputGroup>
+                        <InputGroup className="price-box">
                           <InputGroupAddon addonType="prepend">$</InputGroupAddon>
                           <Input 
                             name="price"
@@ -156,10 +157,6 @@ class Setting extends Component {
                           />
                           <FormFeedback>{errors.price}</FormFeedback>
                         </InputGroup>
-                      </FormGroup>
-                    </Col>
-                    <Col sm="6">
-                      <div className="mt-2">
                         <Button
                           disabled={isSubmitting}
                           type="submit"
@@ -167,7 +164,7 @@ class Setting extends Component {
                         >
                           Update Membership
                         </Button>
-                      </div>
+                      </FormGroup>
                     </Col>
                   </Row>
                 </Form>

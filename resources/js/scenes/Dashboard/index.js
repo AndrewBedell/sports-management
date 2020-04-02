@@ -209,7 +209,9 @@ class Dashboard extends Component {
                     </CardTitle>
                     <CardText>Competition List</CardText>
                   </Card>
-                  <Card body inverse style={{ backgroundColor: '#4480b2', borderColor: '#4480b2' }}>
+                  <Card body inverse
+                    onClick={this.handleURL.bind(this, '/competition/list')}
+                    style={{ backgroundColor: '#4480b2', borderColor: '#4480b2' }}>
                     <CardTitle>
                       <i className="fa fa-user"></i>
                     </CardTitle>

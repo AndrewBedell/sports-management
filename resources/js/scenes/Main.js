@@ -20,6 +20,8 @@ import Payment from './Payment';
 import Competitions from './Competitions';
 import CreateComp from './Competitions/create';
 import DetailComp from './Competitions/detail';
+import ListComp from './Competitions/list';
+import InscribeComp from './Competitions/inscribe';
 import AttendComp from './Competitions/attend';
 import ReadNot from './Notifications/read';
 import Notifications from './Notifications';
@@ -71,7 +73,9 @@ class Main extends Component {
 
           <Route exact path="/payment-player" name="Payment" component={Payment} />
           <Route exact path="/competition/create" name="CreateComp" component={CreateComp} />
+          <Route exact path="/competition/list" name="ListComp" component={ListComp} />
           <Route exact path="/competition/detail" name="DetailComp" component={DetailComp} />
+          <Route exact path="/competition/inscribe" name="InscribeComp" component={InscribeComp} />
           <Route exact path="/competition/attend" name="AttendComp" component={AttendComp} />
           <Route exact path="/competitions" name="Competitions" component={Competitions} />
           <Route exact path="/notification/read" name="ReadNotification" component={ReadNot} />

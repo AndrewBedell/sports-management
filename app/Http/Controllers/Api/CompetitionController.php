@@ -79,16 +79,12 @@ class CompetitionController extends Controller
         ]);
     }
 
-    public function accept(Request $request) {
-        $data = $request->all();
-
-        CompetitionMembers::where('competition_id', $data['competition_id'])
-                    ->where('club_id', $data['club_id'])
-                    ->update(['status' => 1]);
+    public function accept($id) {
+        CompetitionMembers::where('competition_id', $id)->update(['status' => 1]);
         
         $result = array();
 
-        $competition = Competition::find($data['competition_id']);
+        $competition = Competition::find($id);
 
         $club_ids = explode(',', $competition->club_ids);
 
@@ -98,7 +94,7 @@ class CompetitionController extends Controller
                             ->get();
 
         foreach ($clubs as $club) {
-            $comp = CompetitionMembers::where('competition_id', $data['competition_id'])
+            $comp = CompetitionMembers::where('competition_id', $id)
                             ->where('club_id', $club->id)
                             ->get();
 
