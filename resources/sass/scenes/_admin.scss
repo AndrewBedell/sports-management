@@ -166,11 +166,10 @@ body {
               a.detail-link {
                 color: $admin-color;
                 cursor: pointer;
-                &.text-underline,
+                text-decoration: underline;
                 
                 &:hover {
                   color: $white;
-                  text-decoration: underline;
                 }
               }
 
@@ -211,11 +210,10 @@ body {
       a.detail-link {
         color: $admin-color;
         cursor: pointer;
-        &.text-underline,
+        text-decoration: underline;
         
         &:hover {
           color: $white;
-          text-decoration: underline;
         }
       }
 
@@ -362,6 +360,77 @@ body {
           .club-list {
             input {
               height: 48px;
+            }
+          }
+        }
+      }
+
+      .pdf-export {
+        margin: 0 auto;
+        width: 550px;
+  
+        hr {
+          background-color: $black;
+        }
+
+        h5 {
+          color: $black;
+        }
+
+        .k-button.k-primary {
+          background-color:$white;
+          border-color: $white;
+          color: $primary;
+          font-weight: bold;
+        }
+  
+        >div {
+          background-color: $white;
+          border: 1px solid $black;
+          border-radius: 5px;
+          height: 720px;
+          margin-top: 8px;
+          overflow-x: hidden;
+          overflow-y: auto;
+        }
+  
+        .k-grid {
+          border: none;
+  
+          tr.k-master-row {
+            background-color: $white;
+          }
+  
+          table {
+            th, td {
+              border-left: none !important;
+              border-right: none !important;
+              border-bottom: 1px solid $black !important;
+              color: $black !important;
+              font-size: $font-size-sm;
+              padding: 0;
+            }
+
+            th {
+              background-color: $white !important;
+            }
+          }
+  
+          .k-grid-header {
+            font-weight: bold;
+            padding: 0 !important;
+  
+            .k-grid-header-wrap {
+              border-bottom: 1px solid $black;
+              border-left: none;
+              border-right: none;
+              border-top: 1px solid $black;
+            }
+          }
+  
+          .k-grid-container {
+            .k-grid-content {
+              overflow: hidden;
             }
           }
         }

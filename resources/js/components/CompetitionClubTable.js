@@ -166,7 +166,7 @@ class CompetitionClubTable extends Component {
             </Table.HeaderCell>
             <Table.HeaderCell className="text-center">Status</Table.HeaderCell>
             {
-              detail && (
+              (detail || is_super == 1) && (
                 <Table.HeaderCell className="text-center">Action</Table.HeaderCell>
               )
             }
@@ -213,7 +213,7 @@ class CompetitionClubTable extends Component {
                     }
                   </Table.Cell>
                   {
-                    detail && (
+                    (detail || is_super == 1) && (
 
                       <Table.Cell className="text-center text-info">
                         {
@@ -292,7 +292,7 @@ class CompetitionClubTable extends Component {
                 }}
               />
             </Table.HeaderCell>
-            <Table.HeaderCell colSpan={is_super == 1 ? 5 : 6}>
+            <Table.HeaderCell colSpan="6">
               <Menu floated="right" pagination>
                 <Pagination
                   activePage={activePage}

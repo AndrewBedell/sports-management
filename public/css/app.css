@@ -72077,7 +72077,7 @@ body .main-content {
   width: 550px;
 }
 
-.main-content .container .pdf-export h1 {
+.main-content .container .pdf-export h5 {
   color: #000;
 }
 
@@ -72376,12 +72376,11 @@ body .admin-dashboard .home-content .row-0 table tbody td {
 body .admin-dashboard .home-content .row-0 table tbody td a.detail-link {
   color: #CCCCCC;
   cursor: pointer;
+  text-decoration: underline;
 }
 
-body .admin-dashboard .home-content .row-0 table tbody td a.detail-link.text-underline,
 body .admin-dashboard .home-content .row-0 table tbody td a.detail-link:hover {
   color: #FFFFFF;
-  text-decoration: underline;
 }
 
 body .admin-dashboard .home-content .row-0 table tbody td .success-div {
@@ -72417,12 +72416,11 @@ body .admin-dashboard > .content {
 body .admin-dashboard > .content a.detail-link {
   color: #CCCCCC;
   cursor: pointer;
+  text-decoration: underline;
 }
 
-body .admin-dashboard > .content a.detail-link.text-underline,
 body .admin-dashboard > .content a.detail-link:hover {
   color: #FFFFFF;
-  text-decoration: underline;
 }
 
 body .admin-dashboard > .content .segment {
@@ -72548,5 +72546,73 @@ body .admin-dashboard > .content .row .form-group.calendar .field i {
 
 body .admin-dashboard > .content .row .form-group .club-list input {
   height: 48px;
+}
+
+body .admin-dashboard > .content .pdf-export {
+  margin: 0 auto;
+  width: 550px;
+}
+
+body .admin-dashboard > .content .pdf-export hr {
+  background-color: #000;
+}
+
+body .admin-dashboard > .content .pdf-export h5 {
+  color: #000;
+}
+
+body .admin-dashboard > .content .pdf-export .k-button.k-primary {
+  background-color: #FFFFFF;
+  border-color: #FFFFFF;
+  color: #1E1B52;
+  font-weight: bold;
+}
+
+body .admin-dashboard > .content .pdf-export > div {
+  background-color: #FFFFFF;
+  border: 1px solid #000;
+  border-radius: 5px;
+  height: 720px;
+  margin-top: 8px;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+body .admin-dashboard > .content .pdf-export .k-grid {
+  border: none;
+}
+
+body .admin-dashboard > .content .pdf-export .k-grid tr.k-master-row {
+  background-color: #FFFFFF;
+}
+
+body .admin-dashboard > .content .pdf-export .k-grid table th,
+body .admin-dashboard > .content .pdf-export .k-grid table td {
+  border-left: none !important;
+  border-right: none !important;
+  border-bottom: 1px solid #000 !important;
+  color: #000 !important;
+  font-size: 12px;
+  padding: 0;
+}
+
+body .admin-dashboard > .content .pdf-export .k-grid table th {
+  background-color: #FFFFFF !important;
+}
+
+body .admin-dashboard > .content .pdf-export .k-grid .k-grid-header {
+  font-weight: bold;
+  padding: 0 !important;
+}
+
+body .admin-dashboard > .content .pdf-export .k-grid .k-grid-header .k-grid-header-wrap {
+  border-bottom: 1px solid #000;
+  border-left: none;
+  border-right: none;
+  border-top: 1px solid #000;
+}
+
+body .admin-dashboard > .content .pdf-export .k-grid .k-grid-container .k-grid-content {
+  overflow: hidden;
 }
 
