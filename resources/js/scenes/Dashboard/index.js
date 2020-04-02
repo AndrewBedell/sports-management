@@ -30,7 +30,8 @@ class Dashboard extends Component {
   constructor(props) {
     super(props);
 
-    this.state = { 
+    this.state = {
+      is_nf: '', 
       checked: true,
       notification: [],
       org_name: ''
@@ -53,6 +54,7 @@ class Dashboard extends Component {
     const day = d.getUTCDate();
     
     this.setState({
+      is_nf: user.user.is_nf,
       logo: user.user.logo,
       org_name: user.user.org_name,
       month,
@@ -88,7 +90,8 @@ class Dashboard extends Component {
 
   render() {
     const { 
-      notification, logo, org_name,
+      notification,
+      is_nf, logo, org_name,
       month, week, day
     } = this.state;
 
@@ -285,15 +288,19 @@ class Dashboard extends Component {
                     </CardTitle>
                     <CardText>Notification</CardText>
                   </Card>
-                  <Card body inverse
-                    onClick={this.handleURL.bind(this, '/setting')}
-                    style={{ backgroundColor: '#f7882f', borderColor: '#f7882f' }}
-                  >
-                    <CardTitle>
-                      <i className="fa fa-sliders-h"></i>
-                    </CardTitle>
-                    <CardText>Financial Setting</CardText>
-                  </Card>
+                  {
+                    is_nf == 1 && (
+                      <Card body inverse
+                        onClick={this.handleURL.bind(this, '/setting')}
+                        style={{ backgroundColor: '#f7882f', borderColor: '#f7882f' }}
+                      >
+                        <CardTitle>
+                          <i className="fa fa-sliders-h"></i>
+                        </CardTitle>
+                        <CardText>Financial Setting</CardText>
+                      </Card>
+                    )
+                  }
                 </div>
               </Col>
             </Row>
