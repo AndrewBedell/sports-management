@@ -113,6 +113,7 @@ class CompetitionTable extends Component {
     const {
       items,
       detail, inscribe,
+      is_super,
       onSelect
     } = this.props;
 
@@ -173,7 +174,11 @@ class CompetitionTable extends Component {
               To
             </Table.HeaderCell>
             <Table.HeaderCell className="text-center">Clubs</Table.HeaderCell>
-            <Table.HeaderCell className="text-center">Action</Table.HeaderCell>
+            {
+              !is_super && (
+                <Table.HeaderCell className="text-center">Action</Table.HeaderCell>
+              )
+            }
           </Table.Row>
         </Table.Header>
         <Table.Body>
@@ -189,25 +194,31 @@ class CompetitionTable extends Component {
                   </Table.Cell>
                   <Table.Cell className="text-center">
                     {
-                      item.type == 'club' ? (
-                        item.name
+                      is_super ? (
+                        <a className="detail-link" onClick={() => onSelect(item.id, 'detail')}>
+                          {item.name}
+                        </a>
                       ) : (
-                        <Fragment>
-                          {
-                            detail && (
-                              <a className="detail-link" onClick={() => onSelect(item.id, 'detail')}>
-                                {item.name}
-                              </a>
-                            )
-                          }
-                          {
-                            inscribe && (
-                              <a className="detail-link" onClick={() => onSelect(item.id, 'inscribe')}>
-                                {item.name}
-                              </a>
-                            )
-                          }
-                        </Fragment>
+                        item.type == 'club' ? (
+                          item.name
+                        ) : (
+                          <Fragment>
+                            {
+                              detail && (
+                                <a className="detail-link" onClick={() => onSelect(item.id, 'detail')}>
+                                  {item.name}
+                                </a>
+                              )
+                            }
+                            {
+                              inscribe && (
+                                <a className="detail-link" onClick={() => onSelect(item.id, 'inscribe')}>
+                                  {item.name}
+                                </a>
+                              )
+                            }
+                          </Fragment>
+                        )
                       )
                     }
                   </Table.Cell>
@@ -217,32 +228,36 @@ class CompetitionTable extends Component {
                   <Table.Cell className="text-center">
                     {item.reg_ids.split(',').length} Regions, {item.club_ids.split(',').length} Clubs
                   </Table.Cell>
-                  <Table.Cell className="text-center">
-                    {
-                      detail && (
-                        <a className="detail-link" onClick={() => onSelect(item.id, 'detail')}>
-                          Detail
-                        </a>
-                      )
-                    }
-                    {
-                      inscribe && (
-                        <a className="detail-link" onClick={() => onSelect(item.id, 'inscribe')}>
-                          Inscribe
-                        </a>
-                      )
-                    }
-                    {
-                      item.type == 'club' && (
-                        <Fragment>
-                          &nbsp;|&nbsp;
-                          <a className="detail-link" onClick={() => onSelect(item.id, 'attend')}>
-                            Attend
-                          </a>
-                        </Fragment>
-                      )
-                    }
-                  </Table.Cell>
+                  {
+                    !is_super && (
+                      <Table.Cell className="text-center">
+                        {
+                          detail && (
+                            <a className="detail-link" onClick={() => onSelect(item.id, 'detail')}>
+                              Detail
+                            </a>
+                          )
+                        }
+                        {
+                          inscribe && (
+                            <a className="detail-link" onClick={() => onSelect(item.id, 'inscribe')}>
+                              Inscribe
+                            </a>
+                          )
+                        }
+                        {
+                          item.type == 'club' && (
+                            <Fragment>
+                              &nbsp;|&nbsp;
+                              <a className="detail-link" onClick={() => onSelect(item.id, 'attend')}>
+                                Attend
+                              </a>
+                            </Fragment>
+                          )
+                        }
+                      </Table.Cell>
+                    )
+                  }
                 </Table.Row>
               ))
             )
@@ -266,7 +281,7 @@ class CompetitionTable extends Component {
                 }}
               />
             </Table.HeaderCell>
-            <Table.HeaderCell colSpan="7">
+            <Table.HeaderCell colSpan={is_super ? 6 : 7}>
               <Menu floated="right" pagination>
                 <Pagination
                   activePage={activePage}

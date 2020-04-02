@@ -64,6 +64,7 @@ class Competition extends Component {
                     competitions && competitions.length > 0 && (
                       <CompetitionTable
                         items={competitions}
+                        is_super
                         onSelect={(this.handleSelectItem.bind(this))}
                       />
                     )
