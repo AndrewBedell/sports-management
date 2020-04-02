@@ -191,6 +191,19 @@ class Search extends Component {
       }
 
       this.search(params);
+    } else if (this.state.user_is_club != 1) {
+      let params = {
+        stype: 'club',
+        org: '',
+        club: '',
+        mtype: '',
+        rtype: 'all',
+        gender: 0,
+        weight: '',
+        dan: ''
+      }
+
+      this.search(params);
     }
   }
 
