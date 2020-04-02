@@ -178,7 +178,7 @@ class Search extends Component {
 
     if (search.stype) {
       this.search(search);
-    } else {
+    } else if (this.state.level == 1) {
       let params = {
         stype: 'org',
         org: '',
