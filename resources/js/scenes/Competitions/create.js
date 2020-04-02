@@ -43,7 +43,7 @@ class CreateComp extends Component {
       messageStatus: false,
       successMessage: '',
       failMessage: '',
-      competitionType: [],
+      compType: [],
       user_level: ''
     }
 
@@ -82,7 +82,7 @@ class CreateComp extends Component {
             break;
         }
         this.setState({
-          competitionType: CompetitionType.filter(type => type.value == 'inter' || type.value == 'nf')
+          compType: CompetitionType.filter(type => type.value == 'inter' || type.value == 'nf')
         });
         break;
       case 2:
@@ -98,7 +98,7 @@ class CreateComp extends Component {
             break;
         }
         this.setState({
-          competitionType: CompetitionType.filter(type => type.value == 'reg')
+          compType: CompetitionType.filter(type => type.value == 'reg')
         });
         break;
       case 3:
@@ -114,7 +114,7 @@ class CreateComp extends Component {
             break;
         }
         this.setState({
-          competitionType: CompetitionType.filter(type => type.value == 'club')
+          compType: CompetitionType.filter(type => type.value == 'club')
         });
         break;
       default:
@@ -224,7 +224,7 @@ class CreateComp extends Component {
     const {
       unit_list, nf_list, org_list, club_list,
       all_org_list, all_club_list,
-      from, to, competitionType, user_level
+      from, to, compType, user_level
     } = this.state;
 
     return(
@@ -287,7 +287,7 @@ class CreateComp extends Component {
                           name="type"
                           classNamePrefix={!values.type && touched.type ? 'invalid react-select-lg' : 'react-select-lg'}
                           indicatorSeparator={null}
-                          options={competitionType}
+                          options={compType}
                           getOptionValue={option => option.value}
                           getOptionLabel={option => option.label}
                           value={values.type}
