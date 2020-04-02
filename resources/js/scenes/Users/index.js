@@ -238,58 +238,65 @@ class GetInviteUsers extends Component {
       <Fragment>
         <MainTopBar />
         <div className="main-content">
-        {
-          members && members.length > 0 && (
-            <Container fluid>
-              <Row className="my-2">
-                <Col lg="2" md="3" sm="4">
-                  <FormGroup>
-                    <Select
-                      name="inviteOrgtype"
-                      classNamePrefix={'react-select-lg'}
-                      value={inviteOrgtype}
-                      options={OrganizationType}
-                      onChange={this.handleSelectInvite.bind(this)}
-                    />
-                  </FormGroup>
-                </Col>
-                {
-                  inviteOrgtype.value !== 'nf' && (
-                    <Col lg="2" md="3" sm="4">
-                      <FormGroup>
-                        <Input
-                          className="club-list"
-                          list="orgs"
-                          type="text"
-                          placeholder="Regional Federation"
-                          onChange={event => this.handleInviteOrgFilter(event.target.value)}
-                        />
-                        <datalist id="orgs">
-                          {orgs}
-                        </datalist>
-                      </FormGroup>
-                    </Col>
-                  )
-                }
+        <Container fluid>
+          <Row className="my-2">
+            <Col lg="2" md="3" sm="4">
+              <FormGroup>
+                <Select
+                  name="inviteOrgtype"
+                  classNamePrefix={'react-select-lg'}
+                  value={inviteOrgtype}
+                  options={OrganizationType}
+                  onChange={this.handleSelectInvite.bind(this)}
+                />
+              </FormGroup>
+            </Col>
+            {
+              inviteOrgtype.value !== 'nf' && (
                 <Col lg="2" md="3" sm="4">
                   <FormGroup>
                     <Input
-                      value={filter_members}
-                      icon="search"
-                      placeholder="Search Invite Users"
-                      onChange={this.handleFilterInvite.bind(this)}
+                      className="club-list"
+                      list="orgs"
+                      type="text"
+                      placeholder="Regional Federation"
+                      onChange={event => this.handleInviteOrgFilter(event.target.value)}
                     />
+                    <datalist id="orgs">
+                      {orgs}
+                    </datalist>
                   </FormGroup>
                 </Col>
-              </Row>
-              <div className="table-responsive">
+              )
+            }
+            <Col lg="2" md="3" sm="4">
+              <FormGroup>
+                <Input
+                  value={filter_members}
+                  icon="search"
+                  placeholder="Search Invite Users"
+                  onChange={this.handleFilterInvite.bind(this)}
+                />
+              </FormGroup>
+            </Col>
+          </Row>
+          <div className="table-responsive">
+            {
+              members && members.length > 0 ? (
                 <InviteTable
                   items={members}
                 />
-              </div>
-            </Container>
-          )
-        }
+              ) : (
+                <div className="fixed-content">
+                  <h3 className="text-muted">
+                    No results!
+                  </h3>
+                </div>
+              )
+            }
+            
+          </div>
+        </Container>
 
         {
           users && users.length > 0 && (
