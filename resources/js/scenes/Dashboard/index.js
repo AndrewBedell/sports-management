@@ -151,7 +151,7 @@ class Dashboard extends Component {
 
                 <div className="two-column">
                   <Card body inverse
-                    onClick={this.handleURL.bind(this, '/competition/create')}
+                    onClick={this.handleURL.bind(this, '/organization/create')}
                     style={{ backgroundColor: '#7e6c92', borderColor: '#7e6c92' }}
                   >
                     <CardTitle>
