@@ -238,101 +238,111 @@ class GetInviteUsers extends Component {
       <Fragment>
         <MainTopBar />
         <div className="main-content">
-          <Container fluid>
-            <Row className="my-2">
-              <Col lg="2" md="3" sm="4">
-                <FormGroup>
-                  <Select
-                    name="inviteOrgtype"
-                    classNamePrefix={'react-select-lg'}
-                    value={inviteOrgtype}
-                    options={OrganizationType}
-                    onChange={this.handleSelectInvite.bind(this)}
-                  />
-                </FormGroup>
-              </Col>
-              {
-                inviteOrgtype.value !== 'nf' && (
-                  <Col lg="2" md="3" sm="4">
-                    <FormGroup>
-                      <Input
-                        className="club-list"
-                        list="orgs"
-                        type="text"
-                        placeholder="Regional Federation"
-                        onChange={event => this.handleInviteOrgFilter(event.target.value)}
-                      />
-                      <datalist id="orgs">
-                        {orgs}
-                      </datalist>
-                    </FormGroup>
-                  </Col>
-                )
-              }
-              <Col lg="2" md="3" sm="4">
-                <FormGroup>
-                  <Input
-                    value={filter_members}
-                    icon="search"
-                    placeholder="Search Invite Users"
-                    onChange={this.handleFilterInvite.bind(this)}
-                  />
-                </FormGroup>
-              </Col>
-            </Row>
-            <div className="table-responsive">
-              <InviteTable
-                items={members}
-              />
-            </div>
+        {
+          members && members.length > 0 && (
+            <Container fluid>
+              <Row className="my-2">
+                <Col lg="2" md="3" sm="4">
+                  <FormGroup>
+                    <Select
+                      name="inviteOrgtype"
+                      classNamePrefix={'react-select-lg'}
+                      value={inviteOrgtype}
+                      options={OrganizationType}
+                      onChange={this.handleSelectInvite.bind(this)}
+                    />
+                  </FormGroup>
+                </Col>
+                {
+                  inviteOrgtype.value !== 'nf' && (
+                    <Col lg="2" md="3" sm="4">
+                      <FormGroup>
+                        <Input
+                          className="club-list"
+                          list="orgs"
+                          type="text"
+                          placeholder="Regional Federation"
+                          onChange={event => this.handleInviteOrgFilter(event.target.value)}
+                        />
+                        <datalist id="orgs">
+                          {orgs}
+                        </datalist>
+                      </FormGroup>
+                    </Col>
+                  )
+                }
+                <Col lg="2" md="3" sm="4">
+                  <FormGroup>
+                    <Input
+                      value={filter_members}
+                      icon="search"
+                      placeholder="Search Invite Users"
+                      onChange={this.handleFilterInvite.bind(this)}
+                    />
+                  </FormGroup>
+                </Col>
+              </Row>
+              <div className="table-responsive">
+                <InviteTable
+                  items={members}
+                />
+              </div>
+            </Container>
+          )
+        }
 
-            <Row className="mt-5 mb-2">
-              <Col lg="2" md="3" sm="4">
-                <FormGroup>
-                  <Select
-                    name="changeOrgtype"
-                    classNamePrefix={'react-select-lg'}
-                    value={changeOrgtype}
-                    options={OrganizationType}
-                    onChange={this.handleSelectChange.bind(this)}
-                  />
-                </FormGroup>
-              </Col>
-              {
-                changeOrgtype.value !== 'nf' && (
-                  <Col lg="2" md="3" sm="4">
-                    <FormGroup>
-                      <Input
-                        className="club-list"
-                        list="orgs"
-                        type="text"
-                        placeholder="Regional Federation"
-                        onChange={event => this.handleChangeOrgFilter(event.target.value)}
-                      />
-                      <datalist id="orgs">
-                        {orgs}
-                      </datalist>
-                    </FormGroup>
-                  </Col>
-                )
-              }
-              <Col lg="2" md="3" sm="4">
-                <FormGroup>
-                  <Input
-                    value={filter_users}
-                    icon="search"
-                    placeholder="Search Users"
-                    onChange={this.handleFilterChange.bind(this)}
-                  />
-                </FormGroup>
-              </Col>
-            </Row>
-            <div className="table-responsive">
-              <ChangeSuperTable
-                items={users}
-              />
-            </div>
-          </Container>
+        {
+          users && users.length > 0 && (
+            <Container fluid>
+              <Row className="mt-5 mb-2">
+                <Col lg="2" md="3" sm="4">
+                  <FormGroup>
+                    <Select
+                      name="changeOrgtype"
+                      classNamePrefix={'react-select-lg'}
+                      value={changeOrgtype}
+                      options={OrganizationType}
+                      onChange={this.handleSelectChange.bind(this)}
+                    />
+                  </FormGroup>
+                </Col>
+                {
+                  changeOrgtype.value !== 'nf' && (
+                    <Col lg="2" md="3" sm="4">
+                      <FormGroup>
+                        <Input
+                          className="club-list"
+                          list="orgs"
+                          type="text"
+                          placeholder="Regional Federation"
+                          onChange={event => this.handleChangeOrgFilter(event.target.value)}
+                        />
+                        <datalist id="orgs">
+                          {orgs}
+                        </datalist>
+                      </FormGroup>
+                    </Col>
+                  )
+                }
+                <Col lg="2" md="3" sm="4">
+                  <FormGroup>
+                    <Input
+                      value={filter_users}
+                      icon="search"
+                      placeholder="Search Users"
+                      onChange={this.handleFilterChange.bind(this)}
+                    />
+                  </FormGroup>
+                </Col>
+              </Row>
+              <div className="table-responsive">
+                <ChangeSuperTable
+                  items={users}
+                />
+              </div>
+            </Container>
+          )
+        }
         </div>
       </Fragment>
     );

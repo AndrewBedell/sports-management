@@ -242,12 +242,7 @@ class ChangeSuperTable extends Component {
               >
                 Address
               </Table.HeaderCell>
-              <Table.HeaderCell className="text-center">
-                Status
-              </Table.HeaderCell>
-              <Table.HeaderCell className="text-center">
-                Action
-              </Table.HeaderCell>
+              {/* <Table.HeaderCell className="text-center">Action</Table.HeaderCell> */}
             </Table.Row>
           </Table.Header>
           <Table.Body>
@@ -255,7 +250,7 @@ class ChangeSuperTable extends Component {
               data && data.length > 0 && (
                 data.map((item, index) => (
                   <Table.Row key={index}>
-                    <Table.Cell>
+                    <Table.Cell width={3}>
                       <img src={item.profile_image ? item.profile_image : (item.gender == 1 ? Bitmaps.maleAvatar : Bitmaps.femaleAvatar)} className="table-avatar mr-2" />
                       {item.name}
                       {' '}
@@ -263,10 +258,10 @@ class ChangeSuperTable extends Component {
                       {' '}
                       {item.surname}
                     </Table.Cell>
-                    <Table.Cell className="text-center">{item.gender == 1 ? Genders[0].name : Genders[1].name}</Table.Cell>
-                    <Table.Cell className="text-center">{item.birthday}</Table.Cell>
-                    <Table.Cell>{item.email}</Table.Cell>
-                    <Table.Cell className="text-center">{item.mobile_phone}</Table.Cell>
+                    <Table.Cell width={1} className="text-center">{item.gender == 1 ? Genders[0].name : Genders[1].name}</Table.Cell>
+                    <Table.Cell width={1} className="text-center">{item.birthday}</Table.Cell>
+                    <Table.Cell width={3}>{item.email}</Table.Cell>
+                    <Table.Cell width={1} className="text-center">{item.mobile_phone}</Table.Cell>
                     <Table.Cell>
                       {item.addressline1}
                       {item.addressline2 ? '-' : ''}
@@ -277,11 +272,8 @@ class ChangeSuperTable extends Component {
                       {' '}
                       {item.zip_code}
                     </Table.Cell>
-                    <Table.Cell className="text-center">
-
-                    </Table.Cell>
-                    <Table.Cell>
-                      {/* <div className="text-center">
+                    {/* <Table.Cell>
+                      <div className="text-center">
                         <Button
                           title="Change"
                           type="button"
@@ -298,8 +290,8 @@ class ChangeSuperTable extends Component {
                         >
                           <i className="fa fa-trash-alt" />
                         </Button>
-                      </div> */}
-                    </Table.Cell>
+                      </div>
+                    </Table.Cell> */}
                   </Table.Row>
                 ))
               )
@@ -323,7 +315,7 @@ class ChangeSuperTable extends Component {
                   }}
                 />
               </Table.HeaderCell>
-              <Table.HeaderCell colSpan="7">
+              <Table.HeaderCell colSpan="5">
                 <Menu floated="right" pagination>
                   <Pagination
                     activePage={activePage}
