@@ -7,7 +7,6 @@ use App\Member;
 use App\Setting;
 use App\Organization;
 use App\Transaction;
-use App\Plan;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -192,28 +191,25 @@ class TransactionController extends Controller
         );
       }
 
-      $plans = Plan::where('price_per_yearly', $setting['price'])->get();
-
       if ($data['pay_method'] === 'basic_card') {
-        $user = auth()->user();
-        $card_info = $request->input('card_info');
-        $token = $card_info['id'];
-        $user->newSubscription(Plan::$SUBSCRIPTION_DEFAULT, $plans[0]->stripe_plan_id)->quantity(sizeOf($player_list))->create($token);
+        // $user = auth()->user();
+        // $card_info = $request->input('card_info');
+        // $token = $card_info['id'];
 
-        Transaction::create(array(
-          'club_id' => $data['club_id'],
-          'payer_id' => $data['payer_id'],
-          'players' => $players,
-          'amount' => $data['amount'],
-          'price' => $setting['price'],
-          'percent' => $setting['percent']
-        ));
+        // Transaction::create(array(
+        //   'club_id' => $data['club_id'],
+        //   'payer_id' => $data['payer_id'],
+        //   'players' => $players,
+        //   'amount' => $data['amount'],
+        //   'price' => $setting['price'],
+        //   'percent' => $setting['percent']
+        // ));
 
-        foreach ($player_list as $player) {
-            Member::where('id', $player)->update(array(
-              'active' => 2
-          ));
-        } 
+        // foreach ($player_list as $player) {
+        //     Member::where('id', $player)->update(array(
+        //       'active' => 2
+        //   ));
+        // } 
       } else if ($data['pay_method'] === 'payme') {
         
         // Transaction::create(array(

@@ -1,3 +1,5 @@
+/* eslint-disable jsx-a11y/alt-text */
+/* eslint-disable react/style-prop-object */
 /* eslint-disable radix */
 /* eslint-disable no-case-declarations */
 /* eslint-disable no-unused-expressions */
@@ -64,7 +66,7 @@ class Payment extends Component {
   async componentDidMount() {
     const user = JSON.parse(localStorage.getItem('auth'));
     const user_info = user.user.member_info;
-    this.loadStripe();
+    // this.loadStripe();
     const weight_list = await Api.get('weights');
     switch (weight_list.response.status) {
       case 200:
@@ -238,58 +240,58 @@ class Payment extends Component {
     });
   }
 
-  loadStripe() {
-    if (!window.document.getElementById('stripe-script')) {
-      const s = window.document.createElement('script');
-      s.id = 'stripe-script';
-      s.type = 'text/javascript';
-      s.src = 'https://js.stripe.com/v2/';
-      s.onload = () => {
-        window.Stripe.setPublishableKey(`${ENV.STRIPE_KEY}`);
-      };
-      window.document.body.appendChild(s);
-    }
-  }
+  // loadStripe() {
+  //   if (!window.document.getElementById('stripe-script')) {
+  //     const s = window.document.createElement('script');
+  //     s.id = 'stripe-script';
+  //     s.type = 'text/javascript';
+  //     s.src = 'https://js.stripe.com/v2/';
+  //     s.onload = () => {
+  //       window.Stripe.setPublishableKey(`${ENV.STRIPE_KEY}`);
+  //     };
+  //     window.document.body.appendChild(s);
+  //   }
+  // }
 
-  async stripePay(params) {
-    if (params.card_info) {
-      const data = await Api.post('pay-now', params);
-      const { response, body } = data;
-      switch (response.status) {
-        case 200:
-          this.setState({
-            alertVisible: true,
-            messageStatus: true,
-            isSubmitting: false,
-            successMessage: body.message
-          });
-          setTimeout(() => {
-            this.getPlayers();
-          }, 4000);
-          break;
-        case 406:
-          this.setState({
-            alertVisible: true,
-            messageStatus: false,
-            isSubmitting: false,
-            failMessage: body.message
-          });
-          break;
-        default:
-          break;
-      }
-    } else {
-      this.setState({
-        alertVisible: true,
-        messageStatus: false,
-        isSubmitting: false,
-        failMessage: params.error
-      });
-    }
-    setTimeout(() => {
-      this.setState({ alertVisible: false });
-    }, 5000);
-  }
+  // async stripePay(params) {
+  //   if (params.card_info) {
+  //     const data = await Api.post('pay-now', params);
+  //     const { response, body } = data;
+  //     switch (response.status) {
+  //       case 200:
+  //         this.setState({
+  //           alertVisible: true,
+  //           messageStatus: true,
+  //           isSubmitting: false,
+  //           successMessage: body.message
+  //         });
+  //         setTimeout(() => {
+  //           this.getPlayers();
+  //         }, 4000);
+  //         break;
+  //       case 406:
+  //         this.setState({
+  //           alertVisible: true,
+  //           messageStatus: false,
+  //           isSubmitting: false,
+  //           failMessage: body.message
+  //         });
+  //         break;
+  //       default:
+  //         break;
+  //     }
+  //   } else {
+  //     this.setState({
+  //       alertVisible: true,
+  //       messageStatus: false,
+  //       isSubmitting: false,
+  //       failMessage: params.error
+  //     });
+  //   }
+  //   setTimeout(() => {
+  //     this.setState({ alertVisible: false });
+  //   }, 5000);
+  // }
 
   async handlePay() {
     this.setState({
@@ -308,25 +310,24 @@ class Payment extends Component {
       params.price_data = priceData;
       const exp_date = priceData.card_expiry_date.split(' / ');
       const number = priceData.card_number.replace(' ', '');
-      window.Stripe.card.createToken({
-        number,
-        exp_month: exp_date[0],
-        exp_year: exp_date[1].slice(-2),
-        cvc: priceData.card_cvc,
-        name: priceData.card_name
-      }, (status, response) => {
-        if (status === 200) {
-          params.card_info = response;
-          this.stripePay(params);
-        } else {
-          params.card_info = null;
-          params.error = response.error.message;
-          this.stripePay(params);
-        }
-      });
+      // window.Stripe.card.createToken({
+      //   number,
+      //   exp_month: exp_date[0],
+      //   exp_year: exp_date[1].slice(-2),
+      //   cvc: priceData.card_cvc,
+      //   name: priceData.card_name
+      // }, (status, response) => {
+      //   if (status === 200) {
+      //     params.card_info = response;
+      //     this.stripePay(params);
+      //   } else {
+      //     params.card_info = null;
+      //     params.error = response.error.message;
+      //     this.stripePay(params);
+      //   }
+      // });
     } else if (pay_method === 'payme') {
       params.price_data = payme_data;
-      
     }
   }
 
@@ -845,7 +846,7 @@ class Payment extends Component {
                                 <span className="d-block">
                                   Total :
                                   {' '}
-                                  {price ? `$${price}` : null}
+                                  {price ? `${price} UZS` : null}
                                 </span>
                                 <div>
                                   {payme_data && payme_data.email}
@@ -859,7 +860,7 @@ class Payment extends Component {
                                     onClick={this.handleBackTable.bind(this)}>
                                     Back
                                   </Button>
-                                  <Button
+                                  {/* <Button
                                     className="float-right"
                                     type="button"
                                     color="primary"
@@ -868,12 +869,34 @@ class Payment extends Component {
                                   >
                                     {isSubmitting && (<i className="fas fa-sync fa-spin mr-3" />)}
                                     Pay Now
-                                  </Button>
+                                  </Button> */}
                                 </Col>
                               </Row>
                             </Col>
                             <Col md="6" className="d-flex justify-content-center align-items-center">
-                              <Image src={Bitmaps.paymeLogo} />
+                              {process.env.MERCHANT_KEY}
+                              {/* <Image src={Bitmaps.paymeLogo} /> */}
+                              <Form method="POST" action="https://checkout.paycom.uz">
+                                <Input type="hidden" name="merchant" value={ENV.MERCHANT_KEY} />
+                                <Input type="hidden" name="amount" value={price * 100} />
+                                <Input type="hidden" name="account[customer_name]" value="Membership fee" />
+                                <Button
+                                  type="submit"
+                                  style={{
+                                    cursor: 'pointer',
+                                    border: '1px solid #ebebeb',
+                                    borderRadius: '6px',
+                                    background: 'linear-gradient(to top, #f1f2f2, white)',
+                                    width: '200px',
+                                    height: '42px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center'
+                                  }}
+                                >
+                                  <img style={{ width: '160px', height: '20px' }} src="http://cdn.payme.uz/buttons/button_big_EN.svg" />
+                                </Button>
+                              </Form>
                             </Col>
                           </Row>
                         </TabPane>
