@@ -167,7 +167,7 @@ class TransactionController extends Controller
       $club = Organization::find($data['club_id']);
       $org = Organization::find($club->parent_id);
       $nf = Organization::find($org->parent_id);
-
+      $user = auth()->user();
       $settings = Setting::where('organization_id', $nf->id)->get();
       $amount = $request->input('amount');
       $amount1 = 0;
@@ -192,10 +192,12 @@ class TransactionController extends Controller
       }
 
       if ($data['pay_method'] === 'basic_card') {
-        // $user = auth()->user();
         // $card_info = $request->input('card_info');
-        // $token = $card_info['id'];
-
+        return response()->json([
+          'status' => 'success',
+          'message' => 'Paid Successfully! Please wait a message.',
+          'data' => $request->input('pay_info')
+        ], 200);
         // Transaction::create(array(
         //   'club_id' => $data['club_id'],
         //   'payer_id' => $data['payer_id'],
@@ -226,10 +228,10 @@ class TransactionController extends Controller
         //       'active' => 2
         //   ));
         // }
-        return response()->json([
-          'status' => 'error',
-          'message' => 'Paid Failed! Please check your payme again.'
-        ], 406);
+        // return response()->json([
+        //   'status' => 'error',
+        //   'message' => 'Paid Failed! Please check your payme again.'
+        // ], 406);
       }
       return response()->json([
         'status' => 'success',

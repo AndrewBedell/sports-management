@@ -13,7 +13,7 @@ import classnames from 'classnames';
 import {
   withRouter
 } from 'react-router-dom';
-
+import QueryString from 'qs';
 import Select from 'react-select';
 import Card from 'card-react';
 import { Image } from 'semantic-ui-react';
@@ -30,6 +30,7 @@ class Payment extends Component {
     this.state = {
       user: {},
       is_club_member: 0,
+      is_nf: 0,
       pay_status: false,
       players: null,
       player_list: null,
@@ -53,7 +54,6 @@ class Payment extends Component {
       price: 0,
       per_price: 0.00,
       isSubmitting: false,
-      payme_data: null,
       priceData: {
         card_number: '',
         card_name: '',
@@ -64,9 +64,10 @@ class Payment extends Component {
   }
 
   async componentDidMount() {
+    this.componentWillReceiveProps(this.props);
     const user = JSON.parse(localStorage.getItem('auth'));
     const user_info = user.user.member_info;
-    // this.loadStripe();
+    this.loadStripe();
     const weight_list = await Api.get('weights');
     switch (weight_list.response.status) {
       case 200:
@@ -111,11 +112,48 @@ class Payment extends Component {
     this.getPlayers();
   }
 
+  async componentWillReceiveProps(props) {
+    const pay_data = JSON.parse(localStorage.getItem('payme_data'));
+    if (pay_data && pay_data.amount) {
+      const data = await Api.post('pay-now', pay_data);
+      const { response, body } = data;
+      switch (response.status) {
+        case 200:
+          // this.setState({
+          //   alertVisible: true,
+          //   messageStatus: true,
+          //   isSubmitting: false,
+          //   successMessage: body.message
+          // });
+          // setTimeout(() => {
+          //   this.getPlayers();
+          // }, 4000);
+          break;
+        case 406:
+          // this.setState({
+          //   alertVisible: true,
+          //   messageStatus: false,
+          //   isSubmitting: false,
+          //   failMessage: body.message
+          // });
+          break;
+        default:
+          break;
+      }
+      // setTimeout(() => {
+      //   this.setState({ alertVisible: false });
+      // }, 5000);
+      localStorage.removeItem('payme_data');
+    }
+  }
+
   async getPlayers() {
     const user_info = JSON.parse(localStorage.getItem('auth'));
     this.setState({
       user: user_info.user.member_info,
-      is_club_member: user_info.user.is_club_member
+      is_club_member: user_info.user.is_club_member,
+      is_nf: user_info.user.is_nf,
+      pay_method: user_info.user.member_info.country === 'uz' ? 'payme' : 'basic_card'
     });
     if (user_info.user) {
       const data = await Api.get(`club-players/${user_info.user.member_info.organization_id}`);
@@ -240,65 +278,65 @@ class Payment extends Component {
     });
   }
 
-  // loadStripe() {
-  //   if (!window.document.getElementById('stripe-script')) {
-  //     const s = window.document.createElement('script');
-  //     s.id = 'stripe-script';
-  //     s.type = 'text/javascript';
-  //     s.src = 'https://js.stripe.com/v2/';
-  //     s.onload = () => {
-  //       window.Stripe.setPublishableKey(`${ENV.STRIPE_KEY}`);
-  //     };
-  //     window.document.body.appendChild(s);
-  //   }
-  // }
+  loadStripe() {
+    if (!window.document.getElementById('stripe-script')) {
+      const s = window.document.createElement('script');
+      s.id = 'stripe-script';
+      s.type = 'text/javascript';
+      s.src = 'https://js.stripe.com/v2/';
+      s.onload = () => {
+        window.Stripe.setPublishableKey(`${ENV.STRIPE_KEY}`);
+      };
+      window.document.body.appendChild(s);
+    }
+  }
 
-  // async stripePay(params) {
-  //   if (params.card_info) {
-  //     const data = await Api.post('pay-now', params);
-  //     const { response, body } = data;
-  //     switch (response.status) {
-  //       case 200:
-  //         this.setState({
-  //           alertVisible: true,
-  //           messageStatus: true,
-  //           isSubmitting: false,
-  //           successMessage: body.message
-  //         });
-  //         setTimeout(() => {
-  //           this.getPlayers();
-  //         }, 4000);
-  //         break;
-  //       case 406:
-  //         this.setState({
-  //           alertVisible: true,
-  //           messageStatus: false,
-  //           isSubmitting: false,
-  //           failMessage: body.message
-  //         });
-  //         break;
-  //       default:
-  //         break;
-  //     }
-  //   } else {
-  //     this.setState({
-  //       alertVisible: true,
-  //       messageStatus: false,
-  //       isSubmitting: false,
-  //       failMessage: params.error
-  //     });
-  //   }
-  //   setTimeout(() => {
-  //     this.setState({ alertVisible: false });
-  //   }, 5000);
-  // }
+  async directPay(params) {
+    if (params.card_info) {
+      const data = await Api.post('pay-now', params);
+      const { response, body } = data;
+      switch (response.status) {
+        case 200:
+          this.setState({
+            alertVisible: true,
+            messageStatus: true,
+            isSubmitting: false,
+            successMessage: body.message
+          });
+          setTimeout(() => {
+            this.getPlayers();
+          }, 4000);
+          break;
+        case 406:
+          this.setState({
+            alertVisible: true,
+            messageStatus: false,
+            isSubmitting: false,
+            failMessage: body.message
+          });
+          break;
+        default:
+          break;
+      }
+    } else {
+      this.setState({
+        alertVisible: true,
+        messageStatus: false,
+        isSubmitting: false,
+        failMessage: params.error
+      });
+    }
+    setTimeout(() => {
+      this.setState({ alertVisible: false });
+    }, 5000);
+  }
 
   async handlePay() {
     this.setState({
       isSubmitting: true
     });
     const {
-      user, pay_method, payPlayers, price, priceData, payme_data
+      user, pay_method, payPlayers, price, priceData
     } = this.state;
     const params = {};
     params.payer_id = user.id;
@@ -306,28 +344,29 @@ class Payment extends Component {
     params.pay_method = pay_method;
     params.players = payPlayers.map(item => item.id);
     params.amount = price;
+    params.pay_info = priceData;
     if (pay_method === 'basic_card') {
       params.price_data = priceData;
       const exp_date = priceData.card_expiry_date.split(' / ');
       const number = priceData.card_number.replace(' ', '');
-      // window.Stripe.card.createToken({
-      //   number,
-      //   exp_month: exp_date[0],
-      //   exp_year: exp_date[1].slice(-2),
-      //   cvc: priceData.card_cvc,
-      //   name: priceData.card_name
-      // }, (status, response) => {
-      //   if (status === 200) {
-      //     params.card_info = response;
-      //     this.stripePay(params);
-      //   } else {
-      //     params.card_info = null;
-      //     params.error = response.error.message;
-      //     this.stripePay(params);
-      //   }
-      // });
+      window.Stripe.card.createToken({
+        number,
+        exp_month: exp_date[0],
+        exp_year: exp_date[1].slice(-2),
+        cvc: priceData.card_cvc,
+        name: priceData.card_name
+      }, (status, response) => {
+        if (status === 200) {
+          params.card_info = response;
+          this.directPay(params);
+        } else {
+          params.card_info = null;
+          params.error = response.error.message;
+          this.directPay(params);
+        }
+      });
     } else if (pay_method === 'payme') {
-      params.price_data = payme_data;
+      localStorage.setItem('payme_data', JSON.stringify(params));
     }
   }
 
@@ -528,6 +567,7 @@ class Payment extends Component {
 
   render() {
     const {
+      user,
       weights,
       orgs,
       payPlayers,
@@ -536,10 +576,10 @@ class Payment extends Component {
       filter_players,
       price,
       priceData,
-      payme_data,
       isSubmitting,
       pay_method,
-      is_club_member
+      is_club_member,
+      is_nf
     } = this.state;
 
     return (
@@ -551,7 +591,7 @@ class Payment extends Component {
               <Container fluid>
                 <div className="text-center mb-4">
                   {
-                    players && players.length > 0 && is_club_member ? (
+                    players && players.length > 0 && !is_nf ? (
                       <Button
                         type="button"
                         color="success"
@@ -697,32 +737,40 @@ class Payment extends Component {
                   price !== 0 && (
                     <div>
                       <Nav tabs>
-                        <NavItem>
-                          <NavLink
-                            className={classnames({ active: pay_method === 'basic_card' })}
-                            onClick={() => { this.setState({ pay_method: 'basic_card' }); }}
-                          >
-                            <div className="payments">
-                              <Image src={Bitmaps.visa} />
-                              <Image src={Bitmaps.mastercard} />
-                              <Image src={Bitmaps.amex} />
-                              <Image src={Bitmaps.discover} />
-                              <Image src={Bitmaps.jcb} />
-                            </div>
-                          </NavLink>
-                        </NavItem>
-                        <NavItem>
-                          <NavLink
-                            className={classnames({ active: pay_method === 'payme' })}
-                            onClick={() => { this.setState({ pay_method: 'payme' }); }}
-                          >
-                            <div className="payment">
-                              <Image src={Bitmaps.payme} />
-                            </div>
-                          </NavLink>
-                        </NavItem>
+                        {
+                          user.country !== 'uz' && (
+                            <NavItem>
+                              <NavLink
+                                className={classnames({ active: pay_method === 'basic_card' })}
+                                onClick={() => { this.setState({ pay_method: 'basic_card' }); }}
+                              >
+                                <div className="payments">
+                                  <Image src={Bitmaps.visa} />
+                                  <Image src={Bitmaps.mastercard} />
+                                  <Image src={Bitmaps.amex} />
+                                  <Image src={Bitmaps.discover} />
+                                  <Image src={Bitmaps.jcb} />
+                                </div>
+                              </NavLink>
+                            </NavItem>
+                          )
+                        }
+                        {
+                          user.country === 'uz' && (
+                            <NavItem>
+                              <NavLink
+                                className={classnames({ active: pay_method === 'payme' })}
+                                onClick={() => { this.setState({ pay_method: 'payme' }); }}
+                              >
+                                <div className="payment">
+                                  <Image src={Bitmaps.payme} />
+                                </div>
+                              </NavLink>
+                            </NavItem>
+                          )
+                        }
                       </Nav>
-                      <TabContent activeTab={pay_method}>
+                      <TabContent activeTab={user.country === 'uz' ? 'payme' : 'basic_card'}>
                         <TabPane tabId="basic_card">
                           <Card
                             container="card_container"
@@ -756,7 +804,7 @@ class Payment extends Component {
                                     <span className="d-block">
                                       Total :
                                       {' '}
-                                      {price ? `$${price}` : null}
+                                      {price ? `${price} KZT` : null}
                                     </span>
                                   </FormGroup>
                                   <FormGroup>
@@ -848,9 +896,6 @@ class Payment extends Component {
                                   {' '}
                                   {price ? `${price} UZS` : null}
                                 </span>
-                                <div>
-                                  {payme_data && payme_data.email}
-                                </div>
                               </FormGroup>
                               <Row>
                                 <Col md="12">
@@ -860,28 +905,17 @@ class Payment extends Component {
                                     onClick={this.handleBackTable.bind(this)}>
                                     Back
                                   </Button>
-                                  {/* <Button
-                                    className="float-right"
-                                    type="button"
-                                    color="primary"
-                                    disabled={isSubmitting}
-                                    onClick={this.handlePay.bind(this)}
-                                  >
-                                    {isSubmitting && (<i className="fas fa-sync fa-spin mr-3" />)}
-                                    Pay Now
-                                  </Button> */}
                                 </Col>
                               </Row>
                             </Col>
                             <Col md="6" className="d-flex justify-content-center align-items-center">
-                              {process.env.MERCHANT_KEY}
-                              {/* <Image src={Bitmaps.paymeLogo} /> */}
                               <Form method="POST" action="https://checkout.paycom.uz">
                                 <Input type="hidden" name="merchant" value={ENV.MERCHANT_KEY} />
                                 <Input type="hidden" name="amount" value={price * 100} />
                                 <Input type="hidden" name="account[customer_name]" value="Membership fee" />
                                 <Button
                                   type="submit"
+                                  onClick={this.handlePay.bind(this)}
                                   style={{
                                     cursor: 'pointer',
                                     border: '1px solid #ebebeb',
