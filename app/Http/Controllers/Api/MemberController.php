@@ -261,12 +261,12 @@ class MemberController extends Controller
                 'gender' => 'required|boolean',
                 'birthday' => 'required|date',
                 'email' => 'required|string|email|max:255',
-                'mobile_phone' => 'required|string|max:255',
-                'addressline1' => 'required|string|max:255',
+                // 'mobile_phone' => 'required|string|max:255',
+                // 'addressline1' => 'required|string|max:255',
                 // 'country' => 'required|string|max:255',
-                'state' => 'required|string|max:255',
-                'city' => 'required|string|max:255',
-                'zip_code' => 'required|string|max:255',
+                // 'state' => 'required|string|max:255',
+                // 'city' => 'required|string|max:255',
+                // 'zip_code' => 'required|string|max:255',
                 'identity' => 'required|string|max:255',
                 // 'active' => 'required|boolean',
                 'register_date' => 'required|date'
@@ -386,11 +386,11 @@ class MemberController extends Controller
                 $data['profile_image'] = "";
             }
 
-            if (is_null($data['patronymic']))
-                $data['patronymic'] = "";
+            // if (is_null($data['patronymic']))
+            //     $data['patronymic'] = "";
 
-            if (is_null($data['addressline2']))
-                $data['addressline2'] = "";
+            // if (is_null($data['addressline2']))
+            //     $data['addressline2'] = "";
 
             if (is_null($data['position']))
                 $data['position'] = "";
@@ -399,20 +399,20 @@ class MemberController extends Controller
                 'organization_id' => $data['organization_id'],
                 'role_id' => $data['role_id'],
                 'name' => $data['name'],
-                'patronymic' => $data['patronymic'],
+                'patronymic' => "", //$data['patronymic'],
                 'surname' => $data['surname'],
                 'profile_image' => $data['profile_image'],
                 'gender' => $data['gender'],
                 'birthday' => $data['birthday'],
                 'email' => $data['email'],
-                'mobile_phone' => $data['mobile_phone'],
-                'addressline1' => $data['addressline1'],
-                'addressline2' => $data['addressline2'],
+                'mobile_phone' => "", //$data['mobile_phone'],
+                'addressline1' => "", //$data['addressline1'],
+                'addressline2' => "", //$data['addressline2'],
                 'country' => 'kz',
                 // 'country' => $data['country'],
-                'state' => $data['state'],
-                'city' => $data['city'],
-                'zip_code' => $data['zip_code'],
+                'state' => "", //$data['state'],
+                'city' => "", //$data['city'],
+                'zip_code' => "", //$data['zip_code'],
                 'position' => $data['position'],
                 'identity' => $data['identity'],
                 'register_date' => $data['register_date']
@@ -427,7 +427,7 @@ class MemberController extends Controller
                 Player::where('member_id', $member_id)->update(array(
                     'weight_id' => $data['weight_id'],
                     'dan' => $data['dan'],
-                    'skill' => $data['skill']
+                    // 'skill' => $data['skill']
                 ));
             } else {
                 User::where('member_id', $member_id)->update(array(
