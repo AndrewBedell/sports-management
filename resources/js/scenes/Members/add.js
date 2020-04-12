@@ -199,27 +199,28 @@ class MemberAdd extends Component {
         values.club_id.id : 
         (values.organization_id ? values.organization_id.id : this.state.parent_id),
       name: values.name,
-      patronymic: values.patronymic,
+      // patronymic: values.patronymic,
       surname: values.surname,
       gender: values.gender.id,
       birthday: moment(values.birthday).format('YYYY-MM-DD'),
       email: values.email,
-      mobile_phone: values.mobile_phone,
-      addressline1: values.addressline1,
-      addressline2: values.addressline2,
+      // mobile_phone: values.mobile_phone,
+      // addressline1: values.addressline1,
+      // addressline2: values.addressline2,
       country: this.state.country,
-      state: values.state,
-      city: values.city,
-      zip_code: values.zip_code,
+      // state: values.state,
+      // city: values.city,
+      // zip_code: values.zip_code,
       weight_id: values.weight_id ? values.weight_id.id : '',
       dan: values.dan ? values.dan.value : '',
-      identity: values.identity,
+      // identity: values.identity,
       role_id: values.role_id ? values.role_id.id : 3,
       profile_image: imagePreviewUrl || '',
       position: values.position ? (values.position.value || values.position) : '',
-      skill: values.skill ? values.skill : '',
+      // skill: values.skill ? values.skill : '',
       active: values.is_club || 0,
-      register_date: moment(values.register_date).format('YYYY-MM-DD')
+      // register_date: moment(values.register_date).format('YYYY-MM-DD')
+      register_date: values.register_date
     };
 
     const data = await Api.post('reg-member', newData);
@@ -278,6 +279,16 @@ class MemberAdd extends Component {
     } else {
       $imagePreview = (<div className="previewText">Please select an Image for Preview</div>);
     }
+
+    var d = new Date(),
+        month = '' + (d.getMonth() + 1),
+        day = '' + d.getDate(),
+        year = d.getFullYear();
+
+    if (month.length < 2) 
+        month = '0' + month;
+    if (day.length < 2) 
+        day = '0' + day;
     
     return (
       <Fragment>
@@ -300,43 +311,43 @@ class MemberAdd extends Component {
                 organization_id: (level !== null && level != 1) ? level : null,
                 club_id: null,
                 profile_image: null,
-                register_date: null,
+                register_date: [year, month, day].join('-'),
                 name: '',
-                patronymic: '',
+                // patronymic: '',
                 surname: '',
                 gender: null,
                 birthday: null,
                 email: '',
-                mobile_phone: '',
-                addressline1: '',
-                addressline2: '',
+                // mobile_phone: '',
+                // addressline1: '',
+                // addressline2: '',
                 // country: null,
-                state: '',
-                city: '',
-                zip_code: '',
-                identity: '',
+                // state: '',
+                // city: '',
+                // zip_code: '',
+                // identity: '',
                 weight_id: null,
                 dan: null,
                 position: '',
-                skill: ''
+                // skill: ''
               }}
 
               validationSchema={
                 Yup.object().shape({
                   // profile_image: Yup.mixed().required('Image is required!'),
-                  register_date: Yup.mixed().required('This field is required!'),
+                  // register_date: Yup.mixed().required('This field is required!'),
                   name: Yup.string().required('This field is required!'),
                   surname: Yup.string().required('This field is required!'),
                   gender: Yup.mixed().required('This field is required!'),
                   birthday: Yup.mixed().required('This field is required!'),
                   email: Yup.string().email('Email is not valid!').required('This field is required!'),
-                  mobile_phone: Yup.string().matches(/^\+?[0-9]\s?[-]\s|[0-9]$/, 'Mobile phone is incorrect!').required('This field is required!'),
-                  addressline1: Yup.string().required('This field is required!'),
+                  // mobile_phone: Yup.string().matches(/^\+?[0-9]\s?[-]\s|[0-9]$/, 'Mobile phone is incorrect!').required('This field is required!'),
+                  // addressline1: Yup.string().required('This field is required!'),
                   // country: Yup.mixed().required('This field is required!'),
-                  city: Yup.string().required('This field is required!'),
-                  state: Yup.string().required('This field is required!'),
-                  zip_code: Yup.string().required('This field is required!'),
-                  identity: Yup.string().required('This field is required!')
+                  // city: Yup.string().required('This field is required!'),
+                  // state: Yup.string().required('This field is required!'),
+                  // zip_code: Yup.string().required('This field is required!'),
+                  // identity: Yup.string().required('This field is required!')
                 })
               }
 
@@ -523,6 +534,13 @@ class MemberAdd extends Component {
                             <Input
                               id="register_date"
                               name="register_date"
+                              type="text"
+                              value={[year, month, day].join('-')}
+                              readOnly
+                            />
+                            {/* <Input
+                              id="register_date"
+                              name="register_date"
                               type="date"
                               placeholder="YYYY-MM-DD"
                               value={values.register_date || ''}
@@ -533,7 +551,10 @@ class MemberAdd extends Component {
                             <UncontrolledTooltip placement="top" target="register_date">
                               Click triangle icon to select date
                             </UncontrolledTooltip>
-                            {!!errors.register_date && touched.register_date && <FormFeedback className="d-block">{errors.register_date}</FormFeedback> }
+                            {
+                              !!errors.register_date && touched.register_date && 
+                              <FormFeedback className="d-block">{errors.register_date}</FormFeedback>
+                            } */}
                           </FormGroup>
                         </Col>
                       </Row>
@@ -554,10 +575,8 @@ class MemberAdd extends Component {
                       </FormGroup>
                     </Col>
                   </Row>
-                  <Row>                    
-                    
-                    
-                    <Col sm="4">
+                  <Row>
+                    <Col sm="6">
                       <FormGroup>
                         <Label for="name">
                           Name
@@ -573,7 +592,7 @@ class MemberAdd extends Component {
                         <FormFeedback>{errors.name}</FormFeedback>
                       </FormGroup>
                     </Col>
-                    <Col sm="4">
+                    {/* <Col sm="4">
                       <FormGroup>
                         <Label for="patronymic">
                           Patronymic
@@ -586,8 +605,8 @@ class MemberAdd extends Component {
                           onBlur={handleBlur}
                         />
                       </FormGroup>
-                    </Col>
-                    <Col sm="4">
+                    </Col> */}
+                    <Col sm="6">
                       <FormGroup>
                         <Label for="surname">
                           Surname
@@ -660,7 +679,7 @@ class MemberAdd extends Component {
                         <FormFeedback>{errors.email}</FormFeedback>
                       </FormGroup>
                     </Col>
-                    <Col sm="6">
+                    {/* <Col sm="6">
                       <FormGroup>
                         <Label for="mobile_phone">Mobile phone</Label>
                         <Input
@@ -673,8 +692,8 @@ class MemberAdd extends Component {
                         />
                         <FormFeedback>{errors.mobile_phone}</FormFeedback>
                       </FormGroup>
-                    </Col>
-                    <Col sm="6">
+                    </Col> */}
+                    {/* <Col sm="6">
                       <FormGroup>
                         <Label for="identity">Identity</Label>
                         <Input
@@ -687,8 +706,8 @@ class MemberAdd extends Component {
                         />
                         <FormFeedback>{errors.identity}</FormFeedback>
                       </FormGroup>
-                    </Col>
-                    <Col sm="6">
+                    </Col> */}
+                    {/* <Col sm="6">
                       <FormGroup>
                         <Label for="addressline1">Address Line1</Label>
                         <Input
@@ -713,7 +732,7 @@ class MemberAdd extends Component {
                           onBlur={handleBlur}
                         />
                       </FormGroup>
-                    </Col>
+                    </Col> */}
                     {/* <Col sm="3" xs="6">
                       <FormGroup>
                         <Label for="country">Country</Label>
@@ -735,7 +754,7 @@ class MemberAdd extends Component {
                         )}
                       </FormGroup>
                     </Col> */}
-                    <Col sm="3" xs="6">
+                    {/* <Col sm="3" xs="6">
                       <FormGroup>
                         <Label for="state">State</Label>
                         <Input
@@ -776,8 +795,7 @@ class MemberAdd extends Component {
                         />
                         <FormFeedback>{errors.zip_code}</FormFeedback>
                       </FormGroup>
-                    </Col>
-                    <Col sm="3" xs="6"></Col>
+                    </Col> */}
                     {
                       values.role_id && (values.role_id.id == 1 || values.role_id.id == 4) && (
                         <Col xs="6">
@@ -823,7 +841,7 @@ class MemberAdd extends Component {
                     {
                       (user_is_club || (values.role_id && values.role_id.is_player == 1)) && (
                         <Fragment>
-                          <Col sm="3" xs="6">
+                          <Col sm="6">
                             <FormGroup>
                               <Label for="weight_id">Weight</Label>
                               <Select
@@ -841,7 +859,7 @@ class MemberAdd extends Component {
                               {!values.weight_id && touched.weight_id && <FormFeedback className="d-block">This field is required!</FormFeedback>}
                             </FormGroup>
                           </Col>
-                          <Col sm="3" xs="6">
+                          <Col sm="6">
                             <FormGroup>
                               <Label for="dan">Dan</Label>
                               <Select
@@ -861,7 +879,7 @@ class MemberAdd extends Component {
                                 <FormFeedback className="d-block">This field is required!</FormFeedback>}
                             </FormGroup>
                           </Col>
-                          <Col xs="6">
+                          {/* <Col xs="6">
                             <FormGroup>
                               <Label for="skill">Skill</Label>
                               <Input
@@ -872,7 +890,7 @@ class MemberAdd extends Component {
                                 onBlur={handleBlur}
                               />
                             </FormGroup>
-                          </Col>
+                          </Col> */}
                         </Fragment>
                       )
                     }
