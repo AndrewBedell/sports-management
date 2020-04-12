@@ -653,7 +653,8 @@ class Search extends Component {
                 )
               }
               {
-                (search_type.value == 'club' || search_type.value == 'member') && (
+                // (search_type.value == 'club' || search_type.value == 'member') && (
+                search_type.value == 'club' && (
                   <Col xl="2" lg="3" md="4" sm="6" xs="12">
                     <FormGroup>
                       <Select
