@@ -129,6 +129,7 @@ class DataTable extends Component {
         <Table.Header>
           <Table.Row>
             <Table.HeaderCell
+              width="3"
               className="text-center"
               sorted={column === 'name' ? direction : null}
               onClick={this.handleSort.bind(this, 'name')}
@@ -189,14 +190,14 @@ class DataTable extends Component {
             {
               mtype.value !== 'judoka' && (
                 <Fragment>
-                  <Table.HeaderCell
+                  {/* <Table.HeaderCell
                     width="1"
                     className="text-center"
                     sorted={column === 'mobile_phone' ? direction : null}
                     onClick={this.handleSort.bind(this, 'mobile_phone')}
                   >
                     Mobile
-                  </Table.HeaderCell>
+                  </Table.HeaderCell> */}
                   <Table.HeaderCell
                     className="text-center"
                     width="3"
@@ -205,14 +206,14 @@ class DataTable extends Component {
                   >
                     Email
                   </Table.HeaderCell>
-                  <Table.HeaderCell
+                  {/* <Table.HeaderCell
                     className="text-center"
                     width="6"
                     sorted={column === 'addressline1' ? direction : null}
                     onClick={this.handleSort.bind(this, 'addressline1')}
                   >
                     Address
-                  </Table.HeaderCell>
+                  </Table.HeaderCell> */}
                 </Fragment>
               )
             }
@@ -275,16 +276,16 @@ class DataTable extends Component {
                         mtype.value === 'judoka' && item.active == 0 ? (
                           <a>
                             {item.surname && item.surname.toUpperCase()}
-                            {' '}
-                            {item.patronymic != '-' && item.patronymic}
+                            {/* {' '}
+                            {item.patronymic != '-' && item.patronymic} */}
                             {' '}
                             {item.name}
                           </a>
                         ) : (
                           <a className="detail-link" onClick={() => onSelect(item.id)}>
                             {item.surname && item.surname.toUpperCase()}
-                            {' '}
-                            {item.patronymic != '-' && item.patronymic}
+                            {/* {' '}
+                            {item.patronymic != '-' && item.patronymic} */}
                             {' '}
                             {item.name}
                           </a>
@@ -322,15 +323,15 @@ class DataTable extends Component {
                   {
                     mtype.value !== 'judoka' && (
                       <Fragment>
-                        <Table.Cell className="text-center">{item.mobile_phone}</Table.Cell>
+                        {/* <Table.Cell className="text-center">{item.mobile_phone}</Table.Cell> */}
                         <Table.Cell className="text-center">{item.email}</Table.Cell>
-                        <Table.Cell>
+                        {/* <Table.Cell>
                           {(item.addressline1 && item.addressline1 !== '' && item.addressline1 !== '-') ? `${item.addressline1}, ` : '' }
                           {(item.addressline2 && item.addressline2 !== '' && item.addressline2 !== '-') ? `${item.addressline2}, ` : '' }
                           {(item.city && item.city !== '' && item.city !== '-') ? `${item.city}, ` : '' }
                           {(item.state && item.state !== '' && item.state !== '-') ? `${item.state}, ` : '' }
                           {item.zip_code}
-                        </Table.Cell>
+                        </Table.Cell> */}
                       </Fragment>
                     )
                   }
@@ -423,7 +424,7 @@ class DataTable extends Component {
                 }}
               />
             </Table.HeaderCell>
-            <Table.HeaderCell colSpan={stype.value === 'member' ? 8 : 5}>
+            <Table.HeaderCell colSpan={stype.value === 'member' ? 7 : 6}>
               <Menu floated="right" pagination>
                 <Pagination
                   activePage={activePage}
