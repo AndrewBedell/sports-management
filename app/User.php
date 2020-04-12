@@ -15,7 +15,6 @@ class User extends Authenticatable implements JWTSubject
     use SoftDeletes;
 
     public static $ROLE_OWNER = 'owner';
-    public static $ROLE_SUBSCRIBER = 'subscriber';
 
     use Notifiable;
     use Billable;
@@ -27,10 +26,6 @@ class User extends Authenticatable implements JWTSubject
      */
     protected $fillable = [
         'member_id', 'password', 'email', 'is_nf'
-    ];
-
-    protected $appends = [
-        'subscribed'
     ];
 
     /**
@@ -59,10 +54,5 @@ class User extends Authenticatable implements JWTSubject
     public function getJWTCustomClaims()
     {
         return [];
-    }
-
-    public function getSubscribedAttribute()
-    {
-        return $this->subscribed('main');
     }
 }

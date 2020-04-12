@@ -655,14 +655,14 @@ class OrganizationController extends Controller
 
         sort($clubs);
 
-        $role = DB::table('roles')->where('is_player', true)->first();
+        // $role = DB::table('roles')->where('is_player', true)->first();
 
         $players = Player::leftJoin('members', 'members.id', '=','players.member_id')
                         ->leftJoin('weights', 'weights.id', '=', 'players.weight_id')
                         ->leftJoin('organizations AS org1', 'org1.id', '=', 'members.organization_id')
                         ->leftJoin('organizations AS org2', 'org2.id', '=', 'org1.parent_id')
                         ->whereIn('members.organization_id', $clubs)
-                        ->where('members.role_id', $role->id)
+                        // ->where('members.role_id', $role->id)
                         ->where('members.active', 0)
                         ->select('members.*', 'org2.name_o AS region', 'org1.name_o AS club', 
                                 'weights.weight', 'players.dan', 'players.skill')

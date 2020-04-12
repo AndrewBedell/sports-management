@@ -22,6 +22,7 @@ class Setting extends Component {
     const organization_id = user.user.member_info.organization_id;
 
     this.state = {
+      user_info: user.user.member_info,
       item: [],
       alertVisible: false,
       messageStatus: false,
@@ -71,7 +72,7 @@ class Setting extends Component {
 
   async handleSubmit(values, bags) {
     let newData = {};
-    
+
     newData = {
       price: values.price
     };
@@ -98,7 +99,9 @@ class Setting extends Component {
   }
 
   render() {
-
+    const {
+      user_info
+    } = this.state;
     return (
       <Fragment>
         <MainTopBar />
@@ -122,7 +125,7 @@ class Setting extends Component {
               validationSchema={
                 Yup.object().shape({
                   price: Yup.string().matches(/^[+-]?([0-9]*[.])?[0-9]+$/, 'price is only number.')
-                        .required('This field is required.')
+                    .required('This field is required.')
                 })
               }
 
@@ -145,8 +148,8 @@ class Setting extends Component {
                       <FormGroup className="d-flex justify-content-center align-items-center">
                         <Label for="price">Membership Price per Judoka</Label>
                         <InputGroup className="price-box">
-                          <InputGroupAddon addonType="prepend">$</InputGroupAddon>
-                          <Input 
+                          <InputGroupAddon addonType="prepend">{user_info.country === 'uz' ? 'UZS' : 'KZT'}</InputGroupAddon>
+                          <Input
                             name="price"
                             type="text"
                             placeholder="price" 
