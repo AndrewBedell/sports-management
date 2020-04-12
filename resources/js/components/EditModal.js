@@ -97,6 +97,16 @@ class EditModal extends React.Component {
   }
 
   settingValues(props) {
+    var d = new Date(),
+        month = '' + (d.getMonth() + 1),
+        day = '' + d.getDate(),
+        year = d.getFullYear();
+
+    if (month.length < 2) 
+        month = '0' + month;
+    if (day.length < 2) 
+        day = '0' + day;
+
     const { item, org_list } = this.state;
     const {
       roles, weights, type
@@ -131,20 +141,20 @@ class EditModal extends React.Component {
           organization_id: null,
           role_id: null,
           profile_image: null,
-          register_date: null,
+          register_date: [year, month, day].join('-'),
           name: '',
-          patronymic: '',
+          // patronymic: '',
           surname: '',
           gender: null,
           birthday: null,
           email: '',
-          mobile_phone: '',
-          addressline1: '',
-          addressline2: '',
+          // mobile_phone: '',
+          // addressline1: '',
+          // addressline2: '',
           // country: null,
-          state: '',
-          city: '',
-          zip_code: '',
+          // state: '',
+          // city: '',
+          // zip_code: '',
           identity: '',
           weight: null,
           dan: null,
@@ -155,7 +165,7 @@ class EditModal extends React.Component {
     } else if (type && type.value && type.value === 'member') {
       formikRef2.current.setValues({
         name: values.name,
-        patronymic: values.patronymic,
+        // patronymic: values.patronymic,
         surname: values.surname,
         gender: values.gender == 1 ? Genders[0] : Genders[1],
         organization_id: org_list.filter(org => org.id === values.organization_id)[0],
@@ -164,18 +174,18 @@ class EditModal extends React.Component {
         register_date: values.register_date,
         birthday: values.birthday,
         email: values.email,
-        mobile_phone: values.mobile_phone,
-        addressline1: values.addressline1,
-        addressline2: values.addressline2,
+        // mobile_phone: values.mobile_phone,
+        // addressline1: values.addressline1,
+        // addressline2: values.addressline2,
         // country: countries.filter(country => country.countryCode === values.country)[0],
-        state: values.state,
-        city: values.city,
-        zip_code: values.zip_code,
+        // state: values.state,
+        // city: values.city,
+        // zip_code: values.zip_code,
         weight_id: weights.filter(weight => weight.id === values.weight_id)[0],
         dan: Dans.filter(dan => dan.value === values.dan)[0],
         identity: values.identity,
         position: values.role_id == 4 ? referee_type_options.filter(option => option.value == values.position) : values.position,
-        skill: values.skill || 0,
+        // skill: values.skill || 0,
         level: values.level
       });
     } else {
@@ -279,18 +289,18 @@ class EditModal extends React.Component {
       newData = {
         id,
         name: values.name,
-        patronymic: values.patronymic,
+        // patronymic: values.patronymic,
         surname: values.surname,
         gender: values.gender.id,
         birthday: moment(values.birthday).format('YYYY-MM-DD'),
         email: values.email,
-        mobile_phone: values.mobile_phone,
-        addressline1: values.addressline1,
-        addressline2: values.addressline2,
+        // mobile_phone: values.mobile_phone,
+        // addressline1: values.addressline1,
+        // addressline2: values.addressline2,
         // country: values.country.countryCode,
-        state: values.state,
-        city: values.city,
-        zip_code: values.zip_code,
+        // state: values.state,
+        // city: values.city,
+        // zip_code: values.zip_code,
         weight_id: values.role_id && values.role_id.is_player === 1 ? (values.weight_id && values.weight_id.id) : '',
         dan: values.role_id && values.role_id.is_player === 1 ? (values.dan && values.dan.value) : '',
         identity: values.identity,
@@ -299,9 +309,9 @@ class EditModal extends React.Component {
         profile_image: imagePreviewUrl || '',
         position: values.position.value ? values.position.value 
           : values.position.length > 0 && values.position[0].value || values.position,
-        skill: values.skill ? values.skill : '',
+        // skill: values.skill ? values.skill : '',
         active: item.active,
-        register_date: moment(values.register_date).format('YYYY-MM-DD'),
+        register_date: values.register_date,
         name_o: values.organization_id.name_o,
         level: values.level
       };
@@ -346,6 +356,16 @@ class EditModal extends React.Component {
       weights
     } = this.props;
 
+    var d = new Date(),
+        month = '' + (d.getMonth() + 1),
+        day = '' + d.getDate(),
+        year = d.getFullYear();
+
+    if (month.length < 2) 
+        month = '0' + month;
+    if (day.length < 2) 
+        day = '0' + day;
+
     return (
       <Modal
         isOpen={isOpen}
@@ -363,43 +383,43 @@ class EditModal extends React.Component {
                   organization_id: null,
                   role_id: null,
                   profile_image: null,
-                  register_date: null,
+                  register_date: [year, month, day].join('-'),
                   name: '',
-                  patronymic: '',
+                  // patronymic: '',
                   surname: '',
                   gender: null,
                   birthday: null,
                   email: '',
-                  mobile_phone: '',
-                  addressline1: '',
-                  addressline2: '',
+                  // mobile_phone: '',
+                  // addressline1: '',
+                  // addressline2: '',
                   // country: null,
-                  state: '',
-                  city: '',
-                  zip_code: '',
+                  // state: '',
+                  // city: '',
+                  // zip_code: '',
                   identity: '',
                   weight_id: null,
                   dan: null,
                   position: '',
-                  skill: ''
+                  // skill: ''
                 }}
                 validationSchema={
                   Yup.object().shape({
                     organization_id: Yup.mixed().required('This field is required!'),
                     role_id: Yup.mixed().required('This field is required!'),
                     // profile_image: Yup.mixed().required('Image is required!'),
-                    register_date: Yup.mixed().required('This field is required!'),
+                    // register_date: Yup.mixed().required('This field is required!'),
                     name: Yup.string().required('This field is required!'),
                     surname: Yup.string().required('This field is required!'),
                     gender: Yup.mixed().required('This field is required!'),
                     birthday: Yup.mixed().required('This field is required!'),
                     email: Yup.string().email('Email is not valid!').required('This field is required!'),
-                    mobile_phone: Yup.string().matches(/^\d+$/, 'Mobile phone is incorrect!').required('This field is required!'),
-                    addressline1: Yup.string().required('This field is required!'),
+                    // mobile_phone: Yup.string().matches(/^\d+$/, 'Mobile phone is incorrect!').required('This field is required!'),
+                    // addressline1: Yup.string().required('This field is required!'),
                     // country: Yup.mixed().required('This field is required!'),
-                    city: Yup.string().required('This field is required!'),
-                    state: Yup.string().required('This field is required!'),
-                    zip_code: Yup.string().required('This field is required!'),
+                    // city: Yup.string().required('This field is required!'),
+                    // state: Yup.string().required('This field is required!'),
+                    // zip_code: Yup.string().required('This field is required!'),
                     identity: Yup.string().required('This field is required!')
                   })
                 }
@@ -497,10 +517,13 @@ class EditModal extends React.Component {
                             onBlur={handleBlur}
                             invalid={!!errors.register_date && touched.register_date}
                           />
-                          {!!errors.register_date && touched.register_date && <FormFeedback className="d-block">{errors.register_date}</FormFeedback> }
+                          {
+                            !!errors.register_date && touched.register_date && 
+                              <FormFeedback className="d-block">{errors.register_date}</FormFeedback> 
+                          }
                         </FormGroup>
                       </Col>
-                      <Col sm="4">
+                      <Col sm="6">
                         <FormGroup>
                           <Label for="name">
                             Name
@@ -516,7 +539,7 @@ class EditModal extends React.Component {
                           <FormFeedback className="d-block">{errors.name}</FormFeedback>
                         </FormGroup>
                       </Col>
-                      <Col sm="4">
+                      {/* <Col sm="4">
                         <FormGroup>
                           <Label for="patronymic">
                             Patronymic
@@ -529,8 +552,8 @@ class EditModal extends React.Component {
                             onBlur={handleBlur}
                           />
                         </FormGroup>
-                      </Col>
-                      <Col sm="4">
+                      </Col> */}
+                      <Col sm="6">
                         <FormGroup>
                           <Label for="surname">
                             Surname
@@ -546,7 +569,7 @@ class EditModal extends React.Component {
                           <FormFeedback className="d-block">{errors.surname}</FormFeedback>
                         </FormGroup>
                       </Col>
-                      <Col sm="4">
+                      <Col sm="6">
                         <FormGroup>
                           <Label for="gender">Gender</Label>
                           <Select
@@ -567,7 +590,7 @@ class EditModal extends React.Component {
                           )}
                         </FormGroup>
                       </Col>
-                      <Col sm="8">
+                      <Col sm="6">
                         <FormGroup>
                           <Label for="birthday">Birthday</Label>
                           <Input
@@ -596,7 +619,7 @@ class EditModal extends React.Component {
                           {!!errors.email && touched.email && (<FormFeedback className="d-block">{errors.email}</FormFeedback>)}
                         </FormGroup>
                       </Col>
-                      <Col sm="6">
+                      {/* <Col sm="6">
                         <FormGroup>
                           <Label for="mobile_phone">Mobile phone</Label>
                           <Input
@@ -635,7 +658,7 @@ class EditModal extends React.Component {
                             onBlur={handleBlur}
                           />
                         </FormGroup>
-                      </Col>
+                      </Col> */}
                       {/* <Col sm="3" xs="6">
                         <FormGroup>
                           <Label for="country">Country</Label>
@@ -657,7 +680,7 @@ class EditModal extends React.Component {
                           )}
                         </FormGroup>
                       </Col> */}
-                      <Col sm="3" xs="6">
+                      {/* <Col sm="3" xs="6">
                         <FormGroup>
                           <Label for="state">State</Label>
                           <Input
@@ -698,13 +721,13 @@ class EditModal extends React.Component {
                           />
                           {!!errors.zip_code && touched.zip_code && (<FormFeedback className="d-block">{errors.zip_code}</FormFeedback>)}
                         </FormGroup>
-                      </Col>
-                      <Col sm="4" xs="6">
+                      </Col> */}
+                      <Col sm="6">
                         <FormGroup>
                           <Label for="identity">Identity</Label>
                           <Input
                             name="identity"
-                            type="text"
+                            type="text"                            
                             value={values.identity || ''}
                             onChange={handleChange}
                             onBlur={handleBlur}
@@ -715,7 +738,7 @@ class EditModal extends React.Component {
                       </Col>
                       {
                         values.role_id && values.role_id.is_player === 1 && (
-                          <Col sm="4" xs="6">
+                          <Col sm="6">
                             <Label for="weight_id">Weight</Label>
                             <Select
                               name="weight_id"
@@ -735,7 +758,7 @@ class EditModal extends React.Component {
                       }
                       {
                         values.role_id && values.role_id.is_player === 1 && (
-                          <Col sm="4" xs="6">
+                          <Col sm="6">
                             <Label for="dan">Dan</Label>
                             <Select
                               name="dan"
@@ -793,7 +816,7 @@ class EditModal extends React.Component {
                           </Col>
                         )
                       }
-                      {
+                      {/* {
                         values.role_id && values.role_id.is_player === 1 && (
                           <Col xs="6">
                             <FormGroup>
@@ -808,7 +831,7 @@ class EditModal extends React.Component {
                             </FormGroup>
                           </Col>
                         )
-                      }
+                      } */}
                     </Row>
                     <div className="w-100 d-flex justify-content-end">
                       <div>
