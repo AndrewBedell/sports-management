@@ -19,11 +19,9 @@ class CompetitionController extends Controller
 {
     public function index()
     {
-        $user = JWTAuth::parseToken()->authenticate();
-
-        $member = Member::find($user->member_id);
-
-        $competitions = Competition::where('creator_id', $member->organization_id)->get();
+        $competitions = Competition::where('from', 'like', date('Y') . '-%')
+                        ->orderBy('from')
+                        ->get();
 
         return response()->json([
             'status' => 200,
@@ -41,37 +39,25 @@ class CompetitionController extends Controller
         ]);
     }
 
-    public function find()
-    {
-        $user = JWTAuth::parseToken()->authenticate();
-
-        $member = Member::find($user->member_id);
-
-        $notifications = Notification::where('to', $member->organization_id)->get();
-
-        $ids = array();
-
-        foreach ($notifications as $notification) {
-            array_push($ids, $notification->subject_id);
-        }
-
-        $competitions = Competition::whereIn('id', $ids)->get();
-
-        return response()->json([
-            'status' => 200,
-            'competitions' => $competitions
-        ]);
-    }
-
     public function show($id)
     {
         $competition = Competition::find($id);
 
-        $reg_ids = explode(',', $competition->reg_ids);
-        $club_ids = explode(',', $competition->club_ids);
+        $clubs = CompetitionMembers::where('competition_id', $id)->get();
+        $club_ids = sizeof($clubs);
 
-        $competition->reg_ids = sizeof(array_filter($reg_ids));
-        $competition->club_ids = sizeof(array_filter($club_ids));
+        $regs = array();
+        foreach ($clubs as $club) {
+            $clubObj = Organization::find($club->club_id);
+
+            if (!in_array($clubObj->parent_id, $regs)) {
+                array_push($regs, $clubObj->parent_id);
+            }
+        }
+        $reg_ids = sizeof($regs);
+
+        $competition->reg_ids = $reg_ids;
+        $competition->club_ids = $club_ids;
 
         return response()->json([
             'status' => 200,
@@ -79,130 +65,143 @@ class CompetitionController extends Controller
         ]);
     }
 
-    public function accept($id) {
-        CompetitionMembers::where('competition_id', $id)->update(['status' => 1]);
+    // public function accept($id) {
+    //     CompetitionMembers::where('competition_id', $id)->update(['status' => 1]);
         
-        $result = array();
+    //     $result = array();
 
-        $competition = Competition::find($id);
+    //     $competition = Competition::find($id);
 
-        $club_ids = explode(',', $competition->club_ids);
+    //     $club_ids = explode(',', $competition->club_ids);
 
-        $clubs = Organization::leftJoin('organizations AS org', 'org.id', '=', 'organizations.parent_id')
-                            ->whereIn('organizations.id', $club_ids)
-                            ->select('organizations.id', 'organizations.name_o AS club_name', 'org.name_o AS reg_name')
-                            ->get();
+    //     $clubs = Organization::leftJoin('organizations AS org', 'org.id', '=', 'organizations.parent_id')
+    //                         ->whereIn('organizations.id', $club_ids)
+    //                         ->select('organizations.id', 'organizations.name_o AS club_name', 'org.name_o AS reg_name')
+    //                         ->get();
 
-        foreach ($clubs as $club) {
-            $comp = CompetitionMembers::where('competition_id', $id)
-                            ->where('club_id', $club->id)
-                            ->get();
+    //     foreach ($clubs as $club) {
+    //         $comp = CompetitionMembers::where('competition_id', $id)
+    //                         ->where('club_id', $club->id)
+    //                         ->get();
 
-            $male = 0;
-            $female = 0;
-            $officer = 0;
-            $status = 2;
+    //         $male = 0;
+    //         $female = 0;
+    //         $officer = 0;
+    //         $status = 2;
 
-            if (sizeof($comp) > 0) {
-                $member_ids = explode(',', $comp[0]->member_ids);
+    //         if (sizeof($comp) > 0) {
+    //             $member_ids = explode(',', $comp[0]->member_ids);
 
-                $members = Member::whereIn('id', $member_ids)->get();
+    //             $members = Member::whereIn('id', $member_ids)->get();
 
-                foreach ($members as $member) {
-                    if ($member->role_id == 3) {
-                        if ($member->gender == 1)
-                            $male++;
-                        else
-                            $female++;
-                    } else {
-                        $officer++;
-                    }
-                }
+    //             foreach ($members as $member) {
+    //                 if ($member->role_id == 3) {
+    //                     if ($member->gender == 1)
+    //                         $male++;
+    //                     else
+    //                         $female++;
+    //                 } else {
+    //                     $officer++;
+    //                 }
+    //             }
 
-                $status = $comp[0]->status;
-            }
+    //             $status = $comp[0]->status;
+    //         }
 
-            $club['male'] = $male;
-            $club['female'] = $female;
-            $club['officer'] = $officer;
-            $club['status'] = $status;
+    //         $club['male'] = $male;
+    //         $club['female'] = $female;
+    //         $club['officer'] = $officer;
+    //         $club['status'] = $status;
 
-            array_push($result, $club);
-        }
+    //         array_push($result, $club);
+    //     }
 
-        return response()->json([
-            'status' => 200,
-            'result' => $result
-        ]);
-    }
+    //     return response()->json([
+    //         'status' => 200,
+    //         'result' => $result
+    //     ]);
+    // }
 
-    public function orgs($id) {
-        $competition = Competition::find($id);
+    // public function orgs($id) {
+    //     $competition = Competition::find($id);
 
-        $reg_ids = explode(',', $competition->reg_ids);
-        $club_ids = explode(',', $competition->club_ids);
+    //     $reg_ids = explode(',', $competition->reg_ids);
+    //     $club_ids = explode(',', $competition->club_ids);
 
-        $exist = Organization::whereIn('parent_id', $reg_ids)->get();
+    //     $exist = Organization::whereIn('parent_id', $reg_ids)->get();
 
-        foreach ($exist as $obj) {
-            if (!in_array($obj->id, $club_ids)) {
-                $reg_ids = array_diff($reg_ids, [$obj->parent_id]);
-            }
-        }
+    //     foreach ($exist as $obj) {
+    //         if (!in_array($obj->id, $club_ids)) {
+    //             $reg_ids = array_diff($reg_ids, [$obj->parent_id]);
+    //         }
+    //     }
 
-        $regs = array();
-        $clubs = array();
+    //     $regs = array();
+    //     $clubs = array();
 
-        $creator = Organization::find($competition->creator_id);
+    //     $creator = Organization::find($competition->creator_id);
 
-        if ($creator->parent_id == 0) {
-            $regs = Organization::whereNotIn('id', $reg_ids)
-                            ->where('parent_id', $competition->creator_id)
-                            ->orderBy('name_o')
-                            ->get();
-        } else {
-            if ($creator->is_club == 1) {
-                $org = Organization::find($creator->parent_id);
-                $nf = Organization::find($org->parent_id);
+    //     if ($creator->parent_id == 0) {
+    //         $regs = Organization::whereNotIn('id', $reg_ids)
+    //                         ->where('parent_id', $competition->creator_id)
+    //                         ->orderBy('name_o')
+    //                         ->get();
+    //     } else {
+    //         if ($creator->is_club == 1) {
+    //             $org = Organization::find($creator->parent_id);
+    //             $nf = Organization::find($org->parent_id);
 
-                $regs = Organization::whereNotIn('id', $reg_ids)
-                            ->where('parent_id', $nf->id)
-                            ->orderBy('name_o')
-                            ->get();
-            } else {
-                $regs = Organization::where('id', $creator->id)->get();
-            }
-        }
+    //             $regs = Organization::whereNotIn('id', $reg_ids)
+    //                         ->where('parent_id', $nf->id)
+    //                         ->orderBy('name_o')
+    //                         ->get();
+    //         } else {
+    //             $regs = Organization::where('id', $creator->id)->get();
+    //         }
+    //     }
 
-        $parents = array();
-        foreach ($regs as $reg) {
-            array_push($parents, $reg->id);
-        }
+    //     $parents = array();
+    //     foreach ($regs as $reg) {
+    //         array_push($parents, $reg->id);
+    //     }
 
-        $clubs = Organization::whereIn('parent_id', $parents)
-                            ->whereNotIn('id', $club_ids)
-                            ->orderBy('name_o')
-                            ->get();
+    //     $clubs = Organization::whereIn('parent_id', $parents)
+    //                         ->whereNotIn('id', $club_ids)
+    //                         ->orderBy('name_o')
+    //                         ->get();
 
-        return response()->json([
-            'status' => 200,
-            'regs' =>$regs,
-            'clubs' => $clubs
-        ]);
-    }
+    //     return response()->json([
+    //         'status' => 200,
+    //         'regs' =>$regs,
+    //         'clubs' => $clubs
+    //     ]);
+    // }
 
-    public function clubs($id)
+    public function clubs(Request $request)
     {
-        $competition = Competition::find($id);
+        $input = $request->all();
+        
+        if ($input['club_id'] == '' || is_null($input['club_id'])) {
+            $comps = CompetitionMembers::where('competition_id', $input['competition_id'])->get();
 
-        $club_ids = explode(',', $competition->club_ids);
+            $club_ids = array();
 
-        $clubs = Organization::leftJoin('organizations AS org', 'org.id', '=', 'organizations.parent_id')
-                            ->whereIn('organizations.id', $club_ids)
-                            ->select('organizations.id', 'organizations.name_o AS club_name', 'org.name_o AS reg_name')
-                            ->get();
+            foreach ($comps  as $comp) {
+                array_push($club_ids, $comp->club_id);
+            }
 
-        $result = $this->getClubs($id, $clubs);
+            $clubs = Organization::leftJoin('organizations AS org', 'org.id', '=', 'organizations.parent_id')
+                                ->whereIn('organizations.id', $club_ids)
+                                ->select('organizations.id', 'organizations.name_o AS club_name', 'org.name_o AS reg_name')
+                                ->get();
+        } else {
+            $clubs = Organization::leftJoin('organizations AS org', 'org.id', '=', 'organizations.parent_id')
+                                ->where('organizations.id', $input['club_id'])
+                                ->select('organizations.id', 'organizations.name_o AS club_name', 'org.name_o AS reg_name')
+                                ->get();
+        }
+
+        $result = $this->getClubs($input['competition_id'], $clubs);
 
         return response()->json([
             'status' => 200,
@@ -222,13 +221,18 @@ class CompetitionController extends Controller
 
         $validator = Validator::make($data, [
             'creator_id' => 'required|integer',
-            'type' => 'required|string|max:255',
-            'level' => 'required|string|max:255',
             'name' => 'required|string|max:255',
+            'short_name' => 'required|string|max:255',
             'place' => 'required|string|max:255',
+            'type' => 'required|string|max:255',
             'from' => 'required|string|max:255',
             'to' => 'required|string|max:255',
-            'unit_ids' => 'required|string|max:255'
+            'register_from' => 'required|string|max:255',
+            'register_to' => 'required|string|max:255',
+            'legal_birth_from' => 'required|string|max:255',
+            'legal_birth_to' => 'required|string|max:255',
+            'gender' => 'required|string|max:255',
+            'weights' => 'required|string|max:255'
         ]);
 
         if ($validator->fails()) {
@@ -248,92 +252,57 @@ class CompetitionController extends Controller
                     ],
                     406
                 );
-            } else {
-                $reg_ids = '';
-                $club_ids = '';
-                $regArr = array();
-                $clubArr = array();
-
-                if ($data['type'] == 'inter' || $data['type'] == 'nf') {
-                    $regArr = explode(',', $data['unit_ids']);
-
-                    foreach ($regArr as $id) {
-                        $clubs = Organization::where('parent_id', $id)->get();
-
-                        foreach ($clubs as $club) {
-                            $club_ids .= $club->id . ',';
-                            array_push($clubArr, $club->id);
-                        }
-                    }
-
-                    $reg_ids = $data['unit_ids'];
-                    $club_ids = substr($club_ids, 0, strlen($club_ids) - 1);
-                }
-                
-                if ($data['type'] == 'reg') {
-                    array_push($regArr, $data['creator_id']);
-                    $clubArr = explode(',', $data['unit_ids']);
-
-                    $reg_ids = $data['creator_id'];
-                    $club_ids = $data['unit_ids'];
-                }
-
-                if ($data['type'] == 'club') {
-                    $clubArr = explode(',', $data['unit_ids']);
-                    array_push($clubArr, $data['creator_id']);
-
-                    foreach ($clubArr as $id) {
-                        $club = Organization::find($id);
-
-                        array_push($regArr, $club->parent_id);
-
-                        $reg_ids .= $club->parent_id . ',';
-                    }
-
-                    $reg_ids = substr($reg_ids, 0, strlen($reg_ids) - 1);
-                    $club_ids = $data['unit_ids'];
-                }
-
-                $competition = Competition::create(array(
-                    'creator_id' => $data['creator_id'],
-                    'type' => $data['type'],
-                    'level' => $data['level'],
-                    'name' => $data['name'],
-                    'place' => $data['place'],
-                    'from' => $data['from'],
-                    'to' => $data['to'],
-                    'reg_ids' => $reg_ids,
-                    'club_ids' => $club_ids
-                ));
-
-                foreach ($regArr as $reg_id) {
-                    Notification::create(array(
-                        'subject_id' => $competition->id,
-                        'content' => 
-                            'The competition "' . $data['name'] . '" is open from ' . 
-                            $data['from'] . ' to ' . $data['to'] . '.',
-                        'from' => $data['creator_id'],
-                        'to' => $reg_id,
-                        'status' => 0
-                    ));
-                }
-
-                foreach ($clubArr as $club_id) {
-                    Notification::create(array(
-                        'subject_id' => $competition->id,
-                        'content' => 
-                            'The competition "' . $data['name'] . '" is open from ' . 
-                            $data['from'] . ' to ' . $data['to'] . '.',
-                        'from' => $data['creator_id'],
-                        'to' => $club_id,
-                        'status' => 0
-                    ));
-                }
-
-                return response()->json([
-                    'status' => 'success'
-                ], 200);
             }
+
+            if ($data['register_from'] > $data['register_to']) {
+                return response()->json(
+                    [
+                        'status' => 'fail',
+                        'message' => 'Registration period is not valid',
+                    ],
+                    406
+                );
+            }
+
+            if ($data['register_to'] > $data['from']) {
+                return response()->json(
+                    [
+                        'status' => 'fail',
+                        'message' => 'Registration period is not valid',
+                    ],
+                    406
+                );
+            }
+
+            if ($data['legal_birth_from'] > $data['legal_birth_to']) {
+                return response()->json(
+                    [
+                        'status' => 'fail',
+                        'message' => 'Registration period is not valid',
+                    ],
+                    406
+                );
+            }
+
+            $competition = Competition::create(array(
+                'creator_id' => $data['creator_id'],
+                'name' => $data['name'],
+                'short_name' => $data['short_name'],
+                'place' => $data['place'],
+                'type' => $data['type'],
+                'from' => $data['from'],
+                'to' => $data['to'],
+                'register_from' => $data['register_from'],
+                'register_to' => $data['register_to'],
+                'legal_birth_from' => $data['legal_birth_from'],
+                'legal_birth_to' => $data['legal_birth_to'],
+                'gender' => $data['gender'],
+                'weights' => $data['weights']
+            ));
+
+            return response()->json([
+                'status' => 'success'
+            ], 200);
         }
     }
 
@@ -341,27 +310,23 @@ class CompetitionController extends Controller
     {
         $data = $request->all();
 
-        $notification = Notification::find($data['notification']);
-
-        $competition = $notification->subject_id;
-
         $members = '';
 
         foreach ($data['members'] as $member) {
             $members .= $member . ',';
         }
 
-        $compMembers = CompetitionMembers::where('competition_id', $competition)
+        $compMembers = CompetitionMembers::where('competition_id', $data['competition_id'])
                         ->where('club_id', $data['club_id'])
                         ->get();
 
         if (sizeof($compMembers) > 0) {
-            CompetitionMembers::where('competition_id', $competition)
+            CompetitionMembers::where('competition_id', $data['competition_id'])
                         ->where('club_id', $data['club_id'])
                         ->update(['member_ids' => $members]);
         } else {
             CompetitionMembers::create(array(
-                'competition_id' => $competition,
+                'competition_id' => $data['competition_id'],
                 'club_id' => $data['club_id'],
                 'member_ids' => substr($members, 0, strlen($members) - 1),
                 'status' => 0
@@ -370,336 +335,336 @@ class CompetitionController extends Controller
 
         $club = Organization::find($data['club_id']);
 
-        Notification::create(array(
-            'subject_id' => $competition,
-            'content' => 'The club "' . $club->name_o . '" sent the request for attending in competition.',
-            'from' => $data['club_id'],
-            'to' => $notification->from,
-            'status' => 0
-        ));
+        // Notification::create(array(
+        //     'subject_id' => $competition,
+        //     'content' => 'The club "' . $club->name_o . '" sent the request for attending in competition.',
+        //     'from' => $data['club_id'],
+        //     'to' => $notification->from,
+        //     'status' => 0
+        // ));
 
         return response()->json([
             'status' => 'success'
         ], 200);
     }
 
-    public function addClub(Request $request)
-    {
-        $data = $request->all();
+    // public function addClub(Request $request)
+    // {
+    //     $data = $request->all();
 
-        $competition = Competition::find($data['competition_id']);
+    //     $competition = Competition::find($data['competition_id']);
 
-        $regIDs = explode(',', $competition->reg_ids);
+    //     $regIDs = explode(',', $competition->reg_ids);
 
-        if (in_array($data['reg_id'], $regIDs)) {
-            $reg_ids = $competition->reg_ids;
-        } else {
-            $reg_ids = $data['reg_id'] . ',' . $competition->reg_ids;
-        }
+    //     if (in_array($data['reg_id'], $regIDs)) {
+    //         $reg_ids = $competition->reg_ids;
+    //     } else {
+    //         $reg_ids = $data['reg_id'] . ',' . $competition->reg_ids;
+    //     }
         
-        $club_ids = $data['club_id'] . ',' . $competition->club_ids;
+    //     $club_ids = $data['club_id'] . ',' . $competition->club_ids;
 
-        $competition = Competition::where('id', $data['competition_id'])
-                                ->update([
-                                    'reg_ids' => $reg_ids,
-                                    'club_ids' => $club_ids
-                                ]);
+    //     $competition = Competition::where('id', $data['competition_id'])
+    //                             ->update([
+    //                                 'reg_ids' => $reg_ids,
+    //                                 'club_ids' => $club_ids
+    //                             ]);
 
-        $competition = Competition::find($data['competition_id']);
+    //     $competition = Competition::find($data['competition_id']);
 
-        if (!in_array($data['reg_id'], $regIDs)) {
-            Notification::create(array(
-                'subject_id' => $competition->id,
-                'content' => 
-                    'The competition "' . $competition->name . '" is open from '
-                    . $competition->from . ' to ' . $competition->to . '.',
-                'from' => $competition->creator_id,
-                'to' => $data['reg_id'],
-                'status' => 0
-            ));
-        }
+    //     if (!in_array($data['reg_id'], $regIDs)) {
+    //         Notification::create(array(
+    //             'subject_id' => $competition->id,
+    //             'content' => 
+    //                 'The competition "' . $competition->name . '" is open from '
+    //                 . $competition->from . ' to ' . $competition->to . '.',
+    //             'from' => $competition->creator_id,
+    //             'to' => $data['reg_id'],
+    //             'status' => 0
+    //         ));
+    //     }
 
-        Notification::create(array(
-            'subject_id' => $competition->id,
-            'content' => 
-                'The competition "' . $competition->name . '" is open from '
-                . $competition->from . ' to ' . $competition->to . '.',
-            'from' => $competition->creator_id,
-            'to' => $data['club_id'],
-            'status' => 0
-        ));
+    //     Notification::create(array(
+    //         'subject_id' => $competition->id,
+    //         'content' => 
+    //             'The competition "' . $competition->name . '" is open from '
+    //             . $competition->from . ' to ' . $competition->to . '.',
+    //         'from' => $competition->creator_id,
+    //         'to' => $data['club_id'],
+    //         'status' => 0
+    //     ));
 
-        $reg_ids = explode(',', $reg_ids);
-        $club_ids = explode(',', $club_ids);
+    //     $reg_ids = explode(',', $reg_ids);
+    //     $club_ids = explode(',', $club_ids);
 
-        $clubs = Organization::leftJoin('organizations AS org', 'org.id', '=', 'organizations.parent_id')
-                            ->whereIn('organizations.id', $club_ids)
-                            ->select('organizations.id', 'organizations.name_o AS club_name', 'org.name_o AS reg_name')
-                            ->get();
+    //     $clubs = Organization::leftJoin('organizations AS org', 'org.id', '=', 'organizations.parent_id')
+    //                         ->whereIn('organizations.id', $club_ids)
+    //                         ->select('organizations.id', 'organizations.name_o AS club_name', 'org.name_o AS reg_name')
+    //                         ->get();
 
-        $result = $this->getClubs($competition->id, $clubs);
+    //     $result = $this->getClubs($competition->id, $clubs);
 
-        $exist = Organization::whereIn('parent_id', $reg_ids)->get();
+    //     $exist = Organization::whereIn('parent_id', $reg_ids)->get();
 
-        foreach ($exist as $obj) {
-            if (!in_array($obj->id, $club_ids)) {
-                $reg_ids = array_diff($reg_ids, [$obj->parent_id]);
-            }
-        }
+    //     foreach ($exist as $obj) {
+    //         if (!in_array($obj->id, $club_ids)) {
+    //             $reg_ids = array_diff($reg_ids, [$obj->parent_id]);
+    //         }
+    //     }
 
-        $regs = array();
-        $clubs = array();
+    //     $regs = array();
+    //     $clubs = array();
 
-        $creator = Organization::find($competition->creator_id);
+    //     $creator = Organization::find($competition->creator_id);
 
-        if ($creator->parent_id == 0) {
-            $regs = Organization::whereNotIn('id', $reg_ids)
-                            ->where('parent_id', $competition->creator_id)
-                            ->orderBy('name_o')
-                            ->get();
-        } else {
-            if ($creator->is_club == 1) {
-                $org = Organization::find($creator->parent_id);
-                $nf = Organization::find($org->parent_id);
+    //     if ($creator->parent_id == 0) {
+    //         $regs = Organization::whereNotIn('id', $reg_ids)
+    //                         ->where('parent_id', $competition->creator_id)
+    //                         ->orderBy('name_o')
+    //                         ->get();
+    //     } else {
+    //         if ($creator->is_club == 1) {
+    //             $org = Organization::find($creator->parent_id);
+    //             $nf = Organization::find($org->parent_id);
 
-                $regs = Organization::whereNotIn('id', $reg_ids)
-                            ->where('parent_id', $nf->id)
-                            ->orderBy('name_o')
-                            ->get();
-            } else {
-                $regs = Organization::where('id', $creator->id)->get();
-            }
-        }
+    //             $regs = Organization::whereNotIn('id', $reg_ids)
+    //                         ->where('parent_id', $nf->id)
+    //                         ->orderBy('name_o')
+    //                         ->get();
+    //         } else {
+    //             $regs = Organization::where('id', $creator->id)->get();
+    //         }
+    //     }
 
-        $parents = array();
-        foreach ($regs as $reg) {
-            array_push($parents, $reg->id);
-        }
+    //     $parents = array();
+    //     foreach ($regs as $reg) {
+    //         array_push($parents, $reg->id);
+    //     }
 
-        $clubs = Organization::whereIn('parent_id', $parents)
-                            ->whereNotIn('id', $club_ids)
-                            ->orderBy('name_o')
-                            ->get();
+    //     $clubs = Organization::whereIn('parent_id', $parents)
+    //                         ->whereNotIn('id', $club_ids)
+    //                         ->orderBy('name_o')
+    //                         ->get();
 
-        return response()->json([
-            'status' => 'success',
-            'message' => 'The club added successfully.',
-            'result' => $result,
-            'regs' => $regs,
-            'clubs' => $clubs
-        ], 200);
-    }
+    //     return response()->json([
+    //         'status' => 'success',
+    //         'message' => 'The club added successfully.',
+    //         'result' => $result,
+    //         'regs' => $regs,
+    //         'clubs' => $clubs
+    //     ], 200);
+    // }
 
-    public function destroyClub(Request $request)
-    {
-        $data = $request->all();
+    // public function destroyClub(Request $request)
+    // {
+    //     $data = $request->all();
 
-        $competition = Competition::find($data['competition_id']);
+    //     $competition = Competition::find($data['competition_id']);
 
-        $club_ids = explode(',', $competition->club_ids);
-        $club_ids = array_diff($club_ids, [$data['club_id']]);
+    //     $club_ids = explode(',', $competition->club_ids);
+    //     $club_ids = array_diff($club_ids, [$data['club_id']]);
 
-        $reg_ids = explode(',', $competition->reg_ids);
+    //     $reg_ids = explode(',', $competition->reg_ids);
         
-        $org = Organization::find($data['club_id']);
-        $clubs = Organization::where('parent_id', $org->parent_id)
-                            ->where('id', '!=', $data['club_id'])
-                            ->get();
+    //     $org = Organization::find($data['club_id']);
+    //     $clubs = Organization::where('parent_id', $org->parent_id)
+    //                         ->where('id', '!=', $data['club_id'])
+    //                         ->get();
 
-        $flag = true;
+    //     $flag = true;
 
-        if (sizeof($clubs) > 0) {
-            foreach ($clubs as $club) {
-                if (in_array($club->id, $club_ids)) {
-                    $flag = false;
-                }
-            }
+    //     if (sizeof($clubs) > 0) {
+    //         foreach ($clubs as $club) {
+    //             if (in_array($club->id, $club_ids)) {
+    //                 $flag = false;
+    //             }
+    //         }
 
-            if ($flag) {
-                $reg_ids = array_diff($reg_ids, [$org->parent_id]);
-            }
-        } else {
-            $reg_ids = array_diff($reg_ids, [$org->parent_id]);
-        }
+    //         if ($flag) {
+    //             $reg_ids = array_diff($reg_ids, [$org->parent_id]);
+    //         }
+    //     } else {
+    //         $reg_ids = array_diff($reg_ids, [$org->parent_id]);
+    //     }
 
-        $udpateClub = '';
-        foreach ($club_ids as $id) {
-            $udpateClub .= $id . ',';
-        }
+    //     $udpateClub = '';
+    //     foreach ($club_ids as $id) {
+    //         $udpateClub .= $id . ',';
+    //     }
 
-        $udpateReg = '';
-        foreach ($reg_ids as $id) {
-            $udpateReg .= $id . ',';
-        }
+    //     $udpateReg = '';
+    //     foreach ($reg_ids as $id) {
+    //         $udpateReg .= $id . ',';
+    //     }
 
-        $reg_ids = substr($udpateReg, 0, strlen($udpateReg) - 1);
-        $club_ids = substr($udpateClub, 0, strlen($udpateClub) - 1);
+    //     $reg_ids = substr($udpateReg, 0, strlen($udpateReg) - 1);
+    //     $club_ids = substr($udpateClub, 0, strlen($udpateClub) - 1);
 
-        Competition::where('id', $data['competition_id'])
-                    ->update([
-                        'reg_ids' => $reg_ids,
-                        'club_ids' => $club_ids
-                    ]);
+    //     Competition::where('id', $data['competition_id'])
+    //                 ->update([
+    //                     'reg_ids' => $reg_ids,
+    //                     'club_ids' => $club_ids
+    //                 ]);
 
-        CompetitionMembers::where('competition_id', $data['competition_id'])
-                        ->where('club_id', $data['club_id'])
-                        ->delete();
+    //     CompetitionMembers::where('competition_id', $data['competition_id'])
+    //                     ->where('club_id', $data['club_id'])
+    //                     ->delete();
 
-        if ($flag) {
-            Notification::where('subject_id', $data['competition_id'])
-                        ->where('to', $org->parent_id)
-                        ->delete();
-        }
+    //     if ($flag) {
+    //         Notification::where('subject_id', $data['competition_id'])
+    //                     ->where('to', $org->parent_id)
+    //                     ->delete();
+    //     }
 
-        Notification::where('subject_id', $data['competition_id'])
-                        ->where('to', $data['club_id'])
-                        ->delete();
+    //     Notification::where('subject_id', $data['competition_id'])
+    //                     ->where('to', $data['club_id'])
+    //                     ->delete();
 
-        return response()->json([
-            'status' => 'success',
-            'message' => 'The club "' . $org->name_o . '" deleted Successfully.'
-        ], 200);
-    }
+    //     return response()->json([
+    //         'status' => 'success',
+    //         'message' => 'The club "' . $org->name_o . '" deleted Successfully.'
+    //     ], 200);
+    // }
 
-    public function addMembers(Request $request)
-    {
-        $data = $request->all();
+    // public function addMembers(Request $request)
+    // {
+    //     $data = $request->all();
 
-        $competition = Competition::find($data['competition_id']);
+    //     $competition = Competition::find($data['competition_id']);
 
-        $compMembers = CompetitionMembers::where('competition_id', $data['competition_id'])
-                            ->where('club_id', $data['club_id'])
-                            ->get();
+    //     $compMembers = CompetitionMembers::where('competition_id', $data['competition_id'])
+    //                         ->where('club_id', $data['club_id'])
+    //                         ->get();
 
-        $members = array();
+    //     $members = array();
 
-        if (sizeof($compMembers) > 0) {
-            $mem_ids = explode(',', $compMembers[0]->member_ids);
+    //     if (sizeof($compMembers) > 0) {
+    //         $mem_ids = explode(',', $compMembers[0]->member_ids);
 
-            $members = Member::leftJoin('players', 'players.member_id', '=', 'members.id')
-                        ->leftJoin('roles', 'roles.id', '=', 'members.role_id')
-                        ->leftJoin('weights', 'weights.id', '=', 'players.weight_id')
-                        ->where('members.organization_id', $data['club_id'])
-                        ->whereNotIn('members.id', $mem_ids)
-                        ->where('members.active', 1)
-                        ->select('members.*', 'roles.name as role_name', 'weights.weight', 'players.dan')
-                        ->orderBy('players.weight_id')
-                        ->orderBy('members.name')
-                        ->get();
-        } else {
-            $members = Member::leftJoin('players', 'players.member_id', '=', 'members.id')
-                        ->leftJoin('roles', 'roles.id', '=', 'members.role_id')
-                        ->leftJoin('weights', 'weights.id', '=', 'players.weight_id')
-                        ->where('members.organization_id', $data['club_id'])
-                        ->where('members.active', 1)
-                        ->select('members.*', 'roles.name as role_name', 'weights.weight', 'players.dan')
-                        ->orderBy('players.weight_id')
-                        ->orderBy('members.name')
-                        ->get();
-        }
+    //         $members = Member::leftJoin('players', 'players.member_id', '=', 'members.id')
+    //                     ->leftJoin('roles', 'roles.id', '=', 'members.role_id')
+    //                     ->leftJoin('weights', 'weights.id', '=', 'players.weight_id')
+    //                     ->where('members.organization_id', $data['club_id'])
+    //                     ->whereNotIn('members.id', $mem_ids)
+    //                     ->where('members.active', 1)
+    //                     ->select('members.*', 'roles.name as role_name', 'weights.weight', 'players.dan')
+    //                     ->orderBy('players.weight_id')
+    //                     ->orderBy('members.name')
+    //                     ->get();
+    //     } else {
+    //         $members = Member::leftJoin('players', 'players.member_id', '=', 'members.id')
+    //                     ->leftJoin('roles', 'roles.id', '=', 'members.role_id')
+    //                     ->leftJoin('weights', 'weights.id', '=', 'players.weight_id')
+    //                     ->where('members.organization_id', $data['club_id'])
+    //                     ->where('members.active', 1)
+    //                     ->select('members.*', 'roles.name as role_name', 'weights.weight', 'players.dan')
+    //                     ->orderBy('players.weight_id')
+    //                     ->orderBy('members.name')
+    //                     ->get();
+    //     }
 
-        $result = array();
+    //     $result = array();
 
-        foreach ($members as $member) {
-            if ($member->role_id == 3) {
-                $birthday = date_create($member->birthday);
-                $today = date_create(Date('Y-m-d'));
+    //     foreach ($members as $member) {
+    //         if ($member->role_id == 3) {
+    //             $birthday = date_create($member->birthday);
+    //             $today = date_create(Date('Y-m-d'));
 
-                $diff = date_diff($birthday, $today);
+    //             $diff = date_diff($birthday, $today);
 
-                if ($competition->level == 'cadet') {
-                    if ($diff->y < 18 || ($diff->y == 18 && $diff->m == 0 && $diff->d == 0)) {
-                        array_push($result, $member);
-                    }
-                } else {
-                    if ($diff->y > 18 || ($diff->y == 18 && ($diff->m > 0 || $diff->d > 0))) {
-                        array_push($result, $member);
-                    }
-                }
-            } else {
-                array_push($result, $member);
-            }    
-        }
+    //             if ($competition->level == 'cadet') {
+    //                 if ($diff->y < 18 || ($diff->y == 18 && $diff->m == 0 && $diff->d == 0)) {
+    //                     array_push($result, $member);
+    //                 }
+    //             } else {
+    //                 if ($diff->y > 18 || ($diff->y == 18 && ($diff->m > 0 || $diff->d > 0))) {
+    //                     array_push($result, $member);
+    //                 }
+    //             }
+    //         } else {
+    //             array_push($result, $member);
+    //         }    
+    //     }
         
-        return response()->json([
-            'status' => 200,
-            'members' => $result
-        ]);
-    }
+    //     return response()->json([
+    //         'status' => 200,
+    //         'members' => $result
+    //     ]);
+    // }
 
-    public function addMember(Request $request)
-    {
-        $data = $request->all();
+    // public function addMember(Request $request)
+    // {
+    //     $data = $request->all();
 
-        $compMembers = CompetitionMembers::where('competition_id', $data['competition_id'])
-                            ->where('club_id', $data['club_id'])
-                            ->get();
+    //     $compMembers = CompetitionMembers::where('competition_id', $data['competition_id'])
+    //                         ->where('club_id', $data['club_id'])
+    //                         ->get();
 
-        $ids = array();
+    //     $ids = array();
 
-        if (sizeof($compMembers) > 0) {
-            $member_ids = $compMembers[0]->member_ids;
-            $member_ids .= ',' . $data['member_id'];
+    //     if (sizeof($compMembers) > 0) {
+    //         $member_ids = $compMembers[0]->member_ids;
+    //         $member_ids .= ',' . $data['member_id'];
 
-            CompetitionMembers::where('competition_id', $data['competition_id'])
-                                ->where('club_id', $data['club_id'])
-                                ->update(['member_ids' => $member_ids]);
+    //         CompetitionMembers::where('competition_id', $data['competition_id'])
+    //                             ->where('club_id', $data['club_id'])
+    //                             ->update(['member_ids' => $member_ids]);
 
-            $ids = explode(',', $member_ids);
-        } else {
-            CompetitionMembers::create(array(
-                'competition_id' => $data['competition_id'],
-                'club_id' => $data['club_id'],
-                'member_ids' => $data['member_id'],
-                'status' => 0
-            ));
+    //         $ids = explode(',', $member_ids);
+    //     } else {
+    //         CompetitionMembers::create(array(
+    //             'competition_id' => $data['competition_id'],
+    //             'club_id' => $data['club_id'],
+    //             'member_ids' => $data['member_id'],
+    //             'status' => 0
+    //         ));
 
-            $ids[0] = $data['member_id'];
-        }
+    //         $ids[0] = $data['member_id'];
+    //     }
 
-        $members = Member::leftJoin('players', 'players.member_id', '=', 'members.id')
-                            ->leftJoin('roles', 'roles.id', '=', 'members.role_id')
-                            ->leftJoin('weights', 'weights.id', '=', 'players.weight_id')
-                            ->whereIn('members.id', $ids)
-                            ->where('members.active', 1)
-                            ->select('members.*', 'roles.name as role_name', 'weights.weight', 'players.dan')
-                            ->orderBy('players.weight_id')
-                            ->orderBy('members.name')
-                            ->get();
+    //     $members = Member::leftJoin('players', 'players.member_id', '=', 'members.id')
+    //                         ->leftJoin('roles', 'roles.id', '=', 'members.role_id')
+    //                         ->leftJoin('weights', 'weights.id', '=', 'players.weight_id')
+    //                         ->whereIn('members.id', $ids)
+    //                         ->where('members.active', 1)
+    //                         ->select('members.*', 'roles.name as role_name', 'weights.weight', 'players.dan')
+    //                         ->orderBy('players.weight_id')
+    //                         ->orderBy('members.name')
+    //                         ->get();
 
-        return response()->json([
-            'status' => 200,
-            'message' => 'One member added successfully.',
-            'members' => $members
-        ]);
-    }
+    //     return response()->json([
+    //         'status' => 200,
+    //         'message' => 'One member added successfully.',
+    //         'members' => $members
+    //     ]);
+    // }
 
-    public function removeMember(Request $request)
-    {
-        $data = $request->all();
+    // public function removeMember(Request $request)
+    // {
+    //     $data = $request->all();
 
-        $compMembers = CompetitionMembers::where('competition_id', $data['competition_id'])
-                            ->where('club_id', $data['club_id'])
-                            ->get();
+    //     $compMembers = CompetitionMembers::where('competition_id', $data['competition_id'])
+    //                         ->where('club_id', $data['club_id'])
+    //                         ->get();
 
-        $members = explode(',', $compMembers[0]->member_ids);
-        $members = array_diff($members, [$data['member_id']]);
+    //     $members = explode(',', $compMembers[0]->member_ids);
+    //     $members = array_diff($members, [$data['member_id']]);
 
-        $member_ids = '';
+    //     $member_ids = '';
 
-        foreach ($members as $member) {
-            $member_ids .= $member . ',';
-        }
+    //     foreach ($members as $member) {
+    //         $member_ids .= $member . ',';
+    //     }
 
-        CompetitionMembers::where('competition_id', $data['competition_id'])
-                        ->where('club_id', $data['club_id'])
-                        ->update(['member_ids' => substr($member_ids, 0, strlen($member_ids) - 1)]);
+    //     CompetitionMembers::where('competition_id', $data['competition_id'])
+    //                     ->where('club_id', $data['club_id'])
+    //                     ->update(['member_ids' => substr($member_ids, 0, strlen($member_ids) - 1)]);
 
-        return response()->json([
-            'status' => 200,
-            'message' => 'One member deleted successfully.'
-        ]);
-    }
+    //     return response()->json([
+    //         'status' => 200,
+    //         'message' => 'One member deleted successfully.'
+    //     ]);
+    // }
 
     public function getClubs($competition_id, $clubs)
     {

@@ -71788,7 +71788,7 @@ body {
 }
 
 body {
-  background-color: #FFFFFF;
+  background-color: #e2e2e2;
 }
 
 body .main-content {
@@ -71940,7 +71940,7 @@ body .main-content {
 
 .tile-content.dashboard .container .tiles .card .card-title .month {
   color: red;
-  font-size: 25px;
+  font-size: 24px;
   font-weight: bold;
   margin-left: 5px;
   margin-top: 35px;
@@ -71957,9 +71957,9 @@ body .main-content {
 
 .tile-content.dashboard .container .tiles .card .card-title .day {
   color: blue;
-  font-size: 30px;
+  font-size: 25px;
   font-weight: bold;
-  margin-left: 55px;
+  margin-left: 50px;
   margin-top: 30px;
   position: absolute;
 }
@@ -72035,14 +72035,6 @@ body .main-content {
   }
 }
 
-.tooltip .tooltip-inner {
-  font-size: 16px;
-}
-
-.tooltip .arrow {
-  top: 12px;
-}
-
 .main-content .ui.table {
   border-color: #000;
   border-top: none;
@@ -72065,6 +72057,49 @@ body .main-content {
 
 .main-content .ui.table td {
   border-bottom: none;
+}
+
+.main-content .ui.table.competition {
+  border: none;
+}
+
+.main-content .ui.table.competition tr:last-child td {
+  border-bottom: 1px solid #E1E5EB;
+}
+
+.main-content .ui.table.competition tr:nth-child(even) {
+  background-color: #FFFFFF;
+}
+
+.main-content .ui.table.competition tr:nth-child(odd) {
+  background-color: #F5F7FA;
+}
+
+.main-content .ui.table.competition tr:hover {
+  background-color: #dee2e6;
+}
+
+.main-content .ui.table.competition tr th {
+  background-color: #e2e2e2;
+}
+
+.main-content .ui.table.competition tr th,
+.main-content .ui.table.competition tr td {
+  border-bottom: none;
+  border-left: none;
+  border-right: none;
+  border-top: 1px solid #E1E5EB;
+}
+
+.main-content .ui.table.competition tr th > a:hover,
+.main-content .ui.table.competition tr td > a:hover {
+  color: #dc3545;
+  cursor: pointer;
+}
+
+.main-content .container {
+  background-color: #FFFFFF;
+  padding: 20px;
 }
 
 .main-content .container hr {
@@ -72155,6 +72190,11 @@ body .main-content {
 .main-content .form-group input:not([type=file]),
 .main-content .form-group .input-group-text {
   border: 1px solid #000;
+}
+
+.main-content .form-group input:not([type=file]).is-invalid,
+.main-content .form-group .input-group-text.is-invalid {
+  border: 1px solid #dc3545;
 }
 
 .main-content .form-group .price-box {

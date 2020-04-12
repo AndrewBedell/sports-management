@@ -16,14 +16,18 @@ class CreateCompetitionsTable extends Migration
         Schema::create('competitions', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->integer('creator_id');
-            $table->string('type');
-            $table->string('level');
             $table->string('name');
+            $table->string('short_name');
             $table->string('place');
+            $table->string('type');
             $table->date('from');
             $table->date('to');
-            $table->string('reg_ids', 2000);
-            $table->string('club_ids', 2000);
+            $table->date('register_from');
+            $table->date('register_to');
+            $table->year('legal_birth_from');
+            $table->year('legal_birth_to');
+            $table->string('gender', 10);
+            $table->string('weights');
             $table->timestamps();
             $table->softDeletes();
         });

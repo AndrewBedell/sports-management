@@ -10,6 +10,7 @@ import {
 import {
   Container, Row, Col
 } from 'reactstrap';
+import Select from 'react-select';
 
 import Api from '../../apis/app';
 
@@ -21,44 +22,73 @@ class Competitions extends Component {
     super(props);
 
     this.state={
-      is_nf: 0,
-      competitions: []
+      year: [],
+      years: [],
+      competitions: [],
+      init_comps: []
     };
   }
 
   async componentDidMount() {
-    const user = JSON.parse(localStorage.getItem('auth'));
-    const is_nf = user.user.is_nf;
+    let d = new Date();
+    let n = d.getFullYear();
+
+    let years = [];
+
+    for (var i = n + 1; i > n - 10; i--) {
+      years.push({id: i, value: i});
+    }
+
+    let months = ['January', 'February', 'March', 'April', 'May', 'June', 
+                  'July', 'August', 'September', 'October', 'November', 'December'];
 
     this.setState({
-      is_nf
+      year: {id: n, value: n},
+      years
     });
 
-    if (is_nf == 1) {
-      const competitions = await Api.get('competitions');
-      const { response, body } = competitions;
-      switch (response.status) {
-        case 200:
-          this.setState({
-            competitions: body.competitions
-          });
-          break;
-        default:
-          break;
-      }
-    } else {
-      const competitions = await Api.get('find-competitions');
-      const { response, body } = competitions;
-      switch (response.status) {
-        case 200:
-          this.setState({
-            competitions: body.competitions
-          });
-          break;
-        default:
-          break;
-      }
+    const competitions = await Api.get('competitions');
+    const { response, body } = competitions;
+    switch (response.status) {
+      case 200:
+        let competitions = body.competitions;
+        competitions.map((comp) => {
+          let from = comp.from.match(/\d+/g);
+          comp.from = months[parseInt(from[1]) - 1] + ', ' + from[2];
+
+          let to = comp.to.match(/\d+/g);
+          comp.to = months[parseInt(to[1]) - 1] + ', ' + to[2];
+
+          let register_from = new Date(comp.register_from);
+          let today = new Date();
+          let diffTime = register_from - today;
+          let diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+          comp.start = diffDays;
+
+          register_from = comp.register_from.match(/\d+/g);
+          comp.register_from = months[parseInt(register_from[1]) - 1] + ', ' + register_from[2];
+
+          let register_to = comp.register_to.match(/\d+/g);
+          comp.register_to = months[parseInt(register_to[1]) - 1] + ', ' + register_to[2];
+        });
+        
+        this.setState({
+          competitions,
+          init_comps: competitions
+        });
+        break;
+      default:
+        break;
     }
+  }
+
+  handleChangeYear(year) {
+    const { init_comps } = this.state;
+
+    this.setState({
+      year
+    });
   }
 
   handleSelectItem(id, target) {
@@ -66,7 +96,7 @@ class Competitions extends Component {
   }
 
   render() {
-    const { competitions } = this.state;
+    const { competitions, year, years } = this.state;
 
     return (
       <Fragment>
@@ -74,12 +104,29 @@ class Competitions extends Component {
         <div className="main-content dashboard">
           <Container>
             <Row>
+              <Col sm="2">
+                <Select
+                  name="year"
+                  classNamePrefix="react-select-lg"
+                  placeholder="Year"
+                  value={year}
+                  options={years}
+                  getOptionValue={option => option.id}
+                  getOptionLabel={option => option.value}
+                  onChange={(year) => {
+                    this.handleChangeYear(year);
+                  }}
+                />
+              </Col>
+            </Row>
+          </Container>
+          <Container>
+            <Row>
               <Col sm="12">
                 {
                   competitions && competitions.length > 0 && (
                     <CompetitionTable
                       items={competitions}
-                      detail
                       onSelect={this.handleSelectItem.bind(this)}
                     />
                   )

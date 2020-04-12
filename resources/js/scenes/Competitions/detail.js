@@ -25,7 +25,6 @@ class CompetitionDetail extends Component {
       clubs: [],
       selectMembers: [],
       exportMembers: [],
-      edit: false,
       detail: false,
       exportPDF: false,
       pageSize: 5,
@@ -36,7 +35,6 @@ class CompetitionDetail extends Component {
 
   async componentDidMount() {
     const user = JSON.parse(localStorage.getItem('auth'));
-    const is_nf = user.user.is_nf;
     const club_member = user.user.is_club_member;
     const user_org = user.user.member_info.organization_id;
 
@@ -45,28 +43,6 @@ class CompetitionDetail extends Component {
     this.setState({
       competition_id
     });
-
-    if (is_nf != 1 && club_member == 1) {
-      const params = {};
-
-      params.competition_id = this.props.location.state;
-      params.org_id = user_org;
-      
-      const selects = await Api.post('competition-org-members', params);
-      switch (selects.response.status) {
-        case 200:
-          this.setState({
-            selectMembers: selects.body.data,
-            edit: false,
-            detail: true,
-            exportPDF: false,
-            org_flag: 1
-          });
-          break;
-        default:
-          break;
-      }
-    }
 
     const data = await Api.get(`competition/${competition_id}`);
     switch (data.response.status) {
@@ -79,16 +55,44 @@ class CompetitionDetail extends Component {
         break;
     }
 
-    const clubs = await Api.get(`competition-clubs/${competition_id}`);
-    switch (clubs.response.status) {
-      case 200:
-        this.setState({
-          clubs: clubs.body.result
-        });
-        break;
-      default:
-        break;
+    const params = {};
+
+    params.competition_id = this.props.location.state;
+
+    if (club_member == 1) {
+      params.club_id = user_org;
+      // const params = {};
+
+      // params.competition_id = this.props.location.state;
+      // params.org_id = user_org;
+      
+      // const selects = await Api.post('competition-org-members', params);
+      // switch (selects.response.status) {
+      //   case 200:
+      //     this.setState({
+      //       selectMembers: selects.body.data,
+      //       detail: true,
+      //       exportPDF: false,
+      //       org_flag: 1
+      //     });
+      //     break;
+      //   default:
+      //     break;
+      // }
+    } else {
+      params.club_id = '';
     }
+
+    const clubs = await Api.post('competition-clubs', params);
+      switch (clubs.response.status) {
+        case 200:
+          this.setState({
+            clubs: clubs.body.result
+          });
+          break;
+        default:
+          break;
+      }
   }
 
   async handleSelectClub(club_id, action) {
@@ -110,7 +114,6 @@ class CompetitionDetail extends Component {
     if (action == 'detail') {
       this.setState({
         selectMembers: members,
-        edit: false,
         detail: true,
         exportPDF: false
       });
@@ -187,7 +190,6 @@ class CompetitionDetail extends Component {
       
       this.setState({
         exportMembers,
-        edit: false,
         detail: false,
         exportPDF: true,
         data: exportMembers.slice(0, this.state.pageSize)
@@ -213,7 +215,6 @@ class CompetitionDetail extends Component {
     const { 
       org_flag,
       competition, clubs,
-      edit,
       selectMembers, detail,
       exportMembers, exportPDF,
     } = this.state;
@@ -241,7 +242,7 @@ class CompetitionDetail extends Component {
               </Row>
             </Segment>
             {
-              !edit && clubs && clubs.length > 0 && (
+              clubs && clubs.length > 0 && (
                 <Row>
                   <CompetitionClubTable
                     items={clubs}

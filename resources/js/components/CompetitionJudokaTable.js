@@ -137,13 +137,6 @@ class CompetitionJudokaTable extends Component {
             </Table.HeaderCell>
             <Table.HeaderCell
               className="text-center"
-              sorted={column === 'role' ? direction : null}
-              onClick={this.handleSort.bind(this, 'role')}
-            >
-              Role
-            </Table.HeaderCell>
-            <Table.HeaderCell
-              className="text-center"
               sorted={column === 'gender' ? direction : null}
               onClick={this.handleSort.bind(this, 'gender')}
             >
@@ -197,7 +190,6 @@ class CompetitionJudokaTable extends Component {
                       {' '}
                       {item.name}
                   </Table.Cell>
-                  <Table.Cell className="text-center">{item.role_name}</Table.Cell>
                   <Table.Cell className="text-center">
                     {item.gender && item.gender == 1 ? Genders[0].name : Genders[1].name}
                   </Table.Cell>

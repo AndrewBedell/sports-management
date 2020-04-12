@@ -216,33 +216,15 @@ class CompetitionClubTable extends Component {
                     (detail || is_super == 1) && (
 
                       <Table.Cell className="text-center text-info">
-                        {
-                          item.status == 0 && (
-                            <div>
-                              <a className="detail-link" onClick={() => onSelect(item.id, 'detail')}>
-                                <i className="fa fa-file"></i> Detail
-                              </a>
-                            </div>
-                          ) 
-                        }
-                        {
-                          item.status == 1 && (
-                            <div>
-                              <a className="detail-link" onClick={() => onSelect(item.id, 'detail')}>
-                                <i className="fa fa-file"></i> Detail
-                              </a>
-                              &nbsp;|&nbsp;
-                              <a className="detail-link" onClick={() => onSelect(item.id, 'export')}>
-                                <i className="fa fa-file-pdf"></i> Export
-                              </a>
-                            </div>
-                          ) 
-                        }
-                        {
-                          item.status == 2 && (
-                            <span>-</span>
-                          ) 
-                        }
+                        <div>
+                          <a className="detail-link" onClick={() => onSelect(item.id, 'detail')}>
+                            <i className="fa fa-file"></i> Detail
+                          </a>
+                          &nbsp;|&nbsp;
+                          <a className="detail-link" onClick={() => onSelect(item.id, 'export')}>
+                            <i className="fa fa-file-pdf"></i> Export
+                          </a>
+                        </div>
                       </Table.Cell>
                     )
                   }

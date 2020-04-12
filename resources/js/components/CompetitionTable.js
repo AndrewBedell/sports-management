@@ -2,17 +2,10 @@
 /* eslint-disable jsx-a11y/alt-text */
 /* eslint-disable jsx-a11y/anchor-is-valid */
 
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 import {
-  Table,
-  Pagination,
-  Menu
+  Table
 } from 'semantic-ui-react';
-import Select from 'react-select';
-
-import {
-  CompetitionType, CompetitionLevel
-} from '../configs/data';
 
 import _ from 'lodash';
 
@@ -20,165 +13,84 @@ class CompetitionTable extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      column: null,
       data: [],
-      direction: null,
-      activePage: 1,
-      per_page: 10,
-      current_perPage: { label: 10, value: 10 },
-      pageOptions: [
-        { label: 10, value: 10 },
-        { label: 20, value: 20 },
-        { label: 50, value: 50 },
-        { label: 100, value: 100 }
-      ]
+      intervalId: '',
+      start: [],
+      expire: []
     };
-    this.handleChangePerPage = this.handleChangePerPage.bind(this);
+
+    this.timer = this.timer.bind(this);
   }
 
   componentDidMount() {
-    if (this.props.items.length > 0) {
+    const { items, countDown } = this.props;
+
+    if (countDown !== undefined) {
+      let intervalId = setInterval(this.timer, 1000);
+
       this.setState({
-        activePage: 1
+        intervalId
       });
     }
-    const { items } = this.props;
-    const { per_page } = this.state;
+    
     this.setState({
-      data: items.slice(0, per_page)
+      data: items
+    });
+  }
+
+  timer() {
+    const { countDown } = this.props;
+    let expire = [];
+
+    for (let i = 0; i < countDown.length; i++) {
+      let now = new Date().getTime();
+      let distance = countDown[i] - now;
+
+      if (distance > 0) {
+        let days = Math.floor(distance / (1000 * 60 * 60 * 24));
+        let hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        let minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        let seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+        expire.push(days + "d " + hours + "h " + minutes + "m " + seconds + "s ");
+      } else {
+        expire.push('Expired.');
+      }
+    }
+
+    this.setState({
+      expire
     });
   }
 
   componentWillReceiveProps(props) {
     const { items } = props;
     if (this.props.items !== items) {
-      if (props.items.length > 0) {
-        this.setState({
-          activePage: 1
-        });
-      }
-      const { per_page } = this.state;
       this.setState({
-        data: items.slice(0, per_page)
+        data: items
       });
     }
-  }
-
-  handlePaginationChange(e, { activePage }) {
-    const { items } = this.props;
-    const { per_page } = this.state;
-    if (activePage !== 1) {
-      this.setState({
-        activePage,
-        data: items.slice(((activePage - 1) * per_page), activePage * per_page)
-      });
-    } else {
-      this.setState({
-        activePage,
-        data: items.slice(0, per_page)
-      });
-    }
-  }
-
-  handleSort(clickedColumn) {
-    const { column, data, direction } = this.state;
-
-    if (column !== clickedColumn) {
-      this.setState({
-        column: clickedColumn,
-        data: _.sortBy(data, [clickedColumn]),
-        direction: 'ascending'
-      });
-
-      return;
-    }
-
-    this.setState({
-      data: data.reverse(),
-      direction: direction === 'ascending' ? 'descending' : 'ascending'
-    });
-  }
-
-  handleChangePerPage(page_num) {
-    const { items } = this.props;
-    this.setState({
-      activePage: 1,
-      current_perPage: page_num,
-      per_page: page_num.value,
-      data: items.slice(0, page_num.value)
-    });
   }
 
   render() {
     const {
-      items,
-      detail, inscribe,
-      is_super,
+      inscribe,
+      start,
       onSelect
     } = this.props;
 
-    const {
-      column,
-      direction,
-      data,
-      activePage,
-      per_page,
-      pageOptions,
-      current_perPage
-    } = this.state;
+    const { data, expire } = this.state;
 
     return (
-      <Table sortable celled selectable unstackable>
+      <Table className="competition" unstackable>
         <Table.Header>
           <Table.Row>
-            <Table.HeaderCell
-              className="text-center"
-              sorted={column === 'type' ? direction : null}
-              onClick={this.handleSort.bind(this, 'type')}
-            >
-              Type
-            </Table.HeaderCell>
-            <Table.HeaderCell
-              className="text-center"
-              sorted={column === 'level' ? direction : null}
-              onClick={this.handleSort.bind(this, 'level')}
-            >
-              Level
-            </Table.HeaderCell>
-            <Table.HeaderCell
-              className="text-center"
-              sorted={column === 'name' ? direction : null}
-              onClick={this.handleSort.bind(this, 'name')}
-            >
-              Name
-            </Table.HeaderCell>
-            <Table.HeaderCell
-              className="text-center"
-              sorted={column === 'place' ? direction : null}
-              onClick={this.handleSort.bind(this, 'place')}
-            >
-              Place
-            </Table.HeaderCell>
-            <Table.HeaderCell
-              className="text-center"
-              sorted={column === 'from' ? direction : null}
-              onClick={this.handleSort.bind(this, 'from')}
-            >
-              From
-            </Table.HeaderCell>
-            <Table.HeaderCell
-              className="text-center"
-              sorted={column === 'to' ? direction : null}
-              onClick={this.handleSort.bind(this, 'to')}
-            >
-              To
-            </Table.HeaderCell>
-            <Table.HeaderCell className="text-center">Clubs</Table.HeaderCell>
-            {
-              !is_super && (
-                <Table.HeaderCell className="text-center">Action</Table.HeaderCell>
-              )
-            }
+            <Table.HeaderCell className="text-center">Competition Period</Table.HeaderCell>            
+            <Table.HeaderCell className="text-center">Name</Table.HeaderCell>
+            <Table.HeaderCell className="text-center">Place</Table.HeaderCell>
+            <Table.HeaderCell className="text-center">Registration Period</Table.HeaderCell>
+            <Table.HeaderCell className="text-center">Deadline</Table.HeaderCell>
+            <Table.HeaderCell className="text-center">Action</Table.HeaderCell>
           </Table.Row>
         </Table.Header>
         <Table.Body>
@@ -186,112 +98,47 @@ class CompetitionTable extends Component {
             data && data.length > 0 && (
               data.map((item, index) => (
                 <Table.Row key={index}>
-                  <Table.Cell className="text-center">
-                    {CompetitionType.filter(type => type.value == item.type)[0].label}
+                  <Table.Cell width="1" className="text-center">{item.from} ~ {item.to}</Table.Cell>
+                  <Table.Cell width="4">
+                    <a onClick={() => onSelect(item.id, 'detail')}>
+                      <b>{item.name}</b>
+                    </a>
                   </Table.Cell>
-                  <Table.Cell className="text-center">
-                    {CompetitionLevel.filter(level => level.value == item.level)[0].label}
+                  <Table.Cell width="3">
+                    <a onClick={() => onSelect(item.id, 'detail')}>
+                      {item.place}
+                    </a>
                   </Table.Cell>
-                  <Table.Cell className="text-center">
+                  <Table.Cell width="2" className="text-center">
+                    {item.register_from} ~ {item.register_to}
+                  </Table.Cell>
+                  <Table.Cell width="2" className="text-center">
+                    <b className="text-danger">
+                      {
+                        inscribe && (
+                          expire.length > 0 ? expire[index] : ''
+                        )
+                      }
+                    </b>
+                  </Table.Cell>
+                  <Table.Cell width="2" className="text-center">
                     {
-                      is_super ? (
-                        <a className="detail-link" onClick={() => onSelect(item.id, 'detail')}>
-                          {item.name}
+                      inscribe && expire[index] != 'Expired.' && (start[index] - (new Date().getTime()) < 0) ? (
+                        <a onClick={() => onSelect(item.id, 'inscribe')}>
+                          Inscribe
                         </a>
                       ) : (
-                        item.type == 'club' ? (
-                          item.name
-                        ) : (
-                          <Fragment>
-                            {
-                              detail && (
-                                <a className="detail-link" onClick={() => onSelect(item.id, 'detail')}>
-                                  {item.name}
-                                </a>
-                              )
-                            }
-                            {
-                              inscribe && (
-                                <a className="detail-link" onClick={() => onSelect(item.id, 'inscribe')}>
-                                  {item.name}
-                                </a>
-                              )
-                            }
-                          </Fragment>
-                        )
+                        <a onClick={() => onSelect(item.id, 'detail')}>
+                          Detail
+                        </a>
                       )
                     }
                   </Table.Cell>
-                  <Table.Cell className="text-center">{item.place}</Table.Cell>
-                  <Table.Cell className="text-center">{item.from}</Table.Cell>
-                  <Table.Cell className="text-center">{item.to}</Table.Cell>
-                  <Table.Cell className="text-center">
-                    {item.reg_ids.split(',').length} Regions, {item.club_ids.split(',').length} Clubs
-                  </Table.Cell>
-                  {
-                    !is_super && (
-                      <Table.Cell className="text-center">
-                        {
-                          detail && (
-                            <a className="detail-link" onClick={() => onSelect(item.id, 'detail')}>
-                              Detail
-                            </a>
-                          )
-                        }
-                        {
-                          inscribe && (
-                            <a className="detail-link" onClick={() => onSelect(item.id, 'inscribe')}>
-                              Inscribe
-                            </a>
-                          )
-                        }
-                        {
-                          item.type == 'club' && (
-                            <Fragment>
-                              &nbsp;|&nbsp;
-                              <a className="detail-link" onClick={() => onSelect(item.id, 'attend')}>
-                                Attend
-                              </a>
-                            </Fragment>
-                          )
-                        }
-                      </Table.Cell>
-                    )
-                  }
                 </Table.Row>
               ))
             )
           }
         </Table.Body>
-        <Table.Footer fullWidth>
-          <Table.Row>
-            <Table.HeaderCell colSpan="1">
-              <Select
-                name="pageOption"
-                menuPlacement="top"
-                classNamePrefix="react-select"
-                placeholder="Per Page"
-                defaultValue={pageOptions[0]}
-                value={current_perPage}
-                options={pageOptions}
-                getOptionValue={option => option.label}
-                getOptionLabel={option => option.value}
-                onChange={(num) => {
-                  this.handleChangePerPage(num);
-                }}
-              />
-            </Table.HeaderCell>
-            <Table.HeaderCell colSpan={is_super ? 6 : 7}>
-              <Menu floated="right" pagination>
-                <Pagination
-                  activePage={activePage}
-                  onPageChange={this.handlePaginationChange.bind(this)}
-                  totalPages={Math.ceil(items.length / per_page)}
-                />
-              </Menu>
-            </Table.HeaderCell>
-          </Table.Row>
-        </Table.Footer>
       </Table>
     );
   }

@@ -16,13 +16,17 @@ class Competition extends Model
      */
     protected $fillable = [
         'creator_id',
-        'type',
-        'level',
         'name',
+        'short_name',
         'place',
+        'type',
         'from',
         'to',
-        'reg_ids',
-        'club_ids'
+        'register_from',
+        'register_to',
+        'legal_birth_from',
+        'legal_birth_to',
+        'gender',
+        'weights'
     ];
 }

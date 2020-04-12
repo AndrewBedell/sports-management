@@ -16,7 +16,7 @@ import {
 import {
   Container, Row, Col,
   Card, CardTitle, CardText,
-  Input, UncontrolledTooltip
+  Input
 } from 'reactstrap';
 import Switch from "react-switch";
 
@@ -31,7 +31,8 @@ class Dashboard extends Component {
     super(props);
 
     this.state = {
-      is_nf: '', 
+      is_nf: '',
+      is_club_member: '',
       checked: true,
       notification: [],
       org_name: ''
@@ -55,6 +56,7 @@ class Dashboard extends Component {
     
     this.setState({
       is_nf: user.user.is_nf,
+      is_club_member: user.user.is_club_member,
       logo: user.user.logo,
       org_name: user.user.org_name,
       month,
@@ -91,7 +93,8 @@ class Dashboard extends Component {
   render() {
     const { 
       notification,
-      is_nf, logo, org_name,
+      is_nf, is_club_member,
+      logo, org_name,
       month, week, day
     } = this.state;
 
@@ -150,15 +153,19 @@ class Dashboard extends Component {
                 </h3>
 
                 <div className="two-column">
-                  <Card body inverse
-                    onClick={this.handleURL.bind(this, '/organization/create')}
-                    style={{ backgroundColor: '#7e6c92', borderColor: '#7e6c92' }}
-                  >
-                    <CardTitle>
-                      <i className="fa fa-building"></i>
-                    </CardTitle>
-                    <CardText>Organization Registration</CardText>
-                  </Card>
+                  {
+                    is_club_member != 1 && (
+                      <Card body inverse
+                        onClick={this.handleURL.bind(this, '/organization/create')}
+                        style={{ backgroundColor: '#7e6c92', borderColor: '#7e6c92' }}
+                      >
+                        <CardTitle>
+                          <i className="fa fa-building"></i>
+                        </CardTitle>
+                        <CardText>Organization Registration</CardText>
+                      </Card>
+                    )
+                  }
                   <Card body inverse
                     onClick={this.handleURL.bind(this, '/member/register')}
                     style={{ backgroundColor: '#499797', borderColor: '#499797' }}
@@ -178,14 +185,18 @@ class Dashboard extends Component {
                   </CardTitle>
                   <CardText>Browse</CardText>
                 </Card>
-                <Card body inverse
-                  onClick={this.handleURL.bind(this, '/invite-users')}
-                  style={{ backgroundColor: '#262228', borderColor: '#262228' }}>
-                  <CardTitle>
-                    <i className="fa fa-address-card"></i>
-                  </CardTitle>
-                  <CardText>Admin Membership</CardText>
-                </Card>
+                {
+                  is_nf == 1 && (
+                    <Card body inverse
+                      onClick={this.handleURL.bind(this, '/invite-users')}
+                      style={{ backgroundColor: '#262228', borderColor: '#262228' }}>
+                      <CardTitle>
+                        <i className="fa fa-address-card"></i>
+                      </CardTitle>
+                      <CardText>Admin Membership</CardText>
+                    </Card>
+                  )
+                }
               </Col>
               <Col md="3" sm="6" xs="12">
                 <h3 className="ml-3">
@@ -193,45 +204,42 @@ class Dashboard extends Component {
                   Competition
                 </h3>
 
+                {
+                  is_club_member != 1 && (
+                    <Card body inverse
+                      onClick={this.handleURL.bind(this, '/competition/create')}
+                      style={{ backgroundColor: '#ffce33', borderColor: '#ffce33' }}
+                    >
+                      <CardTitle>
+                        <i className="fa fa-users"></i>
+                      </CardTitle>
+                      <CardText>Create Competition</CardText>
+                    </Card>
+                  )
+                }
                 <Card body inverse
-                  onClick={this.handleURL.bind(this, '/competition/create')}
-                  style={{ backgroundColor: '#ffce33', borderColor: '#ffce33' }}
+                  onClick={this.handleURL.bind(this, '/competitions')}
+                  id="calendar" style={{ backgroundColor: '#ec576b', borderColor: '#ec576b' }}
                 >
-                  <CardTitle>
-                    <i className="fa fa-users"></i>
-                  </CardTitle>
-                  <CardText>Create Competition</CardText>
-                </Card>
-                <div className="two-column">
-                  <Card body inverse
-                    onClick={this.handleURL.bind(this, '/competitions')}
-                    style={{ backgroundColor: '#90c0cc', borderColor: '#90c0cc' }}
-                  >
-                    <CardTitle>
-                      <i className="fa fa-list"></i>
-                    </CardTitle>
-                    <CardText>Competition List</CardText>
-                  </Card>
-                  <Card body inverse
-                    onClick={this.handleURL.bind(this, '/competition/list')}
-                    style={{ backgroundColor: '#4480b2', borderColor: '#4480b2' }}>
-                    <CardTitle>
-                      <i className="fa fa-user"></i>
-                    </CardTitle>
-                    <CardText>Inscribe Competition</CardText>
-                  </Card>
-                </div>
-                <Card body inverse id="calendar" style={{ backgroundColor: '#ec576b', borderColor: '#ec576b' }}>
                   <CardTitle>
                     <span className="month">{month}</span>
                     <span className="day">{day}</span>
                     <span className="week">{week}</span>
                     <i className="fa fa-calendar"></i>
                   </CardTitle>
-                  <UncontrolledTooltip placement="right" target="calendar">
-                    Click to view all competition's calendar
-                  </UncontrolledTooltip>
                 </Card>
+                {
+                  is_nf != 1 && (
+                    <Card body inverse
+                      onClick={this.handleURL.bind(this, '/competition/list')}
+                      style={{ backgroundColor: '#4480b2', borderColor: '#4480b2' }}>
+                      <CardTitle>
+                        <i className="fa fa-user"></i>
+                      </CardTitle>
+                      <CardText>Inscribe Competition</CardText>
+                    </Card>
+                  )
+                }
               </Col>
               <Col md="3" sm="6" xs="12">
                 <h3 className="ml-3">
@@ -246,7 +254,7 @@ class Dashboard extends Component {
                   <CardTitle>
                     <i className="fa fa-credit-card"></i>
                   </CardTitle>
-                  <CardText>Judoka Payment</CardText>
+                  <CardText>Financial Info</CardText>
                 </Card>
               </Col>
               <Col md="3" sm="6" xs="12">
@@ -273,8 +281,7 @@ class Dashboard extends Component {
                   </CardTitle>
                   <CardText>Change password</CardText>
                 </Card>
-                <div className="two-column">
-                  <Card body inverse
+                  {/* <Card body inverse
                     onClick={this.handleURL.bind(this, '/notifications')}
                     style={{ backgroundColor: '#696969', borderColor: '#696969' }}
                   >
@@ -287,7 +294,7 @@ class Dashboard extends Component {
                       <i className="fa fa-bell"></i>
                     </CardTitle>
                     <CardText>Notification</CardText>
-                  </Card>
+                  </Card> */}
                   {
                     is_nf == 1 && (
                       <Card body inverse
@@ -301,7 +308,6 @@ class Dashboard extends Component {
                       </Card>
                     )
                   }
-                </div>
               </Col>
             </Row>
           </Container>

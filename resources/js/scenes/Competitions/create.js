@@ -21,100 +21,44 @@ import 'react-semantic-ui-datepickers/dist/react-semantic-ui-datepickers.css';
 import MainTopBar from '../../components/TopBar/MainTopBar';
 import Api from '../../apis/app';
 
-import {
-  CompetitionType, CompetitionLevel
-} from '../../configs/data';
+import { CompetitionType, search_genders } from '../../configs/data';
 
 class CreateComp extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      creator_id: [],
-      unit_list: [],
-      nf_list: [],
-      org_list: [],
-      club_list: [],
-      all_org_list: [],
-      all_club_list: [],
+      creator_id: '',
+      is_nf: '',
+      user_level: '',
       from: null,
       to: null,
+      register_from: null,
+      register_to: null,
+      weight_list: [],
       alertVisible: false,
       messageStatus: false,
       successMessage: '',
-      failMessage: '',
-      compType: [],
-      user_level: ''
-    }
+      failMessage: ''
+    };
 
     this.formikRef = React.createRef();
   }
 
   async componentDidMount() {
     const user = JSON.parse(localStorage.getItem('auth'));
-    const user_level = user.user.level;
 
     this.setState({
       creator_id: user.user.member_info.organization_id,
-      user_level
+      is_nf: user.user.is_nf,
+      user_level: user.user.level
     });
 
-    switch (user_level) {
-      case 1:
-        const nf_response = await Api.get('all-nf');
-        switch (nf_response.response.status) {
-          case 200:
-            this.setState({
-              nf_list: nf_response.body.nfs.filter(nfs => nfs.id != user.user.member_info.organization_id)
-            });
-            break;
-          default:
-            break;
-        }
-        const org_response = await Api.get('organizations-list');
-        switch (org_response.response.status) {
-          case 200:
-            this.setState({
-              org_list: org_response.body.filter(org => org.parent_id != 0)
-            });
-            break;
-          default:
-            break;
-        }
+    const weight_list = await Api.get('weights');
+    switch (weight_list.response.status) {
+      case 200:
         this.setState({
-          compType: CompetitionType.filter(type => type.value == 'inter' || type.value == 'nf')
-        });
-        break;
-      case 2:
-        const reg_response = await Api.get('reg-clubs-list');
-        switch (reg_response.response.status) {
-          case 200:
-            this.setState({
-              all_org_list: reg_response.body.orgs,
-              all_club_list: reg_response.body.clubs
-            });
-            break;
-          default:
-            break;
-        }
-        this.setState({
-          compType: CompetitionType.filter(type => type.value == 'reg')
-        });
-        break;
-      case 3:
-        const all_response = await Api.get('clubs-list');
-        switch (all_response.response.status) {
-          case 200:
-            this.setState({
-              all_org_list: all_response.body.orgs,
-              all_club_list: all_response.body.clubs
-            });
-            break;
-          default:
-            break;
-        }
-        this.setState({
-          compType: CompetitionType.filter(type => type.value == 'club')
+          weight_list: weight_list.body
         });
         break;
       default:
@@ -150,6 +94,34 @@ class CreateComp extends Component {
     }
   }
 
+  onChangeRegisterFrom(event, data) {
+    if (data.value) {
+      let register_from = this.convertDate(data.value);
+
+      this.setState({
+        register_from
+      });
+    } else {
+      this.setState({
+        register_from: null
+      });
+    }
+  }
+
+  onChangeRegisterTo(event, data) {
+    if (data.value) {
+      let register_to = this.convertDate(data.value);
+
+      this.setState({
+        register_to
+      });
+    } else {
+      this.setState({
+        register_to: null
+      });
+    }
+  }
+
   convertDate(d) {
     let year = d.getFullYear();
 
@@ -170,22 +142,32 @@ class CreateComp extends Component {
       return;
     }
 
+    if (!this.state.register_from || !this.state.register_to) {
+      bags.setSubmitting(false);
+      return;
+    }
+    
     let newData = {};
 
-    let unit_ids = '';
-    for (let i = 0; i < values.unit_ids.length; i++) {
-      unit_ids += values.unit_ids[i].id + ',';
+    let weight_ids = '';
+    for (let i = 0; i < values.weights.length; i++) {
+      weight_ids += values.weights[i].id + ',';
     }
-
+    
     newData = {
       creator_id: this.state.creator_id,
-      type: values.type.value,
-      level: values.level.value,
       name: values.name,
+      short_name: values.short_name,
       place: values.place,
+      type: this.state.is_nf ? values.type.value : CompetitionType.filter(type => type.value == 'reg')[0].value,
       from: this.state.from,
       to: this.state.to,
-      unit_ids: unit_ids.substring(0, unit_ids.length - 1)
+      register_from: this.state.register_from,
+      register_to: this.state.register_to,
+      legal_birth_from: values.legal_birth_from.value,
+      legal_birth_to: values.legal_birth_to.value,
+      gender: values.gender.value,
+      weights: weight_ids.substring(0, weight_ids.length - 1)
     }
 
     const data = await Api.post('reg-competition', newData);
@@ -200,7 +182,7 @@ class CreateComp extends Component {
 
         setTimeout(() => {
           this.setState({ alertVisible: false });
-          this.props.history.goBack();
+          this.props.history.push('/competitions');
         }, 2000);
         break;
       case 406:
@@ -222,10 +204,18 @@ class CreateComp extends Component {
 
   render() {
     const {
-      unit_list, nf_list, org_list, club_list,
-      all_org_list, all_club_list,
-      from, to, compType, user_level
+      from, to, is_nf,
+      register_from, register_to,
+      weight_list
     } = this.state;
+
+    let d = new Date();
+    let year = d.getFullYear();
+
+    let years = [];
+    for (let i = year - 10; i > 1950 ; i--) {
+      years.push({label: i, value: i});
+    }
 
     return(
       <Fragment>
@@ -244,23 +234,25 @@ class CreateComp extends Component {
 
               initialValues={{
                 creator_id: null,
-                type: null,
-                level: null,
+                type: '',
                 name: '',
+                short_name: '',
                 place: '',
                 from: null,
                 to: null,
-                reg_ids: null,
-                unit_ids: null
+                register_from: null,
+                register_to: null,
+                legal_birth_from: null,
+                legal_birth_to: null,
+                gender: null,
+                weights: null
               }}
 
               validationSchema={
                 Yup.object().shape({
-                  type: Yup.mixed().required('This field is required!'),
-                  level: Yup.mixed().required('This field is required!'),
                   name: Yup.mixed().required('This field is required!'),
+                  short_name: Yup.mixed().required('This field is required!'),
                   place: Yup.mixed().required('This field is required!'),
-                  unit_ids: Yup.mixed().required('This field is required!')
                 })
               }
 
@@ -280,67 +272,35 @@ class CreateComp extends Component {
                 <Form onSubmit={handleSubmit}>
                   {status && <UncontrolledAlert {...status} />}
                   <Row>
+                    {
+                      is_nf == 1 && (
+                        <Fragment>
+                          <Col xs="12" sm="6">
+                            <FormGroup>
+                              <Label for="type">Competition Type</Label>
+                              <Select
+                                name="type"
+                                classNamePrefix={!values.type && touched.type ? 'invalid react-select-lg' : 'react-select-lg'}
+                                indicatorSeparator={null}
+                                options={CompetitionType.filter(type => type.value == 'inter' || type.value == 'nf')}
+                                getOptionValue={option => option.value}
+                                getOptionLabel={option => option.label}
+                                value={values.type}
+                                onChange={(value) => {
+                                  setFieldValue('type', value);
+                                }}
+                                onBlur={this.handleBlur}
+                              />
+                              {!values.type && touched.type && (
+                                <FormFeedback className="d-block">This field is required!</FormFeedback>
+                              )}
+                            </FormGroup>
+                          </Col>
+                          <Col xs="12" sm="6"></Col>
+                        </Fragment>
+                      )
+                    }
                     <Col xs="12" sm="6">
-                      <FormGroup>
-                        <Label for="type">Competition Type</Label>
-                        <Select
-                          name="type"
-                          classNamePrefix={!values.type && touched.type ? 'invalid react-select-lg' : 'react-select-lg'}
-                          indicatorSeparator={null}
-                          options={compType}
-                          getOptionValue={option => option.value}
-                          getOptionLabel={option => option.label}
-                          value={values.type}
-                          onChange={(value) => {
-                            setFieldValue('type', value);
-
-                            if (value.value === 'inter') {
-                              this.setState({
-                                unit_list: nf_list
-                              });
-                            }
-                            
-                            if (value.value === 'nf') {
-                              this.setState({
-                                unit_list: org_list
-                              });
-                            }
-
-                            if (value.value === 'reg' || value.value === 'club') {
-                              this.setState({
-                                org_list: all_org_list
-                              });
-                            }
-                          }}
-                          onBlur={this.handleBlur}
-                        />
-                        {!values.type && touched.type && (
-                          <FormFeedback className="d-block">This field is required!</FormFeedback>
-                        )}
-                      </FormGroup>
-                    </Col>
-                    <Col xs="12" sm="6">
-                      <FormGroup>
-                        <Label for="level">Competition Level</Label>
-                        <Select
-                          name="level"
-                          classNamePrefix={!values.level && touched.level ? 'invalid react-select-lg' : 'react-select-lg'}
-                          indicatorSeparator={null}
-                          options={CompetitionLevel}
-                          getOptionValue={option => option.value}
-                          getOptionLabel={option => option.label}
-                          value={values.level}
-                          onChange={(value) => {
-                            setFieldValue('level', value);
-                          }}
-                          onBlur={this.handleBlur}
-                        />
-                        {!values.level && touched.level && (
-                          <FormFeedback className="d-block">This field is required!</FormFeedback>
-                        )}
-                      </FormGroup>
-                    </Col>
-                    <Col sm="12">
                       <FormGroup>
                         <Label for="name">Competition Name</Label>
                         <Input
@@ -352,6 +312,34 @@ class CreateComp extends Component {
                           invalid={!!errors.name && touched.name}
                         />
                         <FormFeedback>{errors.name}</FormFeedback>
+                      </FormGroup>
+                    </Col>
+                    <Col xs="12" sm="6">
+                      <FormGroup>
+                        <Label for="short_name">Competition Short Name</Label>
+                        <Input
+                          name="short_name"
+                          type="text"
+                          value={values.short_name || ''}
+                          onChange={handleChange}
+                          onBlur={handleBlur}
+                          invalid={!!errors.short_name && touched.short_name}
+                        />
+                        <FormFeedback>{errors.short_name}</FormFeedback>
+                      </FormGroup>
+                    </Col>
+                    <Col xs="12">
+                      <FormGroup>
+                        <Label for="place">Competition Place</Label>
+                        <Input
+                          name="place"
+                          type="text"
+                          value={values.place || ''}
+                          onChange={handleChange}
+                          onBlur={handleBlur}
+                          invalid={!!errors.place && touched.place}
+                        />
+                        <FormFeedback>{errors.place}</FormFeedback>
                       </FormGroup>
                     </Col>
                     <Col xs="12" sm="6">
@@ -380,91 +368,131 @@ class CreateComp extends Component {
                         )}
                       </FormGroup>
                     </Col>
-                    <Col xs="12">
-                      <FormGroup>
-                        <Label for="place">Competition Place</Label>
-                        <Input
-                          name="place"
-                          type="text"
-                          value={values.place || ''}
-                          onChange={handleChange}
-                          onBlur={handleBlur}
-                          invalid={!!errors.place && touched.place}
+                    <Col xs="12" sm="6">
+                      <FormGroup className={!register_from && touched.register_from ? 'invalid calendar' : 'calendar'}>
+                        <Label for="register_from">Registration From</Label>
+                        <SemanticDatepicker
+                          name="register_from"
+                          placeholder="Registration From"
+                          onChange={this.onChangeRegisterFrom.bind(this)}
                         />
-                        <FormFeedback>{errors.place}</FormFeedback>
+                        {!register_from && touched.register_from && (
+                          <FormFeedback className="d-block">This field is required!</FormFeedback>
+                        )}
                       </FormGroup>
                     </Col>
-                    {
-                      user_level == 1 ? (
-                        <Col xs="12">
-                          <FormGroup>
-                            <Label for="unit_ids">Organization List</Label>
-                            <Select
-                              name="unit_ids"
-                              classNamePrefix={!values.unit_ids && touched.unit_ids ? 'invalid react-select-lg' : 'react-select-lg'}
-                              indicatorSeparator={null}
-                              options={unit_list}
-                              isMulti
-                              getOptionValue={option => option.id}
-                              getOptionLabel={option => option.name_o}
-                              value={values.unit_ids}
-                              onChange={(value) => {
-                                setFieldValue('unit_ids', value);
-                              }}
-                              onBlur={this.handleBlur}
-                            />
-                          </FormGroup>
-                        </Col>
-                      ) : (
-                        <Fragment>
-                          <Col xs="6">
-                            <FormGroup>
-                              <Label>Organization List</Label>
-                              <Select
-                                name="reg_ids"
-                                classNamePrefix={
-                                  !values.reg_ids && touched.reg_ids ? 'invalid react-select-lg' : 'react-select-lg'
-                                }
-                                indicatorSeparator={null}
-                                options={org_list}
-                                getOptionValue={option => option.id}
-                                getOptionLabel={option => option.name_o}
-                                value={values.reg_ids}
-                                onChange={(value) => {
-                                  setFieldValue('reg_ids', value);
+                    <Col xs="12" sm="6">
+                      <FormGroup className={!register_to && touched.register_to ? 'invalid calendar' : 'calendar'}>
+                        <Label for="register_to">Registration To</Label>
+                        <SemanticDatepicker
+                          name="register_to"
+                          placeholder="Registration To"
+                          onChange={this.onChangeRegisterTo.bind(this)}
+                        />
+                        {!register_to && touched.register_to && (
+                          <FormFeedback className="d-block">This field is required!</FormFeedback>
+                        )}
+                      </FormGroup>
+                    </Col>
+                    <Col sm="6">
+                      <FormGroup>
+                        <Label for="legal_birth_from">Legal Date of Birth (Min)</Label>
+                        <Select
+                          name="legal_birth_from"
+                          classNamePrefix={
+                            !values.legal_birth_from && touched.legal_birth_from ? 'invalid react-select-lg' : 'react-select-lg'
+                          }
+                          indicatorSeparator={null}
+                          options={years}
+                          getOptionValue={option => option.value}
+                          getOptionLabel={option => option.label}
+                          value={values.legal_birth_from}
+                          onChange={(value) => {
+                            setFieldValue('legal_birth_from', value);
+                          }}
+                          onBlur={this.handleBlur}
+                        />
+                        {!values.legal_birth_from && touched.legal_birth_from && (
+                          <FormFeedback className="d-block">This field is required!</FormFeedback>
+                        )}
+                      </FormGroup>
+                    </Col>
+                    <Col sm="6">
+                      <FormGroup>
+                        <Label for="legal_birth_to">Legal Date of Birth (Max)</Label>
+                        <Select
+                          name="legal_birth_to"
+                          classNamePrefix={
+                            !values.legal_birth_to && touched.legal_birth_to ? 'invalid react-select-lg' : 'react-select-lg'
+                          }
+                          indicatorSeparator={null}
+                          options={years}
+                          getOptionValue={option => option.value}
+                          getOptionLabel={option => option.label}
+                          value={values.legal_birth_to}
+                          onChange={(value) => {
+                            setFieldValue('legal_birth_to', value);
+                          }}
+                          onBlur={this.handleBlur}
+                        />
+                        {!values.legal_birth_to && touched.legal_birth_to && (
+                          <FormFeedback className="d-block">This field is required!</FormFeedback>
+                        )}
+                      </FormGroup>
+                    </Col>
+                    <Col sm="4">
+                      <FormGroup>
+                        <Label for="gender">Gender</Label>
+                        <Select
+                          name="gender"
+                          classNamePrefix={!values.gender && touched.gender ? 'invalid react-select-lg' : 'react-select-lg'}
+                          indicatorSeparator={null}
+                          options={search_genders}
+                          getOptionValue={option => option.value}
+                          getOptionLabel={option => option.label}
+                          value={values.gender}
+                          onChange={(value) => {
+                            setFieldValue('gender', value);
 
-                                  this.setState({
-                                    club_list: all_club_list.filter(club => club.parent_id == value.id)
-                                  });
-                                }}
-                                onBlur={this.handleBlur}
-                              />
-                            </FormGroup>
-                          </Col>
-                          <Col xs="6">
-                            <FormGroup>
-                              <Label for="unit_ids">Club List</Label>
-                              <Select
-                                name="unit_ids"
-                                classNamePrefix={
-                                  !values.unit_ids && touched.unit_ids ? 'invalid react-select-lg' : 'react-select-lg'
-                                }
-                                indicatorSeparator={null}
-                                options={club_list}
-                                isMulti
-                                getOptionValue={option => option.id}
-                                getOptionLabel={option => option.name_o}
-                                value={values.unit_ids}
-                                onChange={(value) => {
-                                  setFieldValue('unit_ids', value);
-                                }}
-                                onBlur={this.handleBlur}
-                              />
-                            </FormGroup>
-                          </Col>
-                        </Fragment>
-                      )
-                    }
+                            setFieldValue('weights', '');
+
+                            value && value.value != 0 ? 
+                              setFieldValue('weights', weight_list.filter(weight => weight.gender == value.value))
+                            : setFieldValue('weights', weight_list.filter(weight => weight.gender != 0));
+                          }}
+                          onBlur={this.handleBlur}
+                        />
+                        {!values.gender && touched.gender && (
+                          <FormFeedback className="d-block">This field is required!</FormFeedback>
+                        )}
+                      </FormGroup>
+                    </Col>
+                    <Col sm="8">
+                      <FormGroup>
+                        <Label for="weights">Weight Category</Label>
+                        <Select
+                          name="weights"
+                          classNamePrefix={!values.weights && touched.weights ? 'invalid react-select-lg' : 'react-select-lg'}
+                          placeholder="Weight"
+                          menuPlacement="auto"
+                          isMulti
+                          options={
+                            values.gender && values.gender.value != 0 ? 
+                              weight_list.filter(weight => weight.gender == values.gender.value) 
+                            : weight_list.filter(weight => weight.gender != 0)
+                          }
+                          getOptionValue={option => option.id}
+                          getOptionLabel={option => `${option.weight} Kg`}
+                          value={values.weights}
+                          onChange={(weight) => {
+                            setFieldValue('weights', weight);
+                          }}
+                        />
+                        {!values.weights && touched.weights && (
+                          <FormFeedback className="d-block">This field is required!</FormFeedback>
+                        )}
+                      </FormGroup>
+                    </Col>
                   </Row>
                   <div className="w-100 d-flex justify-content-end">
                     <div>

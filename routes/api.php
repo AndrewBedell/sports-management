@@ -38,7 +38,7 @@ Route::namespace('Api')->group(function () {
 
         Route::get('members', 'MemberController@index');
         Route::post('competition-members', 'MemberController@competitionClubMember');
-        Route::post('competition-org-members', 'MemberController@competitionOrgMember');
+        // Route::post('competition-org-members', 'MemberController@competitionOrgMember');
         Route::post('allow-members', 'MemberController@allow');
         Route::post('check-competition', 'MemberController@check');
         Route::get('member/{id}', 'MemberController@show');
@@ -49,18 +49,17 @@ Route::namespace('Api')->group(function () {
 
         Route::get('competitions', 'CompetitionController@index');
         Route::get('competition/{id}', 'CompetitionController@show');
-        Route::get('competition-orgs/{id}', 'CompetitionController@orgs');
-        Route::get('competition-clubs/{id}', 'CompetitionController@clubs');
-        Route::post('competition-add-members', 'CompetitionController@addMembers');
+        // Route::get('competition-orgs/{id}', 'CompetitionController@orgs');
+        Route::post('competition-clubs', 'CompetitionController@clubs');
+        // Route::post('competition-add-members', 'CompetitionController@addMembers');
         Route::get('all-competitions', 'CompetitionController@all');
-        Route::get('find-competitions', 'CompetitionController@find');
         Route::get('accept-competition/{id}', 'CompetitionController@accept');
         Route::post('reg-competition', 'CompetitionController@store');
-        Route::post('add-club-competition', 'CompetitionController@addClub');
-        Route::post('add-member-competition', 'CompetitionController@addMember');
+        // Route::post('add-club-competition', 'CompetitionController@addClub');
+        // Route::post('add-member-competition', 'CompetitionController@addMember');
         Route::post('attend-members', 'CompetitionController@attend');
-        Route::delete('competition-club', 'CompetitionController@destroyClub');
-        Route::delete('competition-member', 'CompetitionController@removeMember');
+        // Route::delete('competition-club', 'CompetitionController@destroyClub');
+        // Route::delete('competition-member', 'CompetitionController@removeMember');
 
         Route::get('notifications', 'NotificationController@index');
         Route::get('notification/unread', 'NotificationController@unread');
@@ -77,6 +76,7 @@ Route::namespace('Api')->group(function () {
         Route::delete('user/{id}', 'UserController@destroy');
 
         Route::get('weights', 'PlayerController@weights');
+        Route::post('competion-weights', 'PlayerController@comp_weights');
 
         Route::get('cost/{id}', 'TransactionController@cost');
         Route::post('pay-now', 'TransactionController@store');
