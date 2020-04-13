@@ -54,8 +54,10 @@ class CompetitionInscribe extends Component {
   }
 
   async componentDidMount() {
-    const competition_id = this.props.location.state;
+    const user = JSON.parse(localStorage.getItem('auth'));
     
+    const competition_id = this.props.location.state;
+
     const competition = await Api.get(`competition/${competition_id}`);
     switch (competition.response.status) {
       case 200:
@@ -79,8 +81,12 @@ class CompetitionInscribe extends Component {
     switch (members.response.status) {
       case 200:
         this.setState({
-          filter_member: members.body.data.filter(member => member.role_id != 3),
-          members: members.body.data.filter(member => member.role_id != 3),
+          filter_member: members.body.data.filter(
+            member => member.role_id != 3 && member.id != user.user.member_info.id
+          ),
+          members: members.body.data.filter(
+            member => member.role_id != 3 && member.id != user.user.member_info.id
+          ),
           filter_judoka: members.body.data.filter(member => member.role_id == 3),
           judokas: members.body.data.filter(member => member.role_id == 3)
         });
@@ -195,15 +201,33 @@ class CompetitionInscribe extends Component {
     }
     
     if (checked) {
-      let selects = [];
+      let selects = [...selectMembers];
 
       let mem = members.filter(item => item.checked === true);
       let judo = judokas.filter(item => item.checked === true);
 
-      selects = mem.concat(judo);
+      var flag = true;
 
+      for (var i = 0; i < mem.length; i++) {
+
+      }
+      for (var j = 0; j < judo.length; j++) {
+        flag = true;
+
+        for (var k = 0; k < selectMembers.length; k++) {
+          if (judo[j].id == selectMembers[k].id) {
+            flag = false;
+          }
+        }
+
+        if (flag) {
+          selects.push(judo[j]);
+        }
+      }
+      selects.reverse();
+      
       this.setState({
-        selectMembers: selects.reverse()
+        selectMembers: selects
       });
     } else {
       this.setState({
@@ -340,46 +364,40 @@ class CompetitionInscribe extends Component {
           </Container>
           {
             status == 0 && (
-              <Container fluid className="mt-3">
+              <Container fluid className="mt-5">
                 <Row>
                   <Col md="6" sm="12">
-                    <Row>
-                      <Col sm="3">
-                        <FormGroup>
-                          <Select
-                            name="search_type"
-                            classNamePrefix={'react-select-lg'}
-                            placeholder="Member Type"
-                            value={filter.search_type}
-                            options={member_type_options.filter(option => option.value != 'judoka')}
-                            getOptionValue={option => option.value}
-                            getOptionLabel={option => option.label}
-                            onChange={(type) => {
-                              this.handleSearchFilter('search_type', type);
-                            }}
-                          />
-                        </FormGroup>
-                      </Col>
-                    </Row>
-                  </Col>
-                  <Col md="6" sm="12"></Col>
-                </Row>
-                <Row>
-                  <Col md="6" sm="12">
-                    <Row>
-                      <Col sm="12" className="table-responsive">
-                        {
-                          members && members.length > 0 && (
+                    {
+                      members && members.length > 0 && (
+                        <Row className="mb-3">
+                          <Col sm="3">
+                            <FormGroup>
+                              <Select
+                                name="search_type"
+                                classNamePrefix={'react-select-lg'}
+                                placeholder="Member Type"
+                                value={filter.search_type}
+                                options={member_type_options.filter(option => option.value != 'judoka')}
+                                getOptionValue={option => option.value}
+                                getOptionLabel={option => option.label}
+                                onChange={(type) => {
+                                  this.handleSearchFilter('search_type', type);
+                                }}
+                              />
+                            </FormGroup>
+                          </Col>
+                          <Col sm="9"></Col>
+                          <Col sm="12">
                             <CompetitionMemberTable
                               items={members}
                               onSelect={this.handleSelectMember.bind(this)}
                               onSelectAll={this.handleSelectAllMember.bind(this)}
                             />
-                          )
-                        }
-                      </Col>
-                    </Row>
-                    <Row className="mt-4">
+                          </Col>
+                        </Row>
+                      )
+                    }
+                    <Row>
                       <Col sm="3">
                         <FormGroup>
                           <Input
@@ -440,7 +458,7 @@ class CompetitionInscribe extends Component {
                     </Row>
                   </Col>
                   <Col md="6" sm="12">
-                    <Row className="mt-2">
+                    <Row>
                       <Col sm="12" className="table-responsive">
                         {
                           selectMembers && selectMembers.length > 0 && (
