@@ -63,20 +63,20 @@ class Profile extends Component {
       role_id: values.role_id,
       organization_id: values.organization_id,
       name: values.name,
-      patronymic: values.patronymic,
+      // patronymic: values.patronymic,
       surname: values.surname,
       gender: values.gender == 1 ? Genders[0] : Genders[1],
       profile_image: values.profile_image,
       register_date: values.register_date,
       birthday: values.birthday,
       email: values.email,
-      mobile_phone: values.mobile_phone,
-      addressline1: values.addressline1,
-      addressline2: values.addressline2,
+      // mobile_phone: values.mobile_phone,
+      // addressline1: values.addressline1,
+      // addressline2: values.addressline2,
       // country: countries.filter(country => country.countryCode === values.country)[0],
-      state: values.state,
-      city: values.city,
-      zip_code: values.zip_code,
+      // state: values.state,
+      // city: values.city,
+      // zip_code: values.zip_code,
       parent_id: values.parent_id,
       identity: values.identity
     });
@@ -106,21 +106,21 @@ class Profile extends Component {
       organization_id: values.organization_id,
       role_id: values.role_id,
       name: values.name,
-      patronymic: values.patronymic,
+      // patronymic: values.patronymic,
       surname: values.surname,
       gender: values.gender.id,
       profile_image: imagePreviewUrl || '',
       birthday: moment(values.birthday).format('YYYY-MM-DD'),
       email: values.email,
-      mobile_phone: values.mobile_phone,
-      addressline1: values.addressline1,
-      addressline2: values.addressline2,
+      // mobile_phone: values.mobile_phone,
+      // addressline1: values.addressline1,
+      // addressline2: values.addressline2,
       // country: values.country.countryCode,
-      state: values.state,
-      city: values.city,
-      zip_code: values.zip_code,
+      // state: values.state,
+      // city: values.city,
+      // zip_code: values.zip_code,
       register_date: values.register_date,
-      position: values.position || '',
+      // position: values.position || '',
       identity: values.identity
     };
 
@@ -192,18 +192,18 @@ class Profile extends Component {
                 register_date: '',
                 profile_image: null,
                 name: '',
-                patronymic: '',
+                // patronymic: '',
                 surname: '',
                 gender: null,
                 birthday: null,
                 email: '',
-                mobile_phone: '',
-                addressline1: '',
-                addressline2: '',
+                // mobile_phone: '',
+                // addressline1: '',
+                // addressline2: '',
                 // country: null,
-                state: '',
-                city: '',
-                zip_code: '',
+                // state: '',
+                // city: '',
+                // zip_code: '',
                 identity: ''
               }}
 
@@ -214,13 +214,13 @@ class Profile extends Component {
                   surname: Yup.string().required('This field is required!'),
                   gender: Yup.mixed().required('This field is required!'),
                   birthday: Yup.mixed().required('This field is required!'),
-                  mobile_phone: Yup.string().matches(/^\+?[0-9]\s?[-]\s|[0-9]$/, 'Mobile phone is incorrect!').required('This field is required!'),
-                  addressline1: Yup.string().required('This field is required!'),
+                  // mobile_phone: Yup.string().matches(/^\+?[0-9]\s?[-]\s|[0-9]$/, 'Mobile phone is incorrect!').required('This field is required!'),
+                  // addressline1: Yup.string().required('This field is required!'),
                   // country: Yup.mixed().required('This field is required!'),
-                  city: Yup.string().required('This field is required!'),
-                  state: Yup.string().required('This field is required!'),
-                  zip_code: Yup.string().required('This field is required!'),
-                  identity: Yup.string().required('This field is required!')
+                  // city: Yup.string().required('This field is required!'),
+                  // state: Yup.string().required('This field is required!'),
+                  // zip_code: Yup.string().required('This field is required!'),
+                  // identity: Yup.string().required('This field is required!')
                 })
               }
 
@@ -262,11 +262,11 @@ class Profile extends Component {
                           type="text"
                           placeholder="YYYY-MM-DD"
                           value={values.register_date}
-                          disabled
+                          readOnly
                         />
                       </FormGroup>
                     </Col>
-                    <Col sm="4">
+                    <Col sm="6">
                       <FormGroup>
                         <Label for="name">
                           Name
@@ -282,7 +282,7 @@ class Profile extends Component {
                         <FormFeedback>{errors.name}</FormFeedback>
                       </FormGroup>
                     </Col>
-                    <Col sm="4">
+                    {/* <Col sm="4">
                       <FormGroup>
                         <Label for="patronymic">
                           Patronymic
@@ -295,8 +295,8 @@ class Profile extends Component {
                           onBlur={handleBlur}
                         />
                       </FormGroup>
-                    </Col>
-                    <Col sm="4">
+                    </Col> */}
+                    <Col sm="6">
                       <FormGroup>
                         <Label for="surname">
                           Surname
@@ -362,7 +362,7 @@ class Profile extends Component {
                         {!!errors.email && touched.email && (<FormFeedback className="d-block">{errors.email}</FormFeedback>)}
                       </FormGroup>
                     </Col>
-                    <Col sm="6">
+                    {/* <Col sm="6">
                       <FormGroup>
                         <Label for="mobile_phone">Mobile phone</Label>
                         <Input
@@ -376,11 +376,17 @@ class Profile extends Component {
                         {!!errors.mobile_phone && touched.mobile_phone && (
                         <FormFeedback className="d-block">{errors.mobile_phone}</FormFeedback>)}
                       </FormGroup>
-                    </Col>
+                    </Col> */}
                     <Col sm="6">
                       <FormGroup>
                         <Label for="identity">Identity</Label>
                         <Input
+                          name="identity"
+                          type="text"
+                          value={values.identity}
+                          readOnly
+                        />
+                        {/* <Input
                           name="identity"
                           type="text"
                           value={values.identity || ''}
@@ -389,10 +395,10 @@ class Profile extends Component {
                           invalid={!!errors.identity && touched.identity}
                         />
                         {!!errors.identity && touched.identity && (
-                        <FormFeedback className="d-block">{errors.identity}</FormFeedback>)}
+                        <FormFeedback className="d-block">{errors.identity}</FormFeedback>)} */}
                       </FormGroup>
                     </Col>
-                    <Col sm="6">
+                    {/* <Col sm="6">
                       <FormGroup>
                         <Label for="addressline1">Address Line1</Label>
                         <Input
@@ -417,7 +423,7 @@ class Profile extends Component {
                           onBlur={handleBlur}
                         />
                       </FormGroup>
-                    </Col>
+                    </Col> */}
                     {/* <Col sm="3" xs="6">
                       <FormGroup>
                         <Label for="country">Country</Label>
@@ -439,7 +445,7 @@ class Profile extends Component {
                         )}
                       </FormGroup>
                     </Col> */}
-                    <Col sm="6">
+                    {/* <Col sm="6">
                       <FormGroup>
                         <Label for="city">City</Label>
                         <Input
@@ -480,7 +486,7 @@ class Profile extends Component {
                         />
                         {!!errors.zip_code && touched.zip_code && (<FormFeedback className="d-block">{errors.zip_code}</FormFeedback>)}
                       </FormGroup>
-                    </Col>
+                    </Col> */}
                   </Row>
                   <hr/>              
                   <div className="w-100 d-flex justify-content-end">

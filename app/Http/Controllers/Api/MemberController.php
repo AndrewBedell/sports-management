@@ -312,10 +312,10 @@ class MemberController extends Controller
                 $exist += $exist1;
             }
 
-            if ($exist2 > 0) {
-                $errArr['identity'] = 'Identity No already exist.';
-                $exist += $exist2;
-            }
+            // if ($exist2 > 0) {
+            //     $errArr['identity'] = 'Identity No already exist.';
+            //     $exist += $exist2;
+            // }
 
             if ($exist > 0) {
                 return response()->json(
@@ -336,14 +336,14 @@ class MemberController extends Controller
                     $checkDeleted = Player::withTrashed()->where('member_id', $id)->count();
 
                     if ($checkDeleted == 0) {
-                        if (is_null($data['skill']))
-                            $data['skill'] = "";
+                        // if (is_null($data['skill']))
+                        //     $data['skill'] = "";
                         
                         Player::create(array(
                             'member_id' => $id,
                             'weight_id' => $data['weight_id'],
                             'dan' => $data['dan'],
-                            'skill' => $data['skill']
+                            // 'skill' => $data['skill']
                         ));
                     } else {
                         Player::withTrashed()->where('member_id', $id)->restore();
@@ -392,8 +392,8 @@ class MemberController extends Controller
             // if (is_null($data['addressline2']))
             //     $data['addressline2'] = "";
 
-            if (is_null($data['position']))
-                $data['position'] = "";
+            // if (is_null($data['position']))
+            //     $data['position'] = "";
 
             Member::where('id', $id)->update(array(
                 'organization_id' => $data['organization_id'],
@@ -413,7 +413,7 @@ class MemberController extends Controller
                 'state' => "", //$data['state'],
                 'city' => "", //$data['city'],
                 'zip_code' => "", //$data['zip_code'],
-                'position' => $data['position'],
+                'position' => "", //$data['position'],
                 'identity' => $data['identity'],
                 'register_date' => $data['register_date']
             ));
@@ -421,8 +421,8 @@ class MemberController extends Controller
             $member_id = $member->id;
 
             if ($role->is_player) {
-                if (is_null($data['skill']))
-                    $data['skill'] = "";
+                // if (is_null($data['skill']))
+                //     $data['skill'] = "";
 
                 Player::where('member_id', $member_id)->update(array(
                     'weight_id' => $data['weight_id'],
