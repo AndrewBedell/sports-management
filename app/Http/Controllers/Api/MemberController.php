@@ -175,8 +175,8 @@ class MemberController extends Controller
         $member_id = $member->id;
 
         if ($role->is_player && !$validPlayer->fails()) {
-            if (is_null($data['skill']))
-                $data['skill'] = "";
+            // if (is_null($data['skill']))
+            //     $data['skill'] = "";
 
             Player::create(array(
                 'member_id' => $member_id,
