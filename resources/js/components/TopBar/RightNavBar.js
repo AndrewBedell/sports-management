@@ -28,36 +28,36 @@ class RightNavBar extends Component {
     super(props);
     this.handleLogout = this.handleLogout.bind(this);
 
-    const user = JSON.parse(localStorage.getItem('auth'));
-    const is_super = user.user.is_super;
-    const is_club_member = user.user.is_club_member;
-    const role_id = user.user.member_info.role_id;
+    // const user = JSON.parse(localStorage.getItem('auth'));
+    // const is_super = user.user.is_super;
+    // const is_club_member = user.user.is_club_member;
+    // const role_id = user.user.member_info.role_id;
 
-    this.state = {
-      is_super: is_super,
-      is_club_member: is_club_member,
-      role_id: role_id,
-      notification: []
-    }
+    // this.state = {
+    //   is_super: is_super,
+    //   is_club_member: is_club_member,
+    //   role_id: role_id,
+    //   notification: []
+    // }
   }
 
-  async componentDidMount() {
-    const unread = await Api.get('notification/unread');
-    const { response, body } = unread;
-    switch (response.status) {
-      case 200:
-        this.setState({
-          notification: body.data
-        });
-        break;
-      default:
-        break;
-    }
-  }
+  // async componentDidMount() {
+  //   const unread = await Api.get('notification/unread');
+  //   const { response, body } = unread;
+  //   switch (response.status) {
+  //     case 200:
+  //       this.setState({
+  //         notification: body.data
+  //       });
+  //       break;
+  //     default:
+  //       break;
+  //   }
+  // }
 
-  handleReadNotification(id) {
-    this.props.history.push('/notification/read', id);
-  }
+  // handleReadNotification(id) {
+  //   this.props.history.push('/notification/read', id);
+  // }
 
   async handleLogout() {
     await this.props.logout();
@@ -65,14 +65,14 @@ class RightNavBar extends Component {
   }
 
   render() {
-    const {
-      is_super, is_club_member, role_id,
-      notification
-    } = this.state;
+    // const {
+    //   is_super, is_club_member, role_id,
+    //   notification
+    // } = this.state;
 
     return (
       <Navbar className="right-nav-bar">
-        <UncontrolledDropdown nav inNavbar>
+        {/* <UncontrolledDropdown nav inNavbar>
           <DropdownToggle nav>
             <i className="fa fa-bell fa-lg text-secondary"></i>
             {
@@ -112,7 +112,7 @@ class RightNavBar extends Component {
               </DropdownItem>
             </Fragment>
           </DropdownMenu>
-        </UncontrolledDropdown>
+        </UncontrolledDropdown> */}
 
         <UncontrolledDropdown nav inNavbar>
           <DropdownToggle nav>
