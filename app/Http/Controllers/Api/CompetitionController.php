@@ -697,14 +697,14 @@ class CompetitionController extends Controller
                 }
 
                 $status = $comp[0]->status;
+
+                $club['male'] = $male;
+                $club['female'] = $female;
+                $club['officer'] = $officer;
+                $club['status'] = $status;
+
+                array_push($result, $club);
             }
-
-            $club['male'] = $male;
-            $club['female'] = $female;
-            $club['officer'] = $officer;
-            $club['status'] = $status;
-
-            array_push($result, $club);
         }
 
         return $result;
