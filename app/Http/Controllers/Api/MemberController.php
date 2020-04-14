@@ -26,18 +26,46 @@ class MemberController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $role = DB::table('roles')->where('is_player', true)->first();
+        $input = $request->all();
+        
+        $org_id = $input['org_id'];
+        $level = $input['level'];
 
-        $role_id = $role->id;
+        $org_ids = array((int)$org_id);
 
-        $orgIDs = $this->orgIDList();
+        switch ($level) {
+            case 1:
+                $orgs = Organization::where('parent_id', $org_id)->get();
 
-        $members = Member::where('members.role_id', '!=', $role_id)
-                        ->whereIn('members.organization_id', $orgIDs)
-                        ->leftJoin('users', 'users.member_id', '=', 'members.id')
-                        ->select('members.*', 'users.id AS uid', 'users.deleted_at AS status')
+                foreach ($orgs as $org) {
+                    array_push($org_ids, $org->id);
+
+                    $clubs = Organization::where('parent_id', $org->id)->get();
+
+                    foreach ($clubs as $club) {
+                        array_push($org_ids, $club->id);
+                    }
+                }
+                break;
+            case 2:
+                $clubs = Organization::where('parent_id', $org_id)->get();
+
+                foreach ($clubs as $club) {
+                    array_push($org_ids, $club->id);
+                }
+                break;
+            default:
+                break;
+        }
+
+        $members = Member::leftJoin('organizations', 'organizations.id', '=', 'members.organization_id')
+                        ->leftJoin('roles', 'roles.id', '=', 'members.role_id')
+                        ->whereIn('organization_id', $org_ids)
+                        ->select('members.*', 'organizations.name_o', 'organizations.level', 'roles.name AS role_name')
+                        ->orderBy('name')
+                        ->orderBy('surname')
                         ->get();
 
         return response()->json($members);

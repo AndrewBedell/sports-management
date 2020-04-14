@@ -36,16 +36,6 @@ class DataTable extends Component {
   }
 
   componentDidMount() {
-    this.componentWillReceiveProps(this.props);
-  }
-
-  componentWillReceiveProps() {
-    const user_info = JSON.parse(localStorage.getItem('auth'));
-    if (user_info.user) {
-      this.setState({
-        user: user_info.user.member_info
-      });
-    }
     if (this.props.items.length > 0) {
       this.setState({
         activePage: 1
@@ -56,6 +46,29 @@ class DataTable extends Component {
     this.setState({
       data: items.slice(0, per_page)
     });
+  }
+
+  componentWillReceiveProps(props) {
+    const user_info = JSON.parse(localStorage.getItem('auth'));
+    const { items } = props;
+
+    if (user_info.user) {
+      this.setState({
+        user: user_info.user.member_info
+      });
+    }
+    
+    if (this.props.items !== items) {
+      if (props.items.length > 0) {
+        this.setState({
+          activePage: 1
+        });
+      }
+      const { per_page } = this.state;
+      this.setState({
+        data: items.slice(0, per_page)
+      });
+    }
   }
 
   handlePaginationChange(e, { activePage }) {
@@ -110,7 +123,8 @@ class DataTable extends Component {
       onEdit,
       items,
       stype,
-      mtype
+      mtype,
+      init
     } = this.props;
 
     const {
@@ -148,10 +162,10 @@ class DataTable extends Component {
               )
             }
             {
-              stype.value === 'member' && (
+              (stype.value === 'member' || init) && (
                 <Fragment>
                   {
-                    mtype.value !== 'judoka' && (
+                    (mtype.value !== 'judoka' && !init) && (
                       <Table.HeaderCell
                         className="text-center"
                         width="2"
@@ -255,12 +269,12 @@ class DataTable extends Component {
               data.map((item, index) => (
                 <Table.Row
                   key={index}
-                  disabled={mtype.value === 'judoka' && item.active == 0}
+                  disabled={(stype.value === 'member' || init) && item.active == 0}
                 >
                   <Table.Cell>
                     <span className="text-primary mr-2">
                       {
-                        stype.value !== 'member' ? (
+                        (stype.value !== 'member' && !init) ? (
                           <Fragment>
                             <img src={item.logo ? item.logo : Bitmaps.logo} className="table-avatar mr-2" />
                           </Fragment>
@@ -272,22 +286,22 @@ class DataTable extends Component {
                       }
                     </span>
                     {
-                      stype.value === 'member' ? (
-                        mtype.value === 'judoka' && item.active == 0 ? (
+                      (stype.value === 'member' || init) ? (
+                        item.active == 0 ? (
                           <a>
-                            {item.surname && item.surname.toUpperCase()}
+                            {item.name}
                             {/* {' '}
                             {item.patronymic != '-' && item.patronymic} */}
                             {' '}
-                            {item.name}
+                            {item.surname && item.surname.toUpperCase()}
                           </a>
                         ) : (
                           <a className="detail-link" onClick={() => onSelect(item.id)}>
-                            {item.surname && item.surname.toUpperCase()}
+                            {item.name}
                             {/* {' '}
                             {item.patronymic != '-' && item.patronymic} */}
                             {' '}
-                            {item.name}
+                            {item.surname && item.surname.toUpperCase()}
                           </a>
                         )
                       ) : (
@@ -303,10 +317,10 @@ class DataTable extends Component {
                     )
                   }
                   {
-                    stype.value === 'member' && (
+                    (stype.value === 'member' || init) && (
                       <Fragment>
                         {
-                          mtype.value !== 'judoka' && (
+                          (mtype.value !== 'judoka' && !init) && (
                             <Table.Cell className="text-center">
                               {item.level == 1 && ('National Federation')}
                               {item.level == 2 && ('Regional Federation')}
@@ -314,8 +328,10 @@ class DataTable extends Component {
                             </Table.Cell>
                           )
                         }
-                        <Table.Cell>{item.name_o}</Table.Cell>
-                        <Table.Cell className="text-center">{item.gender && item.gender == 1 ? Genders[0].name : Genders[1].name}</Table.Cell>
+                        <Table.Cell className="text-center">{item.name_o}</Table.Cell>
+                        <Table.Cell className="text-center">
+                          {item.gender && item.gender == 1 ? Genders[0].name : Genders[1].name}
+                        </Table.Cell>
                         <Table.Cell className="text-center">{item.birthday}</Table.Cell>
                       </Fragment>
                     )

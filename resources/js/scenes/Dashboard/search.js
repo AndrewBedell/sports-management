@@ -17,6 +17,7 @@ import {
   FormFeedback,
   Alert
 } from 'reactstrap';
+import { Input } from 'semantic-ui-react';
 
 import QueryString from 'qs';
 import MainTopBar from '../../components/TopBar/MainTopBar';
@@ -50,6 +51,7 @@ class Search extends Component {
       member_required: true,
       search_type: '',
       member_type: '',
+      filter: '',
       referee_type: referee_type_options[0],
       search_org: '',
       search_club: '',
@@ -57,6 +59,7 @@ class Search extends Component {
       search_weight: '',
       search_dan: '',
       search_data: null,
+      init: false,
       isOpenDeleteModal: false,
       isOpenEditModal: false,
       edit_item: '',
@@ -82,7 +85,7 @@ class Search extends Component {
     if (referee_type_options.length == 3) referee_type_options.splice(0, 0, { label: 'All Referee', value: 'all' });
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     const user = JSON.parse(localStorage.getItem('auth'));
     const level = user.user.level == 1 && true;
     const user_is_club = user.user.is_club_member == 1 && true;
@@ -91,6 +94,24 @@ class Search extends Component {
       level,
       user_is_club
     });
+
+    if (user_is_club) {
+      let params = [];
+      params.org_id = user.user.member_info.organization_id;
+      params.level = user.user.level;
+
+      const member_list = await Api.post('members', params);
+      const { response, body } = member_list;
+      switch (response.status) {
+        case 200:
+          this.setState({
+            members: body
+          });
+          break;
+        default:
+          break;
+      }
+    }
 
     this.componentWillReceiveProps();
   }
@@ -204,6 +225,11 @@ class Search extends Component {
       }
 
       this.search(params);
+    } else if (this.state.user_is_club == 1) {
+      this.setState({
+        search_data: this.state.members,
+        init: true
+      });
     }
   }
 
@@ -240,6 +266,18 @@ class Search extends Component {
         this.setState({
           search_club: value,
           search_data: null
+        });
+        break;
+      case 'search_name':
+        let { members } = this.state;
+
+        members = members.filter(
+          member => member.name.toUpperCase().includes(value.toUpperCase()) || 
+                    member.surname.toUpperCase().includes(value.toUpperCase()));
+
+        this.setState({
+          filter: value,
+          search_data: members
         });
         break;
       case 'member_type':
@@ -283,11 +321,14 @@ class Search extends Component {
 
   async handleSearch() {
     const {
-      search_type, search_org, search_club, member_type, referee_type, search_gender, search_weight, search_dan
+      search_type, search_org, search_club,
+      member_type, referee_type, 
+      search_gender, search_weight, search_dan,
+      user_is_club
     } = this.state;
 
     const search_params = {
-      stype: search_type ? search_type.value : '',
+      stype: search_type ? search_type.value : user_is_club ? 'member' : '',
       org: search_org ? search_org.id : '',
       club: search_club ? search_club.id : '',
       mtype: member_type ? member_type.value : '',
@@ -296,15 +337,15 @@ class Search extends Component {
       weight: search_weight && search_weight.id && search_weight.weight !== 'All' ? search_weight.id : '',
       dan: search_dan ? search_dan.value : ''
     };
-
-    if (!search_params.stype) {
+    
+    if (!user_is_club && !search_params.stype) {
       this.setState({
         search_required: false
       });
       return;
     }
 
-    if (search_params.stype == 'member' && !search_params.mtype) {
+    if ((search_params.stype == 'member' || user_is_club) && !search_params.mtype) {
       this.setState({
         member_required: false
       });
@@ -515,8 +556,9 @@ class Search extends Component {
   }
 
   handleSelectItem(id) {
-    const { search_type } = this.state;
-    if (search_type.value == 'member') {
+    const { search_type, init } = this.state;
+
+    if (search_type.value == 'member' || init) {
       this.props.history.push('/member/detail', id);
     } else {
       this.props.history.push('/organization/detail', id);
@@ -552,6 +594,8 @@ class Search extends Component {
       search_required,
       member_required,
       search_data,
+      init,
+      filter,
       errors,
       isOpenDeleteModal,
       confirmationMessage,
@@ -576,41 +620,41 @@ class Search extends Component {
               &nbsp;Management System!
             </h3>
             <Row>
-              <Col xl="2" lg="3" md="4" sm="6" xs="12">
-                <FormGroup>
-                  <Select
-                    name="search_type"
-                    classNamePrefix={!search_required ? 'invalid react-select-lg' : 'react-select-lg'}
-                    placeholder="Search Type"
-                    indicatorSeparator={null}
-                    value={search_type}
-                    options={
-                      level != 1 ? (
-                        user_is_club ? (
-                          search_type_options.filter(item => item.value == 'member')
-                        ) : (
-                          search_type_options.filter(item => item.value != 'org')
+              {
+                !user_is_club && (
+                  <Col xl="2" lg="4" md="4" sm="6" xs="12">
+                    <FormGroup>
+                      <Select
+                        name="search_type"
+                        classNamePrefix={!search_required ? 'invalid react-select-lg' : 'react-select-lg'}
+                        placeholder="Search Type"
+                        indicatorSeparator={null}
+                        value={search_type}
+                        options={
+                          level != 1 ? (
+                            search_type_options.filter(item => item.value != 'org')
+                          ) : (
+                            search_type_options
+                          )
+                        }
+                        getOptionValue={option => option.value}
+                        getOptionLabel={option => option.label}
+                        onChange={(type) => {
+                          this.handleSearchFilter('search_type', type);
+                        }}
+                      />
+                      {
+                        !search_required && (
+                          <FormFeedback className="d-block">{errors.required}</FormFeedback>
                         )
-                      ) : (
-                        search_type_options
-                      )
-                    }
-                    getOptionValue={option => option.value}
-                    getOptionLabel={option => option.label}
-                    onChange={(type) => {
-                      this.handleSearchFilter('search_type', type);
-                    }}
-                  />
-                  {
-                    !search_required && (
-                      <FormFeedback className="d-block">{errors.required}</FormFeedback>
-                    )
-                  }
-                </FormGroup>
-              </Col>
+                      }
+                    </FormGroup>
+                  </Col>
+                )
+              }
               {
                 level == 1 && search_type.value == 'org' && (
-                  <Col xl="2" lg="3" md="4" sm="6" xs="12">
+                  <Col xl="2" lg="4" md="4" sm="6" xs="12">
                     <FormGroup>
                       <Select
                         name="search_org"
@@ -632,7 +676,7 @@ class Search extends Component {
               }
               {
                 level == 1 && (search_type.value == 'club' || search_type.value == 'member') && (
-                <Col xl="2" lg="3" md="4" sm="6" xs="12">
+                <Col xl="2" lg="4" md="4" sm="6" xs="12">
                   <FormGroup>
                     <Select
                       name="search_org"
@@ -655,7 +699,7 @@ class Search extends Component {
               {
                 // (search_type.value == 'club' || search_type.value == 'member') && (
                 search_type.value == 'club' && (
-                  <Col xl="2" lg="3" md="4" sm="6" xs="12">
+                  <Col xl="2" lg="4" md="4" sm="6" xs="12">
                     <FormGroup>
                       <Select
                         name="search_club"
@@ -676,8 +720,8 @@ class Search extends Component {
                 )
               }
               {
-                search_type.value == 'member' && (
-                  <Col xl="2" lg="3" md="4" sm="6" xs="12">
+                (search_type.value == 'member' || user_is_club) && (
+                  <Col xl="2" lg="4" md="4" sm="6" xs="12">
                     <FormGroup>
                       <Select
                         name="member_type"
@@ -701,8 +745,24 @@ class Search extends Component {
                 )
               }
               {
-                search_type.value == 'member' && member_type.value == 'referee' && (
-                  <Col xl="2" lg="3" md="4" sm="6" xs="12">
+                (search_type.value == 'member' || user_is_club) && (
+                  <Col xl="2" lg="4" md="4" sm="6" xs="12">
+                    <FormGroup>
+                      <Input
+                        name="search_name"
+                        placeholder="Name"
+                        value={filter}
+                        onChange={(event) => {
+                          this.handleSearchFilter('search_name', event.target.value);
+                        }}
+                      />
+                    </FormGroup>
+                  </Col>
+                )
+              }
+              {
+                (search_type.value == 'member' || user_is_club) && member_type.value == 'referee' && (
+                  <Col xl="2" lg="4" md="4" sm="6" xs="12">
                     <FormGroup>
                       <Select
                         name="referee_type"
@@ -721,9 +781,9 @@ class Search extends Component {
                 )
               }
               {
-                search_type.value == 'member' && member_type.value == 'judoka' && (
+                (search_type.value == 'member' || user_is_club) && member_type.value == 'judoka' && (
                   <Fragment>
-                    <Col xl="2" lg="2" md="4" sm="6" xs="12">
+                    <Col xl="2" lg="4" md="4" sm="6" xs="12">
                       <FormGroup>
                         <Select
                           name="search_gender"
@@ -739,7 +799,7 @@ class Search extends Component {
                         />
                       </FormGroup>
                     </Col>
-                    <Col xl="2" lg="2" md="3" sm="6" xs="12">
+                    <Col xl="2" lg="4" md="4" sm="6" xs="12">
                       <FormGroup>
                         <Select
                           name="search_weight"
@@ -756,7 +816,7 @@ class Search extends Component {
                         />
                       </FormGroup>
                     </Col>
-                    <Col xl="1" lg="2" md="2" sm="6" xs="12">
+                    <Col xl="2" lg="4" md="4" sm="6" xs="12">
                       <FormGroup>
                         <Select
                           name="search_dan"
@@ -776,8 +836,8 @@ class Search extends Component {
                   </Fragment>
                 )
               }
-              <Col xl="1" lg="3" md="4" sm="6" xs="12">
-                <div className="text-right">
+              <Col sm="12">
+                <div className="text-center">
                   <FormGroup>
                     <Button
                       type="button"
@@ -811,6 +871,7 @@ class Search extends Component {
               <Container fluid>
                 <div className="table-responsive">
                   <DataTable
+                    init={init}
                     stype={search_type}
                     mtype={member_type}
                     items={search_data}

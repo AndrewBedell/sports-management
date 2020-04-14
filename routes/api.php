@@ -36,7 +36,7 @@ Route::namespace('Api')->group(function () {
         Route::put('organization/{id}', 'OrganizationController@update');
         Route::delete('organization/{id}', 'OrganizationController@destroy');
 
-        Route::get('members', 'MemberController@index');
+        Route::post('members', 'MemberController@index');
         Route::post('competition-members', 'MemberController@competitionClubMember');
         // Route::post('competition-org-members', 'MemberController@competitionOrgMember');
         Route::post('allow-members', 'MemberController@allow');

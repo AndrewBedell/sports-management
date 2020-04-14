@@ -71,13 +71,12 @@ class MemberDetail extends Component {
                           <Row>
                             <Col sm="12">
                               <h5 className="pt-3 py-2">
-                                <b>Culb Name</b>
-                                :
-                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                {member.name_o}
-                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                ( Region:&nbsp;&nbsp;
-                                {member.region}
+                                <b>Club Name</b>
+                                  :
+                                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                {member.club_name}
+                                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;( Region:&nbsp;&nbsp;
+                                {member.org_name}
                                 {' '}
                                 )
                               </h5>
@@ -186,21 +185,21 @@ class MemberDetail extends Component {
                       )
                     }
                     <Row>
-                      <Col md="12" lg="8">
+                      <Col sm="12">
                         <h5 className="py-2">
                           <b>Email</b>
                           :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                           <a href={`mailto:${member.email}`}>{member.email}</a>
                         </h5>
                       </Col>
-                      <Col md="12" lg="4">
+                      {/* <Col md="12" lg="4">
                         <h5 className="py-2">
                           <b>Mobile</b>
                           :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                           {member.mobile_phone}
                         </h5>
-                      </Col>
-                      <Col sm="12">
+                      </Col> */}
+                      {/* <Col sm="12">
                         <h5 className="py-2">
                           <b>Address</b>
                           :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -210,7 +209,7 @@ class MemberDetail extends Component {
                           {(member.state && member.state != '' && member.state != '-') ? `${member.state}, ` : '' }
                           {member.zip_code}
                         </h5>
-                      </Col>
+                      </Col> */}
                     </Row>
                     {member.is_player == 1 ? (
                       <Row>
