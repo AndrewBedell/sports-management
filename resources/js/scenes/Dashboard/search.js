@@ -95,22 +95,21 @@ class Search extends Component {
       user_is_club
     });
 
-    if (user_is_club) {
-      let params = [];
-      params.org_id = user.user.member_info.organization_id;
-      params.level = user.user.level;
+    let params = [];
+    params.user_id = user.user.member_info.id;
+    params.org_id = user.user.member_info.organization_id;
+    params.level = user.user.level;
 
-      const member_list = await Api.post('members', params);
-      const { response, body } = member_list;
-      switch (response.status) {
-        case 200:
-          this.setState({
-            members: body
-          });
-          break;
-        default:
-          break;
-      }
+    const member_list = await Api.post('members', params);
+    const { response, body } = member_list;
+    switch (response.status) {
+      case 200:
+        this.setState({
+          members: body
+        });
+        break;
+      default:
+        break;
     }
 
     this.componentWillReceiveProps();
@@ -269,11 +268,18 @@ class Search extends Component {
         });
         break;
       case 'search_name':
-        let { members } = this.state;
+        let { members, member_type } = this.state;
 
-        members = members.filter(
-          member => member.name.toUpperCase().includes(value.toUpperCase()) || 
-                    member.surname.toUpperCase().includes(value.toUpperCase()));
+        if (member_type == '') {
+          members = members.filter(
+            member => member.name.toUpperCase().includes(value.toUpperCase()) || 
+                      member.surname.toUpperCase().includes(value.toUpperCase()));
+        } else {
+          members = members.filter(
+            member => member.role_name == member_type.label &&
+                      (member.name.toUpperCase().includes(value.toUpperCase()) || 
+                      member.surname.toUpperCase().includes(value.toUpperCase())));
+        }
 
         this.setState({
           filter: value,

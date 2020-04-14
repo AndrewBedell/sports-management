@@ -30,6 +30,7 @@ class MemberController extends Controller
     {
         $input = $request->all();
         
+        $user_id = $input['user_id'];
         $org_id = $input['org_id'];
         $level = $input['level'];
 
@@ -63,6 +64,7 @@ class MemberController extends Controller
         $members = Member::leftJoin('organizations', 'organizations.id', '=', 'members.organization_id')
                         ->leftJoin('roles', 'roles.id', '=', 'members.role_id')
                         ->whereIn('organization_id', $org_ids)
+                        ->where('members.id', '!=', $user_id)
                         ->select('members.*', 'organizations.name_o', 'organizations.level', 'roles.name AS role_name')
                         ->orderBy('name')
                         ->orderBy('surname')

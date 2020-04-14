@@ -805,7 +805,8 @@ class OrganizationController extends Controller
                         $result = $result->where('members.position', $rtype);
                         
                     $result = $result->select('members.*', 'organizations.name_o', 'organizations.level', 'roles.name AS role_name')
-                                    ->orderBy('members.name')->get();
+                                    ->orderBy('members.name')
+                                    ->get();
                 }
                 
                 break;
