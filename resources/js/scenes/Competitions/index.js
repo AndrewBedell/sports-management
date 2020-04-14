@@ -102,7 +102,7 @@ class Competitions extends Component {
       <Fragment>
         <MainTopBar />
         <div className="main-content dashboard">
-          <Container>
+          {/* <Container>
             <Row>
               <Col sm="2">
                 <Select
@@ -119,7 +119,7 @@ class Competitions extends Component {
                 />
               </Col>
             </Row>
-          </Container>
+          </Container> */}
           <Container>
             <Row>
               <Col sm="12">

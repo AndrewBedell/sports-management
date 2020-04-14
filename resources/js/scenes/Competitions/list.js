@@ -50,7 +50,7 @@ class CompetitionList extends Component {
 
         competitions.map(comp => {
           start.push(new Date(comp.register_from).getTime());
-          countDown.push(new Date(comp.register_to).getTime());
+          countDown.push(new Date(comp.register_to).getTime() + 86400000);
 
           let from = comp.from.match(/\d+/g);
           comp.from = months[parseInt(from[1]) - 1] + ', ' + from[2];

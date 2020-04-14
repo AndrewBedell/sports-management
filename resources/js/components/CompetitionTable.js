@@ -89,7 +89,11 @@ class CompetitionTable extends Component {
             <Table.HeaderCell className="text-center">Name</Table.HeaderCell>
             <Table.HeaderCell className="text-center">Place</Table.HeaderCell>
             <Table.HeaderCell className="text-center">Registration Period</Table.HeaderCell>
-            <Table.HeaderCell className="text-center">Deadline</Table.HeaderCell>
+            {
+              expire.length > 0 && (
+                <Table.HeaderCell className="text-center">Deadline</Table.HeaderCell>
+              )
+            }
             <Table.HeaderCell className="text-center">Action</Table.HeaderCell>
           </Table.Row>
         </Table.Header>
@@ -99,12 +103,12 @@ class CompetitionTable extends Component {
               data.map((item, index) => (
                 <Table.Row key={index}>
                   <Table.Cell width="1" className="text-center">{item.from} ~ {item.to}</Table.Cell>
-                  <Table.Cell width="4">
+                  <Table.Cell width="4" className="text-center">
                     <a onClick={() => onSelect(item.id, 'detail')}>
                       <b>{item.name}</b>
                     </a>
                   </Table.Cell>
-                  <Table.Cell width="3">
+                  <Table.Cell width="3" className="text-center">
                     <a onClick={() => onSelect(item.id, 'detail')}>
                       {item.place}
                     </a>
@@ -112,15 +116,17 @@ class CompetitionTable extends Component {
                   <Table.Cell width="2" className="text-center">
                     {item.register_from} ~ {item.register_to}
                   </Table.Cell>
-                  <Table.Cell width="2" className="text-center">
-                    <b className="text-danger">
-                      {
-                        inscribe && (
-                          expire.length > 0 ? expire[index] : ''
-                        )
-                      }
-                    </b>
-                  </Table.Cell>
+                  {
+                    expire.length > 0 && (
+                      <Table.Cell width="2" className="text-center">
+                        {
+                          (start[index] - (new Date().getTime()) < 0) && (
+                            <b className="text-danger">{expire[index]}</b>
+                          )
+                        }
+                      </Table.Cell>
+                    )
+                  }
                   <Table.Cell width="2" className="text-center">
                     {
                       inscribe && expire[index] != 'Expired.' && (start[index] - (new Date().getTime()) < 0) ? (
