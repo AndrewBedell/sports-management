@@ -72048,6 +72048,7 @@ body .main-content {
 .main-content .ui.table th,
 .main-content .ui.table td {
   border: 1px solid #000;
+  vertical-align: middle;
 }
 
 .main-content .ui.table th:last-child,

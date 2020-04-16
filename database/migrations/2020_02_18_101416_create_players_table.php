@@ -18,7 +18,7 @@ class CreatePlayersTable extends Migration
             $table->integer('member_id');
             $table->integer('weight_id');
 
-            $table->smallInteger('dan');
+            $table->char('dan', 10);
             $table->string('skill', 100);
 
             $table->dateTime('expired_date', 0)->nullable();

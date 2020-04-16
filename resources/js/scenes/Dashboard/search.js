@@ -45,6 +45,7 @@ class Search extends Component {
       orgs: [],
       weights: [],
       roles: [],
+      club_list: [],
       clubs: [],
       original_clubs: [],
       search_required: true,
@@ -165,12 +166,14 @@ class Search extends Component {
         if (search.org == '') {
           this.setState({
             original_clubs: club_list.body,
-            clubs: club_list.body
+            clubs: club_list.body,
+            club_list: club_list.body
           });
         } else {
           this.setState({
             original_clubs: club_list.body,
-            clubs: club_list.body.filter(club => club.parent_id == search.org)
+            clubs: club_list.body.filter(club => club.parent_id == search.org),
+            club_list: club_list.body
           });
         }
         break;
@@ -591,6 +594,7 @@ class Search extends Component {
       member_type,
       referee_type,
       weights,
+      club_list,
       clubs,
       search_org,
       search_club,
@@ -898,6 +902,7 @@ class Search extends Component {
               type={search_type}
               weights={weights}
               orgs={org_list}
+              clubs={club_list}
               roles={roles}
               errors={errors}
               handleSave={this.handleSaveItem}

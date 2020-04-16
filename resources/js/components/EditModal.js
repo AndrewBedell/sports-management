@@ -27,6 +27,8 @@ class EditModal extends React.Component {
       item: null,
       isOpen: true,
       org_list: [],
+      club_list: [],
+      filtered_club: [],
       file: '',
       imagePreviewUrl: '',
       fileKey: 1
@@ -53,7 +55,7 @@ class EditModal extends React.Component {
 
   async componentWillReceiveProps(props) {
     const {
-      id, type, orgs
+      id, type, orgs, clubs
     } = props;
     if (type && type.value && type.value === 'member') {
       const data = await Api.get(`member/${id}`);
@@ -90,7 +92,8 @@ class EditModal extends React.Component {
     }
     if (type.value === 'member') {
       this.setState({
-        org_list: orgs
+        org_list: orgs,
+        club_list: clubs
       });
     }
     this.settingValues(props);
@@ -107,7 +110,7 @@ class EditModal extends React.Component {
     if (day.length < 2) 
         day = '0' + day;
 
-    const { item, org_list } = this.state;
+    const { item, org_list, club_list } = this.state;
     const {
       roles, weights, type
     } = props;
@@ -168,7 +171,12 @@ class EditModal extends React.Component {
         // patronymic: values.patronymic,
         surname: values.surname,
         gender: values.gender == 1 ? Genders[0] : Genders[1],
-        organization_id: org_list.filter(org => org.id === values.organization_id)[0],
+        org_id: values.org_id == 1 ? (
+          org_list.filter(org => org.id === values.club_id)[0]
+        ) : (
+          org_list.filter(org => org.id === values.org_id)[0]
+        ),
+        club_id: club_list.filter(club => club.id == values.club_id)[0],
         role_id: roles.filter(role => role.id === values.role_id)[0],
         profile_image: values.profile_image,
         register_date: values.register_date,
@@ -340,7 +348,7 @@ class EditModal extends React.Component {
 
   render() {
     const {
-      isOpen, item, org_list
+      isOpen, item, org_list, filtered_club
     } = this.state;
     const { imagePreviewUrl } = this.state;
 
@@ -380,7 +388,8 @@ class EditModal extends React.Component {
               <Formik
                 ref={this.formikRef2}
                 initialValues={{
-                  organization_id: null,
+                  org_id: null,
+                  club_id: null,
                   role_id: null,
                   profile_image: null,
                   register_date: [year, month, day].join('-'),
@@ -459,7 +468,7 @@ class EditModal extends React.Component {
                           )}
                         </FormGroup>
                       </Col>
-                      <Col sm="8">
+                      <Col sm="4">
                         <FormGroup>
                           <Label for="organization_id">
                             Organization
@@ -468,20 +477,44 @@ class EditModal extends React.Component {
                             name="organization_id"
                             classNamePrefix={!!errors.organization_id && touched.organization_id ? 'invalid react-select-lg' : 'react-select-lg'}
                             indicatorSeparator={null}
-                            options={
-                              values.role_id && values.role_id.is_player === 1 ? 
-                                org_list.filter(org => org.is_club === 1) : org_list
-                            }
+                            options={org_list}
                             getOptionValue={option => option.id}
                             getOptionLabel={option => option.name_o}
-                            value={values.organization_id}
+                            value={values.org_id}
                             onChange={(value) => {
                               setFieldValue('organization_id', value);
+
+                              this.setState({
+                                filtered_club: this.state.club_list.filter(club => club.parent_id == value.id)
+                              });
                             }}
                             onBlur={this.handleBlur}
                           />
                           {!!errors.organization_id && touched.organization_id && (
                             <FormFeedback className="d-block">{errors.organization_id}</FormFeedback>
+                          )}
+                        </FormGroup>
+                      </Col>
+                      <Col sm="4">
+                        <FormGroup>
+                          <Label for="club_id">
+                            Club
+                          </Label>
+                          <Select
+                            name="club_id"
+                            classNamePrefix={!!errors.club_id && touched.club_id ? 'invalid react-select-lg' : 'react-select-lg'}
+                            indicatorSeparator={null}
+                            options={filtered_club}
+                            getOptionValue={option => option.id}
+                            getOptionLabel={option => option.name_o}
+                            value={values.club_id}
+                            onChange={(value) => {
+                              setFieldValue('club_id', value);
+                            }}
+                            onBlur={this.handleBlur}
+                          />
+                          {!!errors.club_id && touched.club_id && (
+                            <FormFeedback className="d-block">{errors.club_id}</FormFeedback>
                           )}
                         </FormGroup>
                       </Col>

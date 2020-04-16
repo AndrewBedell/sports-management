@@ -245,17 +245,28 @@ export const Genders = [
 ];
 
 export const Dans = [
-  { value: '', label: 'All Dan' },
-  { value: 1, label: '1' },
-  { value: 2, label: '2' },
-  { value: 3, label: '3' },
-  { value: 4, label: '4' },
-  { value: 5, label: '5' },
-  { value: 6, label: '6' },
-  { value: 7, label: '7' },
-  { value: 8, label: '8' },
-  { value: 9, label: '9' },
-  { value: 10, label: '10' }
+  { value: 'dan', label: 'All Dan' },
+  { value: '1-dan', label: '1 Dan' },
+  { value: '2-dan', label: '2 Dan' },
+  { value: '3-dan', label: '3 Dan' },
+  { value: '4-dan', label: '4 Dan' },
+  { value: '5-dan', label: '5 Dan' },
+  { value: '6-dan', label: '6 Dan' },
+  { value: '7-dan', label: '7 Dan' },
+  { value: '8-dan', label: '8 Dan' },
+  { value: '9-dan', label: '9 Dan' },
+  { value: '10-dan', label: '10 Dan' },
+  { value: 'kyu', label: 'All Kyu' },
+  { value: '1-kyu', label: '1 Kyu' },
+  { value: '2-kyu', label: '2 Kyu' },
+  { value: '3-kyu', label: '3 Kyu' },
+  { value: '4-kyu', label: '4 Kyu' },
+  { value: '5-kyu', label: '5 Kyu' },
+  { value: '6-kyu', label: '6 Kyu' },
+  { value: '7-kyu', label: '7 Kyu' },
+  { value: '8-kyu', label: '8 Kyu' },
+  { value: '9-kyu', label: '9 Kyu' },
+  { value: '10-kyu', label: '10 Kyu' }
 ];
 
 export const search_genders = [

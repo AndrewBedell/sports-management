@@ -12,7 +12,7 @@ import { Button } from 'reactstrap';
 import Select from 'react-select';
 
 import _ from 'lodash';
-import { Genders } from '../configs/data';
+import { Dans, Genders } from '../configs/data';
 import Bitmaps from '../theme/Bitmaps';
 
 class DataTable extends Component {
@@ -359,7 +359,11 @@ class DataTable extends Component {
                           {' '}
                           Kg
                         </Table.Cell>
-                        <Table.Cell className="text-center">{item.dan}</Table.Cell>
+                        <Table.Cell className="text-center">
+                          {
+                            Dans.filter(dan => dan.value == item.dan)[0].label
+                          }
+                        </Table.Cell>
                           {
                             item.active == 0 && (
                               <Table.Cell className="text-center">
@@ -393,27 +397,31 @@ class DataTable extends Component {
                   {
                     this.props.display && this.props.display == true && (
                       <Table.Cell>
-                        <div className="actions d-flex w-100 justify-content-center align-items-center">
-                          <Button
-                            color="success"
-                            type="button"
-                            onClick={() => onEdit(item.id, index)}
-                            style={{ marginRight: '20px' }}
-                          >
-                            <i className="fa fa-pencil-alt fa-lg" />
-                          </Button>
-                          {
-                            (item.parent_id && item.parent_id !== 0) || (item.name && item.id !== user.id) ? (
+                        {
+                          (stype.value === 'org' || stype.value === 'club' || item.active == 1) && (
+                            <div className="actions d-flex w-100 justify-content-center align-items-center">
                               <Button
-                                color="danger"
+                                color="success"
                                 type="button"
-                                onClick={() => onDelete(item.id)}
+                                onClick={() => onEdit(item.id, index)}
+                                style={{ marginRight: '20px' }}
                               >
-                                <i className="fa fa-trash-alt fa-lg" />
+                                <i className="fa fa-pencil-alt fa-lg" />
                               </Button>
-                            ) : <div className="px-3" />
-                          }
-                        </div>
+                              {
+                                (item.parent_id && item.parent_id !== 0) || (item.name && item.id !== user.id) ? (
+                                  <Button
+                                    color="danger"
+                                    type="button"
+                                    onClick={() => onDelete(item.id)}
+                                  >
+                                    <i className="fa fa-trash-alt fa-lg" />
+                                  </Button>
+                                ) : <div className="px-3" />
+                              }
+                            </div>
+                          )
+                        }
                       </Table.Cell>
                     )
                   }

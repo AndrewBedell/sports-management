@@ -792,8 +792,7 @@ class OrganizationController extends Controller
                     if ($weight != '')
                         $result = $result->where('players.weight_id', $weight);
 
-                    if ($dan != '')
-                        $result = $result->where('players.dan', $dan);
+                    $result = $result->where('players.dan', 'like', '%' . $dan);
 
                     $result = $result->select('members.*', 'organizations.name_o', 'organizations.level', 'weights.weight', 
                                             'players.dan', 'players.skill', 'players.expired_date')
