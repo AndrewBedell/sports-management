@@ -380,9 +380,10 @@ class Search extends Component {
   }
 
   handleEdit(id, index) {
-    const { isOpenEditModal } = this.state;
+    const { isOpenEditModal, search_type } = this.state;
     this.setState({
       isOpenEditModal: !isOpenEditModal,
+      search_type: search_type == '' ? search_type_options.filter(type => type.value == 'member')[0] : search_type,
       edit_item: id,
       editIndex: index
     });

@@ -581,20 +581,26 @@ class OrganizationController extends Controller
 
         $me = Member::find($user->member_id);
 
+        $org = Organization::find($me->organization_id);
+
         $result = array();
 
-        $nf = Organization::where('parent_id', 0)->where('id', $me->organization_id)->get();
+        if ($org->is_club == 0) {
+            array_push($result, $org);
+        } else {
+            $parent = Organization::find($org->parent_id);
 
-        if (sizeof($nf) > 0) {
-            $children = Organization::where('parent_id', '!=', 0)
-                        ->where('parent_id', $nf[0]->id)
+            array_push($result, $parent);
+        }
+
+        if ($org->id == 1) {
+            $children = Organization::where('parent_id', 1)
                         ->where('is_club', 0)
                         ->orderBy('name_o')
                         ->get();
 
-            $merged = $nf->merge($children);
-
-            $result = $merged->all();
+            foreach ($children as $child)
+                array_push($result, $child);
         }
 
         return response()->json($result);
