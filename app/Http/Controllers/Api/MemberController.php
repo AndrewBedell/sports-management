@@ -114,7 +114,7 @@ class MemberController extends Controller
         
         $validPlayer = Validator::make($data, [
             'weight_id' => 'required',
-            'dan' => 'required|integer'
+            'dan' => 'required'
         ]);
         
         $role = DB::table('roles')->where('id', $data['role_id'])->first();
@@ -288,7 +288,7 @@ class MemberController extends Controller
             $data = $request->all();
 
             $validMember = Validator::make($data, [
-                'organization_id' => 'required',
+                'org_id' => 'required',
                 'role_id' => 'required',
                 'name' => 'required|string|max:255',
                 'surname' => 'required|string|max:255',
@@ -321,7 +321,7 @@ class MemberController extends Controller
             if ($role->is_player) {
                 $validPlayer = Validator::make($data, [
                     'weight_id' => 'required',
-                    'dan' => 'required|integer'
+                    'dan' => 'required'
                 ]);
 
                 if ($validPlayer->fails()) {
@@ -429,8 +429,15 @@ class MemberController extends Controller
             // if (is_null($data['position']))
             //     $data['position'] = "";
 
+            $orgID = '';
+
+            if (($data['role_id'] == 2 || $data['role_id'] == 3) && $data['club_id'] != '')
+                $orgID = $data['club_id'];
+            else
+                $orgID = $data['org_id'];
+
             Member::where('id', $id)->update(array(
-                'organization_id' => $data['organization_id'],
+                'organization_id' => $orgID,
                 'role_id' => $data['role_id'],
                 'name' => $data['name'],
                 'patronymic' => "", //$data['patronymic'],

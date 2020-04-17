@@ -100,15 +100,15 @@ class EditModal extends React.Component {
   }
 
   settingValues(props) {
-    var d = new Date(),
-        month = '' + (d.getMonth() + 1),
-        day = '' + d.getDate(),
-        year = d.getFullYear();
+    // var d = new Date(),
+    //     month = '' + (d.getMonth() + 1),
+    //     day = '' + d.getDate(),
+    //     year = d.getFullYear();
 
-    if (month.length < 2) 
-        month = '0' + month;
-    if (day.length < 2) 
-        day = '0' + day;
+    // if (month.length < 2) 
+    //     month = '0' + month;
+    // if (day.length < 2) 
+    //     day = '0' + day;
 
     const { item, org_list, club_list } = this.state;
     const {
@@ -120,52 +120,53 @@ class EditModal extends React.Component {
     const values = {
       ...item
     };
-    if (!item) {
-      if (type && type.value && type.value !== 'member') {
-        formikRef1.current.setValues({
-          name_o: '',
-          name_s: '',
-          parent_id: '',
-          register_no: '',
-          logo: null,
-          email: '',
-          mobile_phone: '',
-          addressline1: '',
-          addressline2: '',
-          // country: null,
-          state: '',
-          city: '',
-          zip_code: '',
-          level: '',
-          is_club: null
-        });
-      } else {
-        formikRef2.current.setValues({
-          organization_id: null,
-          role_id: null,
-          profile_image: null,
-          register_date: [year, month, day].join('-'),
-          name: '',
-          // patronymic: '',
-          surname: '',
-          gender: null,
-          birthday: null,
-          email: '',
-          // mobile_phone: '',
-          // addressline1: '',
-          // addressline2: '',
-          // country: null,
-          // state: '',
-          // city: '',
-          // zip_code: '',
-          identity: '',
-          weight: null,
-          dan: null,
-          position: '',
-          level: ''
-        });
-      }
-    } else if (type && type.value && type.value === 'member') {
+    // if (!item) {
+    //   if (type && type.value && type.value !== 'member') {
+    //     formikRef1.current.setValues({
+    //       name_o: '',
+    //       name_s: '',
+    //       parent_id: '',
+    //       register_no: '',
+    //       logo: null,
+    //       email: '',
+    //       mobile_phone: '',
+    //       addressline1: '',
+    //       addressline2: '',
+    //       // country: null,
+    //       state: '',
+    //       city: '',
+    //       zip_code: '',
+    //       level: '',
+    //       is_club: null
+    //     });
+    //   } else {
+    //     formikRef2.current.setValues({
+    //       organization_id: null,
+    //       role_id: null,
+    //       profile_image: null,
+    //       register_date: [year, month, day].join('-'),
+    //       name: '',
+    //       // patronymic: '',
+    //       surname: '',
+    //       gender: null,
+    //       birthday: null,
+    //       email: '',
+    //       // mobile_phone: '',
+    //       // addressline1: '',
+    //       // addressline2: '',
+    //       // country: null,
+    //       // state: '',
+    //       // city: '',
+    //       // zip_code: '',
+    //       identity: '',
+    //       weight: null,
+    //       dan: null,
+    //       position: '',
+    //       level: ''
+    //     });
+    //   }
+    // } else 
+    if (type && type.value && type.value === 'member') {
       formikRef2.current.setValues({
         name: values.name,
         // patronymic: values.patronymic,
@@ -312,7 +313,8 @@ class EditModal extends React.Component {
         weight_id: values.role_id && values.role_id.is_player === 1 ? (values.weight_id && values.weight_id.id) : '',
         dan: values.role_id && values.role_id.is_player === 1 ? (values.dan && values.dan.value) : '',
         identity: values.identity,
-        organization_id: values.organization_id.id,
+        org_id: values.org_id.id,
+        club_id: (values.club_id && values.club_id.id) || '',
         role_id: values.role_id.id,
         profile_image: imagePreviewUrl || '',
         position: values.position.value ? values.position.value 
@@ -320,7 +322,7 @@ class EditModal extends React.Component {
         // skill: values.skill ? values.skill : '',
         active: item.active,
         register_date: values.register_date,
-        name_o: values.organization_id.name_o,
+        name_o: values.org_id.name_o,
         level: values.level
       };
     }
@@ -329,15 +331,12 @@ class EditModal extends React.Component {
     } = this.props;
 
     handleSave = handleSave || (() => {});
-    if (values.role_id && values.role_id.is_player === 1 && values.organization_id.is_club !== 1) {
+
+    if (values.role_id && (values.role_id.id === 2 || values.role_id.id === 3) && values.club_id === '') {
       bags.setStatus({
         color: 'danger',
-        children: 'Organization should been Club.'
+        children: 'Club is required for this member.'
       });
-      bags.setSubmitting(false);
-      return;
-    }
-    if (values.role_id && values.role_id.is_player === 1 && (!values.weight_id || !values.dan)) {
       bags.setSubmitting(false);
       return;
     }
@@ -414,7 +413,7 @@ class EditModal extends React.Component {
                 }}
                 validationSchema={
                   Yup.object().shape({
-                    organization_id: Yup.mixed().required('This field is required!'),
+                    org_id: Yup.mixed().required('This field is required!'),
                     role_id: Yup.mixed().required('This field is required!'),
                     // profile_image: Yup.mixed().required('Image is required!'),
                     // register_date: Yup.mixed().required('This field is required!'),
@@ -470,19 +469,20 @@ class EditModal extends React.Component {
                       </Col>
                       <Col sm="4">
                         <FormGroup>
-                          <Label for="organization_id">
+                          <Label for="org_id">
                             Organization
                           </Label>
                           <Select
-                            name="organization_id"
-                            classNamePrefix={!!errors.organization_id && touched.organization_id ? 'invalid react-select-lg' : 'react-select-lg'}
+                            name="org_id"
+                            classNamePrefix={!!errors.org_id && touched.org_id ? 'invalid react-select-lg' : 'react-select-lg'}
                             indicatorSeparator={null}
                             options={org_list}
                             getOptionValue={option => option.id}
                             getOptionLabel={option => option.name_o}
                             value={values.org_id}
                             onChange={(value) => {
-                              setFieldValue('organization_id', value);
+                              setFieldValue('org_id', value);
+                              setFieldValue('club_id', '');
 
                               this.setState({
                                 filtered_club: this.state.club_list.filter(club => club.parent_id == value.id)
@@ -490,8 +490,8 @@ class EditModal extends React.Component {
                             }}
                             onBlur={this.handleBlur}
                           />
-                          {!!errors.organization_id && touched.organization_id && (
-                            <FormFeedback className="d-block">{errors.organization_id}</FormFeedback>
+                          {!!errors.org_id && touched.org_id && (
+                            <FormFeedback className="d-block">{errors.org_id}</FormFeedback>
                           )}
                         </FormGroup>
                       </Col>
@@ -504,7 +504,11 @@ class EditModal extends React.Component {
                             name="club_id"
                             classNamePrefix={!!errors.club_id && touched.club_id ? 'invalid react-select-lg' : 'react-select-lg'}
                             indicatorSeparator={null}
-                            options={filtered_club}
+                            options={
+                              filtered_club.length > 0 
+                                ? filtered_club 
+                                : values.org_id && this.state.club_list.filter(club => club.parent_id == values.org_id.id)
+                            }
                             getOptionValue={option => option.id}
                             getOptionLabel={option => option.name_o}
                             value={values.club_id}
@@ -778,15 +782,18 @@ class EditModal extends React.Component {
                               menuPlacement="top"
                               classNamePrefix={values.role_id && values.role_id.is_player === 1 && !values.weight_id && touched.weight_id ? 'invalid react-select-lg' : 'react-select-lg'}
                               value={values.weight_id}
-                              options={weights}
+                              options={weights.filter(weight => weight.id != 0)}
                               getOptionValue={option => option.id}
-                              getOptionLabel={option => option.name}
+                              getOptionLabel={option => option.weight + ' Kg'}
                               onChange={(value) => {
                                 setFieldValue('weight_id', value);
                               }}
                             />
-                            {values.role_id && values.role_id.is_player === 1 && !values.weight_id && touched.weight_id && <FormFeedback className="d-block">This field is required!</FormFeedback>}
-                            </Col>
+                            {
+                              values.role_id && values.role_id.is_player === 1 && !values.weight_id && touched.weight_id && 
+                              <FormFeedback className="d-block">This field is required!</FormFeedback>
+                            }
+                          </Col>
                         )
                       }
                       {
@@ -798,15 +805,18 @@ class EditModal extends React.Component {
                               menuPlacement="top"
                               classNamePrefix={values.role_id && values.role_id.is_player === 1 && !values.dan && touched.dan ? 'invalid react-select-lg' : 'react-select-lg'}
                               value={values.dan}
-                              options={Dans}
+                              options={Dans.filter(dan => dan.value != 'dan' && dan.value != 'kyu')}
                               getOptionValue={option => option.value}
                               getOptionLabel={option => option.label}
                               onChange={(value) => {
                                 setFieldValue('dan', value);
                               }}
                             />
-                            {values.role_id && values.role_id.is_player === 1 && !values.dan && touched.dan && <FormFeedback className="d-block">This field is required!</FormFeedback>}
-                            </Col>
+                            {
+                              values.role_id && values.role_id.is_player === 1 && !values.dan && touched.dan &&
+                              <FormFeedback className="d-block">This field is required!</FormFeedback>
+                            }
+                          </Col>
                         )
                       }
                       {
@@ -866,7 +876,7 @@ class EditModal extends React.Component {
                         )
                       } */}
                     </Row>
-                    <div className="w-100 d-flex justify-content-end">
+                    <div className="w-100 d-flex justify-content-end mt-2">
                       <div>
                         <Button
                           disabled={isSubmitting}
@@ -1167,7 +1177,7 @@ class EditModal extends React.Component {
                       </Col>
                     </Row>
 
-                    <div className="w-100 d-flex justify-content-end">
+                    <div className="w-100 d-flex justify-content-end mt-2">
                       <div>
                         <Button
                           disabled={isSubmitting}

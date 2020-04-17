@@ -798,6 +798,7 @@ class OrganizationController extends Controller
                                             'players.dan', 'players.skill', 'players.expired_date')
                                     ->orderBy('players.weight_id')
                                     ->orderBy('players.dan')
+                                    ->orderBy('members.name')
                                     ->get();
                 } else {
                     if ($mtype == 'referee' && $rtype != '' && $rtype != 'all')
