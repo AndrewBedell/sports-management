@@ -173,12 +173,12 @@ class EditModal extends React.Component {
         surname: values.surname,
         gender: values.gender == 1 ? Genders[0] : Genders[1],
         org_id: values.org_id == 1 ? (
-          org_list.filter(org => org.id === values.club_id)[0]
+          org_list.filter(org => org.id == values.club_id)[0]
         ) : (
-          org_list.filter(org => org.id === values.org_id)[0]
+          org_list.filter(org => org.id == values.org_id)[0]
         ),
         club_id: club_list.filter(club => club.id == values.club_id)[0],
-        role_id: roles.filter(role => role.id === values.role_id)[0],
+        role_id: roles.filter(role => role.id == values.role_id)[0],
         profile_image: values.profile_image,
         register_date: values.register_date,
         birthday: values.birthday,
@@ -190,8 +190,8 @@ class EditModal extends React.Component {
         // state: values.state,
         // city: values.city,
         // zip_code: values.zip_code,
-        weight_id: weights.filter(weight => weight.id === values.weight_id)[0],
-        dan: Dans.filter(dan => dan.value === values.dan)[0],
+        weight_id: weights.filter(weight => weight.id == values.weight_id)[0],
+        dan: Dans.filter(dan => dan.value == values.dan)[0],
         identity: values.identity,
         position: values.role_id == 4 ? referee_type_options.filter(option => option.value == values.position) : values.position,
         // skill: values.skill || 0,
@@ -201,7 +201,7 @@ class EditModal extends React.Component {
       formikRef1.current.setValues({
         name_o: values.name_o,
         name_s: values.name_s,
-        parent_id: org_list.filter(org => org.id === values.parent_id)[0],
+        parent_id: org_list.filter(org => org.id == values.parent_id)[0],
         register_no: values.register_no,
         logo: values.logo,
         email: values.email,
@@ -213,7 +213,7 @@ class EditModal extends React.Component {
         city: values.city,
         zip_code: values.zip_code,
         level: values.level,
-        is_club: SetSwitch.filter(set => set.value === values.is_club)[0]
+        is_club: SetSwitch.filter(set => set.value == values.is_club)[0]
       });
     }
   }
@@ -239,7 +239,7 @@ class EditModal extends React.Component {
   getLevel(parent_id) {
     const { orgs } = this.props;
     for (let i = 0; i < orgs.length; i++) {
-      if (orgs[i].id === parent_id) {
+      if (orgs[i].id == parent_id) {
         return orgs[i].level + 1;
       }
     }
@@ -310,8 +310,8 @@ class EditModal extends React.Component {
         // state: values.state,
         // city: values.city,
         // zip_code: values.zip_code,
-        weight_id: values.role_id && values.role_id.is_player === 1 ? (values.weight_id && values.weight_id.id) : '',
-        dan: values.role_id && values.role_id.is_player === 1 ? (values.dan && values.dan.value) : '',
+        weight_id: values.role_id && values.role_id.is_player == 1 ? (values.weight_id && values.weight_id.id) : '',
+        dan: values.role_id && values.role_id.is_player == 1 ? (values.dan && values.dan.value) : '',
         identity: values.identity,
         org_id: values.org_id.id,
         club_id: (values.club_id && values.club_id.id) || '',
@@ -332,7 +332,7 @@ class EditModal extends React.Component {
 
     handleSave = handleSave || (() => {});
 
-    if (values.role_id && (values.role_id.id === 2 || values.role_id.id === 3) && values.club_id === '') {
+    if (values.role_id && (values.role_id.id == 2 || values.role_id.id == 3) && values.club_id == '') {
       bags.setStatus({
         color: 'danger',
         children: 'Club is required for this member.'
