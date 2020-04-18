@@ -445,7 +445,6 @@ class EditModal extends React.Component {
                 }) => (
                   <Form onSubmit={handleSubmit}>
                     {status && <UncontrolledAlert {...status} />}
-                    {console.log(values)}
                     <Row>
                       <Col sm="4">
                         <FormGroup>
@@ -775,14 +774,14 @@ class EditModal extends React.Component {
                         </FormGroup>
                       </Col>
                       {
-                        values.role_id && values.role_id.is_player === 1 && (
+                        values.role_id && values.role_id.is_player == 1 && (
                           <Col sm="6">
                             <Label for="weight_id">Weight</Label>
                             <Select
                               name="weight_id"
                               menuPlacement="top"
                               classNamePrefix={
-                                values.role_id && values.role_id.is_player === 1 && !values.weight_id && touched.weight_id ? 
+                                values.role_id && values.role_id.is_player == 1 && !values.weight_id && touched.weight_id ? 
                                   'invalid react-select-lg' : 'react-select-lg'
                               }
                               value={values.weight_id}
@@ -794,21 +793,21 @@ class EditModal extends React.Component {
                               }}
                             />
                             {
-                              values.role_id && values.role_id.is_player === 1 && !values.weight_id && touched.weight_id && 
+                              values.role_id && values.role_id.is_player == 1 && !values.weight_id && touched.weight_id && 
                               <FormFeedback className="d-block">This field is required!</FormFeedback>
                             }
                           </Col>
                         )
                       }
                       {
-                        values.role_id && values.role_id.is_player === 1 && (
+                        values.role_id && values.role_id.is_player == 1 && (
                           <Col sm="6">
                             <Label for="dan">Dan</Label>
                             <Select
                               name="dan"
                               menuPlacement="top"
                               classNamePrefix={
-                                values.role_id && values.role_id.is_player === 1 && !values.dan && touched.dan ?
+                                values.role_id && values.role_id.is_player == 1 && !values.dan && touched.dan ?
                                   'invalid react-select-lg' : 'react-select-lg'
                               }
                               value={values.dan}
@@ -820,7 +819,7 @@ class EditModal extends React.Component {
                               }}
                             />
                             {
-                              values.role_id && values.role_id.is_player === 1 && !values.dan && touched.dan &&
+                              values.role_id && values.role_id.is_player == 1 && !values.dan && touched.dan &&
                               <FormFeedback className="d-block">This field is required!</FormFeedback>
                             }
                           </Col>
@@ -837,10 +836,10 @@ class EditModal extends React.Component {
                                 value={values.position || ''}
                                 onChange={handleChange}
                                 onBlur={handleBlur}
-                                invalid={values.role_id && values.role_id.is_player !== 1 && !values.position && touched.position}
+                                invalid={values.role_id && values.role_id.is_player != 1 && !values.position && touched.position}
                                 />
                               {
-                                values.role_id && values.role_id.is_player !== 1 && !values.position && touched.position &&
+                                values.role_id && values.role_id.is_player != 1 && !values.position && touched.position &&
                                 <FormFeedback className="d-block">This field is required!</FormFeedback>
                               }
                             </FormGroup>
