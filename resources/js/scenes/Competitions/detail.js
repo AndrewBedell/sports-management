@@ -19,6 +19,9 @@ class CompetitionDetail extends Component {
     super(props);
 
     this.state = {
+      expire: '',
+      intervalId: '',
+      end: '',
       org_flag: 0,
       competition_id: '',
       competition: [],
@@ -31,6 +34,21 @@ class CompetitionDetail extends Component {
       data: [],
       skip: 0,
     };
+
+    this.end = '';
+  }
+
+  timer() {
+    let distance = this.end - new Date().getTime();
+
+    let days = Math.floor(distance / (1000 * 60 * 60 * 24));
+    let hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    let minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+    let seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+    this.setState({
+      expire: days + "d " + hours + "h " + minutes + "m " + seconds + "s "
+    });
   }
 
   async componentDidMount() {
@@ -47,9 +65,22 @@ class CompetitionDetail extends Component {
     const data = await Api.get(`competition/${competition_id}`);
     switch (data.response.status) {
       case 200:
+        let competition = data.body.competition;
         this.setState({
-          competition: data.body.competition
+          competition
         });
+
+        let now = new Date().getTime();
+        let start = new Date(competition.register_from).getTime();
+        this.end = new Date(competition.register_to).getTime() + 86400000;
+
+        if (now > start && now < this.end) {
+          let intervalId = setInterval(this.timer.bind(this), 1000);
+
+          this.setState({
+            intervalId
+          });
+        }
         break;
       default:
         break;
@@ -212,7 +243,8 @@ class CompetitionDetail extends Component {
   }
 
   render() {
-    const { 
+    const {
+      expire,
       org_flag,
       competition, clubs,
       selectMembers, detail,
@@ -237,7 +269,13 @@ class CompetitionDetail extends Component {
                   <h4>Competition Time: {competition.from} ~ {competition.to}</h4>
                 </Col>
                 <Col sm="12" className="mt-3">
-                  <h4>Federations and Clubs: {competition.reg_ids} Regions, {competition.club_ids} Clubs</h4>
+                  <h4>Registration Period: {competition.register_from} ~ {competition.register_to}</h4>
+                </Col>
+                <Col sm="12" className="mt-3">
+                  <h4>
+                    Federations and Clubs: {competition.reg_ids} Regions, {competition.club_ids} Clubs
+                    <b className="text-danger"> ( {expire} )</b>
+                  </h4>
                 </Col>
               </Row>
             </Segment>
