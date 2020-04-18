@@ -761,7 +761,7 @@ class EditModal extends React.Component {
                       </Col> */}
                       <Col sm="6">
                         <FormGroup>
-                          <Label for="identity">Identity</Label>
+                          <Label for="identity">Member ID</Label>
                           <Input
                             name="identity"
                             type="text"                            
@@ -774,7 +774,7 @@ class EditModal extends React.Component {
                         </FormGroup>
                       </Col>
                       {
-                        values.role_id && values.role_id.is_player === 1 && (
+                        values.role_id !== undefined && values.role_id.is_player === 1 && (
                           <Col sm="6">
                             <Label for="weight_id">Weight</Label>
                             <Select
@@ -797,7 +797,7 @@ class EditModal extends React.Component {
                         )
                       }
                       {
-                        values.role_id && values.role_id.is_player === 1 && (
+                        values.role_id !== undefined && values.role_id.is_player === 1 && (
                           <Col sm="6">
                             <Label for="dan">Dan</Label>
                             <Select
@@ -820,7 +820,7 @@ class EditModal extends React.Component {
                         )
                       }
                       {
-                        values.role_id && values.role_id.id == 1 && (
+                        values.role_id !== undefined && values.role_id.id == 1 && (
                           <Col xs="6">
                             <FormGroup>
                               <Label for="position">Position</Label>
@@ -838,7 +838,7 @@ class EditModal extends React.Component {
                         )
                       }
                       {
-                        values.role_id && values.role_id.id == 4 && (
+                        values.role_id !== undefined && values.role_id.id == 4 && (
                           <Col xs="6">
                             <FormGroup>
                               <Label for="position">Referee Type</Label>
