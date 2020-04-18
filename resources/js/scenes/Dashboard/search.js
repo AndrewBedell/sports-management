@@ -34,11 +34,13 @@ class Search extends Component {
     super(props);
 
     const user = JSON.parse(localStorage.getItem('auth'));
-    
+    const me = user.user.member_info.organization_id;
+
     if (user.user.is_super == 1)
       this.props.history.push('/admin/home');
 
     this.state = {
+      me,
       level: '',
       user_is_club: false,
       org_list: [],
@@ -88,7 +90,7 @@ class Search extends Component {
 
   async componentDidMount() {
     const user = JSON.parse(localStorage.getItem('auth'));
-    const level = user.user.level == 1 && true;
+    const level = user.user.level;
     const user_is_club = user.user.is_club_member == 1 && true;
 
     this.setState({
@@ -182,6 +184,9 @@ class Search extends Component {
     }
 
     const search = QueryString.parse(this.props.location.search, { ignoreQueryPrefix: true });
+    if (this.state.level == 2) {
+      search.org = this.state.me;
+    }
 
     this.setState({
       search_type: search.stype ? (search_type_options.find(type => type.value == search.stype) || '') : '',
@@ -217,7 +222,7 @@ class Search extends Component {
     } else if (this.state.user_is_club != 1) {
       let params = {
         stype: 'club',
-        org: '',
+        org: this.state.me,
         club: '',
         mtype: '',
         rtype: 'all',
@@ -271,18 +276,11 @@ class Search extends Component {
         });
         break;
       case 'search_name':
-        let { members, member_type } = this.state;
+        let { members } = this.state;
 
-        if (member_type == '') {
-          members = members.filter(
-            member => member.name.toUpperCase().includes(value.toUpperCase()) || 
-                      member.surname.toUpperCase().includes(value.toUpperCase()));
-        } else {
-          members = members.filter(
-            member => member.role_name == member_type.label &&
-                      (member.name.toUpperCase().includes(value.toUpperCase()) || 
-                      member.surname.toUpperCase().includes(value.toUpperCase())));
-        }
+        members = members.filter(
+          member => member.name.toUpperCase().includes(value.toUpperCase()) || 
+                    member.surname.toUpperCase().includes(value.toUpperCase()));
 
         this.setState({
           filter: value,
@@ -371,7 +369,8 @@ class Search extends Component {
     switch (response.status) {
       case 200:
         this.setState({
-          search_data: body
+          search_data: body,
+          members: body
         });
         break;
       default:

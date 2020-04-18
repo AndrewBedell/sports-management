@@ -103,22 +103,20 @@ class Dashboard extends Component {
         <TopBar />
         <div className="tile-content dashboard">
           <Container>
-            <marquee>
-              {
-                logo != '' && (
-                  <img src={logo} className="table-avatar mr-2" />
-                )
-              }
-              
-              {org_name}
-            </marquee>
-            <Row className="top-bar">
-              <Col sm="4" xs="12"></Col>
-              <Col sm="4" xs="12" className="px-4 d-flex align-items-center">
-                <span className="fa fa-search"></span>
-                <Input className="search" />
+            <Row className="top-bar pt-2">
+              <Col sm="2" xs="12"></Col>
+              <Col sm="8" xs="12" className="px-4 d-flex align-items-center">
+                <marquee>
+                  {
+                    logo != '' && (
+                      <img src={logo} className="table-avatar mr-2" />
+                    )
+                  }
+                  
+                  {org_name}
+                </marquee>
               </Col>
-              <Col sm="4" xs="12" className="px-4 d-flex align-items-center justify-content-end">
+              <Col sm="2" xs="12" className="px-4 d-flex align-items-center justify-content-end">
                 <Switch
                   className="react-switch lang mx-2"
                   checked={this.state.checked}
@@ -145,13 +143,22 @@ class Dashboard extends Component {
                 </div>
               </Col>
             </Row>
-            <Row className="mt-2 tiles">
+            <Row className="tiles mt-4">
               <Col md="3" sm="6" xs="12">
                 <h3 className="ml-3">
                   <i className="fa fa-pencil mr-2"></i>
                   General
                 </h3>
 
+                <Card body inverse
+                  onClick={this.handleURL.bind(this, '/search')}
+                  style={{ backgroundColor: '#a239ca', borderColor: '#a239ca' }}
+                >
+                  <CardTitle>
+                    <i className="fa fa-search"></i>
+                  </CardTitle>
+                  <CardText>Browse</CardText>
+                </Card>
                 <div className="two-column">
                   {
                     is_club_member != 1 && (
@@ -176,15 +183,6 @@ class Dashboard extends Component {
                     <CardText>Member Registration</CardText>
                   </Card>
                 </div>
-                <Card body inverse
-                  onClick={this.handleURL.bind(this, '/search')}
-                  style={{ backgroundColor: '#a239ca', borderColor: '#a239ca' }}
-                >
-                  <CardTitle>
-                    <i className="fa fa-search"></i>
-                  </CardTitle>
-                  <CardText>Browse</CardText>
-                </Card>
                 {
                   is_nf == 1 && (
                     <Card body inverse
