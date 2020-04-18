@@ -445,6 +445,7 @@ class EditModal extends React.Component {
                 }) => (
                   <Form onSubmit={handleSubmit}>
                     {status && <UncontrolledAlert {...status} />}
+                    {console.log(values)}
                     <Row>
                       <Col sm="4">
                         <FormGroup>
@@ -774,13 +775,16 @@ class EditModal extends React.Component {
                         </FormGroup>
                       </Col>
                       {
-                        values.role_id !== undefined && values.role_id.is_player === 1 && (
+                        values.role_id && values.role_id.is_player === 1 && (
                           <Col sm="6">
                             <Label for="weight_id">Weight</Label>
                             <Select
                               name="weight_id"
                               menuPlacement="top"
-                              classNamePrefix={values.role_id && values.role_id.is_player === 1 && !values.weight_id && touched.weight_id ? 'invalid react-select-lg' : 'react-select-lg'}
+                              classNamePrefix={
+                                values.role_id && values.role_id.is_player === 1 && !values.weight_id && touched.weight_id ? 
+                                  'invalid react-select-lg' : 'react-select-lg'
+                              }
                               value={values.weight_id}
                               options={weights.filter(weight => weight.id != 0)}
                               getOptionValue={option => option.id}
@@ -797,13 +801,16 @@ class EditModal extends React.Component {
                         )
                       }
                       {
-                        values.role_id !== undefined && values.role_id.is_player === 1 && (
+                        values.role_id && values.role_id.is_player === 1 && (
                           <Col sm="6">
                             <Label for="dan">Dan</Label>
                             <Select
                               name="dan"
                               menuPlacement="top"
-                              classNamePrefix={values.role_id && values.role_id.is_player === 1 && !values.dan && touched.dan ? 'invalid react-select-lg' : 'react-select-lg'}
+                              classNamePrefix={
+                                values.role_id && values.role_id.is_player === 1 && !values.dan && touched.dan ?
+                                  'invalid react-select-lg' : 'react-select-lg'
+                              }
                               value={values.dan}
                               options={Dans.filter(dan => dan.value != 'dan' && dan.value != 'kyu')}
                               getOptionValue={option => option.value}
@@ -820,7 +827,7 @@ class EditModal extends React.Component {
                         )
                       }
                       {
-                        values.role_id !== undefined && values.role_id.id == 1 && (
+                        values.role_id && values.role_id.id == 1 && (
                           <Col xs="6">
                             <FormGroup>
                               <Label for="position">Position</Label>
@@ -832,13 +839,16 @@ class EditModal extends React.Component {
                                 onBlur={handleBlur}
                                 invalid={values.role_id && values.role_id.is_player !== 1 && !values.position && touched.position}
                                 />
-                              {values.role_id && values.role_id.is_player !== 1 && !values.position && touched.position && (<FormFeedback className="d-block">This field is required!</FormFeedback>)}
+                              {
+                                values.role_id && values.role_id.is_player !== 1 && !values.position && touched.position &&
+                                <FormFeedback className="d-block">This field is required!</FormFeedback>
+                              }
                             </FormGroup>
                           </Col>
                         )
                       }
                       {
-                        values.role_id !== undefined && values.role_id.id == 4 && (
+                        values.role_id && values.role_id.id == 4 && (
                           <Col xs="6">
                             <FormGroup>
                               <Label for="position">Referee Type</Label>
